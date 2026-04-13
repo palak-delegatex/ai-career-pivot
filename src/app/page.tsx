@@ -82,17 +82,17 @@ const steps = [
     number: "01",
     title: "Share Your Situation",
     desc: "Tell us your current role, skills, financial runway, and what matters most to your family.",
-    accent: "from-indigo-500 to-violet-500",
-    border: "border-indigo-500/20",
-    glow: "hover:shadow-indigo-500/10",
+    accent: "from-teal-500 to-emerald-500",
+    border: "border-teal-500/20",
+    glow: "hover:shadow-teal-500/10",
   },
   {
     number: "02",
     title: "AI Builds Your Strategy",
     desc: "Our AI analyzes your profile and creates a custom transition roadmap — not generic advice.",
-    accent: "from-violet-500 to-cyan-500",
-    border: "border-violet-500/20",
-    glow: "hover:shadow-violet-500/10",
+    accent: "from-teal-400 to-cyan-500",
+    border: "border-teal-500/20",
+    glow: "hover:shadow-teal-500/10",
   },
   {
     number: "03",
@@ -148,7 +148,7 @@ export default function Home() {
           className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
               </svg>
@@ -161,7 +161,7 @@ export default function Home() {
             <Link href="/faq" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
             <Link
               href="/waitlist"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 text-white"
+              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
               Join Waitlist
             </Link>
@@ -174,9 +174,9 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-950/80 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-10 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
             Early Access — Limited Spots
           </motion.div>
 
@@ -214,10 +214,10 @@ export default function Home() {
           >
             <Link
               href="/waitlist"
-              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] text-white overflow-hidden"
+              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 hover:scale-[1.02] text-white overflow-hidden"
             >
               <span className="relative z-10">Get My Roadmap →</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
             </Link>
             <Link
               href="#how-it-works"
@@ -248,7 +248,7 @@ export default function Home() {
         <section id="how-it-works" className="py-28 px-6">
           <div className="max-w-5xl mx-auto">
             <AnimatedSection className="text-center mb-16">
-              <motion.p variants={fadeUp} className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3">
+              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
                 How It Works
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
@@ -284,7 +284,7 @@ export default function Home() {
         <section className="py-28 px-6 bg-slate-900/40 border-y border-slate-800/50">
           <div className="max-w-4xl mx-auto">
             <AnimatedSection className="text-center mb-14">
-              <motion.p variants={fadeUp} className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3">
+              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
                 Who It&apos;s For
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
@@ -305,7 +305,7 @@ export default function Home() {
                   className="flex items-center justify-between bg-slate-900/70 backdrop-blur-sm rounded-xl px-5 py-3.5 border border-slate-800 hover:border-slate-600 transition-all duration-200 group"
                 >
                   <span className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{item.label}</span>
-                  <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded-md ml-3 shrink-0">
+                  <span className="text-xs font-semibold text-teal-400 bg-teal-950/60 border border-teal-800/50 px-2 py-0.5 rounded-md ml-3 shrink-0">
                     {item.tag}
                   </span>
                 </motion.div>
@@ -319,15 +319,15 @@ export default function Home() {
           <AnimatedSection className="max-w-3xl mx-auto text-center">
             <motion.div
               variants={fadeUp}
-              className="relative bg-gradient-to-br from-indigo-950/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-10 sm:p-14 border border-indigo-500/20"
+              className="relative bg-gradient-to-br from-teal-950/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-10 sm:p-14 border border-teal-500/20"
             >
-              <div className="absolute top-6 left-8 text-indigo-500/30 text-8xl font-serif leading-none select-none">&ldquo;</div>
+              <div className="absolute top-6 left-8 text-teal-500/30 text-8xl font-serif leading-none select-none">&ldquo;</div>
               <p className="relative text-xl sm:text-2xl text-slate-200 leading-relaxed font-medium mb-6">
                 Most career advice ignores that you have a mortgage, kids, and a partner who also has
                 a career. AICareerPivot finally accounts for the real constraints.
               </p>
               <div className="flex items-center justify-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm">S</div>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">S</div>
                 <div className="text-left">
                   <div className="text-white font-semibold text-sm">Sarah K.</div>
                   <div className="text-slate-500 text-xs">Senior Engineer → Product Lead</div>
@@ -342,10 +342,10 @@ export default function Home() {
           <AnimatedSection className="max-w-2xl mx-auto text-center">
             <motion.div
               variants={fadeUp}
-              className="relative bg-gradient-to-br from-indigo-900/40 to-violet-900/20 rounded-3xl p-10 sm:p-16 border border-indigo-500/25 overflow-hidden"
+              className="relative bg-gradient-to-br from-teal-900/40 to-emerald-900/20 rounded-3xl p-10 sm:p-16 border border-teal-500/25 overflow-hidden"
             >
               {/* Background glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 to-cyan-600/5 animate-gradient" />
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-600/5 to-cyan-600/5 animate-gradient" />
               <div className="relative z-10">
                 <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
                   Ready to map your next chapter?
@@ -356,7 +356,7 @@ export default function Home() {
                 <motion.div variants={fadeUp}>
                   <Link
                     href="/waitlist"
-                    className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-indigo-500/30 hover:scale-[1.03] text-white"
+                    className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
                     Join the Waitlist
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -372,7 +372,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
+            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
           <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">

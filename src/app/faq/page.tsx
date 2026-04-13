@@ -89,7 +89,7 @@ export default function FAQPage() {
         {/* Nav */}
         <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full border-b border-slate-800/50">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
               </svg>
@@ -101,7 +101,7 @@ export default function FAQPage() {
             <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">About</Link>
             <Link
               href="/waitlist"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 text-white"
+              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
               Join Waitlist
             </Link>
@@ -110,7 +110,7 @@ export default function FAQPage() {
 
         <main className="max-w-3xl mx-auto px-6 py-20">
           <header className="mb-16">
-            <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-4">FAQ</p>
+            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">FAQ</p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
               Career pivot questions, answered honestly
             </h1>
@@ -132,12 +132,12 @@ export default function FAQPage() {
             ))}
           </div>
 
-          <div className="mt-16 text-center bg-gradient-to-br from-indigo-950/60 to-slate-900/60 rounded-3xl p-10 border border-indigo-500/20">
+          <div className="mt-16 text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
             <h2 className="text-2xl font-bold text-white mb-3">Still have questions?</h2>
             <p className="text-slate-400 mb-8">Join the waitlist and we&apos;ll personally answer any questions about your specific situation.</p>
             <Link
               href="/waitlist"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 text-white"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
               Join the Waitlist →
             </Link>
@@ -146,7 +146,7 @@ export default function FAQPage() {
 
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm mt-10">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
+            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
           <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">

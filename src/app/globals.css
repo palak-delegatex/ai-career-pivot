@@ -44,11 +44,11 @@ html {
 .shimmer-text {
   background: linear-gradient(
     90deg,
-    #6366f1 0%,
-    #818cf8 25%,
-    #c7d2fe 50%,
-    #818cf8 75%,
-    #6366f1 100%
+    #0d9488 0%,
+    #2dd4bf 25%,
+    #99f6e4 50%,
+    #2dd4bf 75%,
+    #0d9488 100%
   );
   background-size: 200% auto;
   background-clip: text;
@@ -75,7 +75,7 @@ html {
   left: -20%;
   width: 60%;
   height: 70%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, transparent 70%);
   animation: float 8s ease-in-out infinite;
 }
 
@@ -99,7 +99,7 @@ html {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.1), transparent);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.3), rgba(6, 182, 212, 0.1), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;

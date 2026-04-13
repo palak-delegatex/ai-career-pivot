@@ -20,14 +20,14 @@ export default function WaitlistPage() {
           <input
             type="text"
             placeholder="Your name"
-            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-indigo-500 focus:outline-none text-white placeholder-slate-500 text-lg"
+            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500 text-lg"
           />
           <input
             type="email"
             placeholder="Your email address"
-            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-indigo-500 focus:outline-none text-white placeholder-slate-500 text-lg"
+            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500 text-lg"
           />
-          <select className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-indigo-500 focus:outline-none text-slate-300 text-lg">
+          <select className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-slate-300 text-lg">
             <option value="">What best describes you?</option>
             <option value="burnout">Burned out and ready for change</option>
             <option value="parent">Parent needing income continuity</option>
@@ -37,7 +37,7 @@ export default function WaitlistPage() {
           </select>
           <button
             type="submit"
-            className="w-full px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-lg transition-colors shadow-lg shadow-indigo-900/50 mt-2"
+            className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2"
           >
             Claim My Spot →
           </button>

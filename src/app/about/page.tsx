@@ -75,7 +75,7 @@ export default function AboutPage() {
         {/* Nav */}
         <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full border-b border-slate-800/50">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
               </svg>
@@ -87,7 +87,7 @@ export default function AboutPage() {
             <Link href="/faq" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">FAQ</Link>
             <Link
               href="/waitlist"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 text-white"
+              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
               Join Waitlist
             </Link>
@@ -97,7 +97,7 @@ export default function AboutPage() {
         <main className="max-w-4xl mx-auto px-6 py-20">
           {/* Header */}
           <header className="mb-16">
-            <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-4">About</p>
+            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">About</p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
               Career advice that accounts for your whole life
             </h1>
@@ -129,8 +129,8 @@ export default function AboutPage() {
               {principles.map((principle, i) => (
                 <article key={principle.title} className="bg-slate-900/60 rounded-xl p-6 border border-slate-800">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-950 border border-indigo-800/50 flex items-center justify-center">
-                      <span className="text-indigo-400 font-bold text-sm">{i + 1}</span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-teal-950 border border-teal-800/50 flex items-center justify-center">
+                      <span className="text-teal-400 font-bold text-sm">{i + 1}</span>
                     </div>
                     <div>
                       <h3 className="text-white font-semibold mb-2">{principle.title}</h3>
@@ -151,19 +151,19 @@ export default function AboutPage() {
               </p>
               <ul className="space-y-3 text-slate-400">
                 <li className="flex items-start gap-3">
-                  <span className="text-indigo-400 mt-0.5">→</span>
+                  <span className="text-teal-400 mt-0.5">→</span>
                   <span>Identifies transferable skills from your current role to target roles, with gap analysis</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-indigo-400 mt-0.5">→</span>
+                  <span className="text-teal-400 mt-0.5">→</span>
                   <span>Calculates financial viability based on your income, savings, and target salary range</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-indigo-400 mt-0.5">→</span>
+                  <span className="text-teal-400 mt-0.5">→</span>
                   <span>Sequences milestones to minimize financial risk and family disruption</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-indigo-400 mt-0.5">→</span>
+                  <span className="text-teal-400 mt-0.5">→</span>
                   <span>Generates a personalized 6-month, 1-year, and 2-year roadmap with specific actions</span>
                 </li>
               </ul>
@@ -171,12 +171,12 @@ export default function AboutPage() {
           </section>
 
           {/* CTA */}
-          <section className="text-center bg-gradient-to-br from-indigo-950/60 to-slate-900/60 rounded-3xl p-10 border border-indigo-500/20">
+          <section className="text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to build your real escape plan?</h2>
             <p className="text-slate-400 mb-8">Join the waitlist and be among the first to get your personalized career pivot roadmap.</p>
             <Link
               href="/waitlist"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 text-white"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
               Join the Waitlist →
             </Link>
@@ -185,7 +185,7 @@ export default function AboutPage() {
 
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm mt-10">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
+            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
           <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">

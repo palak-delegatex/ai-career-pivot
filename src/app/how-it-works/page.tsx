@@ -60,7 +60,7 @@ const steps = [
       "Family and personal constraints that affect your timeline",
       "What 'success' actually looks like for you",
     ],
-    accent: "from-indigo-500 to-violet-500",
+    accent: "from-teal-500 to-emerald-500",
   },
   {
     number: "02",
@@ -76,7 +76,7 @@ const steps = [
       "Sequences milestones to maintain income continuity",
       "Recommends the most efficient upskilling paths — not a wishlist",
     ],
-    accent: "from-violet-500 to-cyan-500",
+    accent: "from-teal-400 to-cyan-500",
   },
   {
     number: "03",
@@ -126,7 +126,7 @@ export default function HowItWorksPage() {
         {/* Nav */}
         <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full border-b border-slate-800/50">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
               </svg>
@@ -138,7 +138,7 @@ export default function HowItWorksPage() {
             <Link href="/faq" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">FAQ</Link>
             <Link
               href="/waitlist"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 text-white"
+              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
               Join Waitlist
             </Link>
@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
 
         <main className="max-w-4xl mx-auto px-6 py-20">
           <header className="mb-20">
-            <p className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-4">How It Works</p>
+            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">How It Works</p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
               From stuck to strategic in three steps
             </h1>
@@ -172,7 +172,7 @@ export default function HowItWorksPage() {
                       <ul className="space-y-2.5">
                         {step.details.map((detail) => (
                           <li key={detail} className="flex items-start gap-3 text-sm text-slate-400">
-                            <span className="text-indigo-400 mt-0.5 flex-shrink-0">→</span>
+                            <span className="text-teal-400 mt-0.5 flex-shrink-0">→</span>
                             <span>{detail}</span>
                           </li>
                         ))}
@@ -212,8 +212,8 @@ export default function HowItWorksPage() {
                 "Decision checkpoints to reassess and adapt",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-400">
-                  <span className="w-5 h-5 rounded-full bg-indigo-950 border border-indigo-800/50 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <span className="w-5 h-5 rounded-full bg-teal-950 border border-teal-800/50 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
@@ -224,12 +224,12 @@ export default function HowItWorksPage() {
           </section>
 
           {/* CTA */}
-          <section className="text-center bg-gradient-to-br from-indigo-950/60 to-slate-900/60 rounded-3xl p-10 border border-indigo-500/20">
+          <section className="text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to see your roadmap?</h2>
             <p className="text-slate-400 mb-8">Join the waitlist and be among the first professionals to get their personalized career pivot plan.</p>
             <Link
               href="/waitlist"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 text-white"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
               Join the Waitlist →
             </Link>
@@ -243,7 +243,7 @@ export default function HowItWorksPage() {
 
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm mt-10">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
+            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
           <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">
