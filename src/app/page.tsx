@@ -1,163 +1,320 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+
+function AnimatedSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      variants={stagger}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const steps = [
+  {
+    number: "01",
+    title: "Share Your Situation",
+    desc: "Tell us your current role, skills, financial runway, and what matters most to your family.",
+    accent: "from-indigo-500 to-violet-500",
+    border: "border-indigo-500/20",
+    glow: "hover:shadow-indigo-500/10",
+  },
+  {
+    number: "02",
+    title: "AI Builds Your Strategy",
+    desc: "Our AI analyzes your profile and creates a custom transition roadmap — not generic advice.",
+    accent: "from-violet-500 to-cyan-500",
+    border: "border-violet-500/20",
+    glow: "hover:shadow-violet-500/10",
+  },
+  {
+    number: "03",
+    title: "Execute with Confidence",
+    desc: "Get concrete milestones for 6 months, 1 year, and 2 years with skill gaps and actions laid out.",
+    accent: "from-cyan-500 to-teal-500",
+    border: "border-cyan-500/20",
+    glow: "hover:shadow-cyan-500/10",
+  },
+];
+
+const personas = [
+  { label: "Burned-out professionals ready for change", tag: "Burnout" },
+  { label: "Parents who can't just quit and figure it out", tag: "Family" },
+  { label: "Earners who need income continuity", tag: "Finance" },
+  { label: "Career changers entering a new industry", tag: "Pivot" },
+  { label: "Remote workers exploring new opportunities", tag: "Remote" },
+  { label: "Ambitious employees who want faster growth", tag: "Growth" },
+];
+
+const stats = [
+  { value: "3×", label: "Faster than solo planning" },
+  { value: "6mo", label: "To your first milestone" },
+  { value: "100%", label: "Personalized to your life" },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🧭</span>
-          <span className="font-bold text-xl tracking-tight">AICareerPivot</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/waitlist"
-            className="px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-colors"
+    <>
+      {/* Mesh background */}
+      <div className="mesh-bg" />
+
+      <div className="relative z-10 flex flex-col min-h-screen dot-grid">
+        {/* Nav */}
+        <motion.nav
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
+              </svg>
+            </div>
+            <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:block text-sm text-slate-400">Ready to pivot?</span>
+            <Link
+              href="/waitlist"
+              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 text-white"
+            >
+              Join Waitlist
+            </Link>
+          </div>
+        </motion.nav>
+
+        {/* Hero */}
+        <main className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center max-w-5xl mx-auto w-full">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-950/80 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
-            Join Waitlist
-          </Link>
-        </div>
-      </nav>
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            Early Access — Limited Spots
+          </motion.div>
 
-      {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center max-w-4xl mx-auto w-full">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-indigo-300 text-sm font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-          Early Access — Limited Spots
-        </div>
-
-        <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6">
-          Stop feeling trapped.
-          <br />
-          <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            Build your escape plan.
-          </span>
-        </h1>
-
-        <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mb-10">
-          AICareerPivot is your personalized career strategist. It analyzes your skills,
-          finances, and family constraints to build an actionable roadmap —
-          6 months, 1 year, and 2 years out.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 mb-16">
-          <Link
-            href="/waitlist"
-            className="px-8 py-4 rounded-full bg-indigo-600 hover:bg-indigo-500 font-semibold text-lg transition-colors shadow-lg shadow-indigo-900/50"
+          <motion.h1
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+            className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6"
           >
-            Get My Roadmap →
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="px-8 py-4 rounded-full border border-slate-600 hover:border-slate-400 font-semibold text-lg transition-colors text-slate-300 hover:text-white"
+            <motion.span variants={fadeUp} className="block text-white">
+              Stop feeling trapped.
+            </motion.span>
+            <motion.span variants={fadeUp} className="block shimmer-text mt-2">
+              Build your escape plan.
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.35 }}
+            className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-12"
           >
-            See How It Works
-          </Link>
-        </div>
+            AICareerPivot analyzes your skills, finances, and family constraints to build
+            an actionable roadmap — 6 months, 1 year, and 2 years out.
+            Not generic advice. Your plan.
+          </motion.p>
 
-        {/* Social proof */}
-        <p className="text-slate-500 text-sm">
-          Built for professionals ready to make their next move
-        </p>
-      </main>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.4 }}
+            className="flex flex-col sm:flex-row gap-3 mb-20"
+          >
+            <Link
+              href="/waitlist"
+              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] text-white overflow-hidden"
+            >
+              <span className="relative z-10">Get My Roadmap →</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            </Link>
+            <Link
+              href="#how-it-works"
+              className="px-8 py-4 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
+            >
+              See How It Works
+            </Link>
+          </motion.div>
 
-      {/* How it works */}
-      <section
-        id="how-it-works"
-        className="py-24 px-6 bg-slate-800/50"
-      >
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">How It Works</h2>
-          <p className="text-slate-400 text-center mb-16 max-w-xl mx-auto">
-            Three steps to go from stuck to strategic
-          </p>
-          <div className="grid sm:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                icon: "🎯",
-                title: "Share Your Situation",
-                desc: "Tell us about your current role, skills, financial runway, and what matters most to your family.",
-              },
-              {
-                step: "02",
-                icon: "🤖",
-                title: "AI Builds Your Strategy",
-                desc: "Our AI analyzes your profile and creates a custom transition roadmap — not generic advice.",
-              },
-              {
-                step: "03",
-                icon: "🗺️",
-                title: "Execute with Confidence",
-                desc: "Get concrete milestones for 6 months, 1 year, and 2 years with skill gaps and actions clearly laid out.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-indigo-700 transition-colors"
-              >
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <div className="text-xs font-bold text-indigo-400 mb-2 tracking-widest uppercase">
-                  Step {item.step}
+          {/* Stats */}
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-3 gap-6 sm:gap-12 border-t border-slate-800/80 pt-10 w-full max-w-lg mx-auto"
+          >
+            {stats.map((s) => (
+              <motion.div key={s.label} variants={fadeUp} className="text-center">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white mb-1">{s.value}</div>
+                <div className="text-xs text-slate-500 leading-tight">{s.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </main>
+
+        {/* How it works */}
+        <section id="how-it-works" className="py-28 px-6">
+          <div className="max-w-5xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <motion.p variants={fadeUp} className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3">
+                How It Works
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                From stuck to strategic in three steps
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
+                A simple process that turns your whole situation into a concrete action plan.
+              </motion.p>
+            </AnimatedSection>
+
+            <AnimatedSection className="grid sm:grid-cols-3 gap-5">
+              {steps.map((step) => (
+                <motion.div
+                  key={step.number}
+                  variants={fadeUp}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  className={`card-glow relative bg-slate-900/80 backdrop-blur-sm rounded-2xl p-7 border ${step.border} hover:shadow-xl ${step.glow} transition-all duration-300`}
+                >
+                  <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br ${step.accent} mb-5`}>
+                    <span className="text-white font-bold text-sm">{step.number}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                  {/* Corner accent */}
+                  <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${step.accent} opacity-5 rounded-2xl`} />
+                </motion.div>
+              ))}
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Built for people like you */}
+        <section className="py-28 px-6 bg-slate-900/40 border-y border-slate-800/50">
+          <div className="max-w-4xl mx-auto">
+            <AnimatedSection className="text-center mb-14">
+              <motion.p variants={fadeUp} className="text-indigo-400 text-sm font-semibold tracking-widest uppercase mb-3">
+                Who It&apos;s For
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                Built for people like you
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
+                Unlike generic career advice, we factor in your whole life — not just your resume.
+              </motion.p>
+            </AnimatedSection>
+
+            <AnimatedSection className="grid sm:grid-cols-2 gap-3">
+              {personas.map((item, i) => (
+                <motion.div
+                  key={item.label}
+                  variants={fadeUp}
+                  custom={i}
+                  whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                  className="flex items-center justify-between bg-slate-900/70 backdrop-blur-sm rounded-xl px-5 py-3.5 border border-slate-800 hover:border-slate-600 transition-all duration-200 group"
+                >
+                  <span className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{item.label}</span>
+                  <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded-md ml-3 shrink-0">
+                    {item.tag}
+                  </span>
+                </motion.div>
+              ))}
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Testimonial/quote */}
+        <section className="py-28 px-6">
+          <AnimatedSection className="max-w-3xl mx-auto text-center">
+            <motion.div
+              variants={fadeUp}
+              className="relative bg-gradient-to-br from-indigo-950/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-10 sm:p-14 border border-indigo-500/20"
+            >
+              <div className="absolute top-6 left-8 text-indigo-500/30 text-8xl font-serif leading-none select-none">&ldquo;</div>
+              <p className="relative text-xl sm:text-2xl text-slate-200 leading-relaxed font-medium mb-6">
+                Most career advice ignores that you have a mortgage, kids, and a partner who also has
+                a career. AICareerPivot finally accounts for the real constraints.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm">S</div>
+                <div className="text-left">
+                  <div className="text-white font-semibold text-sm">Sarah K.</div>
+                  <div className="text-slate-500 text-xs">Senior Engineer → Product Lead</div>
                 </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-slate-400 leading-relaxed">{item.desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </motion.div>
+          </AnimatedSection>
+        </section>
 
-      {/* Who it's for */}
-      <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Built for People Like You</h2>
-          <p className="text-slate-400 mb-12 max-w-xl mx-auto">
-            Unlike generic career advice, we factor in your whole life
-          </p>
-          <div className="grid sm:grid-cols-2 gap-6 text-left">
-            {[
-              { icon: "💼", label: "Burned-out professionals ready for change" },
-              { icon: "👨‍👩‍👧", label: "Parents who can't just quit and figure it out" },
-              { icon: "💰", label: "Earners who need income continuity" },
-              { icon: "🔄", label: "Career changers entering a new industry" },
-              { icon: "🌍", label: "Remote workers exploring new opportunities" },
-              { icon: "📈", label: "Ambitious employees who want faster growth" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center gap-4 bg-slate-800/60 rounded-xl px-6 py-4 border border-slate-700"
-              >
-                <span className="text-2xl">{item.icon}</span>
-                <span className="text-slate-200 font-medium">{item.label}</span>
+        {/* CTA */}
+        <section className="py-28 px-6">
+          <AnimatedSection className="max-w-2xl mx-auto text-center">
+            <motion.div
+              variants={fadeUp}
+              className="relative bg-gradient-to-br from-indigo-900/40 to-violet-900/20 rounded-3xl p-10 sm:p-16 border border-indigo-500/25 overflow-hidden"
+            >
+              {/* Background glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 to-cyan-600/5 animate-gradient" />
+              <div className="relative z-10">
+                <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                  Ready to map your next chapter?
+                </motion.h2>
+                <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-10 leading-relaxed">
+                  Join the waitlist and be first to get your personalized career pivot roadmap.
+                </motion.p>
+                <motion.div variants={fadeUp}>
+                  <Link
+                    href="/waitlist"
+                    className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-indigo-500/30 hover:scale-[1.03] text-white"
+                  >
+                    Join the Waitlist
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                </motion.div>
               </div>
-            ))}
+            </motion.div>
+          </AnimatedSection>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
+            <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24 px-6 bg-gradient-to-r from-indigo-900/50 to-cyan-900/30">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to map your next chapter?
-          </h2>
-          <p className="text-slate-300 text-lg mb-10">
-            Join the waitlist and be first to get your personalized career pivot roadmap.
-          </p>
-          <Link
-            href="/waitlist"
-            className="inline-block px-10 py-4 rounded-full bg-indigo-600 hover:bg-indigo-500 font-bold text-lg transition-colors shadow-xl shadow-indigo-900/50"
-          >
-            Join the Waitlist →
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 px-6 border-t border-slate-800 text-center text-slate-500 text-sm">
-        <p>© 2026 AICareerPivot. Your career, your timeline.</p>
-      </footer>
-    </div>
+          <p>© 2026 AICareerPivot. Your career, your timeline.</p>
+        </footer>
+      </div>
+    </>
   );
 }
