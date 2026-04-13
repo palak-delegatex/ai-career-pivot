@@ -12,15 +12,67 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = "https://ai-career-pivot.vercel.app";
+
 export const metadata: Metadata = {
-  title: "AICareerPivot — Your Personal Career Strategist",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "AICareerPivot — Your Personal Career Strategist",
+    template: "%s | AICareerPivot",
+  },
   description:
     "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+  keywords: [
+    "career pivot",
+    "career change",
+    "career transition",
+    "career roadmap",
+    "AI career advice",
+    "career planning",
+    "job change",
+    "career strategy",
+  ],
+  authors: [{ name: "AICareerPivot", url: BASE_URL }],
+  creator: "AICareerPivot",
+  publisher: "AICareerPivot",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: BASE_URL,
+    siteName: "AICareerPivot",
+    title: "AICareerPivot — Your Personal Career Strategist",
+    description:
+      "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AICareerPivot — Personalized career transition roadmaps powered by AI",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "AICareerPivot — Your Personal Career Strategist",
     description:
       "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
-    type: "website",
+    images: ["/og-image.png"],
+    creator: "@aicareer_pivot",
+  },
+  alternates: {
+    canonical: BASE_URL,
   },
 };
 

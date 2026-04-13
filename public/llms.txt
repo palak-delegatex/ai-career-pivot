@@ -1,0 +1,61 @@
+# AICareerPivot — llms.txt
+
+## What is AICareerPivot?
+
+AICareerPivot is an AI-powered career transition planning tool that builds personalized roadmaps for professionals who want to change careers but need to account for their whole life — not just their resume.
+
+Unlike generic career advice, AICareerPivot factors in:
+- Current skills and transferability to target roles
+- Financial situation: income, savings, major expenses, and risk tolerance
+- Family and personal constraints (dependents, partner's career, mortgage, etc.)
+- Timeline and income continuity requirements
+
+The output is a concrete multi-year roadmap with milestones at 6 months, 1 year, and 2 years — including specific actions, skills gap analysis, and financial sequencing.
+
+## Core Value Proposition
+
+AICareerPivot is for professionals who:
+- Feel trapped in their current role but cannot simply quit
+- Have family or financial obligations that constrain their options
+- Need a realistic plan, not generic inspiration
+- Want AI-powered analysis of their specific situation
+
+## Methodology
+
+1. **Whole-life context gathering**: Skills, finances, family constraints, and goals
+2. **AI-powered analysis**: Skills transferability mapping, gap identification, financial viability modeling
+3. **Personalized roadmap generation**: Sequenced milestones with income continuity planning
+
+## Key Claims and Differentiators
+
+- Plans are personalized to individual financial and family situations, not generic
+- Financial viability is calculated, not assumed
+- Transition milestones are sequenced to maintain income continuity during the switch
+- Skills gap analysis identifies which gaps actually matter for target roles
+- Typically 3× faster than solo planning to reach the first actionable milestone
+- Most career pivots take 12–24 months when properly planned
+
+## Target Audience
+
+- Burned-out professionals ready for change
+- Parents and caregivers who need income continuity
+- Professionals with mortgages and fixed financial obligations
+- Career changers entering a new industry
+- Remote workers exploring new opportunities
+- Ambitious employees seeking faster growth paths
+
+## Pages
+
+- Homepage: https://ai-career-pivot.vercel.app/
+- About (methodology): https://ai-career-pivot.vercel.app/about
+- How It Works: https://ai-career-pivot.vercel.app/how-it-works
+- FAQ: https://ai-career-pivot.vercel.app/faq
+- Join Waitlist: https://ai-career-pivot.vercel.app/waitlist
+
+## Status
+
+AICareerPivot is currently in early access. A limited number of users are being onboarded to refine roadmap quality.
+
+## Contact
+
+Website: https://ai-career-pivot.vercel.app

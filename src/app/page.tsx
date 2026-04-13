@@ -4,6 +4,53 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "AICareerPivot",
+  url: "https://ai-career-pivot.vercel.app",
+  description:
+    "AICareerPivot is a personalized AI career strategist that builds custom transition roadmaps by analyzing your skills, financial situation, and family constraints to create actionable 6-month, 1-year, and 2-year career pivot plans.",
+  foundingDate: "2026",
+  areaServed: "Worldwide",
+  serviceType: "Career Coaching",
+  audience: {
+    "@type": "Audience",
+    audienceType: "Professionals seeking career transitions",
+  },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "AICareerPivot",
+  url: "https://ai-career-pivot.vercel.app",
+  description:
+    "Personalized AI-powered career pivot roadmaps for professionals who need to account for skills, finances, and family constraints.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://ai-career-pivot.vercel.app/?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const softwareApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "AICareerPivot",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  url: "https://ai-career-pivot.vercel.app",
+  description:
+    "AI-powered career transition planning tool that creates personalized roadmaps with concrete 6-month, 1-year, and 2-year milestones.",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    description: "Early access waitlist — free to join",
+  },
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
@@ -75,6 +122,20 @@ const stats = [
 export default function Home() {
   return (
     <>
+      {/* Structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+      />
+
       {/* Mesh background */}
       <div className="mesh-bg" />
 
@@ -94,8 +155,10 @@ export default function Home() {
             </div>
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:block text-sm text-slate-400">Ready to pivot?</span>
+          <div className="flex items-center gap-4">
+            <Link href="/how-it-works" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
+            <Link href="/about" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">About</Link>
+            <Link href="/faq" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
             <Link
               href="/waitlist"
               className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 text-white"
@@ -308,10 +371,16 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
-          <div className="flex items-center justify-center gap-2 mb-1">
+          <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-violet-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
+          <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">
+            <Link href="/about" className="hover:text-slate-400 transition-colors">About</Link>
+            <Link href="/how-it-works" className="hover:text-slate-400 transition-colors">How It Works</Link>
+            <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
+            <Link href="/waitlist" className="hover:text-slate-400 transition-colors">Join Waitlist</Link>
+          </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
         </footer>
       </div>
