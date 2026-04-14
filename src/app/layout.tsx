@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider } from "./PostHogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const BASE_URL = "https://ai-career-pivot.vercel.app";
+const BASE_URL = "https://ai-career-pivot.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -77,7 +78,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+          <PostHogProvider>{children}</PostHogProvider>
+        </body>
     </html>
   );
 }
