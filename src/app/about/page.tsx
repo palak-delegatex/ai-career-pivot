@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "AICareerPivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
   alternates: {
-    canonical: "https://ai-career-pivot.vercel.app/about",
+    canonical: "https://ai-career-pivot.com/about",
   },
   openGraph: {
     title: "About AICareerPivot — Our Methodology & Mission",
     description:
       "Learn how AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
-    url: "https://ai-career-pivot.vercel.app/about",
+    url: "https://ai-career-pivot.com/about",
   },
 };
 
@@ -20,13 +20,13 @@ const aboutSchema = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   name: "About AICareerPivot",
-  url: "https://ai-career-pivot.vercel.app/about",
+  url: "https://ai-career-pivot.com/about",
   description:
     "AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps by analyzing skills, financial constraints, and family circumstances.",
   mainEntity: {
     "@type": "Organization",
     name: "AICareerPivot",
-    url: "https://ai-career-pivot.vercel.app",
+    url: "https://ai-career-pivot.com",
     description:
       "AI-powered career transition planning for professionals who need to account for their whole life — not just their resume.",
     foundingDate: "2026",

@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AICareerPivot builds your personalized roadmap.",
   alternates: {
-    canonical: "https://ai-career-pivot.vercel.app/faq",
+    canonical: "https://ai-career-pivot.com/faq",
   },
   openGraph: {
     title: "FAQ — AICareerPivot",
     description:
       "Common questions about career pivots answered: timelines, finances, skills gaps, and how AICareerPivot creates personalized transition roadmaps.",
-    url: "https://ai-career-pivot.vercel.app/faq",
+    url: "https://ai-career-pivot.com/faq",
   },
 };
 

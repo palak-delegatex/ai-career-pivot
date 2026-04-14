@@ -13,7 +13,7 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #0d9488 0%, #059669 100%)",
+          background: "linear-gradient(135deg, #0d9488 0%, #0891b2 100%)",
           borderRadius: "6px",
         }}
       >
@@ -23,13 +23,13 @@ export default function Icon() {
             alignItems: "center",
             justifyContent: "center",
             color: "white",
-            fontSize: "18px",
+            fontSize: "14px",
             fontWeight: "900",
-            letterSpacing: "-1px",
+            letterSpacing: "-0.5px",
             fontFamily: "sans-serif",
           }}
         >
-          CP
+          ACP
         </div>
       </div>
     ),

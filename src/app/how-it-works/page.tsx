@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "See how AICareerPivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
   alternates: {
-    canonical: "https://ai-career-pivot.vercel.app/how-it-works",
+    canonical: "https://ai-career-pivot.com/how-it-works",
   },
   openGraph: {
     title: "How It Works — AICareerPivot",
     description:
       "AICareerPivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
-    url: "https://ai-career-pivot.vercel.app/how-it-works",
+    url: "https://ai-career-pivot.com/how-it-works",
   },
 };
 
@@ -22,7 +22,7 @@ const howItWorksSchema = {
   name: "How AICareerPivot Builds Your Career Transition Roadmap",
   description:
     "AICareerPivot uses AI to analyze your skills, financial situation, and family constraints to build a personalized career pivot roadmap with concrete milestones at 6 months, 1 year, and 2 years.",
-  url: "https://ai-career-pivot.vercel.app/how-it-works",
+  url: "https://ai-career-pivot.com/how-it-works",
   step: [
     {
       "@type": "HowToStep",

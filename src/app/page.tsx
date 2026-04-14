@@ -8,7 +8,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "AICareerPivot",
-  url: "https://ai-career-pivot.vercel.app",
+  url: "https://ai-career-pivot.com",
   description:
     "AICareerPivot is a personalized AI career strategist that builds custom transition roadmaps by analyzing your skills, financial situation, and family constraints to create actionable 6-month, 1-year, and 2-year career pivot plans.",
   foundingDate: "2026",
@@ -24,12 +24,12 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "AICareerPivot",
-  url: "https://ai-career-pivot.vercel.app",
+  url: "https://ai-career-pivot.com",
   description:
     "Personalized AI-powered career pivot roadmaps for professionals who need to account for skills, finances, and family constraints.",
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://ai-career-pivot.vercel.app/?q={search_term_string}",
+    target: "https://ai-career-pivot.com/?q={search_term_string}",
     "query-input": "required name=search_term_string",
   },
 };
@@ -40,7 +40,7 @@ const softwareApplicationSchema = {
   name: "AICareerPivot",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
-  url: "https://ai-career-pivot.vercel.app",
+  url: "https://ai-career-pivot.com",
   description:
     "AI-powered career transition planning tool that creates personalized roadmaps with concrete 6-month, 1-year, and 2-year milestones.",
   offers: {
@@ -56,9 +56,9 @@ const experts = [
     name: "Dario Amodei",
     title: "CEO, Anthropic",
     initials: "DA",
-    gradient: "from-violet-500 to-teal-500",
-    borderGlow: "hover:shadow-violet-500/20",
-    accentBorder: "hover:border-violet-500/40",
+    gradient: "from-rose-500 to-pink-500",
+    borderGlow: "hover:shadow-rose-500/20",
+    accentBorder: "hover:border-rose-500/40",
     quote:
       "AI will have effects that are much broader and occur much faster than previous labor market shocks.",
     context: "Davos 2026",

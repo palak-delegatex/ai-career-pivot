@@ -13,7 +13,7 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #0d9488 0%, #059669 100%)",
+          background: "linear-gradient(135deg, #0d9488 0%, #0891b2 100%)",
           borderRadius: "40px",
         }}
       >
@@ -29,24 +29,24 @@ export default function AppleIcon() {
         >
           <div
             style={{
-              fontSize: "80px",
+              fontSize: "72px",
               fontWeight: "900",
-              letterSpacing: "-4px",
+              letterSpacing: "-3px",
               lineHeight: 1,
             }}
           >
-            CP
+            ACP
           </div>
           <div
             style={{
-              fontSize: "22px",
+              fontSize: "18px",
               fontWeight: "600",
-              letterSpacing: "2px",
-              marginTop: "6px",
-              opacity: 0.85,
+              letterSpacing: "3px",
+              marginTop: "8px",
+              opacity: 0.8,
             }}
           >
-            PIVOT
+            AI PIVOT
           </div>
         </div>
       </div>
