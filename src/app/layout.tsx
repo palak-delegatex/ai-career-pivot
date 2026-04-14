@@ -54,21 +54,12 @@ export const metadata: Metadata = {
     title: "AICareerPivot — Your Personal Career Strategist",
     description:
       "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "AICareerPivot — Personalized career transition roadmaps powered by AI",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AICareerPivot — Your Personal Career Strategist",
     description:
       "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
-    images: ["/og-image.png"],
     creator: "@aicareer_pivot",
   },
   alternates: {
