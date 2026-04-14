@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -169,8 +169,8 @@ function AnimatedSection({ children, className = "" }: { children: React.ReactNo
 const steps = [
   {
     number: "01",
-    title: "Share Your Situation",
-    desc: "Tell us your current role, skills, financial runway, and what matters most to your family.",
+    title: "We Read Your Background",
+    desc: "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation.",
     accent: "from-teal-500 to-emerald-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
@@ -178,7 +178,7 @@ const steps = [
   {
     number: "02",
     title: "AI Builds Your Strategy",
-    desc: "Our AI analyzes your profile and creates a custom transition roadmap — not generic advice.",
+    desc: "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data.",
     accent: "from-teal-400 to-cyan-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
@@ -186,7 +186,7 @@ const steps = [
   {
     number: "03",
     title: "Execute with Confidence",
-    desc: "Get concrete milestones for 6 months, 1 year, and 2 years with skill gaps and actions laid out.",
+    desc: "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today.",
     accent: "from-cyan-500 to-teal-500",
     border: "border-cyan-500/20",
     glow: "hover:shadow-cyan-500/10",
@@ -209,6 +209,22 @@ const stats = [
 ];
 
 export default function Home() {
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/waitlist/count")
+      .then((r) => r.json())
+      .then((d: { count: number }) => {
+        // Only show count if meaningful (>= 10); round down to nearest 10
+        if (d.count >= 10) {
+          setWaitlistCount(Math.floor(d.count / 10) * 10);
+        }
+      })
+      .catch(() => {
+        // Silently fail — badge shows fallback text
+      });
+  }, []);
+
   return (
     <>
       {/* Structured data */}
@@ -248,6 +264,8 @@ export default function Home() {
             <Link href="/how-it-works" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
             <Link href="/about" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">About</Link>
             <Link href="/faq" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
+            <Link href="/blog" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
+            <Link href="/pricing" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
             <Link
               href="/waitlist"
               className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
@@ -266,7 +284,9 @@ export default function Home() {
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-            Early Access — Limited Spots
+            {waitlistCount !== null
+              ? `${waitlistCount}+ professionals on the waitlist`
+              : "Early Access — Limited Spots"}
           </motion.div>
 
           <motion.h1
@@ -290,9 +310,9 @@ export default function Home() {
             transition={{ delay: 0.35 }}
             className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-12"
           >
-            AICareerPivot analyzes your skills, finances, and family constraints to build
-            an actionable roadmap — 6 months, 1 year, and 2 years out.
-            Not generic advice. Your plan.
+            Most career advice ignores your actual background. We don&apos;t.
+            AICareerPivot reads your LinkedIn, resume, and portfolio — then builds a personalized
+            roadmap around your real skills, finances, and family constraints.
           </motion.p>
 
           <motion.div
@@ -380,7 +400,7 @@ export default function Home() {
                 Built for people like you
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
-                Unlike generic career advice, we factor in your whole life — not just your resume.
+                Unlike generic career advice, we read your actual background first — then factor in your whole life.
               </motion.p>
             </AnimatedSection>
 
@@ -561,6 +581,200 @@ export default function Home() {
           </AnimatedSection>
         </section>
 
+        {/* AI Course Showcase */}
+        <section id="ai-courses" className="py-28 px-6 border-t border-slate-800/40">
+          <div className="max-w-6xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
+                Skill Up
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                AI Skills That Actually Get You Hired
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-slate-400 max-w-xl mx-auto">
+                The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.
+              </motion.p>
+            </AnimatedSection>
+
+            <AnimatedSection>
+              <motion.div
+                variants={stagger}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              >
+                {[
+                  {
+                    provider: "Anthropic",
+                    providerColor: "bg-orange-950 text-orange-300 border-orange-800/40",
+                    providerInitial: "AN",
+                    name: "AI Fluency for Professionals",
+                    duration: "4 weeks",
+                    cost: "Free",
+                    costColor: "bg-emerald-950 text-emerald-400",
+                    valueProp: "Understand how LLMs work and how to apply them in any role",
+                    matchScore: 94,
+                  },
+                  {
+                    provider: "Google",
+                    providerColor: "bg-blue-950 text-blue-300 border-blue-800/40",
+                    providerInitial: "G",
+                    name: "AI Essentials",
+                    duration: "5 weeks",
+                    cost: "Free",
+                    costColor: "bg-emerald-950 text-emerald-400",
+                    valueProp: "Practical AI tools for workplace productivity — no coding needed",
+                    matchScore: 89,
+                  },
+                  {
+                    provider: "AWS",
+                    providerColor: "bg-amber-950 text-amber-300 border-amber-800/40",
+                    providerInitial: "AWS",
+                    name: "AI Practitioner",
+                    duration: "20 hours",
+                    cost: "$300 exam",
+                    costColor: "bg-amber-950/60 text-amber-400",
+                    valueProp: "Industry-recognized cert for AI fundamentals on cloud infrastructure",
+                    matchScore: 87,
+                  },
+                  {
+                    provider: "Microsoft",
+                    providerColor: "bg-cyan-950 text-cyan-300 border-cyan-800/40",
+                    providerInitial: "MS",
+                    name: "Azure AI Fundamentals (AI-900)",
+                    duration: "6 hours",
+                    cost: "$165 exam",
+                    costColor: "bg-amber-950/60 text-amber-400",
+                    valueProp: "Core AI and ML concepts — pairs well with any enterprise background",
+                    matchScore: 83,
+                  },
+                  {
+                    provider: "DeepLearning.AI",
+                    providerColor: "bg-teal-950 text-teal-300 border-teal-800/40",
+                    providerInitial: "DL",
+                    name: "AI for Everyone",
+                    duration: "6 hours",
+                    cost: "Free audit",
+                    costColor: "bg-emerald-950 text-emerald-400",
+                    valueProp: "Andrew Ng's non-technical AI strategy course — boardroom-ready",
+                    matchScore: 91,
+                  },
+                  {
+                    provider: "IBM",
+                    providerColor: "bg-indigo-950 text-indigo-300 border-indigo-800/40",
+                    providerInitial: "IBM",
+                    name: "AI Engineering Professional",
+                    duration: "6 months",
+                    cost: "$49/mo",
+                    costColor: "bg-slate-800 text-slate-300",
+                    valueProp: "End-to-end ML engineering skills with hands-on projects",
+                    matchScore: 78,
+                  },
+                ].map((course) => (
+                  <motion.div
+                    key={course.name}
+                    variants={fadeUp}
+                    className="relative flex flex-col gap-4 rounded-2xl bg-slate-900/60 border border-slate-800/60 p-6 hover:border-slate-700/80 transition-colors"
+                  >
+                    {/* Match score badge */}
+                    <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-950/80 border border-teal-800/40 text-teal-400 text-xs font-semibold">
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                      {course.matchScore}% match
+                    </div>
+
+                    {/* Provider badge */}
+                    <div className={`inline-flex w-fit items-center px-2.5 py-1 rounded-lg border text-xs font-bold tracking-wide ${course.providerColor}`}>
+                      {course.providerInitial}
+                    </div>
+
+                    <div className="flex-1">
+                      <h3 className="text-white font-semibold text-base leading-snug mb-2">
+                        {course.name}
+                      </h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">
+                        {course.valueProp}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-slate-500 bg-slate-800/60 px-2 py-0.5 rounded-full">
+                        {course.duration}
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${course.costColor}`}>
+                        {course.cost}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatedSection>
+
+            {/* CTA */}
+            <AnimatedSection className="mt-14 text-center">
+              <motion.div variants={fadeUp} className="inline-flex flex-col items-center gap-4">
+                <p className="text-slate-400 text-sm max-w-md">
+                  Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.
+                </p>
+                <Link
+                  href="/waitlist"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
+                >
+                  Get My Personalized Learning Path →
+                </Link>
+              </motion.div>
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Blog preview */}
+        <section className="py-20 px-6 border-t border-slate-800/60">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h2 className="text-2xl font-extrabold text-white tracking-tight">From the blog</h2>
+                <p className="text-slate-400 text-sm mt-1">Practical guides for your career transition</p>
+              </div>
+              <Link href="/blog" className="text-teal-400 text-sm font-semibold hover:text-teal-300 transition-colors">
+                All articles →
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-6">
+              {[
+                {
+                  slug: "the-6-month-career-pivot-framework",
+                  title: "The 6-Month Career Pivot Framework",
+                  excerpt: "A step-by-step guide to planning your transition with concrete milestones and financial checkpoints.",
+                  readTime: "8 min read",
+                },
+                {
+                  slug: "how-to-change-careers-with-a-family",
+                  title: "How to Change Careers When You Have a Family",
+                  excerpt: "Career change advice that actually accounts for the mortgage, kids, and a partner who also has a career.",
+                  readTime: "7 min read",
+                },
+                {
+                  slug: "the-8-ai-certifications-that-matter-for-career-pivots-2026",
+                  title: "The 8 AI Certifications That Actually Matter in 2026",
+                  excerpt: "Which credentials deliver real salary ROI — and which ones are just checkboxes. Ranked by outcome data.",
+                  readTime: "12 min read",
+                },
+              ].map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group block bg-slate-900/60 border border-slate-800 hover:border-teal-800/60 rounded-2xl p-6 transition-all duration-200 hover:bg-slate-800/60"
+                >
+                  <p className="text-slate-500 text-xs mb-3">{post.readTime}</p>
+                  <h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-teal-300 transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed line-clamp-3">{post.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Footer */}
         <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -571,6 +785,8 @@ export default function Home() {
             <Link href="/about" className="hover:text-slate-400 transition-colors">About</Link>
             <Link href="/how-it-works" className="hover:text-slate-400 transition-colors">How It Works</Link>
             <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
+            <Link href="/blog" className="hover:text-slate-400 transition-colors">Blog</Link>
+            <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
             <Link href="/waitlist" className="hover:text-slate-400 transition-colors">Join Waitlist</Link>
           </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
