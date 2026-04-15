@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllSlugs, getPost } from "@/lib/blog";
+import SiteNav from "@/components/SiteNav";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -96,7 +97,9 @@ export default async function BlogPost({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      <main className="min-h-screen bg-gray-950 text-white py-20 px-6">
+      <div className="min-h-screen bg-gray-950 text-white">
+        <SiteNav />
+        <main className="py-10 px-6">
         <div className="max-w-2xl mx-auto">
           <Link
             href="/blog"
@@ -124,10 +127,9 @@ export default async function BlogPost({
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
             <MDXRemote source={post.content} components={components} />
           </article>
-
-          <WaitlistCTA />
         </div>
-      </main>
+        </main>
+      </div>
     </>
   );
 }
