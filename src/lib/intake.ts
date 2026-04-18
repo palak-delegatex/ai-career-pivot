@@ -41,6 +41,11 @@ export interface PivotPlan {
   keyActions: string[];
   estimatedTimeToTransition: string;
   financialConsiderations: string;
+  upsellOptions?: {
+    premiumRoadmap: boolean;
+    coachingSession: boolean;
+    bundle: boolean;
+  };
 }
 
 export interface IntakeResult {
