@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.69",
     "@supabase/supabase-js": "^2.103.0",
+    "@tailwindcss/typography": "^0.5.19",
     "ai": "^6.0.159",
     "framer-motion": "^12.38.0",
     "gray-matter": "^4.0.3",
