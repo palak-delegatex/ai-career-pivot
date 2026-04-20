@@ -2,23 +2,11 @@
 
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
-import { useEffect } from "react";
 
+// posthog is initialized in instrumentation-client.ts (Next.js 16+ pattern)
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    if (!key) return;
-    posthog.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
-      capture_pageview: true,
-      capture_pageleave: true,
-      persistence: "localStorage",
-    });
-  }, []);
-
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  if (!process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) {
     return <>{children}</>;
   }
-
   return <PHProvider client={posthog}>{children}</PHProvider>;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Blog — Career Pivot Guides & Resources",
@@ -21,7 +22,9 @@ export default function BlogIndex() {
   const posts = getAllPosts();
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white py-20 px-6">
+    <div className="min-h-screen bg-gray-950 text-white">
+      <SiteNav />
+      <main className="py-16 px-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
           Career Pivot Blog
@@ -63,6 +66,7 @@ export default function BlogIndex() {
           ))}
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }
