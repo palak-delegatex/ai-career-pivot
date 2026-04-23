@@ -60,7 +60,26 @@ function WaitlistCTA() {
   );
 }
 
-const components = { WaitlistCTA };
+function PricingCTA() {
+  return (
+    <div className="my-10 p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40 text-center not-prose">
+      <p className="text-white font-semibold text-lg mb-2">
+        Founding member pricing: $49/mo locked forever
+      </p>
+      <p className="text-slate-400 text-sm mb-5">
+        Limited to 100 spots. Standard pricing will be $99/mo — founding members keep $49/mo for life.
+      </p>
+      <Link
+        href="/pricing"
+        className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all"
+      >
+        See Pricing →
+      </Link>
+    </div>
+  );
+}
+
+const components = { WaitlistCTA, PricingCTA };
 
 export default async function BlogPost({
   params,
