@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { UserProfile } from "@/lib/intake";
+import { trackFormStarted, trackFormCompleted } from "@/lib/analytics";
 
 type Step = "form" | "processing" | "error";
 
 export default function OnboardingPage() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const formStartedRef = useRef(false);
 
   const [step, setStep] = useState<Step>("form");
   const [email, setEmail] = useState("");
@@ -17,6 +19,13 @@ export default function OnboardingPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [processingMsg, setProcessingMsg] = useState("");
   const [error, setError] = useState("");
+
+  const fireFormStarted = useCallback(() => {
+    if (!formStartedRef.current) {
+      formStartedRef.current = true;
+      trackFormStarted();
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +40,6 @@ export default function OnboardingPage() {
     try {
       let profile: UserProfile | null = null;
 
-      // 1. Parse resume (primary if provided, higher quality than LinkedIn)
       if (resumeFile) {
         setProcessingMsg("Analyzing your resume…");
         const fd = new FormData();
@@ -43,7 +51,6 @@ export default function OnboardingPage() {
         profile = { ...data.profile, email };
       }
 
-      // 2. Merge LinkedIn data
       if (linkedinUrl) {
         setProcessingMsg("Fetching LinkedIn profile…");
         const res = await fetch("/api/intake/linkedin", {
@@ -53,7 +60,6 @@ export default function OnboardingPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          // Merge: LinkedIn fills gaps in resume data
           if (profile) {
             profile = {
               ...profile,
@@ -67,10 +73,8 @@ export default function OnboardingPage() {
             profile = { ...data.profile, email, linkedinUrl };
           }
         }
-        // LinkedIn failure is non-fatal — continue with resume
       }
 
-      // 3. Merge website context (optional)
       if (websiteUrl) {
         setProcessingMsg("Scanning your portfolio…");
         const res = await fetch("/api/intake/website", {
@@ -91,7 +95,12 @@ export default function OnboardingPage() {
 
       if (!profile) throw new Error("Could not extract a profile. Please upload your resume.");
 
-      // 4. Store profile in sessionStorage and navigate to review
+      trackFormCompleted({
+        has_resume: !!resumeFile,
+        has_linkedin: !!linkedinUrl,
+        has_website: !!websiteUrl,
+      });
+
       sessionStorage.setItem("intake_profile", JSON.stringify(profile));
       router.push("/onboarding/profile");
     } catch (err) {
@@ -134,6 +143,7 @@ export default function OnboardingPage() {
             <input
               type="email"
               value={email}
+              onFocus={fireFormStarted}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
@@ -148,7 +158,7 @@ export default function OnboardingPage() {
             </label>
             <div
               className="w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed border-slate-600 hover:border-teal-500 cursor-pointer text-center transition-colors"
-              onClick={() => fileRef.current?.click()}
+              onClick={() => { fireFormStarted(); fileRef.current?.click(); }}
             >
               {resumeFile ? (
                 <span className="text-teal-400 font-medium">{resumeFile.name}</span>
