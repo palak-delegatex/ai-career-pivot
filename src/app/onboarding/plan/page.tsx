@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PivotPlan } from "@/lib/intake";
+import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
+import { trackCheckoutStarted } from "@/lib/analytics";
 
 function readPlans(): PivotPlan[] {
   if (typeof window === "undefined") return [];
@@ -15,14 +16,56 @@ function readPlans(): PivotPlan[] {
   }
 }
 
+function readEmail(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const raw = window.sessionStorage.getItem("intake_profile");
+    if (!raw) return "";
+    const profile = JSON.parse(raw) as UserProfile;
+    return profile.email ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export default function PivotPlanPage() {
   const router = useRouter();
   const [plans] = useState<PivotPlan[]>(readPlans);
   const [selected, setSelected] = useState(0);
+  const [email] = useState<string>(readEmail);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     if (plans.length === 0) router.replace("/onboarding");
   }, [plans.length, router]);
+
+  async function startCheckout() {
+    if (!email) {
+      setCheckoutError("We lost your email — please restart the intake.");
+      return;
+    }
+    setCheckoutError("");
+    setCheckoutLoading(true);
+    try {
+      sessionStorage.setItem("intake_selected_plan_index", String(selected));
+      trackCheckoutStarted({ plan_index: selected, target_role: plans[selected]?.targetRole });
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Checkout could not start");
+      }
+      const { url } = (await res.json()) as { url: string };
+      window.location.assign(url);
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Checkout failed. Please try again.");
+      setCheckoutLoading(false);
+    }
+  }
 
   if (plans.length === 0) {
     return (
@@ -139,22 +182,35 @@ export default function PivotPlanPage() {
 
         {/* CTA */}
         <div className="mt-10 text-center bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
-          <h3 className="text-xl font-bold mb-3">Build the detailed roadmap for {plan.targetRole}</h3>
+          <h3 className="text-xl font-bold mb-3">Unlock your detailed 2-year roadmap</h3>
           <p className="text-slate-400 mb-6">
-            Add your finances, family situation, and risk tolerance to generate a step-by-step 2-year plan
-            with skills, certs, networking targets, and income bridge strategies.
+            Step-by-step skills, certs, networking targets, income bridge strategies — built around your finances and risk tolerance.
           </p>
+          <div className="flex items-baseline justify-center gap-3 mb-2">
+            <span className="text-slate-500 line-through text-lg">Was $29</span>
+            <span className="text-4xl font-extrabold text-teal-400">$9</span>
+            <span className="text-slate-400 text-sm">early access</span>
+          </div>
+          <p className="text-slate-500 text-xs mb-6">One-time payment · Receipt emailed by Stripe</p>
           <button
-            onClick={() => {
-              sessionStorage.setItem("intake_selected_plan_index", String(selected));
-              router.push("/onboarding/roadmap");
-            }}
-            className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+            type="button"
+            onClick={startCheckout}
+            disabled={checkoutLoading}
+            className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-60 disabled:cursor-not-allowed font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Build My Detailed Roadmap →
+            {checkoutLoading ? "Opening secure checkout…" : "Get my roadmap — $9 →"}
           </button>
-          <p className="mt-4 text-xs text-slate-500">
-            Or <Link href="/waitlist" className="underline hover:text-slate-300">join the waitlist</Link> for full coaching access.
+          {checkoutError && (
+            <p className="mt-4 text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+              {checkoutError}
+            </p>
+          )}
+          <p className="text-slate-500 text-xs mt-4">
+            Prefer the full subscription?{" "}
+            <Link href="/waitlist" className="text-teal-400 hover:text-teal-300">
+              Join the founding-cohort waitlist
+            </Link>
+            .
           </p>
         </div>
       </div>
