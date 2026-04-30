@@ -2,17 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About AICareerPivot — Our Methodology & Mission",
+  title: "About AI Career Pivot — Our Methodology & Mission",
   description:
-    "AICareerPivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
+    "AI Career Pivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
   alternates: {
     canonical: "https://ai-career-pivot.com/about",
   },
   openGraph: {
-    title: "About AICareerPivot — Our Methodology & Mission",
+    title: "About AI Career Pivot — Our Methodology & Mission",
     description:
-      "Learn how AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
+      "Learn how AI Career Pivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
     url: "https://ai-career-pivot.com/about",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About AI Career Pivot — Our Methodology & Mission",
+    description:
+      "Learn how AI Career Pivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
   },
 };
 

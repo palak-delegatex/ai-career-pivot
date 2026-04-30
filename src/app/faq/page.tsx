@@ -2,17 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "FAQ — AICareerPivot",
+  title: "FAQ — AI Career Pivot",
   description:
-    "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AICareerPivot builds your personalized roadmap.",
+    "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AI Career Pivot builds your personalized roadmap.",
   alternates: {
     canonical: "https://ai-career-pivot.com/faq",
   },
   openGraph: {
-    title: "FAQ — AICareerPivot",
+    title: "FAQ — AI Career Pivot",
     description:
-      "Common questions about career pivots answered: timelines, finances, skills gaps, and how AICareerPivot creates personalized transition roadmaps.",
+      "Common questions about career pivots answered: timelines, finances, skills gaps, and how AI Career Pivot creates personalized transition roadmaps.",
     url: "https://ai-career-pivot.com/faq",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FAQ — AI Career Pivot",
+    description:
+      "Common questions about career pivots answered: timelines, finances, skills gaps, and how AI Career Pivot creates personalized transition roadmaps.",
   },
 };
 

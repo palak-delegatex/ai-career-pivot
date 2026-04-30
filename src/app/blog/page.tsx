@@ -16,6 +16,12 @@ export const metadata: Metadata = {
     description:
       "Actionable guides for professionals ready to change careers.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog — Career Pivot Guides & Resources",
+    description:
+      "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
+  },
 };
 
 export default function BlogIndex() {

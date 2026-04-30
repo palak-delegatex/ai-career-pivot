@@ -2,17 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "How It Works — AICareerPivot",
+  title: "How It Works — AI Career Pivot",
   description:
-    "See how AICareerPivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
+    "See how AI Career Pivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
   alternates: {
     canonical: "https://ai-career-pivot.com/how-it-works",
   },
   openGraph: {
-    title: "How It Works — AICareerPivot",
+    title: "How It Works — AI Career Pivot",
     description:
-      "AICareerPivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
+      "AI Career Pivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
     url: "https://ai-career-pivot.com/how-it-works",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "How It Works — AI Career Pivot",
+    description:
+      "AI Career Pivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
   },
 };
 

@@ -18,11 +18,11 @@ const BASE_URL = "https://ai-career-pivot.com";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "AICareerPivot — Your Personal Career Strategist",
-    template: "%s | AICareerPivot",
+    default: "AI Career Pivot — Your Personalized Career Transition Roadmap",
+    template: "%s | AI Career Pivot",
   },
   description:
-    "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+    "Get your personalized career transition roadmap for $9 early access. AI Career Pivot analyzes your skills, finances, and family constraints to build actionable 6-month, 1-year, and 2-year plans.",
   keywords: [
     "career pivot",
     "career change",
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     "job change",
     "career strategy",
   ],
-  authors: [{ name: "AICareerPivot", url: BASE_URL }],
-  creator: "AICareerPivot",
-  publisher: "AICareerPivot",
+  authors: [{ name: "AI Career Pivot", url: BASE_URL }],
+  creator: "AI Career Pivot",
+  publisher: "AI Career Pivot",
   robots: {
     index: true,
     follow: true,
@@ -51,17 +51,26 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: BASE_URL,
-    siteName: "AICareerPivot",
-    title: "AICareerPivot — Your Personal Career Strategist",
+    siteName: "AI Career Pivot",
+    title: "AI Career Pivot — Your Personalized Career Transition Roadmap",
     description:
-      "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+      "Get your personalized career transition roadmap for $9 early access. Analyzes your skills, finances, and family constraints to build actionable plans.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "AI Career Pivot — Personalized career transition roadmaps powered by AI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AICareerPivot — Your Personal Career Strategist",
+    title: "AI Career Pivot — Your Personalized Career Transition Roadmap",
     description:
-      "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
+      "Get your personalized career transition roadmap for $9 early access. Built around your skills, finances, and family constraints.",
     creator: "@aicareer_pivot",
+    images: ["/opengraph-image"],
   },
   alternates: {
     canonical: BASE_URL,
