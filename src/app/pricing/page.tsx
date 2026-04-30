@@ -3,15 +3,21 @@ import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
-  title: "Pricing — AICareerPivot",
+  title: "Pricing — AI Career Pivot",
   description:
-    "Invest less than one hour of career coaching. Get a complete personalized roadmap. Founding cohort: $49/month, locked forever. Standard: $99/month.",
+    "Invest less than one hour of career coaching. Get a complete personalized roadmap for $9 early access. Founding cohort: $49/month, locked forever. Standard: $99/month.",
   alternates: { canonical: "https://ai-career-pivot.com/pricing" },
   openGraph: {
-    title: "Pricing — AICareerPivot",
+    title: "Pricing — AI Career Pivot",
     description:
-      "Founding cohort pricing: $49/month, locked forever. Limited to first 100 users.",
+      "Get your personalized career pivot roadmap for $9 early access. Founding cohort: $49/month, locked forever. Limited to first 100 users.",
     url: "https://ai-career-pivot.com/pricing",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing — AI Career Pivot",
+    description:
+      "Get your personalized career pivot roadmap for $9 early access. Founding cohort: $49/month, locked forever. Limited to first 100 users.",
   },
 };
 
