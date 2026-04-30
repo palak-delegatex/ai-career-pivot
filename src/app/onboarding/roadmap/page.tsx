@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   FamilyConstraints,
@@ -47,6 +47,20 @@ const PARTNER_OPTIONS: { value: FamilyConstraints["partnerIncome"]; label: strin
 ];
 
 export default function RoadmapIntakePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen bg-slate-900 items-center justify-center">
+          <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <RoadmapIntakeForm />
+    </Suspense>
+  );
+}
+
+function RoadmapIntakeForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
