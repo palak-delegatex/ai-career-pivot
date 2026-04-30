@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type {
   FamilyConstraints,
   FinancialObligationBand,
@@ -10,6 +10,7 @@ import type {
   RoadmapIntake,
   UserProfile,
 } from "@/lib/intake";
+import { trackPurchaseCompleted } from "@/lib/analytics";
 
 const OBLIGATION_OPTIONS: { value: FinancialObligationBand; label: string }[] = [
   { value: "under_2k", label: "Under $2k / month" },
@@ -47,6 +48,16 @@ const PARTNER_OPTIONS: { value: FamilyConstraints["partnerIncome"]; label: strin
 
 export default function RoadmapIntakePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const purchaseFiredRef = useRef(false);
+
+  useEffect(() => {
+    if (sessionId && !purchaseFiredRef.current) {
+      purchaseFiredRef.current = true;
+      trackPurchaseCompleted({ stripe_session_id: sessionId });
+    }
+  }, [sessionId]);
 
   const [email, setEmail] = useState("");
   const [currentTitle, setCurrentTitle] = useState("");
@@ -154,7 +165,7 @@ export default function RoadmapIntakePage() {
       const res = await fetch("/api/roadmap/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(intake),
+        body: JSON.stringify({ ...intake, sessionId }),
       });
       const data = await res.json();
       if (!res.ok) {

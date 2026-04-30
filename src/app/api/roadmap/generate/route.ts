@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { RoadmapIntake } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
+import { getPaidSession } from "@/lib/payments";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -58,6 +59,7 @@ function partnerIncomeLabel(p: RoadmapIntake["family"]["partnerIncome"]): string
 }
 
 const RoadmapIntakeSchema = z.object({
+  sessionId: z.string().min(1, "Missing sessionId — checkout required"),
   email: z.string().email(),
   currentTitle: z.string().min(1),
   currentIndustry: z.string().min(1),
@@ -95,7 +97,16 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  const intake: RoadmapIntake = parsed.data;
+  const { sessionId, ...intakeFields } = parsed.data;
+  const intake: RoadmapIntake = intakeFields;
+
+  const paid = await getPaidSession(sessionId);
+  if (!paid) {
+    return NextResponse.json(
+      { error: "Payment required. Please complete checkout to generate your roadmap." },
+      { status: 402 }
+    );
+  }
 
   const familyDescription = [
     intake.family.hasKids

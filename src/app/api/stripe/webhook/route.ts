@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import type Stripe from "stripe";
+import { PostHog } from "posthog-node";
 import { getStripe } from "@/lib/stripe";
 import { recordPayment } from "@/lib/payments";
 
@@ -53,6 +54,25 @@ export async function POST(req: NextRequest) {
           status: "paid",
           paid_at: new Date((event.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
         });
+
+        const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+        if (posthogKey) {
+          const ph = new PostHog(posthogKey, {
+            host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+          });
+          ph.capture({
+            distinctId: email.toLowerCase(),
+            event: "purchase_completed",
+            properties: {
+              stripe_session_id: session.id,
+              amount_total: session.amount_total ?? 0,
+              currency: session.currency ?? "usd",
+              source: "stripe_webhook",
+            },
+          });
+          // serverless: must flush before the function returns or events are dropped
+          await ph.shutdown();
+        }
       }
     }
   } catch (err) {
