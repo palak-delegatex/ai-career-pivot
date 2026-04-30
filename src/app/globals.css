@@ -114,3 +114,49 @@ html {
   background-image: radial-gradient(circle, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
 }
+
+@media print {
+  @page {
+    size: Letter;
+    margin: 0.6in;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+  }
+
+  body * {
+    background-color: transparent !important;
+  }
+
+  .no-print,
+  nav,
+  footer.site-footer {
+    display: none !important;
+  }
+
+  /* Strip dark gradients/borders that don't print well */
+  .print\:bg-white {
+    background: #ffffff !important;
+  }
+
+  .print\:text-black {
+    color: #0f172a !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  #roadmap-print {
+    max-width: none !important;
+  }
+}

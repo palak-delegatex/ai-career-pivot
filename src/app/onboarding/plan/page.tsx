@@ -5,19 +5,24 @@ import { useRouter } from "next/navigation";
 import type { PivotPlan } from "@/lib/intake";
 import Link from "next/link";
 
+function readPlans(): PivotPlan[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.sessionStorage.getItem("intake_plans");
+    return raw ? (JSON.parse(raw) as PivotPlan[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function PivotPlanPage() {
   const router = useRouter();
-  const [plans, setPlans] = useState<PivotPlan[]>([]);
+  const [plans] = useState<PivotPlan[]>(readPlans);
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("intake_plans");
-    if (!stored) {
-      router.replace("/onboarding");
-      return;
-    }
-    setPlans(JSON.parse(stored));
-  }, [router]);
+    if (plans.length === 0) router.replace("/onboarding");
+  }, [plans.length, router]);
 
   if (plans.length === 0) {
     return (
@@ -134,16 +139,23 @@ export default function PivotPlanPage() {
 
         {/* CTA */}
         <div className="mt-10 text-center bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
-          <h3 className="text-xl font-bold mb-3">Want the full detailed roadmap?</h3>
+          <h3 className="text-xl font-bold mb-3">Build the detailed roadmap for {plan.targetRole}</h3>
           <p className="text-slate-400 mb-6">
-            Get a comprehensive week-by-week plan, salary research, and personalized networking scripts.
+            Add your finances, family situation, and risk tolerance to generate a step-by-step 2-year plan
+            with skills, certs, networking targets, and income bridge strategies.
           </p>
-          <Link
-            href="/waitlist"
+          <button
+            onClick={() => {
+              sessionStorage.setItem("intake_selected_plan_index", String(selected));
+              router.push("/onboarding/roadmap");
+            }}
             className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Get Full Access →
-          </Link>
+            Build My Detailed Roadmap →
+          </button>
+          <p className="mt-4 text-xs text-slate-500">
+            Or <Link href="/waitlist" className="underline hover:text-slate-300">join the waitlist</Link> for full coaching access.
+          </p>
         </div>
       </div>
     </div>
