@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PivotPlan } from "@/lib/intake";
+import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
 
 export default function PivotPlanPage() {
   const router = useRouter();
   const [plans, setPlans] = useState<PivotPlan[]>([]);
   const [selected, setSelected] = useState(0);
+  const [email, setEmail] = useState<string>("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_plans");
@@ -17,7 +20,41 @@ export default function PivotPlanPage() {
       return;
     }
     setPlans(JSON.parse(stored));
+    const profileRaw = sessionStorage.getItem("intake_profile");
+    if (profileRaw) {
+      try {
+        const profile = JSON.parse(profileRaw) as UserProfile;
+        if (profile.email) setEmail(profile.email);
+      } catch {
+        // ignore
+      }
+    }
   }, [router]);
+
+  async function startCheckout() {
+    if (!email) {
+      setCheckoutError("We lost your email — please restart the intake.");
+      return;
+    }
+    setCheckoutError("");
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Checkout could not start");
+      }
+      const { url } = (await res.json()) as { url: string };
+      window.location.assign(url);
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Checkout failed. Please try again.");
+      setCheckoutLoading(false);
+    }
+  }
 
   if (plans.length === 0) {
     return (
@@ -134,16 +171,36 @@ export default function PivotPlanPage() {
 
         {/* CTA */}
         <div className="mt-10 text-center bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
-          <h3 className="text-xl font-bold mb-3">Want the full detailed roadmap?</h3>
+          <h3 className="text-xl font-bold mb-3">Unlock your full personalized roadmap</h3>
           <p className="text-slate-400 mb-6">
-            Get a comprehensive week-by-week plan, salary research, and personalized networking scripts.
+            Comprehensive week-by-week plan, salary research, and personalized networking scripts.
           </p>
-          <Link
-            href="/waitlist"
-            className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+          <div className="flex items-baseline justify-center gap-3 mb-2">
+            <span className="text-slate-500 line-through text-lg">Was $29</span>
+            <span className="text-4xl font-extrabold text-teal-400">$9</span>
+            <span className="text-slate-400 text-sm">early access</span>
+          </div>
+          <p className="text-slate-500 text-xs mb-6">One-time payment · Receipt emailed by Stripe</p>
+          <button
+            type="button"
+            onClick={startCheckout}
+            disabled={checkoutLoading}
+            className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-60 disabled:cursor-not-allowed font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Get Full Access →
-          </Link>
+            {checkoutLoading ? "Opening secure checkout…" : "Get my roadmap — $9 →"}
+          </button>
+          {checkoutError && (
+            <p className="mt-4 text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+              {checkoutError}
+            </p>
+          )}
+          <p className="text-slate-500 text-xs mt-4">
+            Prefer the full subscription?{" "}
+            <Link href="/waitlist" className="text-teal-400 hover:text-teal-300">
+              Join the founding-cohort waitlist
+            </Link>
+            .
+          </p>
         </div>
       </div>
     </div>
