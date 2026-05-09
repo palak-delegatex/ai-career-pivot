@@ -24,15 +24,23 @@ export default function ProfileReviewPage() {
     setGenerating(true);
     setError("");
     try {
+      const paymentSessionId = sessionStorage.getItem("payment_session_id");
       const res = await fetch("/api/intake/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile }),
+        body: JSON.stringify({ profile, paymentSessionId }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Plan generation failed");
       const data = await res.json();
-      sessionStorage.setItem("intake_plans", JSON.stringify(data.plans));
-      router.push("/onboarding/plan");
+      if (data.reportId) {
+        sessionStorage.removeItem("payment_session_id");
+        sessionStorage.removeItem("payment_email");
+        sessionStorage.removeItem("intake_profile");
+        router.push(`/report/${data.reportId}`);
+      } else {
+        sessionStorage.setItem("intake_plans", JSON.stringify(data.plans));
+        router.push("/onboarding/plan");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setGenerating(false);

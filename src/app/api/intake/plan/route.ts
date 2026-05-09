@@ -3,6 +3,7 @@ import { gateway } from "@ai-sdk/gateway";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const PivotPlanSchema = z.object({
   plans: z.array(z.object({
@@ -20,10 +21,24 @@ const PivotPlanSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const { profile }: { profile: UserProfile } = await req.json();
+  const { profile, paymentSessionId }: { profile: UserProfile; paymentSessionId?: string } = await req.json();
 
   if (!profile) {
     return NextResponse.json({ error: "profile required" }, { status: 400 });
+  }
+
+  const supabase = getSupabaseClient();
+
+  if (paymentSessionId) {
+    const { data: order } = await supabase
+      .from("orders")
+      .select("id, status")
+      .eq("stripe_session_id", paymentSessionId)
+      .single();
+
+    if (!order || order.status !== "paid") {
+      return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+    }
   }
 
   const { output: object } = await generateText({
@@ -51,6 +66,27 @@ User profile:
 
 Generate personalized, actionable plans — not generic advice.`,
   });
+
+  if (paymentSessionId && object) {
+    const { data: report } = await supabase
+      .from("reports")
+      .insert({
+        email: profile.email,
+        profile,
+        plans: object.plans,
+      })
+      .select("id")
+      .single();
+
+    if (report) {
+      await supabase
+        .from("orders")
+        .update({ report_id: report.id })
+        .eq("stripe_session_id", paymentSessionId);
+
+      return NextResponse.json({ ...object, reportId: report.id });
+    }
+  }
 
   return NextResponse.json(object);
 }

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { UserProfile } from "@/lib/intake";
 
-type Step = "form" | "processing" | "error";
+type Step = "form" | "processing" | "error" | "no_payment";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -17,6 +18,16 @@ export default function OnboardingPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [processingMsg, setProcessingMsg] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const paymentEmail = sessionStorage.getItem("payment_email");
+    const paymentSessionId = sessionStorage.getItem("payment_session_id");
+    if (!paymentSessionId) {
+      setStep("no_payment");
+      return;
+    }
+    if (paymentEmail) setEmail(paymentEmail);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -98,6 +109,26 @@ export default function OnboardingPage() {
       setStep("error");
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
+  }
+
+  if (step === "no_payment") {
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
+        <div className="max-w-md text-center">
+          <div className="text-5xl mb-6">🔒</div>
+          <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
+          <p className="text-slate-400 mb-8 leading-relaxed">
+            Get your personalized career pivot roadmap for $29. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
+          </p>
+          <Link
+            href="/pricing"
+            className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+          >
+            Get Started — $29 →
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (step === "processing") {
