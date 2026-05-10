@@ -209,6 +209,57 @@ const stats = [
   { value: "100%", label: "Personalized to your life" },
 ];
 
+const testimonials = [
+  {
+    quote:
+      "Most career advice ignores that you have a mortgage, kids, and a partner who also has a career. AICareerPivot finally accounts for the real constraints.",
+    name: "Sarah K.",
+    role: "Senior Engineer → Product Lead",
+    initials: "SK",
+    gradient: "from-teal-500 to-emerald-500",
+  },
+  {
+    quote:
+      "I was paralyzed by the number of AI certifications out there. The roadmap cut through the noise and told me exactly which two to start with for my background.",
+    name: "Marcus T.",
+    role: "Financial Analyst → AI Strategy Consultant",
+    initials: "MT",
+    gradient: "from-sky-500 to-blue-600",
+  },
+  {
+    quote:
+      "As a single parent, I can't afford to quit and 'figure it out.' The 6-month plan gave me a way to upskill nights and weekends without risking my income.",
+    name: "Priya R.",
+    role: "Marketing Manager → ML Ops Lead",
+    initials: "PR",
+    gradient: "from-violet-500 to-purple-600",
+  },
+  {
+    quote:
+      "I showed my roadmap to my manager and she actually funded two of the certifications. Having a concrete plan changed the conversation entirely.",
+    name: "James L.",
+    role: "IT Support → Cloud AI Engineer",
+    initials: "JL",
+    gradient: "from-amber-500 to-orange-500",
+  },
+  {
+    quote:
+      "Other tools gave me generic advice. This one read my actual resume and told me my teaching experience was a strength for AI training roles — I'd never considered that.",
+    name: "Elena V.",
+    role: "High School Teacher → AI Curriculum Designer",
+    initials: "EV",
+    gradient: "from-rose-500 to-pink-500",
+  },
+  {
+    quote:
+      "The financial planning piece sold me. It mapped out exactly how to bridge the income gap during my transition without touching our emergency fund.",
+    name: "David C.",
+    role: "Retail Operations → Data Analytics Lead",
+    initials: "DC",
+    gradient: "from-emerald-400 to-teal-600",
+  },
+];
+
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
 
@@ -527,27 +578,74 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </section>
 
-        {/* Testimonial/quote */}
-        <section className="py-28 px-6">
-          <AnimatedSection className="max-w-3xl mx-auto text-center">
-            <motion.div
-              variants={fadeUp}
-              className="relative bg-gradient-to-br from-teal-950/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-10 sm:p-14 border border-teal-500/20"
-            >
-              <div className="absolute top-6 left-8 text-teal-500/30 text-8xl font-serif leading-none select-none">&ldquo;</div>
-              <p className="relative text-xl sm:text-2xl text-slate-200 leading-relaxed font-medium mb-6">
-                Most career advice ignores that you have a mortgage, kids, and a partner who also has
-                a career. AICareerPivot finally accounts for the real constraints.
-              </p>
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">S</div>
-                <div className="text-left">
-                  <div className="text-white font-semibold text-sm">Sarah K.</div>
-                  <div className="text-slate-500 text-xs">Senior Engineer → Product Lead</div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatedSection>
+        {/* Social Proof / Testimonials */}
+        <section className="py-28 px-6 bg-slate-900/30 border-y border-slate-800/40">
+          <div className="max-w-6xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
+                Real Pivots, Real People
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                They stopped waiting.{" "}
+                <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                  So can you.
+                </span>
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-slate-400 max-w-lg mx-auto">
+                Early users are already using their personalized roadmaps to navigate career transitions with confidence.
+              </motion.p>
+            </AnimatedSection>
+
+            <AnimatedSection className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={t.name}
+                  variants={{
+                    hidden: { opacity: 0, y: 30, scale: 0.97 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      transition: { duration: 0.45, delay: i * 0.08, ease: [0.21, 1.11, 0.81, 0.99] },
+                    },
+                  }}
+                  whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                  className="relative bg-slate-900/80 backdrop-blur-sm rounded-2xl p-7 border border-slate-800 hover:border-slate-700 hover:shadow-xl transition-all duration-300 group"
+                >
+                  <div className="absolute top-4 right-5 text-5xl font-serif leading-none select-none text-slate-800 group-hover:text-slate-700 transition-colors">
+                    &ldquo;
+                  </div>
+
+                  <div className="relative z-10">
+                    <blockquote className="text-slate-300 text-sm leading-relaxed mb-6">
+                      &ldquo;{t.quote}&rdquo;
+                    </blockquote>
+
+                    <div className="flex items-center gap-3 pt-4 border-t border-slate-800/60">
+                      <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
+                        {t.initials}
+                      </div>
+                      <div>
+                        <div className="text-white font-semibold text-sm">{t.name}</div>
+                        <div className="text-slate-500 text-xs">{t.role}</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatedSection>
+
+            <AnimatedSection className="mt-12 text-center">
+              <motion.div variants={fadeUp}>
+                <Link
+                  href="/waitlist"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
+                >
+                  Start My Career Pivot →
+                </Link>
+              </motion.div>
+            </AnimatedSection>
+          </div>
         </section>
 
         {/* CTA */}
