@@ -435,3 +435,86 @@ export async function sendDripEmail(
   }
   return true;
 }
+
+const LAUNCH_UTM = "utm_source=email&utm_medium=waitlist&utm_campaign=launch";
+
+function launchUtmLink(path: string) {
+  return `${SITE}${path}?${LAUNCH_UTM}`;
+}
+
+const LAUNCH_SUBJECTS = {
+  A: "Your AI career roadmap is ready — early-bird pricing inside",
+  B: "[First name], we built the career tool you asked for",
+  C: "We just launched — and you get early-bird pricing 🚀",
+} as const;
+
+export type LaunchSubjectVariant = keyof typeof LAUNCH_SUBJECTS;
+
+export function getLaunchEmailTemplate(
+  firstName: string,
+  variant: LaunchSubjectVariant = "A"
+): EmailTemplate {
+  const subject =
+    LAUNCH_SUBJECTS[variant].replace("[First name]", firstName);
+
+  const html = baseHtml(`
+    ${h1(`${firstName}, AICareerPivot is live.`)}
+    ${p("You signed up because you wanted career advice that actually knows your background. We built exactly that.")}
+    ${p("Upload your resume or LinkedIn profile. Our AI extracts 20-40 transferable skills from your actual work history — then builds a personalized career pivot roadmap around your real constraints: salary floor, family, location, timeline.")}
+    ${p("No quiz. No generic advice. Your background, your plan.")}
+
+    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;">
+      <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 16px 0;">What you get:</p>
+      <ul style="color:#94a3b8;font-size:15px;line-height:2;margin:0;padding:0 0 0 20px;">
+        <li>Full resume + LinkedIn analysis (20-40 transferable skills extracted)</li>
+        <li>Constraint-aware planning (salary, family, location, timeline)</li>
+        <li>6-month, 1-year, and 2-year pivot roadmap</li>
+        <li>AI certification recommendations specific to YOUR pivot</li>
+        <li>Specific job titles, companies, and salary ranges</li>
+      </ul>
+    </div>
+
+    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;">
+      <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 16px 0;">Early-bird pricing for waitlist members only:</p>
+      ${p("You were here first, so you get access at our lowest price ever:")}
+      <p style="color:#2dd4bf;font-size:16px;line-height:2;margin:0;">
+        🔹 <strong>$29/month</strong> — full access, cancel anytime<br>
+        🔹 <strong>$149 lifetime deal</strong> — one-time payment, access forever
+      </p>
+      ${p("Standard pricing will be significantly higher. This pricing is exclusively for our waitlist and won't last.")}
+    </div>
+
+    ${cta("Get Your Career Roadmap →", launchUtmLink("/pricing"))}
+
+    <div style="margin-top:32px;">
+      ${p("Thank you for believing in this before it existed. Your support got us here.")}
+      ${sig()}
+    </div>
+  `);
+
+  return { subject, previewText: "AICareerPivot is live — early-bird pricing for waitlist members", html };
+}
+
+export async function sendLaunchEmail(
+  to: string,
+  firstName: string,
+  variant: LaunchSubjectVariant = "A"
+): Promise<boolean> {
+  if (!process.env.RESEND_API_KEY) return false;
+  const template = getLaunchEmailTemplate(firstName, variant);
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    replyTo: REPLY_TO,
+    to,
+    subject: template.subject,
+    html: template.html,
+  });
+
+  if (error) {
+    console.error(`Launch email error (${to}):`, error);
+    return false;
+  }
+  return true;
+}
