@@ -5,36 +5,36 @@ import PricingCheckout from "./PricingCheckout";
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
   description:
-    "Get a complete personalized career pivot roadmap for $29. AI-powered analysis of your resume and LinkedIn profile. 6-month, 1-year, and 2-year milestones.",
+    "Get a personalized career pivot roadmap starting at $29. Lifetime access for $149. AI-powered analysis of your resume and LinkedIn profile.",
   alternates: { canonical: "https://ai-career-pivot.com/pricing" },
   openGraph: {
     title: "Pricing — AICareerPivot",
     description:
-      "Personalized career pivot roadmap for $29. Powered by AI, built on your real background.",
+      "Personalized career pivot roadmap starting at $29. Lifetime access for $149.",
     url: "https://ai-career-pivot.com/pricing",
   },
 };
 
 const FAQ_ITEMS = [
   {
-    q: "What do I get for $29?",
+    q: "What do I get with the $29 report?",
     a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice.",
+  },
+  {
+    q: "What's included in Pro ($29/mo)?",
+    a: "Everything in the one-time report, plus unlimited report updates as your situation changes, an AI certifications roadmap, and ongoing career coaching insights. Cancel anytime.",
+  },
+  {
+    q: "What does Lifetime ($149) include?",
+    a: "All current and future Pro features — forever, with a single payment. No recurring charges. This is a limited Product Hunt exclusive offer for early supporters.",
   },
   {
     q: "How is this different from just asking ChatGPT?",
     a: "ChatGPT gives you generic advice unless you spend 30-45 minutes carefully prompting it and pasting in your full background. AICareerPivot extracts your transferable skills automatically, knows what context matters, and outputs a structured roadmap. Most users get better output in 5 minutes than from an hour of ChatGPT prompting.",
   },
   {
-    q: "What if I don't have a LinkedIn profile or resume?",
-    a: "The product works best with both, but you can use just one. Resume-only works well for people who keep their LinkedIn minimal. LinkedIn-only works if you have a detailed profile with work history and skills.",
-  },
-  {
     q: "What's your refund policy?",
     a: "30 days, no questions asked. If the report isn't useful to you, email us and we'll refund you immediately.",
-  },
-  {
-    q: "Can I update my report later?",
-    a: "The $29 report is a one-time generation based on your current background. We're building a subscription tier with unlimited updates — join the waitlist to lock in founding pricing when it launches.",
   },
   {
     q: "Is my data secure?",
@@ -52,47 +52,61 @@ const REPORT_FEATURES = [
   "Permanent access to your report",
 ];
 
+const PRO_FEATURES = [
+  "Everything in the one-time report",
+  "Unlimited report updates",
+  "AI certifications roadmap",
+  "Ongoing career coaching insights",
+  "Priority support",
+  "Cancel anytime",
+];
+
+const LIFETIME_FEATURES = [
+  "All current Pro features — forever",
+  "All future features included",
+  "No recurring charges",
+  "Priority support",
+  "Early-adopter recognition",
+];
+
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         {/* Hero */}
         <div className="text-center mb-16">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-4">
-            Simple, One-Time Pricing
+            Choose Your Plan
           </p>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
             Your personalized career pivot roadmap.
             <br className="hidden sm:block" />
-            <span className="text-teal-400"> Less than a cup of coffee per career path.</span>
+            <span className="text-teal-400"> Plans for every stage of your journey.</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
             The average career coach charges $250/hour. You&apos;ll need 3-5 sessions
             before they give you actionable advice. That&apos;s $750–$1,250 before you
-            get a single roadmap. AICareerPivot reads your resume, extracts your
-            transferable skills, and builds your complete roadmap in minutes.
+            get a single roadmap. AICareerPivot builds your complete roadmap in minutes.
           </p>
         </div>
 
-        {/* Pricing card */}
-        <div className="max-w-lg mx-auto mb-16">
-          <div className="relative rounded-2xl border-2 border-teal-500 bg-slate-800 p-8 shadow-xl shadow-teal-900/30">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="bg-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-                Career Pivot Report
-              </span>
+        {/* Pricing cards */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16 items-start">
+          {/* Report — $29 one-time */}
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-8 shadow-xl">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-white mb-1">Report</h2>
+              <p className="text-slate-400 text-sm">One-time career pivot roadmap</p>
             </div>
-            <div className="mt-4 mb-6 text-center">
-              <div className="flex items-end justify-center gap-1 mb-1">
-                <span className="text-5xl font-extrabold text-white">$29</span>
-                <span className="text-slate-400 mb-2">one-time</span>
-              </div>
-              <p className="text-teal-400 text-sm font-semibold">
-                30-day money-back guarantee
-              </p>
+            <div className="flex items-end gap-1 mb-1">
+              <span className="text-4xl font-extrabold text-white">$29</span>
+              <span className="text-slate-400 mb-1">one-time</span>
             </div>
+            <p className="text-teal-400 text-sm font-semibold mb-6">
+              30-day money-back guarantee
+            </p>
             <ul className="space-y-3 mb-8">
               {REPORT_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
@@ -101,28 +115,70 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-
-            <PricingCheckout />
-
+            <PricingCheckout plan="report" />
             <p className="text-slate-500 text-xs text-center mt-3">
-              Secure payment via Stripe. Have a waitlist discount code? Enter it above.
+              Secure payment via Stripe
             </p>
           </div>
-        </div>
 
-        {/* Comparison */}
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center mb-16">
-          <p className="text-slate-300 text-sm leading-relaxed">
-            <span className="font-semibold text-white">Not ready yet?</span>{" "}
-            Join the free waitlist for founding cohort pricing when we launch our
-            subscription tier — unlimited plan updates, AI certifications roadmap, and more.
-          </p>
-          <a
-            href="/waitlist?utm_source=pricing_page&utm_medium=internal&utm_campaign=founding_cohort"
-            className="inline-block mt-4 text-teal-400 hover:text-teal-300 text-sm font-semibold transition-colors"
-          >
-            Join the free waitlist →
-          </a>
+          {/* Pro — $29/month */}
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-8 shadow-xl">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-white mb-1">Pro</h2>
+              <p className="text-slate-400 text-sm">Ongoing career coaching</p>
+            </div>
+            <div className="flex items-end gap-1 mb-1">
+              <span className="text-4xl font-extrabold text-white">$29</span>
+              <span className="text-slate-400 mb-1">/month</span>
+            </div>
+            <p className="text-teal-400 text-sm font-semibold mb-6">
+              Cancel anytime
+            </p>
+            <ul className="space-y-3 mb-8">
+              {PRO_FEATURES.map((f) => (
+                <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                  <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <PricingCheckout plan="monthly" />
+            <p className="text-slate-500 text-xs text-center mt-3">
+              Secure payment via Stripe
+            </p>
+          </div>
+
+          {/* Lifetime — $149 */}
+          <div className="relative rounded-2xl border-2 border-teal-500 bg-slate-800 p-8 shadow-xl shadow-teal-900/30">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+              <span className="bg-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+                Product Hunt Exclusive
+              </span>
+            </div>
+            <div className="mb-6 mt-2">
+              <h2 className="text-lg font-bold text-white mb-1">Lifetime</h2>
+              <p className="text-slate-400 text-sm">All features, forever</p>
+            </div>
+            <div className="flex items-end gap-1 mb-1">
+              <span className="text-4xl font-extrabold text-white">$149</span>
+              <span className="text-slate-400 mb-1">one-time</span>
+            </div>
+            <p className="text-teal-400 text-sm font-semibold mb-6">
+              Limited to first 100 supporters
+            </p>
+            <ul className="space-y-3 mb-8">
+              {LIFETIME_FEATURES.map((f) => (
+                <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                  <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <PricingCheckout plan="lifetime" />
+            <p className="text-slate-500 text-xs text-center mt-3">
+              Secure payment via Stripe. Have a discount code? Enter it above.
+            </p>
+          </div>
         </div>
 
         {/* FAQ */}

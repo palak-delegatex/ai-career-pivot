@@ -22,14 +22,22 @@ export async function POST(req: NextRequest) {
     const session = event.data.object;
     const supabase = getSupabaseClient();
 
+    const paymentIntent =
+      typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id ?? null;
+
+    const subscriptionId =
+      typeof session.subscription === "string"
+        ? session.subscription
+        : session.subscription?.id ?? null;
+
     await supabase
       .from("orders")
       .update({
         status: "paid",
-        stripe_payment_intent:
-          typeof session.payment_intent === "string"
-            ? session.payment_intent
-            : session.payment_intent?.id ?? null,
+        stripe_payment_intent: paymentIntent,
+        stripe_subscription_id: subscriptionId,
       })
       .eq("stripe_session_id", session.id);
   }

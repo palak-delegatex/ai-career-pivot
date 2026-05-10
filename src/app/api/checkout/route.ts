@@ -1,36 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripeClient, PRICES } from "@/lib/stripe";
+import { getStripeClient, PLANS, type PlanKey } from "@/lib/stripe";
 import { getSupabaseClient } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
-  const { email, discountCode } = await req.json();
+  const { email, discountCode, plan: planKey = "report" } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
+  const plan = PLANS[planKey as PlanKey];
+  if (!plan) {
+    return NextResponse.json({ error: "invalid plan" }, { status: 400 });
+  }
+
   const stripe = getStripeClient();
   const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
 
+  const priceData: Record<string, unknown> = {
+    currency: "usd",
+    unit_amount: plan.amount,
+    product_data: {
+      name: plan.label,
+      description: plan.description,
+    },
+  };
+  if (plan.recurring) {
+    priceData.recurring = plan.recurring;
+  }
+
   const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-    mode: "payment",
+    mode: plan.mode,
     customer_email: email,
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: PRICES.CAREER_REPORT.amount,
-          product_data: {
-            name: PRICES.CAREER_REPORT.label,
-            description: PRICES.CAREER_REPORT.description,
-          },
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: [{ price_data: priceData as never, quantity: 1 }],
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/pricing`,
-    metadata: { email, discountCode: discountCode ?? "" },
+    metadata: { email, plan: planKey, discountCode: discountCode ?? "" },
   };
 
   if (discountCode) {
@@ -54,9 +59,10 @@ export async function POST(req: NextRequest) {
   await supabase.from("orders").insert({
     email,
     stripe_session_id: session.id,
-    amount_cents: PRICES.CAREER_REPORT.amount,
+    amount_cents: plan.amount,
     status: "pending",
     discount_code: discountCode ?? null,
+    plan_type: planKey,
   });
 
   return NextResponse.json({ url: session.url });

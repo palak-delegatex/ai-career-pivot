@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 
-export default function PricingCheckout() {
+export default function PricingCheckout({ plan = "report" }: { plan?: string }) {
   const [email, setEmail] = useState("");
   const [discountCode, setDiscountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const labels: Record<string, string> = {
+    report: "Get My Report — $29",
+    monthly: "Subscribe — $29/mo",
+    lifetime: "Get Lifetime Access — $149",
+  };
 
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
@@ -21,7 +27,7 @@ export default function PricingCheckout() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, discountCode: discountCode || undefined }),
+        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
@@ -59,7 +65,7 @@ export default function PricingCheckout() {
         disabled={loading}
         className="block w-full text-center px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:cursor-not-allowed font-bold transition-colors shadow-lg shadow-teal-900/50"
       >
-        {loading ? "Redirecting to checkout..." : "Get My Career Pivot Report — $29"}
+        {loading ? "Redirecting to checkout..." : labels[plan] ?? labels.report}
       </button>
     </form>
   );
