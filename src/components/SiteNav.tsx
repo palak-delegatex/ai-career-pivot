@@ -20,6 +20,7 @@ export default function SiteNav() {
         <Link href="/blog" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">Blog</Link>
         <Link href="/pricing" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">Pricing</Link>
         <Link href="/how-it-works" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">How It Works</Link>
+        <Link href="/dashboard" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">My Roadmaps</Link>
         <Link
           href="/waitlist"
           className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-colors text-white"

@@ -44,27 +44,36 @@ export async function POST(req: NextRequest) {
   const { output: object } = await generateText({
     model: gateway("anthropic/claude-sonnet-4.6"),
     output: Output.object({ schema: PivotPlanSchema }),
-    prompt: `You are an expert career strategist specializing in mid-career pivots for professionals with real financial obligations.
+    prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots. You combine deep labor-market knowledge with practical transition planning.
 
-Based on this user's career profile, generate 2-3 realistic career pivot plans ranked by fit and feasibility. Each plan must include concrete 6-month, 1-year, and 2-year milestones.
+Generate 2-3 career pivot plans for this professional, ranked by fit and feasibility. Each plan must feel like it was written by a personal advisor who studied their background — never generic.
 
-IMPORTANT: Be constraint-aware. Account for the fact that this person has an established career and likely financial obligations. Favor paths that:
-1. Leverage existing domain expertise rather than starting from scratch
-2. Minimize income gap during transition
-3. Are achievable within 6-18 months for a working professional
+RULES FOR EVERY FIELD:
+1. Milestones must be measurable (not "learn Python" but "complete 3 portfolio projects demonstrating data analysis with Python and publish on GitHub").
+2. keyActions must include specific resources: named courses, certifications with provider names, communities, job boards, and example companies hiring for this role.
+3. skillGaps must name the exact gap-closing path — specific courses, books, or projects — not just the skill name.
+4. estimatedTimeToTransition must reflect realistic timelines for a working professional, not someone studying full-time.
+5. financialConsiderations must include estimated transition costs (courses, certs, potential income dip period) and timeline to salary recovery. Include expected salary range for the target role.
+6. rationale must reference current market conditions or industry trends that make this pivot timely, and explain why THIS person's specific background gives them an edge.
+7. Favor paths that leverage existing domain expertise over starting from scratch.
+8. Account for financial obligations — minimize income gap, prefer moonlight-first strategies when possible.
+9. Include at least one "start this week" action in keyActions — something concrete they can do TODAY (sign up for X, email Y, read Z).
+10. Address the biggest risk with a concrete fallback in financialConsiderations.
 
-User profile:
+USER PROFILE:
+- Name: ${profile.name ?? "Not specified"}
 - Current title: ${profile.currentTitle ?? "Not specified"}
 - Industry: ${profile.currentIndustry ?? "Not specified"}
 - Years experience: ${profile.yearsExperience ?? "Not specified"}
-- Top skills: ${profile.skills.slice(0, 10).join(", ")}
-- Transferable skills: ${profile.transferableSkills.slice(0, 8).join(", ")}
-- Experience: ${profile.experience.map(e => `${e.title} at ${e.company}`).join("; ")}
-- Education: ${profile.education.map(e => `${e.degree} in ${e.field}`).join("; ")}
-- Certifications: ${profile.certifications.join(", ")}
-- Interests: ${profile.interests.join(", ")}
+- Top skills: ${profile.skills.slice(0, 12).join(", ")}
+- Transferable skills: ${profile.transferableSkills.slice(0, 10).join(", ")}
+- Work history: ${profile.experience.map(e => `${e.title} at ${e.company} (${e.startYear}–${e.endYear ?? "present"}): ${e.description}`).join(" | ")}
+- Education: ${profile.education.map(e => `${e.degree} in ${e.field} from ${e.institution}`).join("; ")}
+- Certifications: ${profile.certifications.join(", ") || "None listed"}
+- Interests: ${profile.interests.join(", ") || "None listed"}
+${profile.rawSummary ? `- Additional context: ${profile.rawSummary.slice(0, 500)}` : ""}
 
-Generate personalized, actionable plans — not generic advice.`,
+Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.`,
   });
 
   if (paymentSessionId && object) {
