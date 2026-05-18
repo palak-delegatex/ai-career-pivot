@@ -88,11 +88,26 @@ export async function POST(req: NextRequest) {
     ];
   }
 
-  const { output: profile } = await generateText({
-    model: gateway("anthropic/claude-sonnet-4.6"),
-    output: Output.object({ schema: ProfileSchema }),
-    messages,
-  });
+  try {
+    const { output: profile } = await generateText({
+      model: gateway("anthropic/claude-sonnet-4.6"),
+      output: Output.object({ schema: ProfileSchema }),
+      messages,
+    });
 
-  return NextResponse.json({ profile });
+    if (!profile) {
+      return NextResponse.json(
+        { error: "Could not extract profile from resume. Please try a different file." },
+        { status: 422 }
+      );
+    }
+
+    return NextResponse.json({ profile });
+  } catch (err) {
+    console.error("Resume parsing error:", err);
+    return NextResponse.json(
+      { error: "Failed to analyze resume. Please try again." },
+      { status: 500 }
+    );
+  }
 }

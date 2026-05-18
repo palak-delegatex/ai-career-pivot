@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  try {
   const { output: object } = await generateText({
     model: gateway("anthropic/claude-sonnet-4.6"),
     output: Output.object({ schema: PivotPlanSchema }),
@@ -98,4 +99,11 @@ Generate deeply personalized, immediately actionable plans. Reference their spec
   }
 
   return NextResponse.json(object);
+  } catch (err) {
+    console.error("Plan generation error:", err);
+    return NextResponse.json(
+      { error: "Failed to generate pivot plans. Please try again." },
+      { status: 500 }
+    );
+  }
 }
