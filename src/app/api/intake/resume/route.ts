@@ -68,8 +68,8 @@ export async function POST(req: NextRequest) {
           {
             type: "file",
             data: base64,
-            mimeType: "application/pdf",
-          } as never,
+            mediaType: "application/pdf",
+          },
           {
             type: "text",
             text: "Extract a complete structured career profile from this resume. Identify all skills, experience, education, and certifications. Also identify transferable skills — abilities that would remain valuable if the person changed careers.",
