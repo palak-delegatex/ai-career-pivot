@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { gateway } from "@ai-sdk/gateway";
+import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { output: context } = await generateText({
-    model: gateway("anthropic/claude-haiku-4.5"),
+    model: anthropic("claude-haiku-4-5"),
     output: Output.object({ schema: WebsiteContextSchema }),
     prompt: `Extract career-relevant context from this personal website or portfolio page. Focus on skills demonstrated, projects built, interests shown, and anything that reveals professional expertise or passions.
 

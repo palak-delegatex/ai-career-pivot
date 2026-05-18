@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { gateway } from "@ai-sdk/gateway";
+import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
   // Use Claude to extract structured profile from Proxycurl JSON
   const { output: profile } = await generateText({
-    model: gateway("anthropic/claude-sonnet-4.6"),
+    model: anthropic("claude-sonnet-4-6"),
     output: Output.object({ schema: ProfileSchema }),
     prompt: `Extract a structured career profile from this LinkedIn data. Identify transferable skills that would be valuable in a career change context.
 

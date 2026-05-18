@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { gateway } from "@ai-sdk/gateway";
+import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   try {
   const { output: object } = await generateText({
-    model: gateway("anthropic/claude-sonnet-4.6"),
+    model: anthropic("claude-sonnet-4-6"),
     output: Output.object({ schema: PivotPlanSchema }),
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots. You combine deep labor-market knowledge with practical transition planning.
 

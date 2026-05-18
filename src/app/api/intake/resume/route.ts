@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { gateway } from "@ai-sdk/gateway";
+import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { output: profile } = await generateText({
-      model: gateway("anthropic/claude-sonnet-4.6"),
+      model: anthropic("claude-sonnet-4-6"),
       output: Output.object({ schema: ProfileSchema }),
       messages,
     });
