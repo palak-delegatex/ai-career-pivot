@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
+import { getStripeClient } from "@/lib/stripe";
 
 const PivotPlanSchema = z.object({
   plans: z.array(z.object({
@@ -37,13 +38,28 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (!order || order.status !== "paid") {
-      return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+      // Webhook may not have fired yet (common in sandbox/test mode).
+      // Fall back to checking Stripe directly and heal the order if paid.
+      try {
+        const stripe = getStripeClient();
+        const session = await stripe.checkout.sessions.retrieve(paymentSessionId);
+        if (session.payment_status !== "paid") {
+          return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+        }
+        // Heal the order so future requests don't need this fallback
+        await supabase
+          .from("orders")
+          .update({ status: "paid" })
+          .eq("stripe_session_id", paymentSessionId);
+      } catch {
+        return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+      }
     }
   }
 
   try {
   const { output: object } = await generateText({
-    model: anthropic("claude-sonnet-4-6"),
+    model: anthropic("claude-sonnet-4.6"),
     output: Output.object({ schema: PivotPlanSchema }),
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots. You combine deep labor-market knowledge with practical transition planning.
 
