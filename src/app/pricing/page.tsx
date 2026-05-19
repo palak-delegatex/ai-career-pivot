@@ -72,7 +72,82 @@ const LIFETIME_FEATURES = [
 ];
 
 export default function PricingPage() {
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "AICareerPivot Career Roadmap",
+    description:
+      "Personalized career pivot roadmap with AI-powered analysis of your resume and LinkedIn profile.",
+    brand: { "@type": "Organization", name: "AICareerPivot" },
+    offers: [
+      {
+        "@type": "Offer",
+        name: "Report",
+        price: "29.00",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+      {
+        "@type": "Offer",
+        name: "Pro",
+        price: "29.00",
+        priceCurrency: "USD",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          billingDuration: "P1M",
+        },
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+      {
+        "@type": "Offer",
+        name: "Lifetime",
+        price: "149.00",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+    ],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://ai-career-pivot.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Pricing",
+        item: "https://ai-career-pivot.com/pricing",
+      },
+    ],
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_ITEMS.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([productSchema, breadcrumbSchema, faqSchema]),
+        }}
+      />
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
 
@@ -211,5 +286,6 @@ export default function PricingPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }
