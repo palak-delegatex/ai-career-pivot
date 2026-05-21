@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export const metadata: Metadata = {
   title: "How It Works — AICareerPivot",
@@ -156,32 +158,45 @@ export default function HowItWorksPage() {
             </p>
           </header>
 
-          {/* The three steps */}
-          <div className="space-y-12 mb-24">
-            {steps.map((step) => (
-              <article key={step.number} className="relative">
-                <div className="flex items-start gap-6">
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${step.accent} flex items-center justify-center`}>
-                    <span className="text-white font-bold">{step.number}</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-slate-500 text-sm font-medium mb-1">{step.subtitle}</p>
-                    <h2 className="text-2xl font-bold text-white mb-3">{step.title}</h2>
-                    <p className="text-slate-400 leading-relaxed mb-5">{step.description}</p>
-                    <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-5">
-                      <ul className="space-y-2.5">
-                        {step.details.map((detail) => (
-                          <li key={detail} className="flex items-start gap-3 text-sm text-slate-400">
-                            <span className="text-teal-400 mt-0.5 flex-shrink-0">→</span>
-                            <span>{detail}</span>
-                          </li>
-                        ))}
-                      </ul>
+          {/* The three steps — tabbed on desktop */}
+          <div className="mb-24">
+            <Tabs defaultValue="step-01">
+              <TabsList className="mb-8 bg-slate-800/80 w-full sm:w-auto">
+                {steps.map((step) => (
+                  <TabsTrigger key={step.number} value={`step-${step.number}`} className="flex-1 sm:flex-none">
+                    {step.number}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {steps.map((step) => (
+                <TabsContent key={step.number} value={`step-${step.number}`}>
+                  <article>
+                    <div className="flex items-start gap-6">
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${step.accent} flex items-center justify-center`}>
+                        <span className="text-white font-bold">{step.number}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-slate-500 text-sm font-medium mb-1">{step.subtitle}</p>
+                        <h2 className="text-2xl font-bold text-white mb-3">{step.title}</h2>
+                        <p className="text-slate-400 leading-relaxed mb-5">{step.description}</p>
+                        <Card className="bg-slate-900/60 border-slate-800 text-white rounded-xl py-0">
+                          <CardContent className="p-5">
+                            <ul className="space-y-2.5">
+                              {step.details.map((detail) => (
+                                <li key={detail} className="flex items-start gap-3 text-sm text-slate-400">
+                                  <span className="text-teal-400 mt-0.5 flex-shrink-0">→</span>
+                                  <span>{detail}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </article>
-            ))}
+                  </article>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
 
           {/* Why it works */}
@@ -189,10 +204,12 @@ export default function HowItWorksPage() {
             <h2 id="why-heading" className="text-2xl font-bold text-white mb-8">Why this approach works</h2>
             <div className="grid sm:grid-cols-3 gap-5">
               {whyItWorks.map((item) => (
-                <div key={item.title} className="bg-slate-900/60 rounded-xl border border-slate-800 p-5">
-                  <h3 className="text-white font-semibold mb-2 text-sm">{item.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{item.description}</p>
-                </div>
+                <Card key={item.title} className="bg-slate-900/60 border-slate-800 text-white rounded-xl py-0">
+                  <CardContent className="p-5">
+                    <h3 className="text-white font-semibold mb-2 text-sm">{item.title}</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed">{item.description}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </section>

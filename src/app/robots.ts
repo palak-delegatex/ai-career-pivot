@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        disallow: ["/dashboard", "/onboarding", "/checkout", "/report", "/design-test"],
       },
     ],
     sitemap: "https://ai-career-pivot.com/sitemap.xml",

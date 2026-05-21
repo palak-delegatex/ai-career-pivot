@@ -21,7 +21,57 @@ export const metadata: Metadata = {
 export default function BlogIndex() {
   const posts = getAllPosts();
 
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Career Pivot Blog",
+    description:
+      "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
+    url: "https://ai-career-pivot.com/blog",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "AICareerPivot",
+      url: "https://ai-career-pivot.com",
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://ai-career-pivot.com/blog/${post.slug}`,
+        name: post.title,
+      })),
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://ai-career-pivot.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: "https://ai-career-pivot.com/blog",
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([collectionSchema, breadcrumbSchema]),
+        }}
+      />
     <div className="min-h-screen bg-gray-950 text-white">
       <SiteNav />
       <main className="py-16 px-6">
@@ -68,5 +118,6 @@ export default function BlogIndex() {
       </div>
       </main>
     </div>
+    </>
   );
 }

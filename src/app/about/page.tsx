@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: "About AICareerPivot — Our Methodology & Mission",
@@ -127,17 +129,24 @@ export default function AboutPage() {
             </p>
             <div className="space-y-4">
               {principles.map((principle, i) => (
-                <article key={principle.title} className="bg-slate-900/60 rounded-xl p-6 border border-slate-800">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-teal-950 border border-teal-800/50 flex items-center justify-center">
-                      <span className="text-teal-400 font-bold text-sm">{i + 1}</span>
+                <Card key={principle.title} className="bg-slate-900/60 border-slate-800 text-white rounded-xl py-0">
+                  <CardContent className="px-6 py-6">
+                    <div className="flex items-start gap-4">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-teal-950 border border-teal-800/50 flex items-center justify-center cursor-default">
+                            <span className="text-teal-400 font-bold text-sm">{i + 1}</span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>Principle {i + 1} of {principles.length}</TooltipContent>
+                      </Tooltip>
+                      <div>
+                        <h3 className="text-white font-semibold mb-2">{principle.title}</h3>
+                        <p className="text-slate-400 text-sm leading-relaxed">{principle.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-white font-semibold mb-2">{principle.title}</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed">{principle.description}</p>
-                    </div>
-                  </div>
-                </article>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </section>

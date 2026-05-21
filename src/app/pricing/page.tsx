@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import SiteNav from "@/components/SiteNav";
 import PricingCheckout from "./PricingCheckout";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
@@ -70,7 +72,82 @@ const LIFETIME_FEATURES = [
 ];
 
 export default function PricingPage() {
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "AICareerPivot Career Roadmap",
+    description:
+      "Personalized career pivot roadmap with AI-powered analysis of your resume and LinkedIn profile.",
+    brand: { "@type": "Organization", name: "AICareerPivot" },
+    offers: [
+      {
+        "@type": "Offer",
+        name: "Report",
+        price: "29.00",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+      {
+        "@type": "Offer",
+        name: "Pro",
+        price: "29.00",
+        priceCurrency: "USD",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          billingDuration: "P1M",
+        },
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+      {
+        "@type": "Offer",
+        name: "Lifetime",
+        price: "149.00",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: "https://ai-career-pivot.com/pricing",
+      },
+    ],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://ai-career-pivot.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Pricing",
+        item: "https://ai-career-pivot.com/pricing",
+      },
+    ],
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_ITEMS.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([productSchema, breadcrumbSchema, faqSchema]),
+        }}
+      />
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
 
@@ -95,89 +172,99 @@ export default function PricingPage() {
         {/* Pricing cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-16 items-start">
           {/* Report — $29 one-time */}
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-8 shadow-xl">
-            <div className="mb-6">
+          <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
+            <CardHeader className="px-8 pt-8 pb-0">
               <h2 className="text-lg font-bold text-white mb-1">Report</h2>
               <p className="text-slate-400 text-sm">One-time career pivot roadmap</p>
-            </div>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-extrabold text-white">$29</span>
-              <span className="text-slate-400 mb-1">one-time</span>
-            </div>
-            <p className="text-teal-400 text-sm font-semibold mb-6">
-              30-day money-back guarantee
-            </p>
-            <ul className="space-y-3 mb-8">
-              {REPORT_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                  <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <PricingCheckout plan="report" />
-            <p className="text-slate-500 text-xs text-center mt-3">
-              Secure payment via Stripe
-            </p>
-          </div>
+              <div className="flex items-end gap-1 mt-4 mb-1">
+                <span className="text-4xl font-extrabold text-white">$29</span>
+                <span className="text-slate-400 mb-1">one-time</span>
+              </div>
+              <p className="text-teal-400 text-sm font-semibold pb-6">
+                30-day money-back guarantee
+              </p>
+            </CardHeader>
+            <CardContent className="px-8">
+              <ul className="space-y-3 mb-8">
+                {REPORT_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter className="px-8 pb-8 flex-col gap-2">
+              <PricingCheckout plan="report" />
+              <p className="text-slate-500 text-xs text-center">Secure payment via Stripe</p>
+            </CardFooter>
+          </Card>
 
           {/* Pro — $29/month */}
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-8 shadow-xl">
-            <div className="mb-6">
+          <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
+            <CardHeader className="px-8 pt-8 pb-0">
               <h2 className="text-lg font-bold text-white mb-1">Pro</h2>
               <p className="text-slate-400 text-sm">Ongoing career coaching</p>
-            </div>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-extrabold text-white">$29</span>
-              <span className="text-slate-400 mb-1">/month</span>
-            </div>
-            <p className="text-teal-400 text-sm font-semibold mb-6">
-              Cancel anytime
-            </p>
-            <ul className="space-y-3 mb-8">
-              {PRO_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                  <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <PricingCheckout plan="monthly" />
-            <p className="text-slate-500 text-xs text-center mt-3">
-              Secure payment via Stripe
-            </p>
-          </div>
+              <div className="flex items-end gap-1 mt-4 mb-1">
+                <span className="text-4xl font-extrabold text-white">$29</span>
+                <span className="text-slate-400 mb-1">/month</span>
+              </div>
+              <p className="text-teal-400 text-sm font-semibold pb-6">
+                Cancel anytime
+              </p>
+            </CardHeader>
+            <CardContent className="px-8">
+              <ul className="space-y-3 mb-8">
+                {PRO_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter className="px-8 pb-8 flex-col gap-2">
+              <PricingCheckout plan="monthly" />
+              <p className="text-slate-500 text-xs text-center">Secure payment via Stripe</p>
+            </CardFooter>
+          </Card>
 
           {/* Lifetime — $149 */}
-          <div className="relative rounded-2xl border-2 border-teal-500 bg-slate-800 p-8 shadow-xl shadow-teal-900/30">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+          <div className="relative">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
               <span className="bg-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
                 Product Hunt Exclusive
               </span>
             </div>
-            <div className="mb-6 mt-2">
-              <h2 className="text-lg font-bold text-white mb-1">Lifetime</h2>
-              <p className="text-slate-400 text-sm">All features, forever</p>
-            </div>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-extrabold text-white">$149</span>
-              <span className="text-slate-400 mb-1">one-time</span>
-            </div>
-            <p className="text-teal-400 text-sm font-semibold mb-6">
-              Limited to first 100 supporters
-            </p>
-            <ul className="space-y-3 mb-8">
-              {LIFETIME_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                  <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <PricingCheckout plan="lifetime" />
-            <p className="text-slate-500 text-xs text-center mt-3">
-              Secure payment via Stripe. Have a discount code? Enter it above.
-            </p>
+            <Card className="bg-slate-800 border-2 border-teal-500 text-white rounded-2xl shadow-xl shadow-teal-900/30 gap-0 py-0">
+              <CardHeader className="px-8 pt-10 pb-0">
+                <h2 className="text-lg font-bold text-white mb-1">Lifetime</h2>
+                <p className="text-slate-400 text-sm">All features, forever</p>
+                <div className="flex items-end gap-1 mt-4 mb-1">
+                  <span className="text-4xl font-extrabold text-white">$149</span>
+                  <span className="text-slate-400 mb-1">one-time</span>
+                </div>
+                <p className="text-teal-400 text-sm font-semibold pb-6">
+                  Limited to first 100 supporters
+                </p>
+              </CardHeader>
+              <CardContent className="px-8">
+                <ul className="space-y-3 mb-8">
+                  {LIFETIME_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                      <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter className="px-8 pb-8 flex-col gap-2">
+                <PricingCheckout plan="lifetime" />
+                <p className="text-slate-500 text-xs text-center">
+                  Secure payment via Stripe. Have a discount code? Enter it above.
+                </p>
+              </CardFooter>
+            </Card>
           </div>
         </div>
 
@@ -186,19 +273,19 @@ export default function PricingPage() {
           <h2 className="text-2xl font-extrabold text-center mb-8">
             Frequently asked questions
           </h2>
-          <div className="space-y-4">
-            {FAQ_ITEMS.map(({ q, a }) => (
-              <div
-                key={q}
-                className="bg-slate-800 border border-slate-700 rounded-xl p-6"
-              >
-                <h3 className="font-semibold text-white mb-2">{q}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{a}</p>
-              </div>
-            ))}
+          <div className="bg-slate-800 border border-slate-700 rounded-2xl px-6">
+            <Accordion type="single" collapsible className="w-full">
+              {FAQ_ITEMS.map(({ q, a }, i) => (
+                <AccordionItem key={q} value={`faq-${i}`}>
+                  <AccordionTrigger>{q}</AccordionTrigger>
+                  <AccordionContent>{a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </main>
     </div>
+    </>
   );
 }
