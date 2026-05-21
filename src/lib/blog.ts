@@ -37,7 +37,7 @@ export function getAllPosts(): Omit<Post, "content">[] {
           .replace(/\*\*|__|\*|_/g, "")
           .trim()
           .split("\n")
-          .filter((l) => l.trim().length > 0)[0]
+          .filter((l) => l.trim().length > 0 && !l.trim().startsWith("import "))[0]
           ?.slice(0, 160) ?? fm.description;
 
       return {
@@ -67,7 +67,7 @@ export function getPost(slug: string): Post | null {
       .replace(/\*\*|__|\*|_/g, "")
       .trim()
       .split("\n")
-      .filter((l) => l.trim().length > 0)[0]
+      .filter((l) => l.trim().length > 0 && !l.trim().startsWith("import "))[0]
       ?.slice(0, 160) ?? fm.description;
 
   return {

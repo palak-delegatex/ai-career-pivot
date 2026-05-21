@@ -174,10 +174,10 @@ export default function PricingPage() {
           {/* Report — $29 one-time */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
-              <h2 className="text-lg font-bold text-white mb-1">Report</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">Report</h2>
               <p className="text-slate-400 text-sm">One-time career pivot roadmap</p>
               <div className="flex items-end gap-1 mt-4 mb-1">
-                <span className="text-4xl font-extrabold text-white">$29</span>
+                <span className="text-4xl font-extrabold text-white font-serif">$29</span>
                 <span className="text-slate-400 mb-1">one-time</span>
               </div>
               <p className="text-teal-400 text-sm font-semibold pb-6">
@@ -203,10 +203,10 @@ export default function PricingPage() {
           {/* Pro — $29/month */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
-              <h2 className="text-lg font-bold text-white mb-1">Pro</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">Pro</h2>
               <p className="text-slate-400 text-sm">Ongoing career coaching</p>
               <div className="flex items-end gap-1 mt-4 mb-1">
-                <span className="text-4xl font-extrabold text-white">$29</span>
+                <span className="text-4xl font-extrabold text-white font-serif">$29</span>
                 <span className="text-slate-400 mb-1">/month</span>
               </div>
               <p className="text-teal-400 text-sm font-semibold pb-6">
@@ -238,10 +238,10 @@ export default function PricingPage() {
             </div>
             <Card className="bg-slate-800 border-2 border-teal-500 text-white rounded-2xl shadow-xl shadow-teal-900/30 gap-0 py-0">
               <CardHeader className="px-8 pt-10 pb-0">
-                <h2 className="text-lg font-bold text-white mb-1">Lifetime</h2>
+                <h2 className="text-2xl font-bold text-white mb-1">Lifetime</h2>
                 <p className="text-slate-400 text-sm">All features, forever</p>
                 <div className="flex items-end gap-1 mt-4 mb-1">
-                  <span className="text-4xl font-extrabold text-white">$149</span>
+                  <span className="text-4xl font-extrabold text-white font-serif">$149</span>
                   <span className="text-slate-400 mb-1">one-time</span>
                 </div>
                 <p className="text-teal-400 text-sm font-semibold pb-6">
