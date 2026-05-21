@@ -405,6 +405,7 @@ export default function OnboardingPage() {
                 type="file"
                 accept=".pdf,.docx,.doc,.txt"
                 className="hidden"
+                onClick={(e) => e.stopPropagation()}
                 onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
               />
             </div>
