@@ -1,61 +1,41 @@
-# AICareerPivot — llms.txt
+# AICareerPivot
 
-## What is AICareerPivot?
+> AI-powered career transition strategist that builds personalized roadmaps based on your skills, finances, and family constraints.
 
-AICareerPivot is an AI-powered career transition planning tool that builds personalized roadmaps for professionals who want to change careers but need to account for their whole life — not just their resume.
+AICareerPivot analyzes your resume, LinkedIn profile, financial situation, and family obligations to create realistic career pivot plans with concrete 6-month, 1-year, and 2-year milestones. Unlike generic career advice, it accounts for mortgages, dependents, income continuity needs, and personal constraints.
 
-Unlike generic career advice, AICareerPivot factors in:
-- Current skills and transferability to target roles
-- Financial situation: income, savings, major expenses, and risk tolerance
-- Family and personal constraints (dependents, partner's career, mortgage, etc.)
-- Timeline and income continuity requirements
+## Key Features
 
-The output is a concrete multi-year roadmap with milestones at 6 months, 1 year, and 2 years — including specific actions, skills gap analysis, and financial sequencing.
+- Extracts 20-40 transferable skills from your resume and LinkedIn
+- 2-3 personalized career pivot paths ranked by fit
+- Financial viability analysis with income continuity planning
+- Constraint-aware planning (salary, family, location)
+- Concrete milestone roadmaps at 6 months, 1 year, and 2 years
+- Skill gap identification with specific action steps
+- Resume reframing guide and networking strategy
 
-## Core Value Proposition
+## Pricing
 
-AICareerPivot is for professionals who:
-- Feel trapped in their current role but cannot simply quit
-- Have family or financial obligations that constrain their options
-- Need a realistic plan, not generic inspiration
-- Want AI-powered analysis of their specific situation
+- Report: $29 one-time — full personalized career pivot roadmap with 30-day money-back guarantee
+- Pro: $29/month — unlimited report updates, AI certifications roadmap, ongoing coaching insights
+- Lifetime: $149 one-time — all current and future Pro features forever
 
-## Methodology
-
-1. **Whole-life context gathering**: Skills, finances, family constraints, and goals
-2. **AI-powered analysis**: Skills transferability mapping, gap identification, financial viability modeling
-3. **Personalized roadmap generation**: Sequenced milestones with income continuity planning
-
-## Key Claims and Differentiators
-
-- Plans are personalized to individual financial and family situations, not generic
-- Financial viability is calculated, not assumed
-- Transition milestones are sequenced to maintain income continuity during the switch
-- Skills gap analysis identifies which gaps actually matter for target roles
-- Typically 3× faster than solo planning to reach the first actionable milestone
-- Most career pivots take 12–24 months when properly planned
-
-## Target Audience
+## Who It's For
 
 - Burned-out professionals ready for change
-- Parents and caregivers who need income continuity
-- Professionals with mortgages and fixed financial obligations
+- Parents who can't just quit and figure it out
+- Earners who need income continuity during transition
 - Career changers entering a new industry
-- Remote workers exploring new opportunities
-- Ambitious employees seeking faster growth paths
 
-## Pages
+## Key Links
 
-- Homepage: https://ai-career-pivot.vercel.app/
-- About (methodology): https://ai-career-pivot.vercel.app/about
-- How It Works: https://ai-career-pivot.vercel.app/how-it-works
-- FAQ: https://ai-career-pivot.vercel.app/faq
-- Join Waitlist: https://ai-career-pivot.vercel.app/waitlist
+- Homepage: https://ai-career-pivot.com
+- Pricing: https://ai-career-pivot.com/pricing
+- How It Works: https://ai-career-pivot.com/how-it-works
+- About: https://ai-career-pivot.com/about
+- FAQ: https://ai-career-pivot.com/faq
+- Blog: https://ai-career-pivot.com/blog
 
-## Status
+## Extended Documentation
 
-AICareerPivot is currently in early access. A limited number of users are being onboarded to refine roadmap quality.
-
-## Contact
-
-Website: https://ai-career-pivot.vercel.app
+- [Full product details, FAQ, and blog index](https://ai-career-pivot.com/llms-full.txt)
