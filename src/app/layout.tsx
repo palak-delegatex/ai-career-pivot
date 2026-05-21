@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Source_Serif_4, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "./PostHogProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
@@ -91,6 +92,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
           <PostHogProvider>{children}</PostHogProvider>
+          <Analytics />
         </body>
     </html>
   );

@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.69",
+    "@base-ui/react": "^1.4.1",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.159",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
