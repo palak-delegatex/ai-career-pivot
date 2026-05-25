@@ -102,10 +102,16 @@ export default function PivotPlanPage() {
             <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
               <h3 className="text-sm font-bold text-amber-400 mb-3">Skill Gaps to Close</h3>
               <ul className="space-y-2">
-                {plan.skillGaps.map((gap, i) => (
+                {(plan.skillGaps ?? []).map((gap, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
                     <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
-                    {gap}
+                    {typeof gap === "string" ? gap : (
+                      <span>
+                        <span className="font-medium text-white">{gap.skill}</span>
+                        {" — "}{gap.currentLevel} → {gap.requiredLevel}
+                        {gap.resource && <span className="text-amber-300 ml-1">({gap.resource})</span>}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -113,23 +119,76 @@ export default function PivotPlanPage() {
             <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
               <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
               <ul className="space-y-2">
-                {plan.keyActions.map((action, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
-                    {action}
-                  </li>
-                ))}
+                {(plan.weekOneActions ?? []).length > 0
+                  ? plan.weekOneActions!.map((action, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                        <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
+                        <span>
+                          <span className="font-medium text-white">{action.title}</span>
+                          {" — "}{action.instruction}
+                          <span className="text-slate-500 ml-1">({action.timeEstimate})</span>
+                        </span>
+                      </li>
+                    ))
+                  : (plan.keyActions ?? []).map((action, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                        <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
+                        {action}
+                      </li>
+                    ))
+                }
               </ul>
             </div>
           </div>
 
-          {/* Financial considerations */}
-          {plan.financialConsiderations && (
+          {/* AI Toolkit */}
+          {(plan.aiToolkit ?? []).length > 0 && (
+            <div className="bg-slate-800/60 border border-violet-700/40 rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-violet-400 mb-3">AI Toolkit for This Role</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {plan.aiToolkit!.map((item, i) => (
+                  <div key={i} className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-violet-400 font-medium text-sm">{item.tool}</span>
+                      <span className="text-xs bg-violet-900/40 border border-violet-700/40 text-violet-300 px-2 py-0.5 rounded-full">{item.proficiencyNeeded}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mb-1">{item.category}</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{item.useCase}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Financial summary / considerations */}
+          {plan.financialSummary ? (
+            <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-slate-300 mb-2">Financial Summary</h3>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-slate-500">Current Salary</p>
+                  <p className="text-slate-300 font-medium">{plan.financialSummary.currentSalaryRange}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500">Target Salary</p>
+                  <p className="text-teal-300 font-medium">{plan.financialSummary.targetSalaryRange}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500">Salary Uplift</p>
+                  <p className="text-emerald-400 font-medium">+{plan.financialSummary.salaryUpliftPercent}%</p>
+                </div>
+                <div>
+                  <p className="text-slate-500">ROI Timeframe</p>
+                  <p className="text-slate-300 font-medium">{plan.financialSummary.roiTimeframe}</p>
+                </div>
+              </div>
+            </div>
+          ) : plan.financialConsiderations ? (
             <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
               <h3 className="text-sm font-bold text-slate-300 mb-2">Financial Considerations</h3>
               <p className="text-slate-400 text-sm leading-relaxed">{plan.financialConsiderations}</p>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* CTA */}

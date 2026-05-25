@@ -62,6 +62,13 @@ export interface RecommendedResource {
   timeEstimate: string;
 }
 
+export interface AIToolkitItem {
+  tool: string;
+  category: string;
+  useCase: string;
+  proficiencyNeeded: "beginner" | "intermediate" | "advanced";
+}
+
 export interface PivotPlan {
   targetRole: string;
   targetIndustry: string;
@@ -76,6 +83,7 @@ export interface PivotPlan {
   estimatedTimeToTransition: string;
   financialSummary?: FinancialSummary;
   recommendedResources?: RecommendedResource[];
+  aiToolkit?: AIToolkitItem[];
   /** @deprecated Use skillGaps (structured) instead */
   legacySkillGaps?: string[];
   /** @deprecated Use weekOneActions instead */

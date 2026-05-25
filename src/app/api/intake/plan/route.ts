@@ -45,6 +45,12 @@ const PivotPlanSchema = z.object({
       cost: z.string(),
       timeEstimate: z.string(),
     })),
+    aiToolkit: z.array(z.object({
+      tool: z.string(),
+      category: z.string(),
+      useCase: z.string(),
+      proficiencyNeeded: z.enum(["beginner", "intermediate", "advanced"]),
+    })),
   })),
 });
 
@@ -88,21 +94,32 @@ export async function POST(req: NextRequest) {
   const { output: object } = await generateText({
     model: anthropic("claude-sonnet-4.6"),
     output: Output.object({ schema: PivotPlanSchema }),
-    prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots. You combine deep labor-market knowledge with practical transition planning.
+    prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
 Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic.
 
+CRITICAL — AI-NATIVE STRATEGY:
+Every plan must be AI-native. This means:
+- The rationale MUST explain how AI is reshaping the target role/industry and why pivoting NOW gives a first-mover advantage before the market catches up.
+- Milestones MUST include specific AI tool adoption and AI skill-building steps (e.g. "Build first AI-assisted workflow using Claude for [specific task]", "Complete Anthropic AI Fluency certification", "Ship internal AI agent that automates [process]").
+- skillGaps MUST include at least 1-2 AI-specific skills relevant to the target role (e.g. "AI prompt engineering", "AI workflow automation", "LLM integration", "AI-assisted data analysis", "AI content generation", "AI agent development"). Set appropriate currentLevel/requiredLevel based on the user's background.
+- weekOneActions MUST include at least one AI-related action (e.g. "Set up Claude/ChatGPT workspace for [target role] tasks", "Complete Anthropic AI Fluency course (free, 3-4 hours)").
+- recommendedResources MUST include at least 2 AI-specific resources. Prioritize: Anthropic AI Fluency (free), Google AI Essentials, AWS AI Practitioner, relevant AI certifications for the target industry.
+- aiToolkit: provide 4-6 specific AI tools the user should master for the target role. For each tool, specify: the tool name (e.g. "Claude", "ChatGPT", "Midjourney", "GitHub Copilot", "Cursor", "v0", "Jasper", "Notion AI", "Runway", "Descript", "HubSpot AI", "Salesforce Einstein"), category (e.g. "AI coding assistant", "AI writing & analysis", "AI design", "AI video", "AI sales intelligence"), useCase describing exactly how they'd use it daily in the target role, and proficiencyNeeded ("beginner"/"intermediate"/"advanced").
+
+Frame AI as a career multiplier, not a threat. The narrative should be: "You + AI tools = a professional who delivers 3x the output of someone who doesn't use AI."
+
 RULES FOR EVERY FIELD:
-1. matchScore (0-100): overall fit score considering skills, experience, market demand, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has.
-2. Each milestone string must be ≤15 words. Make them measurable and specific.
-3. skillGaps: for each gap, specify the skill name, currentLevel (e.g. "none", "beginner", "intermediate"), requiredLevel (e.g. "intermediate", "advanced"), priority ("high"/"medium"/"low"), and optionally a resource (specific course or book name with provider).
-4. weekOneActions: exactly 3 actions the user can start THIS WEEK. Each has a short title, a detailed instruction, a timeEstimate (e.g. "2 hours", "30 minutes"), and difficulty ("easy"/"medium"/"hard"). Prioritize easy wins first.
-5. financialSummary: provide currentSalaryRange and targetSalaryRange as formatted ranges (e.g. "$85,000-$105,000"), salaryUpliftPercent as a number, transitionCosts as an array of line items (e.g. ["Google Data Analytics Certificate: $49/mo x 6 = $294", "Career coaching: $500"]), and roiTimeframe (e.g. "6-9 months after transition").
-6. recommendedResources: 3-5 specific resources with name, provider, type (e.g. "course", "certification", "book", "community"), url, cost (e.g. "$49/mo", "Free"), and timeEstimate (e.g. "40 hours", "6 weeks").
-7. rationale must reference current market conditions or industry trends that make this pivot timely, and explain why THIS person's specific background gives them an edge.
-8. Favor paths that leverage existing domain expertise over starting from scratch.
-9. Account for financial obligations — minimize income gap, prefer moonlight-first strategies when possible.
-10. estimatedTimeToTransition must reflect realistic timelines for a working professional, not someone studying full-time.
+1. matchScore (0-100): overall fit score considering skills, experience, market demand, AI-readiness, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has. Boost matchScore for paths where AI tools significantly lower the barrier to entry.
+2. Each milestone string must be ≤15 words. Make them measurable and specific. At least 30% of milestones across all timeframes should involve AI tool adoption or AI skill development.
+3. skillGaps: for each gap, specify the skill name, currentLevel (e.g. "none", "beginner", "intermediate"), requiredLevel (e.g. "intermediate", "advanced"), priority ("high"/"medium"/"low"), and optionally a resource (specific course or book name with provider). Include AI-specific skill gaps.
+4. weekOneActions: exactly 3 actions the user can start THIS WEEK. Each has a short title, a detailed instruction, a timeEstimate (e.g. "2 hours", "30 minutes"), and difficulty ("easy"/"medium"/"hard"). Prioritize easy wins first. At least one action must involve trying an AI tool relevant to the target career.
+5. financialSummary: provide currentSalaryRange and targetSalaryRange as formatted ranges (e.g. "$85,000-$105,000"), salaryUpliftPercent as a number, transitionCosts as an array of line items (e.g. ["Google Data Analytics Certificate: $49/mo x 6 = $294", "Career coaching: $500"]), and roiTimeframe (e.g. "6-9 months after transition"). Note that many AI certifications and tools are free or low-cost, which reduces transition costs.
+6. recommendedResources: 3-5 specific resources with name, provider, type (e.g. "course", "certification", "book", "community"), url, cost (e.g. "$49/mo", "Free"), and timeEstimate (e.g. "40 hours", "6 weeks"). At least 2 must be AI-related.
+7. rationale must reference how AI is transforming the target industry, current market conditions, and explain why THIS person's specific background combined with AI tools gives them a unique edge.
+8. Favor paths that leverage existing domain expertise combined with AI tools over starting from scratch.
+9. Account for financial obligations — minimize income gap, prefer moonlight-first strategies when possible. Highlight that AI tools can accelerate the transition by automating ramp-up tasks.
+10. estimatedTimeToTransition must reflect realistic timelines for a working professional using AI tools to accelerate learning, not someone studying full-time.
 
 USER PROFILE:
 - Name: ${profile.name ?? "Not specified"}
