@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
@@ -313,7 +314,17 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         </motion.nav>
 
         {/* Hero */}
-        <main className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center max-w-5xl mx-auto w-full">
+        <main className="relative flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center w-full overflow-hidden">
+          <Image
+            src="/images/hero-career-pivot.png"
+            alt=""
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/80 via-[#030712]/70 to-[#030712]" />
+          <div className="relative z-10 max-w-5xl mx-auto w-full flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -386,6 +397,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </motion.div>
             ))}
           </motion.div>
+          </div>
         </main>
 
         {/* How it works */}
