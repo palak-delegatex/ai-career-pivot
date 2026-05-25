@@ -436,6 +436,23 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </section>
 
+        {/* Dashboard visual proof */}
+        <section className="relative w-full py-24 overflow-hidden">
+          <Image
+            src="/images/dashboard.png"
+            alt="AI-powered career analytics dashboard showing skill match scores and progress tracking"
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#030712] via-[#030712]/60 to-[#030712]" />
+          <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+            <p className="text-sm font-semibold tracking-widest uppercase text-teal-400 mb-4">Data-driven insights</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Your career strategy, powered by AI analytics</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">Track your progress, measure skill gaps, and see exactly where you stand — all in one dashboard.</p>
+          </div>
+        </section>
+
         {/* Built for people like you */}
         <section className="py-28 px-6 bg-slate-900/40 border-y border-slate-800/50">
           <div className="max-w-4xl mx-auto">
