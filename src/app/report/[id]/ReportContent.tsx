@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PivotPlan } from "@/lib/intake";
+import PlanHero from "@/components/PlanHero";
 
 export default function ReportContent({ plans }: { plans: PivotPlan[] }) {
   const [selected, setSelected] = useState(0);
@@ -29,18 +30,7 @@ export default function ReportContent({ plans }: { plans: PivotPlan[] }) {
       )}
 
       <div className="space-y-6">
-        <div className="bg-slate-800/60 border border-teal-700/40 rounded-2xl p-6">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h2 className="text-2xl font-bold text-teal-400">{plan.targetRole}</h2>
-              <p className="text-slate-400">{plan.targetIndustry}</p>
-            </div>
-            <span className="text-xs bg-teal-900/40 border border-teal-700/50 text-teal-300 px-3 py-1 rounded-full whitespace-nowrap ml-4">
-              {plan.estimatedTimeToTransition}
-            </span>
-          </div>
-          <p className="text-slate-300 leading-relaxed">{plan.rationale}</p>
-        </div>
+        <PlanHero plan={plan} />
 
         <div className="grid md:grid-cols-3 gap-4">
           {[
