@@ -1,58 +1,121 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateText, Output } from "ai";
-import { z } from "zod";
+import { generateObject } from "ai";
+import { jsonSchema } from "ai";
 import type { UserProfile } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
 import { getStripeClient } from "@/lib/stripe";
 
-const PivotPlanSchema = z.object({
-  plans: z.array(z.object({
-    targetRole: z.string(),
-    targetIndustry: z.string(),
-    rationale: z.string(),
-    matchScore: z.number(),
-    skillMatchPercent: z.number(),
-    sixMonthMilestones: z.array(z.string()),
-    oneYearMilestones: z.array(z.string()),
-    twoYearMilestones: z.array(z.string()),
-    skillGaps: z.array(z.object({
-      skill: z.string(),
-      currentLevel: z.string(),
-      requiredLevel: z.string(),
-      priority: z.enum(["high", "medium", "low"]),
-      resource: z.string().optional(),
-    })),
-    weekOneActions: z.array(z.object({
-      title: z.string(),
-      instruction: z.string(),
-      timeEstimate: z.string(),
-      difficulty: z.enum(["easy", "medium", "hard"]),
-    })).max(3),
-    estimatedTimeToTransition: z.string(),
-    financialSummary: z.object({
-      currentSalaryRange: z.string(),
-      targetSalaryRange: z.string(),
-      salaryUpliftPercent: z.number(),
-      transitionCosts: z.array(z.string()),
-      roiTimeframe: z.string(),
-    }),
-    recommendedResources: z.array(z.object({
-      name: z.string(),
-      provider: z.string(),
-      type: z.string(),
-      url: z.string(),
-      cost: z.string(),
-      timeEstimate: z.string(),
-    })),
-    aiToolkit: z.array(z.object({
-      tool: z.string(),
-      category: z.string(),
-      useCase: z.string(),
-      proficiencyNeeded: z.enum(["beginner", "intermediate", "advanced"]),
-    })),
-  })),
+const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
+  type: "object",
+  properties: {
+    plans: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          targetRole: { type: "string" },
+          targetIndustry: { type: "string" },
+          rationale: { type: "string" },
+          matchScore: { type: "number" },
+          skillMatchPercent: { type: "number" },
+          sixMonthMilestones: { type: "array", items: { type: "string" } },
+          oneYearMilestones: { type: "array", items: { type: "string" } },
+          twoYearMilestones: { type: "array", items: { type: "string" } },
+          skillGaps: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                skill: { type: "string" },
+                currentLevel: { type: "string" },
+                requiredLevel: { type: "string" },
+                priority: { type: "string", enum: ["high", "medium", "low"] },
+                resource: { type: "string" },
+              },
+              required: ["skill", "currentLevel", "requiredLevel", "priority"],
+            },
+          },
+          weekOneActions: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                instruction: { type: "string" },
+                timeEstimate: { type: "string" },
+                difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
+              },
+              required: ["title", "instruction", "timeEstimate", "difficulty"],
+            },
+          },
+          estimatedTimeToTransition: { type: "string" },
+          financialSummary: {
+            type: "object",
+            properties: {
+              currentSalaryRange: { type: "string" },
+              targetSalaryRange: { type: "string" },
+              salaryUpliftPercent: { type: "number" },
+              transitionCosts: { type: "array", items: { type: "string" } },
+              roiTimeframe: { type: "string" },
+            },
+            required: ["currentSalaryRange", "targetSalaryRange", "salaryUpliftPercent", "transitionCosts", "roiTimeframe"],
+          },
+          recommendedResources: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                provider: { type: "string" },
+                type: { type: "string" },
+                url: { type: "string" },
+                cost: { type: "string" },
+                timeEstimate: { type: "string" },
+              },
+              required: ["name", "provider", "type", "url", "cost", "timeEstimate"],
+            },
+          },
+          aiToolkit: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                tool: { type: "string" },
+                category: { type: "string" },
+                useCase: { type: "string" },
+                proficiencyNeeded: { type: "string", enum: ["beginner", "intermediate", "advanced"] },
+              },
+              required: ["tool", "category", "useCase", "proficiencyNeeded"],
+            },
+          },
+        },
+        required: ["targetRole", "targetIndustry", "rationale", "matchScore", "skillMatchPercent",
+          "sixMonthMilestones", "oneYearMilestones", "twoYearMilestones", "skillGaps",
+          "weekOneActions", "estimatedTimeToTransition", "financialSummary",
+          "recommendedResources", "aiToolkit"],
+      },
+    },
+  },
+  required: ["plans"],
 });
+
+type PivotPlan = {
+  targetRole: string;
+  targetIndustry: string;
+  rationale: string;
+  matchScore: number;
+  skillMatchPercent: number;
+  sixMonthMilestones: string[];
+  oneYearMilestones: string[];
+  twoYearMilestones: string[];
+  skillGaps: { skill: string; currentLevel: string; requiredLevel: string; priority: "high" | "medium" | "low"; resource?: string }[];
+  weekOneActions: { title: string; instruction: string; timeEstimate: string; difficulty: "easy" | "medium" | "hard" }[];
+  estimatedTimeToTransition: string;
+  financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string };
+  recommendedResources: { name: string; provider: string; type: string; url: string; cost: string; timeEstimate: string }[];
+  aiToolkit: { tool: string; category: string; useCase: string; proficiencyNeeded: "beginner" | "intermediate" | "advanced" }[];
+};
 
 export async function POST(req: NextRequest) {
   const { profile, paymentSessionId }: { profile: UserProfile; paymentSessionId?: string } = await req.json();
@@ -91,9 +154,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-  const { output: object } = await generateText({
+  const { object } = await generateObject({
     model: anthropic("claude-sonnet-4-6"),
-    output: Output.object({ schema: PivotPlanSchema }),
+    schema: pivotPlanJsonSchema,
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
 Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic.
