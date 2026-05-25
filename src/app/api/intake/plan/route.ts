@@ -18,7 +18,7 @@ const PivotPlanSchema = z.object({
     keyActions: z.array(z.string()),
     estimatedTimeToTransition: z.string(),
     financialConsiderations: z.string(),
-  })).min(1).max(3),
+  })),
 });
 
 export async function POST(req: NextRequest) {
