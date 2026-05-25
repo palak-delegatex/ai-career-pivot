@@ -150,6 +150,35 @@ export default function PivotPlanPage() {
             </div>
           )}
 
+          {/* Recommended Resources */}
+          {(plan.recommendedResources ?? []).length > 0 && (
+            <div className="bg-slate-800/60 border border-teal-700/40 rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-teal-400 mb-3">Recommended Resources</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {plan.recommendedResources!.map((resource, i) => (
+                  <a
+                    key={i}
+                    href={resource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 hover:border-teal-600/50 transition-colors group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-teal-300 font-medium text-sm group-hover:text-teal-200 transition-colors">{resource.name}</span>
+                      <svg className="w-3.5 h-3.5 text-slate-500 group-hover:text-teal-400 transition-colors shrink-0 ml-2" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-6H21m0 0v7.5m0-7.5l-9 9" /></svg>
+                    </div>
+                    <p className="text-xs text-slate-500 mb-2">{resource.provider}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs bg-teal-900/40 border border-teal-700/40 text-teal-300 px-2 py-0.5 rounded-full">{resource.type}</span>
+                      <span className="text-xs text-slate-400">{resource.cost}</span>
+                      <span className="text-xs text-slate-500">· {resource.timeEstimate}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Financial summary / considerations */}
           {plan.financialSummary ? (
             <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
