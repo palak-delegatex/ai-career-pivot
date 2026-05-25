@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
   try {
   const { output: object } = await generateText({
-    model: anthropic("claude-sonnet-4.6"),
+    model: anthropic("claude-sonnet-4-6"),
     output: Output.object({ schema: PivotPlanSchema }),
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
