@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -96,17 +97,31 @@ export default function AboutPage() {
           </div>
         </nav>
 
+        {/* Hero */}
+        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+          <Image
+            src="/images/about-trust.png"
+            alt="Professional discussing career strategy in a modern workspace"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/80 via-[#030712]/70 to-[#030712]" />
+          <div className="relative z-10 flex items-end h-full max-w-5xl mx-auto px-6 pb-12">
+            <header>
+              <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">About</p>
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
+                Career advice that accounts for your whole life
+              </h1>
+              <p className="text-xl text-slate-400 leading-relaxed max-w-2xl">
+                AICareerPivot is an AI-powered career strategist built for the reality most professionals face: you can&apos;t just quit and figure it out. You have financial obligations, family considerations, and real constraints that generic career coaches ignore.
+              </p>
+            </header>
+          </div>
+        </section>
+
         <main className="max-w-4xl mx-auto px-6 py-20">
-          {/* Header */}
-          <header className="mb-16">
-            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">About</p>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
-              Career advice that accounts for your whole life
-            </h1>
-            <p className="text-xl text-slate-400 leading-relaxed max-w-2xl">
-              AICareerPivot is an AI-powered career strategist built for the reality most professionals face: you can&apos;t just quit and figure it out. You have financial obligations, family considerations, and real constraints that generic career coaches ignore.
-            </p>
-          </header>
 
           {/* Mission */}
           <section className="mb-20" aria-labelledby="mission-heading">
