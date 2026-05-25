@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { PivotPlan } from "@/lib/intake";
 import Link from "next/link";
 import PlanHero from "@/components/PlanHero";
+import RoadmapTimeline from "@/components/RoadmapTimeline";
 
 export default function PivotPlanPage() {
   const router = useRouter();
@@ -67,25 +68,11 @@ export default function PivotPlanPage() {
           <PlanHero plan={plan} />
 
           {/* Milestones */}
-          <div className="grid md:grid-cols-3 gap-4">
-            {[
-              { label: "6-Month Milestones", items: plan.sixMonthMilestones, color: "emerald" },
-              { label: "1-Year Milestones", items: plan.oneYearMilestones, color: "teal" },
-              { label: "2-Year Milestones", items: plan.twoYearMilestones, color: "cyan" },
-            ].map(({ label, items, color }) => (
-              <div key={label} className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-                <h3 className={`text-sm font-bold text-${color}-400 mb-3`}>{label}</h3>
-                <ul className="space-y-2">
-                  {items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                      <span className={`text-${color}-500 mt-0.5 shrink-0`}>→</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <RoadmapTimeline
+            sixMonthMilestones={plan.sixMonthMilestones}
+            oneYearMilestones={plan.oneYearMilestones}
+            twoYearMilestones={plan.twoYearMilestones}
+          />
 
           {/* Skill gaps + key actions */}
           <div className="grid md:grid-cols-2 gap-4">

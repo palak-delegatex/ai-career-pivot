@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PivotPlan } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
+import RoadmapTimeline from "@/components/RoadmapTimeline";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
@@ -37,25 +38,11 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           <DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { label: "6-Month Milestones", items: plan.sixMonthMilestones, accent: "text-emerald-400", bullet: "text-emerald-500" },
-            { label: "1-Year Milestones", items: plan.oneYearMilestones, accent: "text-teal-400", bullet: "text-teal-500" },
-            { label: "2-Year Milestones", items: plan.twoYearMilestones, accent: "text-cyan-400", bullet: "text-cyan-500" },
-          ].map(({ label, items, accent, bullet }) => (
-            <div key={label} className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-              <h3 className={`text-sm font-bold ${accent} mb-3`}>{label}</h3>
-              <ul className="space-y-2">
-                {items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className={`${bullet} mt-0.5 shrink-0`}>→</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <RoadmapTimeline
+          sixMonthMilestones={plan.sixMonthMilestones}
+          oneYearMilestones={plan.oneYearMilestones}
+          twoYearMilestones={plan.twoYearMilestones}
+        />
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
