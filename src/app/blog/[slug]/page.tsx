@@ -51,10 +51,10 @@ function WaitlistCTA() {
         finances, and family situation.
       </p>
       <Link
-        href="/waitlist"
+        href="/pricing"
         className="inline-block px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-colors"
       >
-        Join the Waitlist →
+        Get My Roadmap — $5 →
       </Link>
     </div>
   );

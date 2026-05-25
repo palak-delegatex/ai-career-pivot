@@ -100,10 +100,10 @@ export default function FAQPage() {
             <Link href="/how-it-works" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">How It Works</Link>
             <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">About</Link>
             <Link
-              href="/waitlist"
+              href="/pricing"
               className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
-              Join Waitlist
+              Get Started
             </Link>
           </div>
         </nav>
@@ -134,12 +134,12 @@ export default function FAQPage() {
 
           <div className="mt-16 text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
             <h2 className="text-2xl font-bold text-white mb-3">Still have questions?</h2>
-            <p className="text-slate-400 mb-8">Join the waitlist and we&apos;ll personally answer any questions about your specific situation.</p>
+            <p className="text-slate-400 mb-8">Get your personalized career pivot roadmap and we&apos;ll answer any questions about your specific situation.</p>
             <Link
-              href="/waitlist"
+              href="/pricing"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
-              Join the Waitlist →
+              Get My Roadmap — $5 →
             </Link>
           </div>
         </main>

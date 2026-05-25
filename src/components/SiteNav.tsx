@@ -88,15 +88,15 @@ export default function SiteNav() {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <Button render={<Link href="/waitlist" />} size="sm" className="ml-2">
-          Join Waitlist
+        <Button render={<Link href="/pricing" />} size="sm" className="ml-2">
+          Get Started
         </Button>
       </div>
 
       {/* Mobile nav */}
       <div className="sm:hidden flex items-center gap-2">
-        <Button render={<Link href="/waitlist" />} size="sm">
-          Join Waitlist
+        <Button render={<Link href="/pricing" />} size="sm">
+          Get Started
         </Button>
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
@@ -130,12 +130,12 @@ export default function SiteNav() {
               <SheetClose
                 render={
                   <Link
-                    href="/waitlist"
+                    href="/pricing"
                     className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
                   />
                 }
               >
-                Join Waitlist
+                Get Started
               </SheetClose>
             </div>
           </SheetContent>

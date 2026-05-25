@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -46,9 +46,9 @@ const softwareApplicationSchema = {
     "AI-powered career transition planning tool that creates personalized roadmaps with concrete 6-month, 1-year, and 2-year milestones.",
   offers: {
     "@type": "Offer",
-    price: "0",
+    price: "5",
     priceCurrency: "USD",
-    description: "Early access waitlist — free to join",
+    description: "Personalized career pivot roadmap — intro pricing",
   },
 };
 
@@ -261,21 +261,6 @@ const testimonials = [
 ];
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
-  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetch("/api/waitlist/count")
-      .then((r) => r.json())
-      .then((d: { count: number }) => {
-        // Only show count if meaningful (>= 10); round down to nearest 10
-        if (d.count >= 10) {
-          setWaitlistCount(Math.floor(d.count / 10) * 10);
-        }
-      })
-      .catch(() => {
-        // Silently fail — badge shows fallback text
-      });
-  }, []);
 
   return (
     <>
@@ -319,10 +304,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <Link href="/blog" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
             <Link href="/pricing" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
             <Link
-              href="/waitlist"
+              href="/pricing"
               className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
-              Join Waitlist
+              Get Started
             </Link>
           </div>
         </motion.nav>
@@ -333,12 +318,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 text-sm font-medium mb-10 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-            {waitlistCount !== null
-              ? `${waitlistCount}+ professionals on the waitlist`
-              : "Early Access — Limited Spots"}
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            Intro Pricing — Just $5 (was $29)
           </motion.div>
 
           <motion.h1
@@ -374,10 +357,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="flex flex-col sm:flex-row gap-3 mb-20"
           >
             <Link
-              href="/waitlist"
+              href="/pricing"
               className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 hover:scale-[1.02] text-white overflow-hidden"
             >
-              <span className="relative z-10">Get My Roadmap →</span>
+              <span className="relative z-10">Get My Roadmap — $5 →</span>
               <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
             </Link>
             <Link
@@ -569,10 +552,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 </p>
               </div>
               <Link
-                href="/waitlist"
+                href="/pricing"
                 className="shrink-0 px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.03]"
               >
-                Build My Pivot Plan →
+                Build My Pivot Plan — $5 →
               </Link>
             </motion.div>
           </div>
@@ -638,10 +621,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <AnimatedSection className="mt-12 text-center">
               <motion.div variants={fadeUp}>
                 <Link
-                  href="/waitlist"
+                  href="/pricing"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Start My Career Pivot →
+                  Start My Career Pivot — $5 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -662,14 +645,14 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   Ready to map your next chapter?
                 </motion.h2>
                 <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-10 leading-relaxed">
-                  Join the waitlist and be first to get your personalized career pivot roadmap.
+                  Get your personalized career pivot roadmap today — just $5 intro pricing.
                 </motion.p>
                 <motion.div variants={fadeUp}>
                   <Link
-                    href="/waitlist"
+                    href="/pricing"
                     className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Join the Waitlist
+                    Get My Roadmap — $5
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -815,10 +798,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.
                 </p>
                 <Link
-                  href="/waitlist"
+                  href="/pricing"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Get My Personalized Learning Path →
+                  Get My Personalized Learning Path — $5 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -867,7 +850,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
             <Link href="/blog" className="hover:text-slate-400 transition-colors">Blog</Link>
             <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
-            <Link href="/waitlist" className="hover:text-slate-400 transition-colors">Join Waitlist</Link>
+            <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
           </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
         </footer>
