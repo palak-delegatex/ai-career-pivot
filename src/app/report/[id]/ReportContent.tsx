@@ -6,6 +6,7 @@ import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 import SkillGapChart from "@/components/SkillGapChart";
+import WeekOneActionCards from "@/components/WeekOneActionCards";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -49,29 +50,21 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           <SkillGapChart skillGaps={plan.skillGaps!} />
         )}
 
-        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-          <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
-          <ul className="space-y-2">
-            {(plan.weekOneActions ?? []).length > 0
-              ? plan.weekOneActions!.map((action, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
-                    <span>
-                      <span className="font-medium text-white">{action.title}</span>
-                      {" — "}{action.instruction}
-                      <span className="text-slate-500 ml-1">({action.timeEstimate})</span>
-                    </span>
-                  </li>
-                ))
-              : (plan.keyActions ?? []).map((action, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
-                    {action}
-                  </li>
-                ))
-            }
-          </ul>
-        </div>
+        {(plan.weekOneActions ?? []).length > 0 ? (
+          <WeekOneActionCards actions={plan.weekOneActions!} />
+        ) : (plan.keyActions ?? []).length > 0 ? (
+          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+            <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
+            <ul className="space-y-2">
+              {plan.keyActions!.map((action, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                  <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
+                  {action}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         {(plan.aiToolkit ?? []).length > 0 && (
           <div className="bg-slate-800/60 border border-violet-700/40 rounded-2xl p-5">

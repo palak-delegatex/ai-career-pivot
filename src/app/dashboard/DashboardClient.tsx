@@ -127,19 +127,30 @@ function ReportCard({ report }: { report: Report }) {
         <span className="text-slate-500 text-xs shrink-0">{date}</span>
       </div>
 
-      {plan && plan.keyActions.length > 0 && (
+      {plan && ((plan.weekOneActions ?? []).length > 0 || (plan.keyActions ?? []).length > 0) && (
         <div className="mt-4 pt-4 border-t border-slate-700/50">
           <p className="text-sm font-medium text-slate-300 mb-2">Next actions:</p>
           <ul className="space-y-1">
-            {plan.keyActions.slice(0, 3).map((action, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-xs text-slate-400"
-              >
-                <span className="text-teal-400 mt-0.5 shrink-0">○</span>
-                <span className="line-clamp-1">{action}</span>
-              </li>
-            ))}
+            {plan.weekOneActions
+              ? plan.weekOneActions.slice(0, 3).map((action, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-xs text-slate-400"
+                  >
+                    <span className="text-teal-400 mt-0.5 shrink-0">○</span>
+                    <span className="line-clamp-1">{action.title}</span>
+                  </li>
+                ))
+              : plan.keyActions!.slice(0, 3).map((action, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-xs text-slate-400"
+                  >
+                    <span className="text-teal-400 mt-0.5 shrink-0">○</span>
+                    <span className="line-clamp-1">{action}</span>
+                  </li>
+                ))
+            }
           </ul>
         </div>
       )}
