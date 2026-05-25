@@ -3,8 +3,9 @@
 import { useState } from "react";
 import type { PivotPlan } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
+import DownloadPdfButton from "@/components/DownloadPdfButton";
 
-export default function ReportContent({ plans }: { plans: PivotPlan[] }) {
+export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
   const plan = plans[selected];
 
@@ -31,6 +32,10 @@ export default function ReportContent({ plans }: { plans: PivotPlan[] }) {
 
       <div className="space-y-6">
         <PlanHero plan={plan} />
+
+        <div className="flex justify-end">
+          <DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} />
+        </div>
 
         <div className="grid md:grid-cols-3 gap-4">
           {[
