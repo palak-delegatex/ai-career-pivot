@@ -23,6 +23,13 @@ const FUN_FACTS = [
   "Action verbs like 'spearheaded' and 'orchestrated' outperform passive language.",
 ] as const;
 
+function parseInsightsFromStream(text: string): string[] {
+  return text
+    .split("\n")
+    .map((line) => line.replace(/^\d+[\.\)]\s*/, "").trim())
+    .filter((line) => line.length > 10);
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -32,12 +39,17 @@ export default function OnboardingPage() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [processingMsg, setProcessingMsg] = useState("");
+  const [, setProcessingMsg] = useState("");
   const [error, setError] = useState("");
   const [activeStep, setActiveStep] = useState(0);
   const [factIndex, setFactIndex] = useState(0);
   const [factVisible, setFactVisible] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
+
+  const [aiInsights, setAiInsights] = useState<string[]>([]);
+  const [insightIndex, setInsightIndex] = useState(0);
+  const [insightVisible, setInsightVisible] = useState(true);
+  const insightsReady = aiInsights.length > 0;
 
   useEffect(() => {
     const paymentEmail = sessionStorage.getItem("payment_email");
@@ -67,8 +79,9 @@ export default function OnboardingPage() {
     return () => clearTimeout(timeout);
   }, [step]);
 
+  // Cycle through fun facts (used before AI insights arrive)
   useEffect(() => {
-    if (step !== "processing") return;
+    if (step !== "processing" || insightsReady) return;
     const cycle = setInterval(() => {
       setFactVisible(false);
       setTimeout(() => {
@@ -77,11 +90,52 @@ export default function OnboardingPage() {
       }, 400);
     }, 5000);
     return () => clearInterval(cycle);
-  }, [step]);
+  }, [step, insightsReady]);
+
+  // Cycle through AI insights once they're ready
+  useEffect(() => {
+    if (step !== "processing" || !insightsReady) return;
+    setInsightVisible(true);
+    const cycle = setInterval(() => {
+      setInsightVisible(false);
+      setTimeout(() => {
+        setInsightIndex((prev) => (prev + 1) % aiInsights.length);
+        setInsightVisible(true);
+      }, 400);
+    }, 6000);
+    return () => clearInterval(cycle);
+  }, [step, insightsReady, aiInsights.length]);
 
   const snapToComplete = useCallback(() => {
     setActiveStep(ANALYSIS_STEPS.length - 1);
   }, []);
+
+  async function fetchInsights(profile: UserProfile) {
+    try {
+      const res = await fetch("/api/intake/insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile }),
+      });
+      if (!res.ok || !res.body) return;
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        const parsed = parseInsightsFromStream(accumulated);
+        if (parsed.length > 0) {
+          setAiInsights(parsed);
+        }
+      }
+    } catch {
+      // Non-fatal — fun facts continue as fallback
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -96,7 +150,6 @@ export default function OnboardingPage() {
     try {
       let profile: UserProfile | null = null;
 
-      // 1. Parse resume (primary if provided, higher quality than LinkedIn)
       if (resumeFile) {
         setProcessingMsg("Analyzing your resume…");
         const fd = new FormData();
@@ -108,7 +161,6 @@ export default function OnboardingPage() {
         profile = { ...data.profile, email };
       }
 
-      // 2. Merge LinkedIn data
       if (linkedinUrl) {
         setProcessingMsg("Fetching LinkedIn profile…");
         const res = await fetch("/api/intake/linkedin", {
@@ -118,7 +170,6 @@ export default function OnboardingPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          // Merge: LinkedIn fills gaps in resume data
           if (profile) {
             profile = {
               ...profile,
@@ -132,10 +183,13 @@ export default function OnboardingPage() {
             profile = { ...data.profile, email, linkedinUrl };
           }
         }
-        // LinkedIn failure is non-fatal — continue with resume
       }
 
-      // 3. Merge website context (optional)
+      // Fire parallel AI insights call as soon as we have a profile
+      if (profile && profile.skills?.length > 0) {
+        fetchInsights(profile);
+      }
+
       if (websiteUrl) {
         setProcessingMsg("Scanning your portfolio…");
         const res = await fetch("/api/intake/website", {
@@ -159,7 +213,6 @@ export default function OnboardingPage() {
       if (profile.name) setUserName(profile.name.split(" ")[0]);
       snapToComplete();
 
-      // 4. Store profile in sessionStorage and navigate to review
       sessionStorage.setItem("intake_profile", JSON.stringify(profile));
       router.push("/onboarding/profile");
     } catch (err) {
@@ -193,9 +246,12 @@ export default function OnboardingPage() {
       ? `Analyzing ${userName}'s background…`
       : "Our AI is reading between the lines";
 
+    const displayInsight = insightsReady ? aiInsights[insightIndex] : null;
+    const displayFact = !insightsReady ? FUN_FACTS[factIndex] : null;
+
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
-        <div className="max-w-md w-full flex flex-col items-center">
+        <div className="max-w-lg w-full flex flex-col items-center">
           {/* Neural Document Scanner */}
           <div className="mb-8">
             <svg width="210" height="150" viewBox="0 0 210 150" fill="none" aria-label="AI analyzing resume">
@@ -265,7 +321,7 @@ export default function OnboardingPage() {
               <line x1="144" y1="82" x2="172" y2="108" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
               <line x1="144" y1="107" x2="172" y2="108" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
 
-              {/* Input layer nodes (4) — light up sequentially as scan reads rows */}
+              {/* Input layer nodes (4) */}
               <circle cx="140" cy="32" r="4" fill="#2dd4bf" fillOpacity="0.1" stroke="#2dd4bf" strokeWidth="1" strokeOpacity="0.25">
                 <animate attributeName="fill-opacity" values="0.1;0.1;0.6;0.1;0.1;0.5;0.1" keyTimes="0;0.10;0.13;0.18;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.25;0.7;0.25" keyTimes="0;0.10;0.13;0.18;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
@@ -283,7 +339,7 @@ export default function OnboardingPage() {
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.25;0.7;0.25" keyTimes="0;0.61;0.64;0.69;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
               </circle>
 
-              {/* Output layer nodes (3) — light up after all inputs, then all nodes pulse together */}
+              {/* Output layer nodes (3) */}
               <circle cx="175" cy="48" r="4" fill="#2dd4bf" fillOpacity="0.1" stroke="#2dd4bf" strokeWidth="1" strokeOpacity="0.25">
                 <animate attributeName="fill-opacity" values="0.1;0.1;0.6;0.1;0.5;0.1" keyTimes="0;0.78;0.81;0.84;0.88;0.93" dur="3s" repeatCount="indefinite" />
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.7;0.25" keyTimes="0;0.78;0.81;0.84;0.88;0.93" dur="3s" repeatCount="indefinite" />
@@ -340,19 +396,52 @@ export default function OnboardingPage() {
             })}
           </div>
 
-          {/* Rotating fun facts */}
-          <div className="w-full rounded-xl bg-white/[0.06] px-5 py-4 min-h-[60px] flex items-center justify-center">
-            <p
-              className="text-slate-300 text-sm text-center leading-relaxed"
-              style={{
-                animation: factVisible ? "fact-fade-in 0.4s ease-out forwards" : "none",
-                opacity: factVisible ? 1 : 0,
-                transition: factVisible ? "none" : "opacity 0.3s ease-out",
-              }}
-            >
-              💡 {FUN_FACTS[factIndex]}
-            </p>
-          </div>
+          {/* AI Insights or Fun Facts */}
+          {insightsReady ? (
+            <div className="w-full rounded-xl bg-gradient-to-br from-teal-950/40 to-slate-800/60 border border-teal-800/30 px-5 py-5 min-h-[80px]">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-400 uppercase tracking-wider">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zm4.95 2.05a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM14.25 7.25a.75.75 0 010 1.5h-1.5a.75.75 0 010-1.5h1.5zM12.89 11.83a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 011.06-1.06l1.06 1.06zM8.75 12.75a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5zM4.17 12.89a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 111.06 1.06l-1.06 1.06zM3.25 8.75a.75.75 0 010-1.5h-1.5a.75.75 0 010 1.5h1.5zM4.17 3.11a.75.75 0 011.06 1.06L4.17 5.23a.75.75 0 01-1.06-1.06l1.06-1.06z" />
+                  </svg>
+                  AI Insight — based on your profile
+                </span>
+              </div>
+              <p
+                className="text-slate-200 text-sm leading-relaxed"
+                style={{
+                  animation: insightVisible ? "fact-fade-in 0.4s ease-out forwards" : "none",
+                  opacity: insightVisible ? 1 : 0,
+                  transition: insightVisible ? "none" : "opacity 0.3s ease-out",
+                }}
+              >
+                {displayInsight}
+              </p>
+              <div className="flex gap-1 mt-3 justify-center">
+                {aiInsights.map((_, i) => (
+                  <span
+                    key={i}
+                    className={`block w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
+                      i === insightIndex ? "bg-teal-400" : "bg-slate-600"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="w-full rounded-xl bg-white/[0.06] px-5 py-4 min-h-[60px] flex items-center justify-center">
+              <p
+                className="text-slate-300 text-sm text-center leading-relaxed"
+                style={{
+                  animation: factVisible ? "fact-fade-in 0.4s ease-out forwards" : "none",
+                  opacity: factVisible ? 1 : 0,
+                  transition: factVisible ? "none" : "opacity 0.3s ease-out",
+                }}
+              >
+                💡 {displayFact}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
