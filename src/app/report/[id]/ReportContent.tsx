@@ -5,6 +5,7 @@ import type { PivotPlan } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
+import SkillGapChart from "@/components/SkillGapChart";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -44,48 +45,32 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           twoYearMilestones={plan.twoYearMilestones}
         />
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-amber-400 mb-3">Skill Gaps to Close</h3>
-            <ul className="space-y-2">
-              {(plan.skillGaps ?? []).map((gap, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                  <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
-                  {typeof gap === "string" ? gap : (
+        {(plan.skillGaps ?? []).length > 0 && (
+          <SkillGapChart skillGaps={plan.skillGaps!} />
+        )}
+
+        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+          <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
+          <ul className="space-y-2">
+            {(plan.weekOneActions ?? []).length > 0
+              ? plan.weekOneActions!.map((action, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
                     <span>
-                      <span className="font-medium text-white">{gap.skill}</span>
-                      {" — "}
-                      {gap.currentLevel} → {gap.requiredLevel}
-                      {gap.resource && <span className="text-amber-300 ml-1">({gap.resource})</span>}
+                      <span className="font-medium text-white">{action.title}</span>
+                      {" — "}{action.instruction}
+                      <span className="text-slate-500 ml-1">({action.timeEstimate})</span>
                     </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
-            <ul className="space-y-2">
-              {(plan.weekOneActions ?? []).length > 0
-                ? plan.weekOneActions!.map((action, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                      <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
-                      <span>
-                        <span className="font-medium text-white">{action.title}</span>
-                        {" — "}{action.instruction}
-                        <span className="text-slate-500 ml-1">({action.timeEstimate})</span>
-                      </span>
-                    </li>
-                  ))
-                : (plan.keyActions ?? []).map((action, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                      <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
-                      {action}
-                    </li>
-                  ))
-              }
-            </ul>
-          </div>
+                  </li>
+                ))
+              : (plan.keyActions ?? []).map((action, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <span className="text-teal-500 mt-0.5 shrink-0">✓</span>
+                    {action}
+                  </li>
+                ))
+            }
+          </ul>
         </div>
 
         {(plan.aiToolkit ?? []).length > 0 && (
