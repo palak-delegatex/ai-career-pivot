@@ -8,11 +8,13 @@ import { getStripeClient } from "@/lib/stripe";
 
 const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   type: "object",
+  additionalProperties: false,
   properties: {
     plans: {
       type: "array",
       items: {
         type: "object",
+        additionalProperties: false,
         properties: {
           targetRole: { type: "string" },
           targetIndustry: { type: "string" },
@@ -26,6 +28,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
             type: "array",
             items: {
               type: "object",
+              additionalProperties: false,
               properties: {
                 skill: { type: "string" },
                 currentLevel: { type: "string" },
@@ -33,13 +36,14 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
                 priority: { type: "string", enum: ["high", "medium", "low"] },
                 resource: { type: "string" },
               },
-              required: ["skill", "currentLevel", "requiredLevel", "priority"],
+              required: ["skill", "currentLevel", "requiredLevel", "priority", "resource"],
             },
           },
           weekOneActions: {
             type: "array",
             items: {
               type: "object",
+              additionalProperties: false,
               properties: {
                 title: { type: "string" },
                 instruction: { type: "string" },
@@ -52,6 +56,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
           estimatedTimeToTransition: { type: "string" },
           financialSummary: {
             type: "object",
+            additionalProperties: false,
             properties: {
               currentSalaryRange: { type: "string" },
               targetSalaryRange: { type: "string" },
@@ -65,6 +70,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
             type: "array",
             items: {
               type: "object",
+              additionalProperties: false,
               properties: {
                 name: { type: "string" },
                 provider: { type: "string" },
@@ -80,6 +86,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
             type: "array",
             items: {
               type: "object",
+              additionalProperties: false,
               properties: {
                 tool: { type: "string" },
                 category: { type: "string" },
