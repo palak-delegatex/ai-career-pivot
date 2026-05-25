@@ -125,36 +125,56 @@ export default function ReportContent({ plans }: { plans: PivotPlan[] }) {
         )}
 
         {plan.financialSummary ? (
-          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-slate-300 mb-2">Financial Summary</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-slate-500">Current Salary</p>
-                <p className="text-slate-300 font-medium">{plan.financialSummary.currentSalaryRange}</p>
+          <div className="bg-slate-800/60 border border-emerald-700/30 rounded-2xl p-6">
+            <h3 className="text-sm font-bold text-emerald-400 mb-5">Salary & Financial Bridge</h3>
+
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 text-center">
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Current Range</p>
+                <p className="text-xl font-bold text-slate-200">{plan.financialSummary.currentSalaryRange}</p>
               </div>
-              <div>
-                <p className="text-slate-500">Target Salary</p>
-                <p className="text-teal-300 font-medium">{plan.financialSummary.targetSalaryRange}</p>
+
+              <div className="flex flex-col items-center shrink-0">
+                <span className="text-emerald-400 font-bold text-sm">+{plan.financialSummary.salaryUpliftPercent}%</span>
+                <svg width="48" height="20" viewBox="0 0 48 20" fill="none" aria-label={`${plan.financialSummary.salaryUpliftPercent}% salary uplift`}>
+                  <path d="M0 10H40M40 10L32 4M40 10L32 16" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-              <div>
-                <p className="text-slate-500">Salary Uplift</p>
-                <p className="text-emerald-400 font-medium">+{plan.financialSummary.salaryUpliftPercent}%</p>
-              </div>
-              <div>
-                <p className="text-slate-500">ROI Timeframe</p>
-                <p className="text-slate-300 font-medium">{plan.financialSummary.roiTimeframe}</p>
+
+              <div className="flex-1 bg-slate-900/60 border border-emerald-700/40 rounded-xl p-4 text-center">
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Target Range</p>
+                <p className="text-xl font-bold text-emerald-300">{plan.financialSummary.targetSalaryRange}</p>
               </div>
             </div>
+
+            <div className="h-2 rounded-full bg-slate-700/50 overflow-hidden mb-5" aria-hidden="true">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: "100%",
+                  background: "linear-gradient(to right, #64748b, #14b8a6, #34d399)",
+                }}
+              />
+            </div>
+
             {plan.financialSummary.transitionCosts.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-slate-700/50">
-                <p className="text-slate-500 text-xs mb-1">Transition Costs</p>
-                <ul className="space-y-1">
+              <div className="mb-4">
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Transition Costs</p>
+                <div className="grid sm:grid-cols-2 gap-2">
                   {plan.financialSummary.transitionCosts.map((cost, i) => (
-                    <li key={i} className="text-slate-400 text-xs">{cost}</li>
+                    <div key={i} className="flex items-center gap-2 bg-slate-900/40 border border-slate-700/40 rounded-lg px-3 py-2">
+                      <span className="text-amber-400 shrink-0 text-xs">$</span>
+                      <span className="text-sm text-slate-300">{cost}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
+
+            <div className="flex items-center gap-2 bg-teal-900/20 border border-teal-700/30 rounded-lg px-4 py-2.5">
+              <span className="text-teal-400 text-sm">ROI Timeframe:</span>
+              <span className="text-white font-medium text-sm">{plan.financialSummary.roiTimeframe}</span>
+            </div>
           </div>
         ) : plan.financialConsiderations ? (
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
