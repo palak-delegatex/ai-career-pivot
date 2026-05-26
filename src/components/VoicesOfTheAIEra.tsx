@@ -23,7 +23,7 @@ const voices: VoiceExpert[] = [
   {
     name: "Dario Amodei",
     title: "CEO, Anthropic",
-    imageSrc: "/images/voices/dario-amodei.svg",
+    imageSrc: "/images/voices/dario-amodei.png",
     imageAlt: "Thoughtful tech CEO in a modern office with dramatic side lighting and city skyline at dusk",
     gradient: "from-rose-500 to-pink-500",
     borderGlow: "hover:shadow-rose-500/20",
@@ -36,7 +36,7 @@ const voices: VoiceExpert[] = [
   {
     name: "Geoffrey Hinton",
     title: 'Nobel Laureate · "Godfather of AI"',
-    imageSrc: "/images/voices/geoffrey-hinton.svg",
+    imageSrc: "/images/voices/geoffrey-hinton.png",
     imageAlt: "Distinguished professor in a university library with neural network diagrams on a chalkboard and golden hour light",
     gradient: "from-amber-400 to-orange-500",
     borderGlow: "hover:shadow-amber-500/20",
@@ -49,7 +49,7 @@ const voices: VoiceExpert[] = [
   {
     name: "Jensen Huang",
     title: "CEO, NVIDIA",
-    imageSrc: "/images/voices/jensen-huang.svg",
+    imageSrc: "/images/voices/jensen-huang.png",
     imageAlt: "Charismatic tech executive on stage with dramatic teal lighting and holographic GPU chip diagrams",
     gradient: "from-emerald-400 to-teal-600",
     borderGlow: "hover:shadow-emerald-500/20",
@@ -62,7 +62,7 @@ const voices: VoiceExpert[] = [
   {
     name: "Chamath Palihapitiya",
     title: "Founder, Social Capital",
-    imageSrc: "/images/voices/chamath-palihapitiya.svg",
+    imageSrc: "/images/voices/chamath-palihapitiya.png",
     imageAlt: "Venture capitalist in a modern podcast studio with neon blue lighting and market data monitors",
     gradient: "from-sky-400 to-blue-600",
     borderGlow: "hover:shadow-sky-500/20",
@@ -163,6 +163,7 @@ function VoiceCard({ expert, index }: { expert: VoiceExpert; index: number }) {
                 alt={expert.imageAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
+                quality={75}
                 className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent md:hidden" />
@@ -204,15 +205,15 @@ function VoiceCard({ expert, index }: { expert: VoiceExpert; index: number }) {
 
 export default function VoicesOfTheAIEra() {
   return (
-    <section
-      className="py-28 px-6 overflow-hidden relative"
-      style={{
-        backgroundImage: "url(/images/voices/voices-hero-bg.svg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <section className="py-28 px-6 overflow-hidden relative">
+      <Image
+        src="/images/voices/voices-hero-bg.png"
+        alt=""
+        fill
+        sizes="100vw"
+        quality={60}
+        className="object-cover fixed inset-0 -z-10"
+      />
       <div className="max-w-6xl mx-auto relative z-10">
         <AnimatedSection className="text-center mb-16">
           <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
