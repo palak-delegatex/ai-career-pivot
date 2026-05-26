@@ -1,22 +1,185 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0a1628"/>
-      <stop offset="100%" style="stop-color:#0f172a"/>
+    <!-- Deep tech studio dark -->
+    <linearGradient id="studio-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#060914"/>
+      <stop offset="50%" style="stop-color:#080c18"/>
+      <stop offset="100%" style="stop-color:#030712"/>
     </linearGradient>
-    <radialGradient id="glow" cx="40%" cy="40%" r="55%">
-      <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:0.25"/>
-      <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:0"/>
+    <!-- Neon blue from left monitor bank -->
+    <radialGradient id="blue-glow" cx="18%" cy="45%" r="45%">
+      <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:0.22"/>
+      <stop offset="60%" style="stop-color:#0ea5e9;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:0"/>
     </radialGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:0.15"/>
-      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:0.05"/>
+    <!-- Cool secondary fill -->
+    <radialGradient id="blue2" cx="75%" cy="50%" r="40%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:0.12"/>
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:0"/>
+    </radialGradient>
+    <!-- Monitor screen gradient -->
+    <linearGradient id="screen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#060c1a"/>
+      <stop offset="100%" style="stop-color:#04080f"/>
     </linearGradient>
+    <!-- Desk surface -->
+    <linearGradient id="desk" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1020"/>
+      <stop offset="100%" style="stop-color:#060814"/>
+    </linearGradient>
+    <!-- Figure -->
+    <linearGradient id="fig" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#080b14"/>
+      <stop offset="100%" style="stop-color:#040710"/>
+    </linearGradient>
+    <!-- Floor fade -->
+    <linearGradient id="floorfade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#030712;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#030712;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.6"/>
+    </radialGradient>
+    <filter id="gblur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="mblur"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="sblur"><feGaussianBlur stdDeviation="3.5"/></filter>
   </defs>
-  <rect width="1600" height="900" fill="url(#bg)"/>
-  <rect width="1600" height="900" fill="url(#glow)"/>
-  <circle cx="560" cy="380" r="220" fill="url(#accent)" opacity="0.6"/>
-  <circle cx="640" cy="520" r="160" fill="#38bdf8" opacity="0.08"/>
-  <text x="560" y="420" font-family="serif" font-size="180" font-weight="bold" fill="#38bdf8" opacity="0.25" text-anchor="middle">CP</text>
-  <rect x="0" y="750" width="1600" height="150" fill="url(#bg)" opacity="0.8"/>
+
+  <!-- Base -->
+  <rect width="1600" height="900" fill="url(#studio-bg)"/>
+  <rect width="1600" height="900" fill="url(#blue-glow)"/>
+  <rect width="1600" height="900" fill="url(#blue2)"/>
+
+  <!-- ==== MULTI-MONITOR TRADING/DATA SETUP (background) ==== -->
+  <!-- Monitor bank frame - dark desk at back -->
+  <rect x="0" y="150" width="700" height="580" fill="#04060f" opacity="0.7"/>
+
+  <!-- Monitor 1 (left, tall) -->
+  <rect x="30" y="165" width="200" height="340" rx="5" fill="#060810" opacity="0.95"/>
+  <rect x="34" y="169" width="192" height="332" rx="3" fill="url(#screen)" opacity="0.9"/>
+  <!-- Chart on screen 1 -->
+  <text x="130" y="195" font-family="monospace" font-size="10" fill="#38bdf8" opacity="0.5" text-anchor="middle">AI FUND · Q2 2026</text>
+  <line x1="45" y1="205" x2="218" y2="205" stroke="#38bdf8" stroke-width="0.5" opacity="0.2"/>
+  <!-- Candlestick chart -->
+  <rect x="55" y="320" width="8" height="40" fill="#34d399" opacity="0.55"/>
+  <line x1="59" y1="315" x2="59" y2="365" stroke="#34d399" stroke-width="1" opacity="0.45"/>
+  <rect x="73" y="300" width="8" height="55" fill="#34d399" opacity="0.5"/>
+  <line x1="77" y1="295" x2="77" y2="360" stroke="#34d399" stroke-width="1" opacity="0.4"/>
+  <rect x="91" y="280" width="8" height="45" fill="#34d399" opacity="0.55"/>
+  <rect x="109" y="260" width="8" height="65" fill="#34d399" opacity="0.5"/>
+  <rect x="127" y="290" width="8" height="35" fill="#ef4444" opacity="0.45"/>
+  <line x1="131" y1="285" x2="131" y2="330" stroke="#ef4444" stroke-width="1" opacity="0.4"/>
+  <rect x="145" y="250" width="8" height="55" fill="#34d399" opacity="0.55"/>
+  <rect x="163" y="230" width="8" height="50" fill="#34d399" opacity="0.5"/>
+  <rect x="181" y="210" width="8" height="45" fill="#34d399" opacity="0.55"/>
+  <rect x="199" y="220" width="8" height="35" fill="#ef4444" opacity="0.45"/>
+  <!-- Price labels -->
+  <text x="45" y="215" font-family="monospace" font-size="8" fill="#38bdf8" opacity="0.38">+847%</text>
+  <text x="45" y="230" font-family="monospace" font-size="8" fill="#34d399" opacity="0.35">AI PORTFOLIO</text>
+  <!-- Bottom ticker -->
+  <text x="45" y="485" font-family="monospace" font-size="7" fill="#38bdf8" opacity="0.35">NVDA +4.2%  MSFT +2.8%</text>
+  <text x="45" y="498" font-family="monospace" font-size="7" fill="#34d399" opacity="0.3">META +3.1%  GOOG +1.9%</text>
+
+  <!-- Monitor 2 (center, wider) -->
+  <rect x="244" y="155" width="310" height="390" rx="5" fill="#060810" opacity="0.95"/>
+  <rect x="248" y="159" width="302" height="382" rx="3" fill="url(#screen)" opacity="0.9"/>
+  <!-- AI trend chart on monitor 2 -->
+  <text x="399" y="185" font-family="monospace" font-size="11" fill="#38bdf8" opacity="0.48" text-anchor="middle">AI ADOPTION CURVE · 2020-2030</text>
+  <line x1="260" y1="195" x2="544" y2="195" stroke="#38bdf8" stroke-width="0.5" opacity="0.2"/>
+  <!-- Exponential curve -->
+  <polyline points="270,460 300,455 330,448 360,435 390,412 420,375 450,320 480,245 510,160 540,95"
+    fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.5"/>
+  <!-- Area under curve -->
+  <polygon points="270,460 300,455 330,448 360,435 390,412 420,375 450,320 480,245 510,160 540,95 540,460"
+    fill="#38bdf8" opacity="0.06"/>
+  <!-- Current year marker -->
+  <line x1="450" y1="195" x2="450" y2="460" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <text x="452" y="212" font-family="monospace" font-size="8" fill="#fbbf24" opacity="0.4">NOW</text>
+  <!-- Axis labels -->
+  <text x="270" y="474" font-family="monospace" font-size="8" fill="#64748b" opacity="0.5">2020</text>
+  <text x="390" y="474" font-family="monospace" font-size="8" fill="#64748b" opacity="0.5">2025</text>
+  <text x="510" y="474" font-family="monospace" font-size="8" fill="#64748b" opacity="0.5">2030</text>
+  <!-- Stats overlay -->
+  <text x="268" y="250" font-family="monospace" font-size="9" fill="#38bdf8" opacity="0.4">GPT-3: 175B params</text>
+  <text x="268" y="265" font-family="monospace" font-size="9" fill="#38bdf8" opacity="0.4">GPT-4: 1.8T params</text>
+  <text x="268" y="280" font-family="monospace" font-size="9" fill="#38bdf8" opacity="0.38">Claude 4: ??? params</text>
+
+  <!-- Monitor 3 (right of bank) -->
+  <rect x="568" y="170" width="200" height="320" rx="5" fill="#060810" opacity="0.9"/>
+  <rect x="572" y="174" width="192" height="312" rx="3" fill="url(#screen)" opacity="0.85"/>
+  <!-- Portfolio metrics -->
+  <text x="668" y="198" font-family="monospace" font-size="10" fill="#38bdf8" opacity="0.45" text-anchor="middle">PORTFOLIO</text>
+  <text x="578" y="225" font-family="monospace" font-size="9" fill="#34d399" opacity="0.4">AI INFRA    +$2.1B</text>
+  <text x="578" y="243" font-family="monospace" font-size="9" fill="#34d399" opacity="0.38">ML TOOLING  +$840M</text>
+  <text x="578" y="261" font-family="monospace" font-size="9" fill="#34d399" opacity="0.36">DATA LAYER  +$620M</text>
+  <text x="578" y="279" font-family="monospace" font-size="9" fill="#ef4444" opacity="0.32">LEGACY TECH  -$180M</text>
+  <text x="578" y="297" font-family="monospace" font-size="9" fill="#34d399" opacity="0.36">AI AGENTS   +$1.3B</text>
+  <line x1="578" y1="308" x2="752" y2="308" stroke="#38bdf8" stroke-width="0.5" opacity="0.18"/>
+  <text x="578" y="323" font-family="monospace" font-size="10" fill="#38bdf8" opacity="0.4">NET: +$4.68B</text>
+  <!-- Pie chart rough -->
+  <circle cx="668" cy="398" r="55" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.15"/>
+  <path d="M668 343 A55 55 0 0 1 723 398 L668 398 Z" fill="#34d399" opacity="0.25"/>
+  <path d="M723 398 A55 55 0 0 1 668 453 L668 398 Z" fill="#38bdf8" opacity="0.2"/>
+  <path d="M668 453 A55 55 0 0 1 613 398 L668 398 Z" fill="#2563eb" opacity="0.2"/>
+  <path d="M613 398 A55 55 0 0 1 668 343 L668 398 Z" fill="#0ea5e9" opacity="0.18"/>
+
+  <!-- Desk surface -->
+  <rect x="0" y="600" width="760" height="20" fill="url(#desk)" opacity="0.9"/>
+
+  <!-- ==== PODCAST MICROPHONE (center-left) ==== -->
+  <!-- Mic arm -->
+  <line x1="430" y1="600" x2="550" y2="430" stroke="#1a2535" stroke-width="6" opacity="0.85"/>
+  <line x1="550" y1="430" x2="580" y2="350" stroke="#1a2535" stroke-width="5" opacity="0.8"/>
+  <!-- Mic body -->
+  <rect x="558" y="295" width="46" height="78" rx="23" fill="#0d1525" opacity="0.9"/>
+  <rect x="562" y="299" width="38" height="70" rx="19" fill="#12202e" opacity="0.88"/>
+  <!-- Mic grill lines -->
+  <line x1="562" y1="315" x2="600" y2="315" stroke="#38bdf8" stroke-width="0.5" opacity="0.18"/>
+  <line x1="562" y1="325" x2="600" y2="325" stroke="#38bdf8" stroke-width="0.5" opacity="0.15"/>
+  <line x1="562" y1="335" x2="600" y2="335" stroke="#38bdf8" stroke-width="0.5" opacity="0.18"/>
+  <line x1="562" y1="345" x2="600" y2="345" stroke="#38bdf8" stroke-width="0.5" opacity="0.15"/>
+  <line x1="562" y1="355" x2="600" y2="355" stroke="#38bdf8" stroke-width="0.5" opacity="0.18"/>
+  <!-- On-air indicator -->
+  <circle cx="581" cy="380" r="5" fill="#ef4444" opacity="0.75"/>
+  <circle cx="581" cy="380" r="8" fill="#ef4444" opacity="0.2" filter="url(#sblur)"/>
+
+  <!-- ==== FIGURE: podcaster, forward lean, confident ==== -->
+  <!-- Desk in front -->
+  <rect x="560" y="640" width="700" height="18" fill="url(#desk)" opacity="0.9"/>
+
+  <!-- Figure seated behind desk (right-center) -->
+  <!-- Torso - leaning forward -->
+  <ellipse cx="1020" cy="620" rx="95" ry="80" fill="url(#fig)" opacity="0.95"/>
+  <!-- Shoulders -->
+  <ellipse cx="1020" cy="548" rx="108" ry="26" fill="#070a12" opacity="0.96"/>
+  <!-- Head -->
+  <ellipse cx="1028" cy="462" rx="56" ry="62" fill="#060910" opacity="0.96"/>
+  <!-- Neck -->
+  <rect x="1002" y="508" width="44" height="44" fill="#060910" opacity="0.96"/>
+  <!-- Left arm (casual on desk) -->
+  <rect x="910" y="560" width="34" height="120" rx="15" fill="#070a12" opacity="0.9" transform="rotate(15 910 560)"/>
+  <!-- Right arm (forward lean/gesture) -->
+  <rect x="1080" y="548" width="32" height="130" rx="15" fill="#070a12" opacity="0.9" transform="rotate(-20 1080 548)"/>
+  <!-- Hands on desk -->
+  <ellipse cx="950" cy="685" rx="22" ry="12" fill="#060910" opacity="0.88"/>
+  <ellipse cx="1145" cy="658" rx="20" ry="11" fill="#060910" opacity="0.85"/>
+
+  <!-- Blue neon rim on figure from monitors -->
+  <ellipse cx="955" cy="550" rx="22" ry="90" fill="#38bdf8" opacity="0.08" filter="url(#sblur)"/>
+  <!-- Screen ambient on face -->
+  <ellipse cx="1010" cy="462" rx="30" ry="38" fill="#38bdf8" opacity="0.06" filter="url(#sblur)"/>
+
+  <!-- Table mic in front of figure -->
+  <rect x="1000" y="615" width="12" height="50" fill="#0d1525" opacity="0.8"/>
+  <ellipse cx="1006" cy="610" rx="10" ry="8" fill="#12202e" opacity="0.85"/>
+
+  <!-- Shadow -->
+  <ellipse cx="1020" cy="780" rx="100" ry="14" fill="#000000" opacity="0.35" filter="url(#sblur)"/>
+
+  <!-- Floor fade -->
+  <rect x="0" y="720" width="1600" height="180" fill="url(#floorfade)"/>
+
+  <!-- Vignette -->
+  <rect width="1600" height="900" fill="url(#vignette)"/>
 </svg>

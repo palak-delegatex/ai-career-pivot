@@ -1,22 +1,249 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1508"/>
-      <stop offset="100%" style="stop-color:#0f172a"/>
+    <!-- Warm deep library dark: wood + shadow -->
+    <linearGradient id="room" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0c08"/>
+      <stop offset="50%" style="stop-color:#100e08"/>
+      <stop offset="100%" style="stop-color:#030712"/>
     </linearGradient>
-    <radialGradient id="glow" cx="40%" cy="40%" r="55%">
-      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.25"/>
+    <!-- Golden hour sunbeam from right window -->
+    <radialGradient id="sunbeam" cx="90%" cy="25%" r="50%">
+      <stop offset="0%" style="stop-color:#fde68a;stop-opacity:0.28"/>
+      <stop offset="40%" style="stop-color:#fbbf24;stop-opacity:0.14"/>
       <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0"/>
     </radialGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.15"/>
-      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0.05"/>
+    <!-- Secondary warm fill -->
+    <radialGradient id="warmfill" cx="65%" cy="40%" r="45%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0"/>
+    </radialGradient>
+    <!-- Bookshelves gradient -->
+    <linearGradient id="shelf" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1208"/>
+      <stop offset="100%" style="stop-color:#0d0a05"/>
     </linearGradient>
+    <!-- Chalkboard surface -->
+    <linearGradient id="chalkboard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0e1a14"/>
+      <stop offset="100%" style="stop-color:#0a1410"/>
+    </linearGradient>
+    <!-- Floor fade -->
+    <linearGradient id="floorfade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#030712;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#030712;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Figure dark -->
+    <linearGradient id="fig" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#120d04"/>
+      <stop offset="100%" style="stop-color:#080604"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.6"/>
+    </radialGradient>
+    <filter id="gblur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="mblur"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="sblur"><feGaussianBlur stdDeviation="3"/></filter>
   </defs>
-  <rect width="1600" height="900" fill="url(#bg)"/>
-  <rect width="1600" height="900" fill="url(#glow)"/>
-  <circle cx="560" cy="380" r="220" fill="url(#accent)" opacity="0.6"/>
-  <circle cx="640" cy="520" r="160" fill="#f59e0b" opacity="0.08"/>
-  <text x="560" y="420" font-family="serif" font-size="180" font-weight="bold" fill="#f59e0b" opacity="0.25" text-anchor="middle">GH</text>
-  <rect x="0" y="750" width="1600" height="150" fill="url(#bg)" opacity="0.8"/>
+
+  <!-- Room base -->
+  <rect width="1600" height="900" fill="url(#room)"/>
+  <rect width="1600" height="900" fill="url(#sunbeam)"/>
+  <rect width="1600" height="900" fill="url(#warmfill)"/>
+
+  <!-- ==== BOOKSHELVES (background, both sides) ==== -->
+  <!-- Left bookshelf wall -->
+  <!-- Shelf planks -->
+  <rect x="0" y="100" width="340" height="700" fill="url(#shelf)" opacity="0.95"/>
+  <!-- Shelf horizontal planks -->
+  <rect x="0" y="200" width="340" height="6" fill="#1e1508" opacity="0.8"/>
+  <rect x="0" y="340" width="340" height="6" fill="#1e1508" opacity="0.8"/>
+  <rect x="0" y="480" width="340" height="6" fill="#1e1508" opacity="0.8"/>
+  <rect x="0" y="620" width="340" height="6" fill="#1e1508" opacity="0.8"/>
+  <!-- Book spines - row 1 (100-200) -->
+  <rect x="10" y="110" width="18" height="84" fill="#8b2500" opacity="0.7"/>
+  <rect x="30" y="115" width="14" height="79" fill="#1a3a5c" opacity="0.7"/>
+  <rect x="46" y="108" width="20" height="86" fill="#2d4a1e" opacity="0.7"/>
+  <rect x="68" y="112" width="16" height="82" fill="#5c3a00" opacity="0.7"/>
+  <rect x="86" y="107" width="22" height="87" fill="#1a1a4a" opacity="0.7"/>
+  <rect x="110" y="114" width="15" height="80" fill="#4a1e2a" opacity="0.65"/>
+  <rect x="127" y="110" width="19" height="84" fill="#1e3a1e" opacity="0.7"/>
+  <rect x="148" y="116" width="13" height="78" fill="#3a2000" opacity="0.65"/>
+  <rect x="163" y="108" width="21" height="86" fill="#1a3a4a" opacity="0.7"/>
+  <rect x="186" y="112" width="17" height="82" fill="#5c1e00" opacity="0.65"/>
+  <rect x="205" y="109" width="20" height="85" fill="#1e1a3a" opacity="0.7"/>
+  <rect x="227" y="115" width="14" height="79" fill="#2a4a00" opacity="0.65"/>
+  <rect x="243" y="111" width="18" height="83" fill="#4a2a00" opacity="0.7"/>
+  <rect x="263" y="108" width="22" height="86" fill="#1a2a3a" opacity="0.65"/>
+  <rect x="287" y="113" width="16" height="81" fill="#3a1a00" opacity="0.65"/>
+  <rect x="305" y="110" width="19" height="84" fill="#1a3a2a" opacity="0.7"/>
+  <!-- Book rows 2-4 (similar pattern, abbreviated) -->
+  <rect x="10" y="210" width="18" height="124" fill="#1a2a4a" opacity="0.65"/>
+  <rect x="30" y="215" width="14" height="119" fill="#5c2800" opacity="0.6"/>
+  <rect x="46" y="208" width="20" height="126" fill="#1e3a1e" opacity="0.65"/>
+  <rect x="68" y="212" width="16" height="122" fill="#3a1800" opacity="0.6"/>
+  <rect x="86" y="207" width="22" height="127" fill="#1a1a4a" opacity="0.65"/>
+  <rect x="110" y="214" width="15" height="120" fill="#4a2000" opacity="0.6"/>
+  <rect x="127" y="210" width="19" height="124" fill="#2a3a00" opacity="0.65"/>
+  <rect x="148" y="215" width="13" height="119" fill="#1a3a4a" opacity="0.6"/>
+  <rect x="163" y="208" width="21" height="126" fill="#4a1800" opacity="0.65"/>
+  <rect x="186" y="212" width="17" height="122" fill="#1e2a3a" opacity="0.6"/>
+  <rect x="205" y="209" width="20" height="125" fill="#3a2200" opacity="0.65"/>
+  <rect x="227" y="215" width="14" height="119" fill="#1a2a1a" opacity="0.6"/>
+  <rect x="243" y="211" width="18" height="123" fill="#4a3000" opacity="0.65"/>
+  <rect x="263" y="208" width="22" height="126" fill="#1a2a3a" opacity="0.6"/>
+  <rect x="287" y="213" width="16" height="121" fill="#3a1a00" opacity="0.65"/>
+  <rect x="305" y="210" width="19" height="124" fill="#1a2a2a" opacity="0.6"/>
+
+  <!-- Right bookshelf -->
+  <rect x="1260" y="100" width="340" height="700" fill="url(#shelf)" opacity="0.9"/>
+  <rect x="1260" y="200" width="340" height="6" fill="#1e1508" opacity="0.75"/>
+  <rect x="1260" y="340" width="340" height="6" fill="#1e1508" opacity="0.75"/>
+  <rect x="1260" y="480" width="340" height="6" fill="#1e1508" opacity="0.75"/>
+  <rect x="1260" y="620" width="340" height="6" fill="#1e1508" opacity="0.75"/>
+  <rect x="1270" y="110" width="18" height="84" fill="#3a1a00" opacity="0.6"/>
+  <rect x="1290" y="115" width="14" height="79" fill="#1a2a4a" opacity="0.6"/>
+  <rect x="1306" y="108" width="20" height="86" fill="#2a3a1a" opacity="0.6"/>
+  <rect x="1328" y="112" width="16" height="82" fill="#4a2800" opacity="0.6"/>
+  <rect x="1346" y="107" width="22" height="87" fill="#1a1a3a" opacity="0.6"/>
+  <rect x="1370" y="114" width="15" height="80" fill="#3a1800" opacity="0.55"/>
+  <rect x="1387" y="110" width="19" height="84" fill="#1a2a1a" opacity="0.6"/>
+  <rect x="1408" y="116" width="13" height="78" fill="#4a2200" opacity="0.55"/>
+  <rect x="1423" y="108" width="21" height="86" fill="#1a2a3a" opacity="0.6"/>
+  <rect x="1446" y="112" width="17" height="82" fill="#3a1800" opacity="0.55"/>
+  <rect x="1465" y="109" width="20" height="85" fill="#1a1a2a" opacity="0.6"/>
+  <rect x="1487" y="115" width="14" height="79" fill="#2a3a00" opacity="0.55"/>
+  <rect x="1503" y="111" width="18" height="83" fill="#3a2000" opacity="0.6"/>
+  <rect x="1523" y="108" width="22" height="86" fill="#1a2a2a" opacity="0.55"/>
+  <rect x="1547" y="113" width="16" height="81" fill="#2a1a00" opacity="0.55"/>
+  <rect x="1565" y="110" width="19" height="84" fill="#1a2a1e" opacity="0.6"/>
+
+  <!-- ==== TALL WINDOW (right of center) - golden hour light ==== -->
+  <!-- Window frame -->
+  <rect x="1050" y="0" width="200" height="800" fill="#1a1408" opacity="0.05"/>
+  <!-- Window light beam -->
+  <polygon points="1050,0 1250,0 1400,900 900,900" fill="#fde68a" opacity="0.04"/>
+  <!-- Dust particles in sunbeam -->
+  <circle cx="1100" cy="150" r="2" fill="#fde68a" opacity="0.4"/>
+  <circle cx="1130" cy="220" r="1.5" fill="#fbbf24" opacity="0.35"/>
+  <circle cx="1080" cy="310" r="2" fill="#fde68a" opacity="0.3"/>
+  <circle cx="1160" cy="180" r="1" fill="#fbbf24" opacity="0.4"/>
+  <circle cx="1200" cy="260" r="2" fill="#fde68a" opacity="0.35"/>
+  <circle cx="1140" cy="380" r="1.5" fill="#fbbf24" opacity="0.28"/>
+  <circle cx="1090" cy="450" r="2" fill="#fde68a" opacity="0.25"/>
+  <circle cx="1170" cy="340" r="1" fill="#fbbf24" opacity="0.32"/>
+  <circle cx="1115" cy="520" r="1.5" fill="#fde68a" opacity="0.2"/>
+  <circle cx="1220" cy="420" r="2" fill="#fbbf24" opacity="0.25"/>
+  <circle cx="1050" cy="600" r="1.5" fill="#fde68a" opacity="0.2"/>
+  <circle cx="1185" cy="480" r="1" fill="#fbbf24" opacity="0.25"/>
+
+  <!-- ==== CHALKBOARD (center-back) ==== -->
+  <rect x="400" y="80" width="600" height="420" fill="url(#chalkboard)" opacity="0.95"/>
+  <!-- Chalkboard frame (wood) -->
+  <rect x="392" y="72" width="616" height="12" fill="#2a1e08" opacity="0.9"/>
+  <rect x="392" y="492" width="616" height="12" fill="#2a1e08" opacity="0.9"/>
+  <rect x="392" y="72" width="12" height="432" fill="#2a1e08" opacity="0.9"/>
+  <rect x="996" y="72" width="12" height="432" fill="#2a1e08" opacity="0.9"/>
+  <!-- Chalk ledge -->
+  <rect x="392" y="490" width="616" height="20" fill="#221808" opacity="0.8"/>
+  <!-- Chalk dust -->
+  <rect x="440" y="492" width="18" height="4" fill="#e5e5e5" opacity="0.15"/>
+  <rect x="510" y="492" width="12" height="4" fill="#e5e5e5" opacity="0.12"/>
+  <rect x="620" y="492" width="20" height="4" fill="#e5e5e5" opacity="0.1"/>
+
+  <!-- Neural network diagram on chalkboard (chalk style) -->
+  <!-- Title -->
+  <text x="700" y="125" font-family="serif" font-size="20" fill="#e5e5e5" opacity="0.55" text-anchor="middle">DEEP NEURAL NETWORK</text>
+  <line x1="440" y1="135" x2="960" y2="135" stroke="#e5e5e5" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Input layer nodes -->
+  <circle cx="460" cy="200" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.4"/>
+  <circle cx="460" cy="250" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.4"/>
+  <circle cx="460" cy="300" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.4"/>
+  <circle cx="460" cy="350" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.4"/>
+  <circle cx="460" cy="400" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.35"/>
+  <text x="460" y="445" font-family="sans-serif" font-size="11" fill="#e5e5e5" opacity="0.35" text-anchor="middle">Input</text>
+
+  <!-- Hidden layer 1 -->
+  <circle cx="600" cy="175" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="600" cy="235" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="600" cy="295" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="600" cy="355" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="600" cy="415" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.32"/>
+  <text x="600" y="445" font-family="sans-serif" font-size="11" fill="#fde68a" opacity="0.32" text-anchor="middle">Hidden 1</text>
+
+  <!-- Hidden layer 2 -->
+  <circle cx="740" cy="185" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.36"/>
+  <circle cx="740" cy="255" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.36"/>
+  <circle cx="740" cy="325" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.36"/>
+  <circle cx="740" cy="395" r="12" fill="none" stroke="#fde68a" stroke-width="1.2" opacity="0.3"/>
+  <text x="740" y="445" font-family="sans-serif" font-size="11" fill="#fde68a" opacity="0.3" text-anchor="middle">Hidden 2</text>
+
+  <!-- Output layer -->
+  <circle cx="880" cy="225" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="880" cy="300" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.38"/>
+  <circle cx="880" cy="375" r="12" fill="none" stroke="#e5e5e5" stroke-width="1.2" opacity="0.32"/>
+  <text x="880" y="445" font-family="sans-serif" font-size="11" fill="#e5e5e5" opacity="0.32" text-anchor="middle">Output</text>
+
+  <!-- Connection lines (selected subset for readability) -->
+  <line x1="472" y1="200" x2="588" y2="175" stroke="#e5e5e5" stroke-width="0.5" opacity="0.18"/>
+  <line x1="472" y1="200" x2="588" y2="235" stroke="#e5e5e5" stroke-width="0.5" opacity="0.18"/>
+  <line x1="472" y1="250" x2="588" y2="175" stroke="#e5e5e5" stroke-width="0.5" opacity="0.15"/>
+  <line x1="472" y1="250" x2="588" y2="295" stroke="#e5e5e5" stroke-width="0.5" opacity="0.18"/>
+  <line x1="472" y1="300" x2="588" y2="235" stroke="#e5e5e5" stroke-width="0.5" opacity="0.15"/>
+  <line x1="472" y1="300" x2="588" y2="295" stroke="#e5e5e5" stroke-width="0.5" opacity="0.18"/>
+  <line x1="472" y1="350" x2="588" y2="355" stroke="#e5e5e5" stroke-width="0.5" opacity="0.18"/>
+  <line x1="472" y1="400" x2="588" y2="415" stroke="#e5e5e5" stroke-width="0.5" opacity="0.15"/>
+  <line x1="612" y1="175" x2="728" y2="185" stroke="#fde68a" stroke-width="0.5" opacity="0.2"/>
+  <line x1="612" y1="235" x2="728" y2="185" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="612" y1="235" x2="728" y2="255" stroke="#fde68a" stroke-width="0.5" opacity="0.2"/>
+  <line x1="612" y1="295" x2="728" y2="255" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="612" y1="295" x2="728" y2="325" stroke="#fde68a" stroke-width="0.5" opacity="0.2"/>
+  <line x1="612" y1="355" x2="728" y2="325" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="612" y1="415" x2="728" y2="395" stroke="#fde68a" stroke-width="0.5" opacity="0.15"/>
+  <line x1="752" y1="185" x2="868" y2="225" stroke="#fde68a" stroke-width="0.5" opacity="0.2"/>
+  <line x1="752" y1="255" x2="868" y2="225" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="752" y1="255" x2="868" y2="300" stroke="#fde68a" stroke-width="0.5" opacity="0.2"/>
+  <line x1="752" y1="325" x2="868" y2="300" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="752" y1="325" x2="868" y2="375" stroke="#fde68a" stroke-width="0.5" opacity="0.18"/>
+  <line x1="752" y1="395" x2="868" y2="375" stroke="#fde68a" stroke-width="0.5" opacity="0.15"/>
+
+  <!-- Chalk annotation -->
+  <text x="500" y="165" font-family="serif" font-size="13" fill="#fde68a" opacity="0.38" font-style="italic">backpropagation</text>
+  <line x1="498" y1="170" x2="488" y2="188" stroke="#fde68a" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- ==== FIGURE (professor, standing, in profile) ==== -->
+  <!-- Body - tall standing figure left of chalkboard -->
+  <rect x="268" y="380" width="100" height="380" rx="8" fill="url(#fig)" opacity="0.92"/>
+  <!-- Shoulders broader -->
+  <ellipse cx="318" cy="385" rx="68" ry="22" fill="#110d04" opacity="0.95"/>
+  <!-- Head (in profile, slightly angled toward board) -->
+  <ellipse cx="348" cy="315" rx="46" ry="54" fill="#100c03" opacity="0.95"/>
+  <!-- Neck -->
+  <rect x="322" y="360" width="36" height="30" fill="#100c03" opacity="0.95"/>
+  <!-- Arm raised toward board -->
+  <rect x="360" y="390" width="28" height="110" rx="12" fill="#110d04" opacity="0.9" transform="rotate(-25 360 390)"/>
+  <!-- Hand (circle) -->
+  <circle cx="415" cy="488" r="15" fill="#0e0a02" opacity="0.88"/>
+  <!-- Chalk in hand (tiny line) -->
+  <line x1="420" y1="483" x2="432" y2="470" stroke="#e5e5e5" stroke-width="3" opacity="0.35"/>
+
+  <!-- Golden rim light on professor (from right window) -->
+  <ellipse cx="395" cy="350" rx="28" ry="70" fill="#fbbf24" opacity="0.1" filter="url(#sblur)"/>
+
+  <!-- Floating chalk dust particles -->
+  <circle cx="440" cy="480" r="1.5" fill="#e5e5e5" opacity="0.2"/>
+  <circle cx="448" cy="470" r="1" fill="#e5e5e5" opacity="0.18"/>
+  <circle cx="435" cy="460" r="1.5" fill="#e5e5e5" opacity="0.15"/>
+  <circle cx="452" cy="490" r="1" fill="#e5e5e5" opacity="0.2"/>
+  <circle cx="444" cy="500" r="1.5" fill="#e5e5e5" opacity="0.15"/>
+
+  <!-- Floor shadow -->
+  <ellipse cx="318" cy="755" rx="80" ry="12" fill="#000000" opacity="0.35" filter="url(#sblur)"/>
+
+  <!-- Floor/wall fade to dark -->
+  <rect x="0" y="680" width="1600" height="220" fill="url(#floorfade)"/>
+
+  <!-- Vignette -->
+  <rect width="1600" height="900" fill="url(#vignette)"/>
 </svg>
