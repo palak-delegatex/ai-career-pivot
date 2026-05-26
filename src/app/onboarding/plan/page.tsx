@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PivotPlan } from "@/lib/intake";
+import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
+import { Download, Loader2 } from "lucide-react";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
@@ -11,7 +12,9 @@ import SkillGapChart from "@/components/SkillGapChart";
 export default function PivotPlanPage() {
   const router = useRouter();
   const [plans, setPlans] = useState<PivotPlan[]>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [selected, setSelected] = useState(0);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_plans");
@@ -20,7 +23,33 @@ export default function PivotPlanPage() {
       return;
     }
     setPlans(JSON.parse(stored));
+
+    const storedProfile = sessionStorage.getItem("intake_profile");
+    if (storedProfile) {
+      setProfile(JSON.parse(storedProfile));
+    }
   }, [router]);
+
+  async function handleDownloadPdf() {
+    setDownloadingPdf(true);
+    try {
+      const res = await fetch("/api/plan/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile, plan: plans[selected] }),
+      });
+      if (!res.ok) throw new Error("Failed to generate PDF");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `career-pivot-${plans[selected].targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloadingPdf(false);
+    }
+  }
 
   if (plans.length === 0) {
     return (
@@ -67,6 +96,22 @@ export default function PivotPlanPage() {
         <div className="space-y-6">
           {/* Hero */}
           <PlanHero plan={plan} />
+
+          {/* PDF Download */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleDownloadPdf}
+              disabled={downloadingPdf}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-500 disabled:bg-teal-800 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              {downloadingPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {downloadingPdf ? "Generating PDF..." : "Download PDF"}
+            </button>
+          </div>
 
           {/* Milestones */}
           <RoadmapTimeline
