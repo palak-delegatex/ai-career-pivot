@@ -4,7 +4,7 @@ export function getStripeClient() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
-export type PlanKey = "report" | "monthly" | "lifetime";
+export type PlanKey = "report" | "lifetime";
 
 export const PLANS: Record<
   PlanKey,
@@ -20,16 +20,8 @@ export const PLANS: Record<
     amount: 500,
     label: "Career Pivot Report — Intro Pricing",
     description:
-      "Personalized AI career pivot roadmap with 6-month, 1-year, and 2-year milestones",
+      "Personalized AI career pivot roadmap with certifications, 6-month, 1-year, and 2-year milestones",
     mode: "payment",
-  },
-  monthly: {
-    amount: 2900,
-    label: "AICareerPivot Pro",
-    description:
-      "Unlimited report updates, AI certifications roadmap, and ongoing career coaching",
-    mode: "subscription",
-    recurring: { interval: "month" },
   },
   lifetime: {
     amount: 14900,

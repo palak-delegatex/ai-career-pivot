@@ -10,7 +10,6 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
 
   const labels: Record<string, string> = {
     report: "Get My Report — $5",
-    monthly: "Subscribe — $29/mo",
     lifetime: "Get Lifetime Access — $149",
   };
 

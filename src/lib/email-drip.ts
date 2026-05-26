@@ -478,8 +478,8 @@ export function getLaunchEmailTemplate(
       <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 16px 0;">Early-bird pricing for waitlist members only:</p>
       ${p("You were here first, so you get access at our lowest price ever:")}
       <p style="color:#2dd4bf;font-size:16px;line-height:2;margin:0;">
-        🔹 <strong>$29/month</strong> — full access, cancel anytime<br>
-        🔹 <strong>$149 lifetime deal</strong> — one-time payment, access forever
+        🔹 <strong>$5 report</strong> — one-time career pivot roadmap with AI certifications<br>
+        🔹 <strong>$149 lifetime deal</strong> — one-time payment, all features forever
       </p>
       ${p("Standard pricing will be significantly higher. This pricing is exclusively for our waitlist and won't last.")}
     </div>

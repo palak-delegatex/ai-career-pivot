@@ -7,12 +7,12 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
   description:
-    "Get a personalized career pivot roadmap starting at just $5 intro pricing. AI-powered analysis of your resume and LinkedIn profile.",
+    "Get a personalized career pivot roadmap with AI certifications starting at just $5 intro pricing. AI-powered analysis of your resume and LinkedIn profile.",
   alternates: { canonical: "https://ai-career-pivot.com/pricing" },
   openGraph: {
     title: "Pricing — AICareerPivot",
     description:
-      "Personalized career pivot roadmap starting at just $5 intro pricing. Lifetime access for $149.",
+      "Personalized career pivot roadmap with AI certifications starting at just $5 intro pricing. Lifetime access for $149.",
     url: "https://ai-career-pivot.com/pricing",
   },
 };
@@ -20,15 +20,11 @@ export const metadata: Metadata = {
 const FAQ_ITEMS = [
   {
     q: "What do I get with the $5 report?",
-    a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice. The $5 intro price is a limited-time offer.",
-  },
-  {
-    q: "What's included in Pro ($29/mo)?",
-    a: "Everything in the one-time report, plus unlimited report updates as your situation changes, an AI certifications roadmap, and ongoing career coaching insights. Cancel anytime.",
+    a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, AI certifications roadmap tailored to your pivot, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice. The $5 intro price is a limited-time offer.",
   },
   {
     q: "What does Lifetime ($149) include?",
-    a: "All current and future Pro features — forever, with a single payment. No recurring charges. This is a limited Product Hunt exclusive offer for early supporters.",
+    a: "Everything in the one-time report, plus unlimited report updates as your situation changes, ongoing career coaching insights, and all future features — forever, with a single payment. No recurring charges. This is a limited Product Hunt exclusive offer for early supporters.",
   },
   {
     q: "How is this different from just asking ChatGPT?",
@@ -49,22 +45,16 @@ const REPORT_FEATURES = [
   "6-month, 1-year, and 2-year milestone roadmaps",
   "Transferable skills analysis (20-40 skills extracted)",
   "Skill gap identification with action steps",
+  "AI certifications roadmap tailored to your pivot",
   "Financial considerations for each path",
   "Constraint-aware planning (salary, family, location)",
   "Permanent access to your report",
 ];
 
-const PRO_FEATURES = [
+const LIFETIME_FEATURES = [
   "Everything in the one-time report",
   "Unlimited report updates",
-  "AI certifications roadmap",
   "Ongoing career coaching insights",
-  "Priority support",
-  "Cancel anytime",
-];
-
-const LIFETIME_FEATURES = [
-  "All current Pro features — forever",
   "All future features included",
   "No recurring charges",
   "Priority support",
@@ -85,18 +75,6 @@ export default function PricingPage() {
         name: "Report (Intro Pricing)",
         price: "5.00",
         priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        url: "https://ai-career-pivot.com/pricing",
-      },
-      {
-        "@type": "Offer",
-        name: "Pro",
-        price: "29.00",
-        priceCurrency: "USD",
-        priceSpecification: {
-          "@type": "UnitPriceSpecification",
-          billingDuration: "P1M",
-        },
         availability: "https://schema.org/InStock",
         url: "https://ai-career-pivot.com/pricing",
       },
@@ -160,7 +138,7 @@ export default function PricingPage() {
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
             Your personalized career pivot roadmap.
             <br className="hidden sm:block" />
-            <span className="text-teal-400"> Plans for every stage of your journey.</span>
+            <span className="text-teal-400"> Two simple plans. No surprises.</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
             The average career coach charges $250/hour. You&apos;ll need 3-5 sessions
@@ -170,7 +148,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16 items-start">
+        <div className="grid md:grid-cols-2 gap-6 mb-16 items-start max-w-4xl mx-auto">
           {/* Report — $5 intro pricing */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
@@ -200,35 +178,6 @@ export default function PricingPage() {
             </CardContent>
             <CardFooter className="px-8 pb-8 flex-col gap-2">
               <PricingCheckout plan="report" />
-              <p className="text-slate-500 text-xs text-center">Secure payment via Stripe</p>
-            </CardFooter>
-          </Card>
-
-          {/* Pro — $29/month */}
-          <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
-            <CardHeader className="px-8 pt-8 pb-0">
-              <h2 className="text-2xl font-bold text-white mb-1">Pro</h2>
-              <p className="text-slate-400 text-sm">Ongoing career coaching</p>
-              <div className="flex items-end gap-1 mt-4 mb-1">
-                <span className="text-4xl font-extrabold text-white font-serif">$29</span>
-                <span className="text-slate-400 mb-1">/month</span>
-              </div>
-              <p className="text-teal-400 text-sm font-semibold pb-6">
-                Cancel anytime
-              </p>
-            </CardHeader>
-            <CardContent className="px-8">
-              <ul className="space-y-3 mb-8">
-                {PRO_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                    <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter className="px-8 pb-8 flex-col gap-2">
-              <PricingCheckout plan="monthly" />
               <p className="text-slate-500 text-xs text-center">Secure payment via Stripe</p>
             </CardFooter>
           </Card>
