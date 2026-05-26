@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
 import { Download, Loader2 } from "lucide-react";
+import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError, trackCtaClicked } from "@/lib/tracking";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
@@ -31,6 +32,8 @@ export default function PivotPlanPage() {
   }, [router]);
 
   async function handleDownloadPdf() {
+    const targetRole = plans[selected].targetRole;
+    trackPdfDownloadStarted({ source: "onboarding", target_role: targetRole });
     setDownloadingPdf(true);
     try {
       const res = await fetch("/api/plan/pdf", {
@@ -43,9 +46,12 @@ export default function PivotPlanPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `career-pivot-${plans[selected].targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
+      a.download = `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
+      trackPdfDownloadCompleted({ source: "onboarding", target_role: targetRole });
+    } catch (err) {
+      trackPdfDownloadError({ source: "onboarding", error: err instanceof Error ? err.message : "Unknown error" });
     } finally {
       setDownloadingPdf(false);
     }
@@ -78,7 +84,7 @@ export default function PivotPlanPage() {
             {plans.map((p, i) => (
               <button
                 key={i}
-                onClick={() => setSelected(i)}
+                onClick={() => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: p.targetRole, target_industry: p.targetIndustry }); }}
                 className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${
                   i === selected
                     ? "bg-teal-600 border-teal-500 text-white"
@@ -237,6 +243,7 @@ export default function PivotPlanPage() {
           </p>
           <Link
             href="/waitlist"
+            onClick={() => trackCtaClicked({ cta_text: "Get Full Access", cta_location: "plan_page", destination: "/waitlist" })}
             className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
             Get Full Access →

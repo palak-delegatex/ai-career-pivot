@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
 
 function CheckoutSuccessInner() {
   const router = useRouter();
@@ -20,14 +21,19 @@ function CheckoutSuccessInner() {
       .then((res) => res.json())
       .then((data) => {
         if (data.paid) {
+          trackPaymentVerified({ session_id: sessionId });
           sessionStorage.setItem("payment_session_id", sessionId);
           sessionStorage.setItem("payment_email", data.email);
           setStatus("success");
         } else {
+          trackPaymentVerificationFailed({ session_id: sessionId });
           setStatus("error");
         }
       })
-      .catch(() => setStatus("error"));
+      .catch(() => {
+        trackPaymentVerificationFailed({ session_id: sessionId });
+        setStatus("error");
+      });
   }, [sessionId, router]);
 
   if (status === "verifying") {
@@ -75,6 +81,7 @@ function CheckoutSuccessInner() {
         </p>
         <Link
           href="/onboarding"
+          onClick={() => trackCtaClicked({ cta_text: "Build My Roadmap", cta_location: "checkout_success", destination: "/onboarding" })}
           className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
         >
           Build My Roadmap →

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
+import { trackReferralLinkCopied } from "@/lib/tracking";
 
 type FormState = "idle" | "loading" | "success" | "already" | "error";
 
@@ -87,6 +88,7 @@ export default function WaitlistForm() {
     function copyLink() {
       if (!referralLink) return;
       navigator.clipboard.writeText(referralLink).then(() => {
+        trackReferralLinkCopied();
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });

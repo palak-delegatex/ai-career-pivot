@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackCheckoutStarted, trackCheckoutError } from "@/lib/tracking";
 
 export default function PricingCheckout({ plan = "report" }: { plan?: string }) {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
       setError("Please enter your email address.");
       return;
     }
+    trackCheckoutStarted({ plan, has_discount: !!discountCode });
     setLoading(true);
     setError("");
 
@@ -34,7 +36,9 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
         window.location.href = data.url;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      trackCheckoutError({ plan, error: message });
+      setError(message);
       setLoading(false);
     }
   }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { UserProfile } from "@/lib/intake";
+import { trackProfileReviewed, trackPlanGenerationStarted, trackPlanGenerationCompleted, trackPlanGenerationError } from "@/lib/tracking";
 
 export default function ProfileReviewPage() {
   const router = useRouter();
@@ -17,10 +18,16 @@ export default function ProfileReviewPage() {
       return;
     }
     setProfile(JSON.parse(stored));
+    trackProfileReviewed();
   }, [router]);
 
   async function handleGenerate() {
     if (!profile) return;
+    trackPlanGenerationStarted({
+      current_title: profile.currentTitle,
+      current_industry: profile.currentIndustry,
+      skills_count: profile.skills.length,
+    });
     setGenerating(true);
     setError("");
     try {
@@ -33,16 +40,20 @@ export default function ProfileReviewPage() {
       if (!res.ok) throw new Error((await res.json()).error ?? "Plan generation failed");
       const data = await res.json();
       if (data.reportId) {
+        trackPlanGenerationCompleted({ plans_count: 1, has_report_id: true });
         sessionStorage.removeItem("payment_session_id");
         sessionStorage.removeItem("payment_email");
         sessionStorage.removeItem("intake_profile");
         router.push(`/report/${data.reportId}`);
       } else {
+        trackPlanGenerationCompleted({ plans_count: data.plans?.length ?? 0, has_report_id: false });
         sessionStorage.setItem("intake_plans", JSON.stringify(data.plans));
         router.push("/onboarding/plan");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      trackPlanGenerationError({ error: message });
+      setError(message);
       setGenerating(false);
     }
   }

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { UserProfile, UserCircumstances, UserLocation } from "@/lib/intake";
+import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived } from "@/lib/tracking";
 
 type Step = "form" | "processing" | "error" | "no_payment";
 
@@ -138,6 +139,10 @@ export default function OnboardingPage() {
           setAiInsights(parsed);
         }
       }
+      const finalParsed = parseInsightsFromStream(accumulated);
+      if (finalParsed.length > 0) {
+        trackAiInsightsReceived({ insights_count: finalParsed.length });
+      }
     } catch {
       // Non-fatal — fun facts continue as fallback
     }
@@ -194,6 +199,15 @@ export default function OnboardingPage() {
       setError("Please provide your email and at least one source (LinkedIn URL or resume).");
       return;
     }
+
+    const hasCircumstancesData = Object.values(circumstances).some(Boolean);
+    trackOnboardingStarted({
+      has_resume: !!resumeFile,
+      has_linkedin: !!linkedinUrl,
+      has_website: !!websiteUrl,
+      has_location: !!location,
+      has_circumstances: hasCircumstancesData,
+    });
 
     setStep("processing");
     setError("");
@@ -268,11 +282,20 @@ export default function OnboardingPage() {
       if (profile.name) setUserName(profile.name.split(" ")[0]);
       snapToComplete();
 
+      trackOnboardingCompleted({
+        has_resume: !!resumeFile,
+        has_linkedin: !!linkedinUrl,
+        has_website: !!websiteUrl,
+        skills_count: profile.skills.length,
+      });
+
       sessionStorage.setItem("intake_profile", JSON.stringify(profile));
       router.push("/onboarding/profile");
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      trackOnboardingError({ error: message, stage: "form_submission" });
       setStep("error");
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(message);
     }
   }
 

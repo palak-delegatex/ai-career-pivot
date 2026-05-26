@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
+import { trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError } from "@/lib/tracking";
 
 interface Props {
   reportId: string;
@@ -13,6 +14,7 @@ export default function DownloadPdfButton({ reportId, planIndex, targetRole }: P
   const [loading, setLoading] = useState(false);
 
   async function handleDownload() {
+    trackPdfDownloadStarted({ source: "report", target_role: targetRole });
     setLoading(true);
     try {
       const res = await fetch(`/api/report/pdf?id=${reportId}&plan=${planIndex}`);
@@ -24,6 +26,9 @@ export default function DownloadPdfButton({ reportId, planIndex, targetRole }: P
       a.download = `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
+      trackPdfDownloadCompleted({ source: "report", target_role: targetRole });
+    } catch (err) {
+      trackPdfDownloadError({ source: "report", error: err instanceof Error ? err.message : "Unknown error" });
     } finally {
       setLoading(false);
     }

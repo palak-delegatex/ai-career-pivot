@@ -6,6 +6,7 @@ import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
+import { trackCtaClicked } from "@/lib/tracking";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -316,6 +317,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           >
             <Link
               href="/pricing"
+              onClick={() => trackCtaClicked({ cta_text: "Get My Roadmap — $5", cta_location: "hero", destination: "/pricing" })}
               className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 hover:scale-[1.02] text-white overflow-hidden"
             >
               <span className="relative z-10">Get My Roadmap — $5 →</span>
@@ -498,6 +500,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <motion.div variants={fadeUp}>
                 <Link
                   href="/pricing"
+                  onClick={() => trackCtaClicked({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials", destination: "/pricing" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
                   Start My Career Pivot — $5 →
@@ -526,6 +529,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <motion.div variants={fadeUp}>
                   <Link
                     href="/pricing"
+                    onClick={() => trackCtaClicked({ cta_text: "Get My Roadmap — $5", cta_location: "final_cta", destination: "/pricing" })}
                     className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
                     Get My Roadmap — $5
@@ -675,6 +679,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 </p>
                 <Link
                   href="/pricing"
+                  onClick={() => trackCtaClicked({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses", destination: "/pricing" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
                   Get My Personalized Learning Path — $5 →
