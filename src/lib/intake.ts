@@ -13,6 +13,21 @@ export interface Education {
   year: number | null;
 }
 
+export interface UserCircumstances {
+  salaryFloor?: string;
+  dependents?: "none" | "partner" | "children" | "caretaker";
+  timeline?: "asap" | "3-6 months" | "6-12 months" | "1-2 years";
+  riskTolerance?: "conservative" | "moderate" | "aggressive";
+  willingnessToRelocate?: "yes" | "no" | "remote-preferred";
+}
+
+export interface UserLocation {
+  city?: string;
+  region?: string;
+  country?: string;
+  source: "gps" | "manual";
+}
+
 export interface UserProfile {
   email: string;
   name?: string;
@@ -28,6 +43,8 @@ export interface UserProfile {
   linkedinUrl?: string;
   websiteUrl?: string;
   rawSummary?: string;
+  circumstances?: UserCircumstances;
+  location?: UserLocation;
 }
 
 export interface SkillGap {

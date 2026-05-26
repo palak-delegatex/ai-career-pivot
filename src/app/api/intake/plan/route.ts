@@ -203,7 +203,14 @@ USER PROFILE:
 - Certifications: ${profile.certifications.join(", ") || "None listed"}
 - Interests: ${profile.interests.join(", ") || "None listed"}
 ${profile.rawSummary ? `- Additional context: ${profile.rawSummary.slice(0, 500)}` : ""}
+${profile.location ? `- Location: ${[profile.location.city, profile.location.region, profile.location.country].filter(Boolean).join(", ")}` : ""}
+${profile.circumstances?.salaryFloor ? `- Minimum salary requirement: ${profile.circumstances.salaryFloor}` : ""}
+${profile.circumstances?.dependents ? `- Dependents: ${profile.circumstances.dependents}` : ""}
+${profile.circumstances?.timeline ? `- Desired transition timeline: ${profile.circumstances.timeline}` : ""}
+${profile.circumstances?.riskTolerance ? `- Risk tolerance: ${profile.circumstances.riskTolerance}` : ""}
+${profile.circumstances?.willingnessToRelocate ? `- Relocation: ${profile.circumstances.willingnessToRelocate}` : ""}
 
+${profile.location || profile.circumstances ? `CONSTRAINT-AWARE PLANNING: If the user provided location, salary, timeline, dependents, risk tolerance, or relocation preferences, you MUST factor these into every plan. Salary ranges must respect the salary floor. Timelines must match their preferred pace. Risk-averse users need moonlight-first strategies. Location-bound users need local or remote job market data. Reference their specific constraints in rationale and milestones.` : ""}
 Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.`,
   });
 

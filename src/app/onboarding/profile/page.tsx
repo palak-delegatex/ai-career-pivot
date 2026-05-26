@@ -138,6 +138,57 @@ export default function ProfileReviewPage() {
           </div>
         )}
 
+        {/* Location & Circumstances */}
+        {(profile.location || profile.circumstances) && (
+          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 className="text-lg font-bold text-teal-400 mb-4">Your Constraints</h2>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              {profile.location && (
+                <div>
+                  <span className="text-slate-500">Location</span>
+                  <p className="text-white font-medium">
+                    {[profile.location.city, profile.location.region, profile.location.country].filter(Boolean).join(", ")}
+                  </p>
+                </div>
+              )}
+              {profile.circumstances?.salaryFloor && (
+                <div>
+                  <span className="text-slate-500">Salary floor</span>
+                  <p className="text-white font-medium">{profile.circumstances.salaryFloor}</p>
+                </div>
+              )}
+              {profile.circumstances?.timeline && (
+                <div>
+                  <span className="text-slate-500">Timeline</span>
+                  <p className="text-white font-medium">{profile.circumstances.timeline}</p>
+                </div>
+              )}
+              {profile.circumstances?.riskTolerance && (
+                <div>
+                  <span className="text-slate-500">Risk tolerance</span>
+                  <p className="text-white font-medium capitalize">{profile.circumstances.riskTolerance}</p>
+                </div>
+              )}
+              {profile.circumstances?.dependents && profile.circumstances.dependents !== "none" && (
+                <div>
+                  <span className="text-slate-500">Dependents</span>
+                  <p className="text-white font-medium capitalize">{profile.circumstances.dependents}</p>
+                </div>
+              )}
+              {profile.circumstances?.willingnessToRelocate && (
+                <div>
+                  <span className="text-slate-500">Relocation</span>
+                  <p className="text-white font-medium">
+                    {profile.circumstances.willingnessToRelocate === "yes" ? "Open to relocating" :
+                     profile.circumstances.willingnessToRelocate === "no" ? "Staying in current area" :
+                     "Remote preferred"}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {error && (
           <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3 mb-6">
             {error}

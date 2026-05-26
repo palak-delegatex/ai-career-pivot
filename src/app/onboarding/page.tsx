@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { UserProfile } from "@/lib/intake";
+import type { UserProfile, UserCircumstances, UserLocation } from "@/lib/intake";
 
 type Step = "form" | "processing" | "error" | "no_payment";
 
@@ -45,6 +45,12 @@ export default function OnboardingPage() {
   const [factIndex, setFactIndex] = useState(0);
   const [factVisible, setFactVisible] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
+
+  const [circumstances, setCircumstances] = useState<UserCircumstances>({});
+  const [location, setLocation] = useState<UserLocation | null>(null);
+  const [locationText, setLocationText] = useState("");
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [showCircumstances, setShowCircumstances] = useState(false);
 
   const [aiInsights, setAiInsights] = useState<string[]>([]);
   const [insightIndex, setInsightIndex] = useState(0);
@@ -137,6 +143,51 @@ export default function OnboardingPage() {
     }
   }
 
+  async function detectLocation() {
+    if (!navigator.geolocation) return;
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=en`,
+            { headers: { "User-Agent": "AICareerPivot/1.0" } }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.address ?? {};
+            const city = addr.city ?? addr.town ?? addr.village ?? "";
+            const region = addr.state ?? "";
+            const country = addr.country ?? "";
+            setLocation({ city, region, country, source: "gps" });
+            setLocationText([city, region, country].filter(Boolean).join(", "));
+          }
+        } catch {
+          // Non-fatal — user can type manually
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => setDetectingLocation(false),
+      { timeout: 10000 }
+    );
+  }
+
+  function handleLocationManualChange(value: string) {
+    setLocationText(value);
+    const parts = value.split(",").map((s) => s.trim());
+    if (parts.length >= 1 && parts[0]) {
+      setLocation({
+        city: parts[0],
+        region: parts[1] ?? "",
+        country: parts[2] ?? "",
+        source: "manual",
+      });
+    } else {
+      setLocation(null);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email || (!linkedinUrl && !resumeFile)) {
@@ -209,6 +260,10 @@ export default function OnboardingPage() {
       }
 
       if (!profile) throw new Error("Could not extract a profile. Please upload your resume.");
+
+      const hasCircumstances = Object.values(circumstances).some(Boolean);
+      if (hasCircumstances) profile.circumstances = circumstances;
+      if (location) profile.location = location;
 
       if (profile.name) setUserName(profile.name.split(" ")[0]);
       snapToComplete();
@@ -526,6 +581,128 @@ export default function OnboardingPage() {
               placeholder="https://yoursite.com"
               className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
             />
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Your location
+              <span className="text-slate-500 font-normal ml-2">(optional, improves job market accuracy)</span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={locationText}
+                onChange={(e) => handleLocationManualChange(e.target.value)}
+                placeholder="City, State, Country"
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+              />
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={detectingLocation}
+                className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+              >
+                {detectingLocation ? "Detecting…" : "Use GPS"}
+              </button>
+            </div>
+            {location?.source === "gps" && (
+              <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+            )}
+          </div>
+
+          {/* Expandable circumstances section */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowCircumstances(!showCircumstances)}
+              className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors"
+            >
+              <svg
+                className={`w-4 h-4 transition-transform ${showCircumstances ? "rotate-90" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              Personal circumstances
+              <span className="text-slate-500 font-normal">(optional — helps tailor your plan)</span>
+            </button>
+
+            {showCircumstances && (
+              <div className="mt-4 flex flex-col gap-4 pl-1">
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
+                  <input
+                    type="text"
+                    value={circumstances.salaryFloor ?? ""}
+                    onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
+                    placeholder="e.g. $60,000"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
+                  <select
+                    value={circumstances.dependents ?? ""}
+                    onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                  >
+                    <option value="">Prefer not to say</option>
+                    <option value="none">No dependents</option>
+                    <option value="partner">Partner</option>
+                    <option value="children">Children</option>
+                    <option value="caretaker">Caretaker for family</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1.5">Transition timeline</label>
+                  <select
+                    value={circumstances.timeline ?? ""}
+                    onChange={(e) => setCircumstances({ ...circumstances, timeline: (e.target.value || undefined) as UserCircumstances["timeline"] })}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                  >
+                    <option value="">No preference</option>
+                    <option value="asap">As soon as possible</option>
+                    <option value="3-6 months">3–6 months</option>
+                    <option value="6-12 months">6–12 months</option>
+                    <option value="1-2 years">1–2 years</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1.5">Risk tolerance</label>
+                  <select
+                    value={circumstances.riskTolerance ?? ""}
+                    onChange={(e) => setCircumstances({ ...circumstances, riskTolerance: (e.target.value || undefined) as UserCircumstances["riskTolerance"] })}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                  >
+                    <option value="">No preference</option>
+                    <option value="conservative">Conservative — keep income stable</option>
+                    <option value="moderate">Moderate — some income gap OK</option>
+                    <option value="aggressive">Aggressive — willing to take a leap</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1.5">Willingness to relocate</label>
+                  <select
+                    value={circumstances.willingnessToRelocate ?? ""}
+                    onChange={(e) => setCircumstances({ ...circumstances, willingnessToRelocate: (e.target.value || undefined) as UserCircumstances["willingnessToRelocate"] })}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                  >
+                    <option value="">No preference</option>
+                    <option value="yes">Yes, open to relocating</option>
+                    <option value="no">No, staying in current area</option>
+                    <option value="remote-preferred">Remote work preferred</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           {error && (
