@@ -8,6 +8,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "session_id required" }, { status: 400 });
   }
 
+  if (sessionId.startsWith("bypass_")) {
+    const supabase = getSupabaseClient();
+    const { data: order } = await supabase
+      .from("orders")
+      .select("email, status")
+      .eq("stripe_session_id", sessionId)
+      .single();
+
+    if (order?.status === "paid") {
+      return NextResponse.json({ paid: true, email: order.email });
+    }
+    return NextResponse.json({ paid: false });
+  }
+
   const stripe = getStripeClient();
   const session = await stripe.checkout.sessions.retrieve(sessionId);
 

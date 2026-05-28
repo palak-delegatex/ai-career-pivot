@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripeClient, PLANS, type PlanKey } from "@/lib/stripe";
+import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
 import { getSupabaseClient } from "@/lib/supabase";
+import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
   const { email, discountCode, plan: planKey = "report" } = await req.json();
@@ -15,8 +16,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const stripe = getStripeClient();
     const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
+
+    if (isBypassEmail(email)) {
+      const bypassSessionId = `bypass_${randomUUID()}`;
+      const supabase = getSupabaseClient();
+      await supabase.from("orders").insert({
+        email,
+        stripe_session_id: bypassSessionId,
+        amount_cents: 0,
+        status: "paid",
+        discount_code: "TEAM_BYPASS",
+        plan_type: planKey,
+      });
+      return NextResponse.json({
+        url: `${origin}/checkout/success?session_id=${bypassSessionId}`,
+      });
+    }
+
+    const stripe = getStripeClient();
 
     const priceData: Record<string, unknown> = {
       currency: "usd",

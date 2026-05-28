@@ -39,3 +39,10 @@ export const PRICES = {
     description: PLANS.report.description,
   },
 } as const;
+
+export function isBypassEmail(email: string): boolean {
+  const list = process.env.BYPASS_PAYMENT_EMAILS ?? "";
+  if (!list) return false;
+  const allowed = list.split(",").map((e) => e.trim().toLowerCase());
+  return allowed.includes(email.trim().toLowerCase());
+}

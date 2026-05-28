@@ -141,15 +141,16 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (!order || order.status !== "paid") {
-      // Webhook may not have fired yet (common in sandbox/test mode).
-      // Fall back to checking Stripe directly and heal the order if paid.
+      if (paymentSessionId.startsWith("bypass_")) {
+        return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+      }
+      // Webhook may not have fired yet. Fall back to checking Stripe directly.
       try {
         const stripe = getStripeClient();
         const session = await stripe.checkout.sessions.retrieve(paymentSessionId);
         if (session.payment_status !== "paid") {
           return NextResponse.json({ error: "payment not verified" }, { status: 402 });
         }
-        // Heal the order so future requests don't need this fallback
         await supabase
           .from("orders")
           .update({ status: "paid" })
