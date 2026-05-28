@@ -77,14 +77,20 @@ export function buildPivotPlanPdf(
   doc.fontSize(9).fillColor(TEAL).text(metrics.join("   |   "));
 
   // 1. Milestones
-  heading(doc, "6-Month Milestones", EMERALD);
-  bulletList(doc, plan.sixMonthMilestones);
+  if (plan.sixMonthMilestones?.length) {
+    heading(doc, "6-Month Milestones", EMERALD);
+    bulletList(doc, plan.sixMonthMilestones);
+  }
 
-  heading(doc, "1-Year Milestones", TEAL);
-  bulletList(doc, plan.oneYearMilestones);
+  if (plan.oneYearMilestones?.length) {
+    heading(doc, "1-Year Milestones", TEAL);
+    bulletList(doc, plan.oneYearMilestones);
+  }
 
-  heading(doc, "2-Year Milestones", TEAL);
-  bulletList(doc, plan.twoYearMilestones);
+  if (plan.twoYearMilestones?.length) {
+    heading(doc, "2-Year Milestones", TEAL);
+    bulletList(doc, plan.twoYearMilestones);
+  }
 
   // 2. Skill Gaps
   if (plan.skillGaps && plan.skillGaps.length > 0) {
@@ -137,7 +143,7 @@ export function buildPivotPlanPdf(
     doc.fontSize(10).fillColor(SLATE);
     doc.text(`Current Range: ${fs.currentSalaryRange}`);
     doc.text(`Target Range:  ${fs.targetSalaryRange}  (+${fs.salaryUpliftPercent}%)`);
-    if (fs.transitionCosts.length > 0) {
+    if (fs.transitionCosts?.length) {
       doc.moveDown(0.3);
       doc.text("Transition Costs:");
       bulletList(doc, fs.transitionCosts);
@@ -162,7 +168,7 @@ export function buildPivotPlanPdf(
   }
 
   // 7. Transferable Skills
-  if (profile.transferableSkills.length > 0) {
+  if (profile.transferableSkills?.length) {
     heading(doc, "Transferable Skills", TEAL);
     doc.fontSize(10).fillColor(SLATE).text(profile.transferableSkills.join("  \u00B7  "));
   }
