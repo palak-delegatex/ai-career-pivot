@@ -3,10 +3,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { StepIndicator } from "@/components/StepIndicator";
 import type { UserProfile, UserCircumstances, UserLocation } from "@/lib/intake";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
-type Step = "form" | "processing" | "error" | "no_payment";
+type PageStep = "form" | "processing" | "error" | "no_payment";
+
+const WIZARD_STEPS = ["Your Background", "Additional Sources", "Life Circumstances"];
 
 const ANALYSIS_STEPS = [
   "Parsing document structure",
@@ -24,6 +28,21 @@ const FUN_FACTS = [
   "Action verbs like 'spearheaded' and 'orchestrated' outperform passive language.",
 ] as const;
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -300 : 300,
+    opacity: 0,
+  }),
+};
+
 function parseInsightsFromStream(text: string): string[] {
   return text
     .split("\n")
@@ -35,7 +54,10 @@ export default function OnboardingPage() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [step, setStep] = useState<Step>("form");
+  const [pageStep, setPageStep] = useState<PageStep>("form");
+  const [wizardStep, setWizardStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+
   const [email, setEmail] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -51,7 +73,6 @@ export default function OnboardingPage() {
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [locationText, setLocationText] = useState("");
   const [detectingLocation, setDetectingLocation] = useState(false);
-  const [showCircumstances, setShowCircumstances] = useState(false);
 
   const [aiInsights, setAiInsights] = useState<string[]>([]);
   const [insightIndex, setInsightIndex] = useState(0);
@@ -60,18 +81,20 @@ export default function OnboardingPage() {
 
   const [ctaVariant, setCtaVariant] = useState<string>("control");
 
+  const [dropActive, setDropActive] = useState(false);
+  const [gpsResolved, setGpsResolved] = useState(false);
+
   useEffect(() => {
     const paymentEmail = sessionStorage.getItem("payment_email");
     const paymentSessionId = sessionStorage.getItem("payment_session_id");
     if (!paymentSessionId) {
-      setStep("no_payment");
+      setPageStep("no_payment");
       return;
     }
     if (paymentEmail) setEmail(paymentEmail);
   }, []);
 
   useEffect(() => {
-    // Read A/B flag once PostHog is ready — onFeatureFlags fires after identify/load
     if (typeof window === "undefined") return;
     import("posthog-js").then(({ default: posthog }) => {
       posthog.onFeatureFlags(() => {
@@ -83,7 +106,7 @@ export default function OnboardingPage() {
   }, []);
 
   useEffect(() => {
-    if (step !== "processing") return;
+    if (pageStep !== "processing") return;
     let timeout: ReturnType<typeof setTimeout>;
     let current = 0;
     function scheduleNext() {
@@ -98,11 +121,10 @@ export default function OnboardingPage() {
     }
     scheduleNext();
     return () => clearTimeout(timeout);
-  }, [step]);
+  }, [pageStep]);
 
-  // Cycle through fun facts (used before AI insights arrive)
   useEffect(() => {
-    if (step !== "processing" || insightsReady) return;
+    if (pageStep !== "processing" || insightsReady) return;
     const cycle = setInterval(() => {
       setFactVisible(false);
       setTimeout(() => {
@@ -111,11 +133,10 @@ export default function OnboardingPage() {
       }, 400);
     }, 5000);
     return () => clearInterval(cycle);
-  }, [step, insightsReady]);
+  }, [pageStep, insightsReady]);
 
-  // Cycle through AI insights once they're ready
   useEffect(() => {
-    if (step !== "processing" || !insightsReady) return;
+    if (pageStep !== "processing" || !insightsReady) return;
     setInsightVisible(true);
     const cycle = setInterval(() => {
       setInsightVisible(false);
@@ -125,11 +146,34 @@ export default function OnboardingPage() {
       }, 400);
     }, 6000);
     return () => clearInterval(cycle);
-  }, [step, insightsReady, aiInsights.length]);
+  }, [pageStep, insightsReady, aiInsights.length]);
 
   const snapToComplete = useCallback(() => {
     setActiveStep(ANALYSIS_STEPS.length - 1);
   }, []);
+
+  function goNext() {
+    setDirection(1);
+    setWizardStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1));
+  }
+
+  function goBack() {
+    setDirection(-1);
+    setWizardStep((s) => Math.max(s - 1, 0));
+  }
+
+  function canAdvanceStep1(): boolean {
+    return !!email && (!!linkedinUrl || !!resumeFile);
+  }
+
+  function handleStep1Next() {
+    if (!canAdvanceStep1()) {
+      setError("Please provide your email and at least one source (LinkedIn URL or resume).");
+      return;
+    }
+    setError("");
+    goNext();
+  }
 
   async function fetchInsights(profile: UserProfile) {
     try {
@@ -165,6 +209,7 @@ export default function OnboardingPage() {
   async function detectLocation() {
     if (!navigator.geolocation) return;
     setDetectingLocation(true);
+    setGpsResolved(false);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
@@ -180,9 +225,11 @@ export default function OnboardingPage() {
             const country = addr.country ?? "";
             setLocation({ city, region, country, source: "gps" });
             setLocationText([city, region, country].filter(Boolean).join(", "));
+            setGpsResolved(true);
+            setTimeout(() => setGpsResolved(false), 1500);
           }
         } catch {
-          // Non-fatal — user can type manually
+          // Non-fatal
         } finally {
           setDetectingLocation(false);
         }
@@ -207,13 +254,7 @@ export default function OnboardingPage() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email || (!linkedinUrl && !resumeFile)) {
-      setError("Please provide your email and at least one source (LinkedIn URL or resume).");
-      return;
-    }
-
+  async function handleSubmit() {
     const hasCircumstancesData = Object.values(circumstances).some(Boolean);
     trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "form_submitted", page: "onboarding" });
     trackOnboardingStarted({
@@ -224,14 +265,14 @@ export default function OnboardingPage() {
       has_circumstances: hasCircumstancesData,
     });
 
-    setStep("processing");
+    setPageStep("processing");
     setError("");
 
     try {
       let profile: UserProfile | null = null;
 
       if (resumeFile) {
-        setProcessingMsg("Analyzing your resume…");
+        setProcessingMsg("Analyzing your resume...");
         const fd = new FormData();
         fd.append("resume", resumeFile);
         fd.append("email", email);
@@ -242,7 +283,7 @@ export default function OnboardingPage() {
       }
 
       if (linkedinUrl) {
-        setProcessingMsg("Fetching LinkedIn profile…");
+        setProcessingMsg("Fetching LinkedIn profile...");
         const res = await fetch("/api/intake/linkedin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -265,13 +306,12 @@ export default function OnboardingPage() {
         }
       }
 
-      // Fire parallel AI insights call as soon as we have a profile
       if (profile && profile.skills?.length > 0) {
         fetchInsights(profile);
       }
 
       if (websiteUrl) {
-        setProcessingMsg("Scanning your portfolio…");
+        setProcessingMsg("Scanning your portfolio...");
         const res = await fetch("/api/intake/website", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -309,16 +349,16 @@ export default function OnboardingPage() {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       trackOnboardingError({ error: message, stage: "form_submission" });
-      setStep("error");
+      setPageStep("error");
       setError(message);
     }
   }
 
-  if (step === "no_payment") {
+  if (pageStep === "no_payment") {
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <div className="text-5xl mb-6">🔒</div>
+          <div className="text-5xl mb-6">&#x1f512;</div>
           <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
           <p className="text-slate-400 mb-8 leading-relaxed">
             Get your personalized career pivot roadmap for $29. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
@@ -327,16 +367,16 @@ export default function OnboardingPage() {
             href="/pricing"
             className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Get Started — $29 →
+            Get Started — $29 &rarr;
           </Link>
         </div>
       </div>
     );
   }
 
-  if (step === "processing") {
+  if (pageStep === "processing") {
     const headline = userName
-      ? `Analyzing ${userName}'s background…`
+      ? `Analyzing ${userName}'s background...`
       : "Our AI is reading between the lines";
 
     const displayInsight = insightsReady ? aiInsights[insightIndex] : null;
@@ -364,10 +404,8 @@ export default function OnboardingPage() {
                 </linearGradient>
               </defs>
 
-              {/* Layer 1: Document silhouette */}
               <rect x="15" y="5" width="95" height="140" rx="6" fill="white" fillOpacity="0.15" />
 
-              {/* Text rows — pulse bright as scan line passes */}
               <rect x="28" y="35" width="70" height="3" rx="1.5" fill="white" fillOpacity="0.3">
                 <animate attributeName="fill-opacity" values="0.3;0.3;0.8;0.3;0.3" keyTimes="0;0.05;0.07;0.12;1" dur="3s" repeatCount="indefinite" />
               </rect>
@@ -384,7 +422,6 @@ export default function OnboardingPage() {
                 <animate attributeName="fill-opacity" values="0.3;0.3;0.8;0.3;0.3" keyTimes="0;0.73;0.75;0.80;1" dur="3s" repeatCount="indefinite" />
               </rect>
 
-              {/* Layer 2: AI scan line with glow */}
               <g filter="url(#scanGlow)">
                 <rect x="17" y="28" width="91" height="3" rx="1.5" fill="url(#scanGrad)">
                   <animateTransform attributeName="transform" type="translate" values="0 0;0 80;0 0" keyTimes="0;0.80;0.81" dur="3s" repeatCount="indefinite" />
@@ -392,7 +429,6 @@ export default function OnboardingPage() {
                 </rect>
               </g>
 
-              {/* Layer 3: Neural network — connections from document to input nodes */}
               <line x1="110" y1="40" x2="138" y2="32" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.12">
                 <animate attributeName="stroke-opacity" values="0.12;0.12;0.5;0.12;0.12" keyTimes="0;0.09;0.11;0.16;1" dur="3s" repeatCount="indefinite" />
               </line>
@@ -406,7 +442,6 @@ export default function OnboardingPage() {
                 <animate attributeName="stroke-opacity" values="0.12;0.12;0.5;0.12;0.12" keyTimes="0;0.60;0.62;0.67;1" dur="3s" repeatCount="indefinite" />
               </line>
 
-              {/* Inter-node connections (input → output layer) */}
               <line x1="144" y1="32" x2="172" y2="48" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
               <line x1="144" y1="57" x2="172" y2="48" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
               <line x1="144" y1="57" x2="172" y2="78" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
@@ -414,7 +449,6 @@ export default function OnboardingPage() {
               <line x1="144" y1="82" x2="172" y2="108" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
               <line x1="144" y1="107" x2="172" y2="108" stroke="#2dd4bf" strokeWidth="0.75" strokeOpacity="0.08" />
 
-              {/* Input layer nodes (4) */}
               <circle cx="140" cy="32" r="4" fill="#2dd4bf" fillOpacity="0.1" stroke="#2dd4bf" strokeWidth="1" strokeOpacity="0.25">
                 <animate attributeName="fill-opacity" values="0.1;0.1;0.6;0.1;0.1;0.5;0.1" keyTimes="0;0.10;0.13;0.18;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.25;0.7;0.25" keyTimes="0;0.10;0.13;0.18;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
@@ -432,7 +466,6 @@ export default function OnboardingPage() {
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.25;0.7;0.25" keyTimes="0;0.61;0.64;0.69;0.85;0.88;0.93" dur="3s" repeatCount="indefinite" />
               </circle>
 
-              {/* Output layer nodes (3) */}
               <circle cx="175" cy="48" r="4" fill="#2dd4bf" fillOpacity="0.1" stroke="#2dd4bf" strokeWidth="1" strokeOpacity="0.25">
                 <animate attributeName="fill-opacity" values="0.1;0.1;0.6;0.1;0.5;0.1" keyTimes="0;0.78;0.81;0.84;0.88;0.93" dur="3s" repeatCount="indefinite" />
                 <animate attributeName="stroke-opacity" values="0.25;0.25;0.8;0.25;0.7;0.25" keyTimes="0;0.78;0.81;0.84;0.88;0.93" dur="3s" repeatCount="indefinite" />
@@ -451,7 +484,6 @@ export default function OnboardingPage() {
           <h2 className="text-2xl font-bold mb-1 text-center">{headline}</h2>
           <p className="text-slate-500 text-sm mb-8">Usually done in under 30 seconds</p>
 
-          {/* Progress stepper */}
           <div className="w-full mb-8">
             {ANALYSIS_STEPS.map((label, i) => {
               const completed = i < activeStep;
@@ -489,7 +521,6 @@ export default function OnboardingPage() {
             })}
           </div>
 
-          {/* AI Insights or Fun Facts */}
           {insightsReady ? (
             <div className="w-full rounded-xl bg-gradient-to-br from-teal-950/40 to-slate-800/60 border border-teal-800/30 px-5 py-5 min-h-[80px]">
               <div className="flex items-center gap-2 mb-3">
@@ -531,7 +562,7 @@ export default function OnboardingPage() {
                   transition: factVisible ? "none" : "opacity 0.3s ease-out",
                 }}
               >
-                💡 {displayFact}
+                {displayFact}
               </p>
             </div>
           )}
@@ -543,134 +574,226 @@ export default function OnboardingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6 py-20">
       <div className="max-w-lg w-full">
-        <div className="text-center mb-10">
-          <div className="text-5xl mb-4">🧭</div>
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
             Let&apos;s Build Your Roadmap
           </h1>
           <p className="text-slate-300 text-lg leading-relaxed">
-            Share your background and we&apos;ll generate a personalized career pivot plan — not generic advice.
+            Share your background and we&apos;ll generate a personalized career pivot plan.
           </p>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Email address <span className="text-teal-400">*</span>
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-            />
-          </div>
+        <StepIndicator steps={WIZARD_STEPS} currentStep={wizardStep} />
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Resume upload <span className="text-teal-400">*</span>
-              <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
-            </label>
-            <div
-              className="w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed border-slate-600 hover:border-teal-500 cursor-pointer text-center transition-colors"
-              onClick={() => fileRef.current?.click()}
-            >
-              {resumeFile ? (
-                <span className="text-teal-400 font-medium">{resumeFile.name}</span>
-              ) : (
-                <span className="text-slate-400">Click to upload resume</span>
-              )}
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".pdf,.docx,.doc,.txt"
-                className="hidden"
-                onClick={(e) => e.stopPropagation()}
-                onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              LinkedIn URL
-              <span className="text-slate-500 font-normal ml-2">(optional, improves accuracy)</span>
-            </label>
-            <input
-              type="url"
-              value={linkedinUrl}
-              onChange={(e) => setLinkedinUrl(e.target.value)}
-              placeholder="https://linkedin.com/in/yourprofile"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Portfolio or personal site
-              <span className="text-slate-500 font-normal ml-2">(optional)</span>
-            </label>
-            <input
-              type="url"
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              placeholder="https://yoursite.com"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-            />
-          </div>
-
-          {/* Location */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Your location
-              <span className="text-slate-500 font-normal ml-2">(optional, improves job market accuracy)</span>
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={locationText}
-                onChange={(e) => handleLocationManualChange(e.target.value)}
-                placeholder="City, State, Country"
-                className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-              />
-              <button
-                type="button"
-                onClick={detectLocation}
-                disabled={detectingLocation}
-                className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+        <div className="relative overflow-hidden min-h-[340px]">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            {wizardStep === 0 && (
+              <motion.div
+                key="step-0"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="flex flex-col gap-5"
               >
-                {detectingLocation ? "Detecting…" : "Use GPS"}
-              </button>
-            </div>
-            {location?.source === "gps" && (
-              <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Email address <span className="text-teal-400">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Resume upload <span className="text-teal-400">*</span>
+                    <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
+                  </label>
+                  <div
+                    className={`w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
+                      dropActive
+                        ? "border-teal-400 bg-teal-950/30 scale-[1.01]"
+                        : resumeFile
+                          ? "border-teal-600"
+                          : "border-slate-600 hover:border-teal-500"
+                    }`}
+                    onClick={() => fileRef.current?.click()}
+                    onDragOver={(e) => { e.preventDefault(); setDropActive(true); }}
+                    onDragLeave={() => setDropActive(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDropActive(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) setResumeFile(file);
+                    }}
+                  >
+                    {resumeFile ? (
+                      <span className="text-teal-400 font-medium">{resumeFile.name}</span>
+                    ) : (
+                      <span className="text-slate-400">
+                        {dropActive ? "Drop your resume here" : "Click or drag to upload resume"}
+                      </span>
+                    )}
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept=".pdf,.docx,.doc,.txt"
+                      className="hidden"
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    LinkedIn URL
+                    <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                  />
+                </div>
+
+                {error && (
+                  <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleStep1Next}
+                  className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next &rarr;
+                </button>
+              </motion.div>
             )}
-          </div>
 
-          {/* Expandable circumstances section */}
-          <div>
-            <button
-              type="button"
-              onClick={() => setShowCircumstances(!showCircumstances)}
-              className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors"
-            >
-              <svg
-                className={`w-4 h-4 transition-transform ${showCircumstances ? "rotate-90" : ""}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+            {wizardStep === 1 && (
+              <motion.div
+                key="step-1"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="flex flex-col gap-5"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-              Personal circumstances
-              <span className="text-slate-500 font-normal">(optional — helps tailor your plan)</span>
-            </button>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Portfolio or personal site
+                    <span className="text-slate-500 font-normal ml-2">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    placeholder="https://yoursite.com"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                  />
+                </div>
 
-            {showCircumstances && (
-              <div className="mt-4 flex flex-col gap-4 pl-1">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Your location
+                    <span className="text-slate-500 font-normal ml-2">(improves job market accuracy)</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={locationText}
+                      onChange={(e) => handleLocationManualChange(e.target.value)}
+                      placeholder="City, State, Country"
+                      className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={detectingLocation}
+                      className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+                    >
+                      {detectingLocation ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                          </svg>
+                          Detecting
+                        </span>
+                      ) : gpsResolved ? (
+                        <motion.span
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: [0.8, 1.2, 1] }}
+                          transition={{ duration: 0.4 }}
+                          className="text-teal-400"
+                        >
+                          &#10003; Found
+                        </motion.span>
+                      ) : (
+                        "Use GPS"
+                      )}
+                    </button>
+                  </div>
+                  {location?.source === "gps" && !gpsResolved && (
+                    <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+                  )}
+                </div>
+
+                <div className="flex gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={goBack}
+                    className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                  >
+                    &larr; Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                  >
+                    Next &rarr;
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center"
+                >
+                  Skip this step
+                </button>
+              </motion.div>
+            )}
+
+            {wizardStep === 2 && (
+              <motion.div
+                key="step-2"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="flex flex-col gap-4"
+              >
+                <p className="text-slate-400 text-sm mb-1">
+                  These details help us tailor your plan to your real-life constraints.
+                </p>
+
                 <div>
                   <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
                   <input
@@ -706,9 +829,9 @@ export default function OnboardingPage() {
                   >
                     <option value="">No preference</option>
                     <option value="asap">As soon as possible</option>
-                    <option value="3-6 months">3–6 months</option>
-                    <option value="6-12 months">6–12 months</option>
-                    <option value="1-2 years">1–2 years</option>
+                    <option value="3-6 months">3-6 months</option>
+                    <option value="6-12 months">6-12 months</option>
+                    <option value="1-2 years">1-2 years</option>
                   </select>
                 </div>
 
@@ -739,27 +862,39 @@ export default function OnboardingPage() {
                     <option value="remote-preferred">Remote work preferred</option>
                   </select>
                 </div>
-              </div>
+
+                <div className="flex gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={goBack}
+                    className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                  >
+                    &larr; Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                  >
+                    {ctaVariant === "urgency"
+                      ? "Reveal My Plan"
+                      : ctaVariant === "benefit"
+                        ? "Show My Best Move"
+                        : "Analyze My Background"}
+                    {" "}&rarr;
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center"
+                >
+                  Skip &amp; analyze now
+                </button>
+              </motion.div>
             )}
-          </div>
-
-          {error && (
-            <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2"
-          >
-            {ctaVariant === "urgency"
-              ? "Reveal My Career Pivot Plan →"
-              : ctaVariant === "benefit"
-              ? "Show Me My Best Career Move →"
-              : "Analyze My Background →"}
-          </button>
-        </form>
+          </AnimatePresence>
+        </div>
 
         <p className="text-slate-500 text-xs text-center mt-6">
           Your data is processed securely and never shared. You can request deletion anytime.
