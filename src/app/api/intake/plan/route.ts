@@ -5,6 +5,7 @@ import { jsonSchema } from "ai";
 import type { UserProfile } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
 import { getStripeClient } from "@/lib/stripe";
+import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
 
 const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   type: "object",
@@ -246,6 +247,15 @@ Generate deeply personalized, immediately actionable plans. Reference their spec
         .from("orders")
         .update({ report_id: report.id })
         .eq("stripe_session_id", paymentSessionId);
+
+      const firstName = (profile.name ?? "").split(" ")[0] || "there";
+      scheduleMilestoneEmails(
+        supabase,
+        report.id,
+        profile.email,
+        firstName,
+        object.plans
+      ).catch((err) => console.error("Milestone email scheduling error:", err));
 
       return NextResponse.json({ ...object, reportId: report.id });
     }

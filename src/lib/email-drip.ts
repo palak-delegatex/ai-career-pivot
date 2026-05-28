@@ -66,6 +66,9 @@ export interface EmailOpts {
   referralName?: string;
   nextTierName?: string;
   nextTierCount?: number;
+  milestoneName?: string;
+  reportId?: string;
+  planIndex?: number;
 }
 
 export function getEmailTemplate(
@@ -396,6 +399,59 @@ export function getEmailTemplate(
           ${sig()}
         `),
       };
+
+    // Milestone check-in: "You planned to start [milestone] by now"
+    case 13: {
+      const milestone = opts?.milestoneName ?? "your next milestone";
+      const roadmapLink = opts?.reportId
+        ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "milestone_checkin")
+        : utmLink("/dashboard", "milestone_checkin");
+      return {
+        subject: `How's it going with "${milestone}"?`,
+        previewText: `You planned to start this by now — check in on your roadmap.`,
+        html: baseHtml(`
+          ${h1(`Time for a check-in, ${name}.`)}
+          ${p(`When we built your roadmap, you planned to start this milestone by now:`)}
+          <div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:24px 0;border-radius:0 8px 8px 0;">
+            <p style="color:#f1f5f9;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
+          </div>
+          ${p("How's it going? Whether you're ahead of schedule, right on track, or need to adjust — your roadmap is there to help.")}
+          ${p("You can mark this milestone complete, update your goals, or explore what's next.")}
+          <div style="margin:32px 0;">
+            ${cta("Open my roadmap →", roadmapLink)}
+          </div>
+          ${p("Progress isn't always linear. What matters is that you keep moving.")}
+          ${sig()}
+        `),
+      };
+    }
+
+    // Re-engagement nudge: user hasn't returned in 14 days
+    case 14: {
+      const roadmapLink = opts?.reportId
+        ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "milestone_nudge")
+        : utmLink("/dashboard", "milestone_nudge");
+      return {
+        subject: `${name}, your career roadmap is waiting`,
+        previewText: "It's been a couple weeks — your roadmap is ready when you are.",
+        html: baseHtml(`
+          ${h1(`Still thinking about your next move, ${name}?`)}
+          ${p("It's been a couple of weeks since you last checked in on your career roadmap. Life gets busy — we get it.")}
+          ${p("But your roadmap doesn't expire. Your milestones, skill gaps, and action items are all still there, personalized to your background and constraints.")}
+          ${p("Even 10 minutes can help:")}
+          <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
+            <li>Mark off anything you've already done</li>
+            <li>Adjust timelines if your situation has changed</li>
+            <li>Review your next week-one action</li>
+          </ul>
+          <div style="margin:32px 0;">
+            ${cta("Pick up where I left off →", roadmapLink)}
+          </div>
+          ${p("Small steps compound. We're here when you're ready.")}
+          ${sig()}
+        `),
+      };
+    }
 
     default:
       return null;
