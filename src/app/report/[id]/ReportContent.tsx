@@ -9,6 +9,7 @@ import SkillGapChart from "@/components/SkillGapChart";
 import SkillTree from "@/components/SkillTree";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
 import PathComparison from "@/components/PathComparison";
+import FollowUpChat from "@/components/FollowUpChat";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -154,6 +155,12 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
             <p className="text-slate-400 text-sm leading-relaxed">{plan.financialConsiderations}</p>
           </div>
         ) : null}
+
+        <FollowUpChat
+          reportId={reportId}
+          planIndex={selected}
+          targetRole={plan.targetRole}
+        />
       </div>
     </>
   );

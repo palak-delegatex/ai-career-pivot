@@ -88,6 +88,18 @@ export default function DashboardClient() {
           {reports.map((report) => (
             <ReportCard key={report.id} report={report} />
           ))}
+
+          <div className="mt-6 pt-6 border-t border-slate-700/50">
+            <p className="text-slate-400 text-sm text-center mb-3">
+              Ready to pick up where you left off?
+            </p>
+            <Link
+              href={`/report/${reports[0].id}`}
+              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
+            >
+              Continue My Roadmap
+            </Link>
+          </div>
         </div>
       )}
     </main>
