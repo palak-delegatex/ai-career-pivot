@@ -6,6 +6,7 @@ import PlanHero from "@/components/PlanHero";
 import InteractiveRoadmap from "@/components/InteractiveRoadmap";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 import SkillGapChart from "@/components/SkillGapChart";
+import SkillTree from "@/components/SkillTree";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
 import PathComparison from "@/components/PathComparison";
 
@@ -49,10 +50,16 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           twoYearMilestones={plan.twoYearMilestones}
           reportId={reportId}
           planIndex={selected}
+          skillGaps={plan.skillGaps}
+          recommendedResources={plan.recommendedResources}
         />
 
         {(plan.skillGaps ?? []).length > 0 && (
           <SkillGapChart skillGaps={plan.skillGaps!} />
+        )}
+
+        {(plan.skillGaps ?? []).length > 0 && (
+          <SkillTree skillGaps={plan.skillGaps!} />
         )}
 
         {(plan.weekOneActions ?? []).length > 0 ? (
