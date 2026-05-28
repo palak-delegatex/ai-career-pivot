@@ -9,6 +9,7 @@ import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, 
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
+import PathComparison from "@/components/PathComparison";
 
 export default function PivotPlanPage() {
   const router = useRouter();
@@ -97,6 +98,9 @@ export default function PivotPlanPage() {
             ))}
           </div>
         )}
+
+        {/* Cross-path comparison */}
+        {plans.length > 1 && <PathComparison plans={plans} />}
 
         {/* Selected plan */}
         <div className="space-y-6">

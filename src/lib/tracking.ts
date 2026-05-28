@@ -6,6 +6,23 @@ function capture(event: string, properties?: Record<string, unknown>) {
   }
 }
 
+// A/B testing — returns the variant name for a PostHog feature flag, or the fallback if not loaded
+export function getFeatureFlagVariant(flagKey: string, fallback = "control"): string {
+  if (typeof window === "undefined" || !posthog.__loaded) return fallback;
+  const variant = posthog.getFeatureFlag(flagKey);
+  if (typeof variant === "string") return variant;
+  if (variant === true) return "test";
+  return fallback;
+}
+
+export function trackExperimentViewed(props: { flag: string; variant: string; page: string }) {
+  capture("experiment_viewed", props);
+}
+
+export function trackExperimentConversion(props: { flag: string; variant: string; event: string; page: string }) {
+  capture("experiment_conversion", props);
+}
+
 // Onboarding funnel
 export function trackOnboardingStarted(props: { has_resume: boolean; has_linkedin: boolean; has_website: boolean; has_location: boolean; has_circumstances: boolean }) {
   capture("onboarding_started", props);

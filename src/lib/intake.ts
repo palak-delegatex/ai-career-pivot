@@ -86,6 +86,16 @@ export interface AIToolkitItem {
   proficiencyNeeded: "beginner" | "intermediate" | "advanced";
 }
 
+export interface PathTradeoffs {
+  difficulty: "low" | "medium" | "high";
+  riskLevel: "low" | "medium" | "high";
+  timeToFirstRole: string;
+  incomeImpactNear: string;
+  incomePotentialLong: string;
+  pros: string[];
+  cons: string[];
+}
+
 export interface PivotPlan {
   targetRole: string;
   targetIndustry: string;
@@ -101,6 +111,7 @@ export interface PivotPlan {
   financialSummary?: FinancialSummary;
   recommendedResources?: RecommendedResource[];
   aiToolkit?: AIToolkitItem[];
+  tradeoffs?: PathTradeoffs;
   /** @deprecated Use skillGaps (structured) instead */
   legacySkillGaps?: string[];
   /** @deprecated Use weekOneActions instead */

@@ -7,6 +7,7 @@ import InteractiveRoadmap from "@/components/InteractiveRoadmap";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 import SkillGapChart from "@/components/SkillGapChart";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
+import PathComparison from "@/components/PathComparison";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -32,6 +33,8 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           ))}
         </div>
       )}
+
+      {plans.length > 1 && <PathComparison plans={plans} />}
 
       <div className="space-y-6">
         <PlanHero plan={plan} />

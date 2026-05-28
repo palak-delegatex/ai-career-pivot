@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { UserProfile, UserCircumstances, UserLocation } from "@/lib/intake";
-import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived } from "@/lib/tracking";
+import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
 type Step = "form" | "processing" | "error" | "no_payment";
 
@@ -58,6 +58,8 @@ export default function OnboardingPage() {
   const [insightVisible, setInsightVisible] = useState(true);
   const insightsReady = aiInsights.length > 0;
 
+  const [ctaVariant, setCtaVariant] = useState<string>("control");
+
   useEffect(() => {
     const paymentEmail = sessionStorage.getItem("payment_email");
     const paymentSessionId = sessionStorage.getItem("payment_session_id");
@@ -66,6 +68,18 @@ export default function OnboardingPage() {
       return;
     }
     if (paymentEmail) setEmail(paymentEmail);
+  }, []);
+
+  useEffect(() => {
+    // Read A/B flag once PostHog is ready — onFeatureFlags fires after identify/load
+    if (typeof window === "undefined") return;
+    import("posthog-js").then(({ default: posthog }) => {
+      posthog.onFeatureFlags(() => {
+        const variant = getFeatureFlagVariant("onboarding_cta_copy", "control");
+        setCtaVariant(variant);
+        trackExperimentViewed({ flag: "onboarding_cta_copy", variant, page: "onboarding" });
+      });
+    });
   }, []);
 
   useEffect(() => {
@@ -201,6 +215,7 @@ export default function OnboardingPage() {
     }
 
     const hasCircumstancesData = Object.values(circumstances).some(Boolean);
+    trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "form_submitted", page: "onboarding" });
     trackOnboardingStarted({
       has_resume: !!resumeFile,
       has_linkedin: !!linkedinUrl,
@@ -738,7 +753,11 @@ export default function OnboardingPage() {
             type="submit"
             className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2"
           >
-            Analyze My Background →
+            {ctaVariant === "urgency"
+              ? "Reveal My Career Pivot Plan →"
+              : ctaVariant === "benefit"
+              ? "Show Me My Best Career Move →"
+              : "Analyze My Background →"}
           </button>
         </form>
 

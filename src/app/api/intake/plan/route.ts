@@ -96,11 +96,25 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
               required: ["tool", "category", "useCase", "proficiencyNeeded"],
             },
           },
+          tradeoffs: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              difficulty: { type: "string", enum: ["low", "medium", "high"] },
+              riskLevel: { type: "string", enum: ["low", "medium", "high"] },
+              timeToFirstRole: { type: "string" },
+              incomeImpactNear: { type: "string" },
+              incomePotentialLong: { type: "string" },
+              pros: { type: "array", items: { type: "string" } },
+              cons: { type: "array", items: { type: "string" } },
+            },
+            required: ["difficulty", "riskLevel", "timeToFirstRole", "incomeImpactNear", "incomePotentialLong", "pros", "cons"],
+          },
         },
         required: ["targetRole", "targetIndustry", "rationale", "matchScore", "skillMatchPercent",
           "sixMonthMilestones", "oneYearMilestones", "twoYearMilestones", "skillGaps",
           "weekOneActions", "estimatedTimeToTransition", "financialSummary",
-          "recommendedResources", "aiToolkit"],
+          "recommendedResources", "aiToolkit", "tradeoffs"],
       },
     },
   },
@@ -122,6 +136,7 @@ type PivotPlan = {
   financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string };
   recommendedResources: { name: string; provider: string; type: string; url: string; cost: string; timeEstimate: string }[];
   aiToolkit: { tool: string; category: string; useCase: string; proficiencyNeeded: "beginner" | "intermediate" | "advanced" }[];
+  tradeoffs: { difficulty: "low" | "medium" | "high"; riskLevel: "low" | "medium" | "high"; timeToFirstRole: string; incomeImpactNear: string; incomePotentialLong: string; pros: string[]; cons: string[] };
 };
 
 export async function POST(req: NextRequest) {
@@ -167,7 +182,7 @@ export async function POST(req: NextRequest) {
     schema: pivotPlanJsonSchema,
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
-Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic.
+Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic. Each plan MUST include a tradeoffs object with: difficulty ("low"/"medium"/"high"), riskLevel ("low"/"medium"/"high"), timeToFirstRole (e.g. "8-12 months"), incomeImpactNear (e.g. "-10% for 6 months"), incomePotentialLong (e.g. "+40% within 2 years"), pros (3-5 specific advantages for this person), cons (2-4 honest drawbacks). Make tradeoffs comparison-ready so the user can pick the best path for their situation.
 
 CRITICAL — AI-NATIVE STRATEGY:
 Every plan must be AI-native. This means:
