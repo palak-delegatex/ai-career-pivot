@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { PivotPlan } from "@/lib/intake";
+import type { PivotPlan, MarketData } from "@/lib/intake";
 
 const difficultyColor = {
   low: "text-emerald-400",
@@ -72,7 +72,20 @@ const tagColors: Record<string, string> = {
   "Easiest Transition": "bg-blue-900/40 border-blue-600/40 text-blue-300",
 };
 
-export default function PathComparison({ plans, onSelectPlan }: { plans: PivotPlan[]; onSelectPlan?: (index: number) => void }) {
+function fmtSalary(n: number): string {
+  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
+  return `$${n.toLocaleString()}`;
+}
+
+function growthColor(pct: number | null): string {
+  if (pct === null) return "text-slate-500";
+  if (pct >= 20) return "text-emerald-400";
+  if (pct >= 10) return "text-teal-400";
+  if (pct >= 5) return "text-amber-400";
+  return "text-slate-400";
+}
+
+export default function PathComparison({ plans, onSelectPlan, marketData }: { plans: PivotPlan[]; onSelectPlan?: (index: number) => void; marketData?: Record<string, MarketData> }) {
   const [expanded, setExpanded] = useState(true);
   const plansWithTradeoffs = plans.filter((p) => p.tradeoffs);
   if (plansWithTradeoffs.length < 2) return null;
@@ -178,6 +191,41 @@ export default function PathComparison({ plans, onSelectPlan }: { plans: PivotPl
                 </span>
               ))}
             />
+            {marketData && Object.keys(marketData).length > 0 && (
+              <>
+                <CompareRow
+                  label="Market Salary"
+                  values={plansWithTradeoffs.map((p) => {
+                    const md = marketData[p.targetRole];
+                    if (!md) return <span key={p.targetRole} className="text-xs text-slate-500">—</span>;
+                    return (
+                      <div key={p.targetRole}>
+                        <span className="text-xs font-medium text-teal-300">{fmtSalary(md.salaryMedian)}</span>
+                        <span className="text-[10px] text-slate-500 ml-1">median</span>
+                        <p className="text-[10px] text-slate-500 mt-0.5">
+                          {fmtSalary(md.salaryP25)} – {fmtSalary(md.salaryP75)}
+                        </p>
+                      </div>
+                    );
+                  })}
+                />
+                <CompareRow
+                  label="Demand Growth"
+                  values={plansWithTradeoffs.map((p) => {
+                    const md = marketData[p.targetRole];
+                    if (!md || md.growthPercent === null) return <span key={p.targetRole} className="text-xs text-slate-500">—</span>;
+                    return (
+                      <div key={p.targetRole}>
+                        <span className={`text-xs font-medium ${growthColor(md.growthPercent)}`}>
+                          +{md.growthPercent}%
+                        </span>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{md.growthLabel}</p>
+                      </div>
+                    );
+                  })}
+                />
+              </>
+            )}
             <CompareRow
               label="Skill Match"
               values={plansWithTradeoffs.map((p) => (

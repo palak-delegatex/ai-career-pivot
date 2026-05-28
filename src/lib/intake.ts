@@ -120,6 +120,21 @@ export interface PivotPlan {
   financialConsiderations?: string;
 }
 
+export interface MarketData {
+  role: string;
+  salaryP10: number;
+  salaryP25: number;
+  salaryMedian: number;
+  salaryP75: number;
+  salaryP90: number;
+  totalEmployment: number;
+  jobPostingsCount: number | null;
+  growthPercent: number | null;
+  growthLabel: string;
+  source: string;
+  updatedAt: string;
+}
+
 export interface IntakeResult {
   profile: UserProfile;
   plans: PivotPlan[];

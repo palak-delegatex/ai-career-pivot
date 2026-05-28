@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { PivotPlan } from "@/lib/intake";
+import type { PivotPlan, MarketData } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import InteractiveRoadmap from "@/components/InteractiveRoadmap";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
@@ -11,16 +11,20 @@ import WeekOneActionCards from "@/components/WeekOneActionCards";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 import FollowUpChat from "@/components/FollowUpChat";
+import MarketDataBanner, { MarketDataLoader } from "@/components/MarketDataBanner";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
   const plan = plans[selected];
+  const roles = plans.map((p) => p.targetRole);
 
   return (
+    <MarketDataLoader roles={roles}>
+      {(marketData) => (
     <>
       <PlanSelector plans={plans} selected={selected} onSelect={setSelected} />
 
-      {plans.length > 1 && <PathComparison plans={plans} onSelectPlan={setSelected} />}
+      {plans.length > 1 && <PathComparison plans={plans} onSelectPlan={setSelected} marketData={marketData} />}
 
       <div className="space-y-6">
         <PlanHero plan={plan} />
@@ -28,6 +32,8 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
         <div className="flex justify-end">
           <DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} />
         </div>
+
+        <MarketDataBanner targetRole={plan.targetRole} marketData={marketData[plan.targetRole]} />
 
         <InteractiveRoadmap
           sixMonthMilestones={plan.sixMonthMilestones}
@@ -147,5 +153,7 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
         />
       </div>
     </>
+      )}
+    </MarketDataLoader>
   );
 }
