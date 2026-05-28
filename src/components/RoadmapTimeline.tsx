@@ -73,101 +73,102 @@ export default function RoadmapTimeline({
         </span>
       </div>
 
-      {/* Mobile: vertical timeline */}
-      <ol className="md:hidden relative space-y-0" aria-label="Timeline phases">
-        {phases.map((phase, idx) => {
-          const colors = nodeColors[phase.color];
-          const isLast = idx === phases.length - 1;
-          const hasMore = phase.milestones.length > PREVIEW_COUNT;
+      {/* Mobile: horizontal swipeable timeline */}
+      <div className="md:hidden">
+        <ol
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 -mx-2 px-2"
+          aria-label="Timeline phases"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {phases.map((phase, idx) => {
+            const colors = nodeColors[phase.color];
+            const hasMore = phase.milestones.length > PREVIEW_COUNT;
 
-          return (
-            <li key={phase.label} className="relative pl-8 pb-8 last:pb-0">
-              {/* Vertical connector line */}
-              {!isLast && (
-                <div
-                  className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-gradient-to-b from-slate-600 to-slate-700/50"
-                  aria-hidden="true"
-                />
-              )}
-
-              {/* Phase node */}
-              <div
-                className={`absolute left-0 top-0.5 h-6 w-6 rounded-full border-2 ${colors.border} ${colors.bg} shadow-lg ${colors.glow} flex items-center justify-center`}
-                aria-hidden="true"
-              >
-                <span className="text-[10px] font-bold text-white">
-                  {idx + 1}
-                </span>
-              </div>
-
-              {/* Phase content */}
-              <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+            return (
+              <li key={phase.label} className="snap-center shrink-0 w-[85vw] max-w-[340px]">
+                {/* Phase node */}
                 <div className="flex items-center gap-2 mb-3">
+                  <div
+                    className={`h-7 w-7 rounded-full border-2 ${colors.border} ${colors.bg} shadow-lg ${colors.glow} flex items-center justify-center shrink-0`}
+                    aria-hidden="true"
+                  >
+                    <span className="text-xs font-bold text-white">
+                      {idx + 1}
+                    </span>
+                  </div>
                   <h3 className={`text-sm font-bold ${colors.text}`}>
                     {phase.label}
                   </h3>
                   <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${colors.badge}`}
+                    className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${colors.badge}`}
                   >
                     {phase.milestones.length} milestones
                   </span>
                 </div>
 
-                <ul className="space-y-1.5" role="list">
-                  {phase.milestones
-                    .slice(0, PREVIEW_COUNT)
-                    .map((item, i) => (
-                      <li
-                        key={i}
-                        className="flex items-start gap-2 text-sm text-slate-300"
-                      >
-                        <span
-                          className={`${colors.bullet} mt-0.5 shrink-0`}
+                {/* Phase content */}
+                <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+                  <ul className="space-y-1.5" role="list">
+                    {phase.milestones
+                      .slice(0, PREVIEW_COUNT)
+                      .map((item, i) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 text-sm text-slate-300"
                         >
-                          →
-                        </span>
-                        <span className="leading-snug">{item}</span>
-                      </li>
-                    ))}
-                </ul>
+                          <span
+                            className={`${colors.bullet} mt-0.5 shrink-0`}
+                          >
+                            →
+                          </span>
+                          <span className="leading-snug">{item}</span>
+                        </li>
+                      ))}
+                  </ul>
 
-                {hasMore && (
-                  <Collapsible>
-                    <CollapsibleContent className="overflow-hidden transition-all data-[ending-style]:h-0 data-[starting-style]:h-0">
-                      <ul className="space-y-1.5 mt-1.5" role="list">
-                        {phase.milestones
-                          .slice(PREVIEW_COUNT)
-                          .map((item, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-2 text-sm text-slate-300"
-                            >
-                              <span
-                                className={`${colors.bullet} mt-0.5 shrink-0`}
+                  {hasMore && (
+                    <Collapsible>
+                      <CollapsibleContent className="overflow-hidden transition-all data-[ending-style]:h-0 data-[starting-style]:h-0">
+                        <ul className="space-y-1.5 mt-1.5" role="list">
+                          {phase.milestones
+                            .slice(PREVIEW_COUNT)
+                            .map((item, i) => (
+                              <li
+                                key={i}
+                                className="flex items-start gap-2 text-sm text-slate-300"
                               >
-                                →
-                              </span>
-                              <span className="leading-snug">{item}</span>
-                            </li>
-                          ))}
-                      </ul>
-                    </CollapsibleContent>
-                    <CollapsibleTrigger className="mt-2 flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition-colors group cursor-pointer">
-                      <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[panel-open]:rotate-180" />
-                      <span className="group-data-[panel-open]:hidden">
-                        Show {phase.milestones.length - PREVIEW_COUNT} more
-                      </span>
-                      <span className="hidden group-data-[panel-open]:inline">
-                        Show less
-                      </span>
-                    </CollapsibleTrigger>
-                  </Collapsible>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+                                <span
+                                  className={`${colors.bullet} mt-0.5 shrink-0`}
+                                >
+                                  →
+                                </span>
+                                <span className="leading-snug">{item}</span>
+                              </li>
+                            ))}
+                        </ul>
+                      </CollapsibleContent>
+                      <CollapsibleTrigger className="mt-2 flex items-center gap-1.5 min-h-[44px] px-2 -mx-2 text-sm text-slate-400 hover:text-slate-200 transition-colors group cursor-pointer">
+                        <ChevronDown className="h-4 w-4 transition-transform group-data-[panel-open]:rotate-180" />
+                        <span className="group-data-[panel-open]:hidden">
+                          Show {phase.milestones.length - PREVIEW_COUNT} more
+                        </span>
+                        <span className="hidden group-data-[panel-open]:inline">
+                          Show less
+                        </span>
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+        <div className="flex justify-center gap-1.5 mt-2" aria-hidden="true">
+          {phases.map((phase) => (
+            <div key={phase.label} className={`w-2 h-2 rounded-full ${nodeColors[phase.color].bg} opacity-50`} />
+          ))}
+        </div>
+      </div>
 
       {/* Desktop: horizontal timeline */}
       <ol
@@ -248,8 +249,8 @@ export default function RoadmapTimeline({
                           ))}
                       </ul>
                     </CollapsibleContent>
-                    <CollapsibleTrigger className="mt-2 flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition-colors group cursor-pointer">
-                      <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[panel-open]:rotate-180" />
+                    <CollapsibleTrigger className="mt-2 flex items-center gap-1.5 min-h-[44px] px-2 -mx-2 text-sm text-slate-400 hover:text-slate-200 transition-colors group cursor-pointer">
+                      <ChevronDown className="h-4 w-4 transition-transform group-data-[panel-open]:rotate-180" />
                       <span className="group-data-[panel-open]:hidden">
                         +{phase.milestones.length - PREVIEW_COUNT} more
                       </span>

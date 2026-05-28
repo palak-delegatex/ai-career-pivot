@@ -131,7 +131,7 @@ export default function SiteNav() {
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="icon-sm" aria-label="Open menu" />
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="min-w-[44px] min-h-[44px]" />
             }
           >
             <MenuIcon className="size-5" />
@@ -145,7 +145,7 @@ export default function SiteNav() {
                   render={
                     <Link
                       href={href}
-                      className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      className={`block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-medium transition-colors ${
                         pathname === href
                           ? "bg-muted text-white"
                           : "text-slate-400 hover:text-white hover:bg-muted"
@@ -159,7 +159,7 @@ export default function SiteNav() {
               <Separator className="my-2" />
               {user ? (
                 <form action="/api/auth/signout" method="POST">
-                  <button className="block w-full text-left rounded-lg px-3 py-2.5 text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
+                  <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
                     Sign Out
                   </button>
                 </form>
@@ -168,7 +168,7 @@ export default function SiteNav() {
                   render={
                     <Link
                       href="/login"
-                      className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+                      className="block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
                     />
                   }
                 >

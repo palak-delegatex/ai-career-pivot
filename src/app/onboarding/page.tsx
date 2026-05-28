@@ -572,7 +572,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6 py-20">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6 py-20 pb-24 md:pb-20">
       <div className="max-w-lg w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
@@ -673,13 +673,15 @@ export default function OnboardingPage() {
                   </p>
                 )}
 
-                <button
-                  type="button"
-                  onClick={handleStep1Next}
-                  className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next &rarr;
-                </button>
+                <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
+                  <button
+                    type="button"
+                    onClick={handleStep1Next}
+                    className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next &rarr;
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -753,29 +755,31 @@ export default function OnboardingPage() {
                   )}
                 </div>
 
-                <div className="flex gap-3 mt-2">
-                  <button
-                    type="button"
-                    onClick={goBack}
-                    className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
-                  >
-                    &larr; Back
-                  </button>
+                <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={goBack}
+                      className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                    >
+                      &larr; Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goNext}
+                      className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                    >
+                      Next &rarr;
+                    </button>
+                  </div>
                   <button
                     type="button"
                     onClick={goNext}
-                    className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                    className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
                   >
-                    Next &rarr;
+                    Skip this step
                   </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center"
-                >
-                  Skip this step
-                </button>
               </motion.div>
             )}
 
@@ -863,34 +867,36 @@ export default function OnboardingPage() {
                   </select>
                 </div>
 
-                <div className="flex gap-3 mt-2">
-                  <button
-                    type="button"
-                    onClick={goBack}
-                    className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
-                  >
-                    &larr; Back
-                  </button>
+                <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={goBack}
+                      className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                    >
+                      &larr; Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                    >
+                      {ctaVariant === "urgency"
+                        ? "Reveal My Plan"
+                        : ctaVariant === "benefit"
+                          ? "Show My Best Move"
+                          : "Analyze My Background"}
+                      {" "}&rarr;
+                    </button>
+                  </div>
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                    className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
                   >
-                    {ctaVariant === "urgency"
-                      ? "Reveal My Plan"
-                      : ctaVariant === "benefit"
-                        ? "Show My Best Move"
-                        : "Analyze My Background"}
-                    {" "}&rarr;
+                    Skip &amp; analyze now
                   </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center"
-                >
-                  Skip &amp; analyze now
-                </button>
               </motion.div>
             )}
           </AnimatePresence>

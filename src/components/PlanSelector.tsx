@@ -27,7 +27,7 @@ export default function PlanSelector({
           <button
             key={i}
             onClick={() => onSelect(i)}
-            className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors text-left ${
+            className={`flex-1 px-4 py-3 min-h-[44px] rounded-xl border text-sm font-medium transition-colors text-left ${
               isActive
                 ? "bg-teal-600 border-teal-500 text-white"
                 : "bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-400"

@@ -6,6 +6,9 @@ import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
+import SuccessMetrics from "@/components/SuccessMetrics";
+import CaseStudyCards from "@/components/CaseStudyCards";
+import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 
 const organizationSchema = {
@@ -227,14 +230,14 @@ function StickyCtaBar() {
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 80, opacity: 0 }}
-      className="fixed bottom-0 inset-x-0 z-50 bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 flex items-center justify-center gap-4"
+      className="fixed bottom-0 inset-x-0 z-50 bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-4"
     >
       <span className="hidden sm:block text-slate-400 text-sm">Ready to pivot your career?</span>
       <Link
         href="/pricing"
         onClick={() => trackCtaClicked({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar", destination: "/pricing" })}
         onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar" })}
-        className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 hover:scale-[1.02]"
+        className="px-6 py-3 min-h-[44px] flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 hover:scale-[1.02]"
       >
         Get My Plan — $5 →
       </Link>
@@ -304,14 +307,14 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
-            <Link href="/about" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">About</Link>
-            <Link href="/faq" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
-            <Link href="/blog" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
-            <Link href="/pricing" className="hidden md:block text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
+            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
+            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">About</Link>
+            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
+            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
+            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
             <Link
               href="/pricing"
-              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
+              className="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
               Get Started
             </Link>
@@ -481,6 +484,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </section>
 
+        {/* Success Metrics Banner */}
+        <SuccessMetrics />
+
         {/* Dashboard visual proof */}
         <section className="relative w-full py-24 overflow-hidden">
           <Image
@@ -520,7 +526,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   variants={fadeUp}
                   custom={i}
                   whileHover={{ x: 4, transition: { duration: 0.15 } }}
-                  className="flex items-center justify-between bg-slate-900/70 backdrop-blur-sm rounded-xl px-5 py-3.5 border border-slate-800 hover:border-slate-600 transition-all duration-200 group"
+                  className="flex items-center justify-between bg-slate-900/70 backdrop-blur-sm rounded-xl px-5 py-3.5 min-h-[44px] border border-slate-800 hover:border-slate-600 transition-all duration-200 group"
                 >
                   <span className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{item.label}</span>
                   <span className="text-xs font-semibold text-teal-400 bg-teal-950/60 border border-teal-800/50 px-2 py-0.5 rounded-md ml-3 shrink-0">
@@ -534,6 +540,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
         {/* Voices of the AI Era — Image-Forward Expert Quotes */}
         <VoicesOfTheAIEra />
+
+        {/* Case Study Cards */}
+        <CaseStudyCards />
+
+        {/* Trust Bar */}
+        <TrustBar />
 
         {/* Social Proof / Testimonials */}
         <section className="py-28 px-6 bg-slate-900/30 border-y border-slate-800/40">
@@ -820,17 +832,17 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         </section>
 
         {/* Footer */}
-        <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
+        <footer className="py-8 pb-20 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
             <span className="text-slate-500 font-medium">AICareerPivot</span>
           </div>
-          <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">
-            <Link href="/about" className="hover:text-slate-400 transition-colors">About</Link>
-            <Link href="/how-it-works" className="hover:text-slate-400 transition-colors">How It Works</Link>
-            <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
-            <Link href="/blog" className="hover:text-slate-400 transition-colors">Blog</Link>
-            <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
+          <nav className="flex items-center justify-center flex-wrap gap-1 mb-2" aria-label="Footer navigation">
+            <Link href="/about" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">About</Link>
+            <Link href="/how-it-works" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">How It Works</Link>
+            <Link href="/faq" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">FAQ</Link>
+            <Link href="/blog" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">Blog</Link>
+            <Link href="/pricing" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">Pricing</Link>
           </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
         </footer>

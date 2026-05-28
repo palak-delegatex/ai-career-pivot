@@ -6,6 +6,12 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 interface Tier {
   label: string;
@@ -150,64 +156,58 @@ export default function SkillTree({ skillGaps }: { skillGaps: SkillGap[] }) {
         })}
       </div>
 
-      {/* Mobile: vertical */}
-      <ol className="md:hidden relative space-y-0" aria-label="Skill tree tiers">
+      {/* Mobile: collapsible tiers */}
+      <div className="md:hidden space-y-2" aria-label="Skill tree tiers">
         {tiers.map((tier, idx) => {
           const colors = tierColors[tier.color];
-          const isLast = idx === tiers.length - 1;
 
           return (
-            <li key={tier.label} className="relative pl-8 pb-6 last:pb-0">
-              {/* Vertical connector */}
-              {!isLast && (
-                <div
-                  className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-gradient-to-b from-slate-600 to-slate-700/50"
-                  aria-hidden="true"
-                />
-              )}
-
-              {/* Tier node */}
-              <div className={`absolute left-0 top-0.5 h-6 w-6 rounded-full ${colors.dot} flex items-center justify-center shadow-lg`}>
-                <span className="text-[10px] font-bold text-white">{idx + 1}</span>
-              </div>
-
-              {/* Tier content */}
-              <div className={`border rounded-xl p-3 ${colors.bg} ${colors.border}`}>
-                <p className={`text-xs font-semibold ${colors.text} mb-2`}>{tier.label}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {tier.skills.map((gap, i) => (
-                    <Tooltip key={i}>
-                      <TooltipTrigger asChild>
-                        <button
-                          className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer min-h-[44px] ${colors.chip}`}
-                        >
-                          {gap.skill}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="max-w-[240px] bg-slate-800 border border-slate-600 p-3">
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-medium text-white text-xs">{gap.skill}</span>
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium capitalize ${PRIORITY_BADGE[gap.priority]}`}>
-                              {gap.priority}
-                            </span>
+            <Collapsible key={tier.label} defaultOpen={idx === 0}>
+              <div className={`border rounded-xl ${colors.bg} ${colors.border}`}>
+                <CollapsibleTrigger className="w-full flex items-center gap-3 p-3 min-h-[44px] cursor-pointer group">
+                  <div className={`h-7 w-7 rounded-full ${colors.dot} flex items-center justify-center shadow-lg shrink-0`}>
+                    <span className="text-xs font-bold text-white">{idx + 1}</span>
+                  </div>
+                  <p className={`text-sm font-semibold ${colors.text} flex-1 text-left`}>{tier.label}</p>
+                  <span className="text-xs text-slate-500">{tier.skills.length} skills</span>
+                  <ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-data-[panel-open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="overflow-hidden transition-all data-[ending-style]:h-0 data-[starting-style]:h-0">
+                  <div className="flex flex-wrap gap-1.5 px-3 pb-3">
+                    {tier.skills.map((gap, i) => (
+                      <Tooltip key={i}>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer min-h-[44px] ${colors.chip}`}
+                          >
+                            {gap.skill}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-[240px] bg-slate-800 border border-slate-600 p-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-medium text-white text-xs">{gap.skill}</span>
+                              <span className={`text-[11px] px-1.5 py-0.5 rounded-full border font-medium capitalize ${PRIORITY_BADGE[gap.priority]}`}>
+                                {gap.priority}
+                              </span>
+                            </div>
+                            <p className="text-slate-400 text-xs">
+                              {gap.currentLevel} → {gap.requiredLevel}
+                            </p>
+                            {gap.resource && (
+                              <p className="text-amber-300/80 text-xs">{gap.resource}</p>
+                            )}
                           </div>
-                          <p className="text-slate-400 text-[11px]">
-                            {gap.currentLevel} → {gap.requiredLevel}
-                          </p>
-                          {gap.resource && (
-                            <p className="text-amber-300/80 text-[11px]">{gap.resource}</p>
-                          )}
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </CollapsibleContent>
               </div>
-            </li>
+            </Collapsible>
           );
         })}
-      </ol>
+      </div>
     </div>
   );
 }

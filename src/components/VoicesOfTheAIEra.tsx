@@ -253,7 +253,7 @@ export default function VoicesOfTheAIEra() {
           </div>
           <Link
             href="/pricing"
-            className="shrink-0 px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.03]"
+            className="shrink-0 px-5 py-3 min-h-[44px] inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.03]"
           >
             Build My Pivot Plan — $5 →
           </Link>
