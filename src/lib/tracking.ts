@@ -79,6 +79,16 @@ export function trackCtaClicked(props: { cta_text: string; cta_location: string;
   capture("cta_clicked", props);
 }
 
+// CTA hover intent
+export function trackCtaHovered(props: { cta_text: string; cta_location: string }) {
+  capture("cta_hovered", props);
+}
+
+// Scroll depth
+export function trackScrollDepth(props: { depth_percent: number; section_visible: string }) {
+  capture("scroll_depth", props);
+}
+
 // Referral
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");

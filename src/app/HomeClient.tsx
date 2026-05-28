@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
-import { trackCtaClicked } from "@/lib/tracking";
+import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -209,7 +209,61 @@ const testimonials = [
   },
 ];
 
+function StickyCtaBar() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setVisible(window.scrollY > 600);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 80, opacity: 0 }}
+      className="fixed bottom-0 inset-x-0 z-50 bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 flex items-center justify-center gap-4"
+    >
+      <span className="hidden sm:block text-slate-400 text-sm">Ready to pivot your career?</span>
+      <Link
+        href="/pricing"
+        onClick={() => trackCtaClicked({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar", destination: "/pricing" })}
+        onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar" })}
+        className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 hover:scale-[1.02]"
+      >
+        Get My Plan — $5 →
+      </Link>
+    </motion.div>
+  );
+}
+
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
+  const heroRef = useRef<HTMLElement>(null);
+
+  const handleHeroCtaHover = useCallback(() => {
+    trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $5", cta_location: "hero" });
+  }, []);
+
+  useEffect(() => {
+    let lastDepth = 0;
+    function onScroll() {
+      const depth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      const rounded = Math.floor(depth / 25) * 25;
+      if (rounded > lastDepth && rounded > 0) {
+        lastDepth = rounded;
+        const sections = ["hero", "how-it-works", "testimonials", "final-cta"];
+        const idx = Math.min(Math.floor(rounded / 25) - 1, sections.length - 1);
+        trackScrollDepth({ depth_percent: rounded, section_visible: sections[idx] });
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -226,6 +280,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
       />
+
+      {/* Sticky CTA bar */}
+      <StickyCtaBar />
 
       {/* Mesh background */}
       <div className="mesh-bg" />
@@ -262,7 +319,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         </motion.nav>
 
         {/* Hero */}
-        <main className="relative flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center w-full overflow-hidden">
+        <main ref={heroRef} className="relative flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center w-full overflow-hidden">
           <Image
             src="/images/hero-career-pivot.png"
             alt=""
@@ -280,7 +337,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Intro Pricing — Just $5 (was $29)
+            Intro Pricing — Just $5 (was $29) · Limited time
           </motion.div>
 
           <motion.h1
@@ -302,33 +359,72 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.35 }}
-            className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-12"
+            className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6"
           >
-            Most career advice ignores your actual background. We don&apos;t.
-            AICareerPivot reads your LinkedIn, resume, and portfolio — then builds a personalized
-            roadmap around your real skills, finances, and family constraints.
+            Upload your resume. Get a personalized career pivot roadmap built around your
+            real skills, finances, and family constraints — in under 5 minutes.
           </motion.p>
 
+          {/* Social proof — positioned ABOVE CTA for trust-before-action */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.5 }}
+            className="mb-6 max-w-md mx-auto"
+          >
+            <div className="flex items-center justify-center gap-3 bg-slate-900/70 backdrop-blur-sm border border-slate-800/60 rounded-xl px-5 py-3">
+              <div className="flex -space-x-2 shrink-0">
+                {[
+                  { initials: "SK", gradient: "from-teal-500 to-emerald-500" },
+                  { initials: "MT", gradient: "from-sky-500 to-blue-600" },
+                  { initials: "PR", gradient: "from-violet-500 to-purple-600" },
+                  { initials: "JL", gradient: "from-amber-500 to-orange-500" },
+                  { initials: "EV", gradient: "from-rose-500 to-pink-500" },
+                ].map((a) => (
+                  <div key={a.initials} className={`w-7 h-7 rounded-full bg-gradient-to-br ${a.gradient} flex items-center justify-center text-white text-[10px] font-bold ring-2 ring-slate-900`}>
+                    {a.initials}
+                  </div>
+                ))}
+              </div>
+              <p className="text-slate-400 text-sm">
+                <span className="text-white font-semibold">127 professionals pivoted this month</span>
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Primary CTA — larger, animated ring for attention */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.4 }}
-            className="flex flex-col sm:flex-row gap-3 mb-20"
+            className="flex flex-col items-center gap-4 mb-10"
           >
-            <Link
-              href="/pricing"
-              onClick={() => trackCtaClicked({ cta_text: "Get My Roadmap — $5", cta_location: "hero", destination: "/pricing" })}
-              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-semibold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 hover:scale-[1.02] text-white overflow-hidden"
-            >
-              <span className="relative z-10">Get My Roadmap — $5 →</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="px-8 py-4 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
-            >
-              See How It Works
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/pricing"
+                onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan Now — $5", cta_location: "hero", destination: "/pricing" })}
+                onMouseEnter={handleHeroCtaHover}
+                className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
+              >
+                <span className="relative z-10">Build My Pivot Plan Now — $5 →</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="px-8 py-6 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
+              >
+                See How It Works
+              </Link>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <p className="text-slate-500 text-sm">
+                Takes 3 minutes · No subscription · Full roadmap yours to keep
+              </p>
+              <p className="text-amber-400/80 text-xs font-medium">
+                🔥 83 people viewed this page today
+              </p>
+            </div>
           </motion.div>
 
           {/* Stats */}
@@ -501,6 +597,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <Link
                   href="/pricing"
                   onClick={() => trackCtaClicked({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials", destination: "/pricing" })}
+                  onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
                   Start My Career Pivot — $5 →
@@ -521,22 +618,24 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <div className="absolute inset-0 bg-gradient-to-r from-teal-600/5 to-cyan-600/5 animate-gradient" />
               <div className="relative z-10">
                 <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                  Ready to map your next chapter?
+                  Your career won&apos;t wait. Neither should you.
                 </motion.h2>
-                <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-10 leading-relaxed">
-                  Get your personalized career pivot roadmap today — just $5 intro pricing.
+                <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-8 leading-relaxed">
+                  Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.
                 </motion.p>
-                <motion.div variants={fadeUp}>
+                <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
                   <Link
                     href="/pricing"
-                    onClick={() => trackCtaClicked({ cta_text: "Get My Roadmap — $5", cta_location: "final_cta", destination: "/pricing" })}
-                    className="group inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
+                    onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan — $5", cta_location: "final_cta", destination: "/pricing" })}
+                    onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $5", cta_location: "final_cta" })}
+                    className="group inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Get My Roadmap — $5
+                    Build My Pivot Plan — $5
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
+                  <p className="text-slate-500 text-sm">3 minutes · No subscription · Yours to keep forever</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -680,6 +779,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <Link
                   href="/pricing"
                   onClick={() => trackCtaClicked({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses", destination: "/pricing" })}
+                  onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
                   Get My Personalized Learning Path — $5 →
@@ -730,7 +830,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <Link href="/how-it-works" className="hover:text-slate-400 transition-colors">How It Works</Link>
             <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
             <Link href="/blog" className="hover:text-slate-400 transition-colors">Blog</Link>
-            <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
             <Link href="/pricing" className="hover:text-slate-400 transition-colors">Pricing</Link>
           </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
