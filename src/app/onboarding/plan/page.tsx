@@ -10,6 +10,7 @@ import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
 import PathComparison from "@/components/PathComparison";
+import PlanSelector from "@/components/PlanSelector";
 
 export default function PivotPlanPage() {
   const router = useRouter();
@@ -80,27 +81,19 @@ export default function PivotPlanPage() {
         </div>
 
         {/* Plan selector */}
-        {plans.length > 1 && (
-          <div className="flex gap-3 mb-8">
-            {plans.map((p, i) => (
-              <button
-                key={i}
-                onClick={() => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: p.targetRole, target_industry: p.targetIndustry }); }}
-                className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${
-                  i === selected
-                    ? "bg-teal-600 border-teal-500 text-white"
-                    : "bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-400"
-                }`}
-              >
-                <span className="block font-bold">{p.targetRole}</span>
-                <span className="text-xs opacity-70">{p.targetIndustry}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        <PlanSelector
+          plans={plans}
+          selected={selected}
+          onSelect={(i) => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: plans[i].targetRole, target_industry: plans[i].targetIndustry }); }}
+        />
 
         {/* Cross-path comparison */}
-        {plans.length > 1 && <PathComparison plans={plans} />}
+        {plans.length > 1 && (
+          <PathComparison
+            plans={plans}
+            onSelectPlan={(i) => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: plans[i].targetRole, target_industry: plans[i].targetIndustry }); }}
+          />
+        )}
 
         {/* Selected plan */}
         <div className="space-y-6">

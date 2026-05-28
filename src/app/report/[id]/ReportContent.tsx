@@ -9,6 +9,7 @@ import SkillGapChart from "@/components/SkillGapChart";
 import SkillTree from "@/components/SkillTree";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
 import PathComparison from "@/components/PathComparison";
+import PlanSelector from "@/components/PlanSelector";
 import FollowUpChat from "@/components/FollowUpChat";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
@@ -17,26 +18,9 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
 
   return (
     <>
-      {plans.length > 1 && (
-        <div className="flex gap-3 mb-8">
-          {plans.map((p, i) => (
-            <button
-              key={i}
-              onClick={() => setSelected(i)}
-              className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${
-                i === selected
-                  ? "bg-teal-600 border-teal-500 text-white"
-                  : "bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-400"
-              }`}
-            >
-              <span className="block font-bold">{p.targetRole}</span>
-              <span className="text-xs opacity-70">{p.targetIndustry}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <PlanSelector plans={plans} selected={selected} onSelect={setSelected} />
 
-      {plans.length > 1 && <PathComparison plans={plans} />}
+      {plans.length > 1 && <PathComparison plans={plans} onSelectPlan={setSelected} />}
 
       <div className="space-y-6">
         <PlanHero plan={plan} />
