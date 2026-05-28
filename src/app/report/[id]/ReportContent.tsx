@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { PivotPlan } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
-import RoadmapTimeline from "@/components/RoadmapTimeline";
+import InteractiveRoadmap from "@/components/InteractiveRoadmap";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 import SkillGapChart from "@/components/SkillGapChart";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
@@ -40,10 +40,12 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           <DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} />
         </div>
 
-        <RoadmapTimeline
+        <InteractiveRoadmap
           sixMonthMilestones={plan.sixMonthMilestones}
           oneYearMilestones={plan.oneYearMilestones}
           twoYearMilestones={plan.twoYearMilestones}
+          reportId={reportId}
+          planIndex={selected}
         />
 
         {(plan.skillGaps ?? []).length > 0 && (
