@@ -14,56 +14,62 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid plan" }, { status: 400 });
   }
 
-  const stripe = getStripeClient();
-  const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
+  try {
+    const stripe = getStripeClient();
+    const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
 
-  const priceData: Record<string, unknown> = {
-    currency: "usd",
-    unit_amount: plan.amount,
-    product_data: {
-      name: plan.label,
-      description: plan.description,
-    },
-  };
-  if (plan.recurring) {
-    priceData.recurring = plan.recurring;
-  }
-
-  const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-    mode: plan.mode,
-    customer_email: email,
-    line_items: [{ price_data: priceData as never, quantity: 1 }],
-    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/pricing`,
-    metadata: { email, plan: planKey, discountCode: discountCode ?? "" },
-  };
-
-  if (discountCode) {
-    try {
-      const promos = await stripe.promotionCodes.list({
-        code: discountCode,
-        active: true,
-        limit: 1,
-      });
-      if (promos.data.length > 0) {
-        sessionParams.discounts = [{ promotion_code: promos.data[0].id }];
-      }
-    } catch {
-      // Invalid code — proceed without discount
+    const priceData: Record<string, unknown> = {
+      currency: "usd",
+      unit_amount: plan.amount,
+      product_data: {
+        name: plan.label,
+        description: plan.description,
+      },
+    };
+    if (plan.recurring) {
+      priceData.recurring = plan.recurring;
     }
+
+    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+      mode: plan.mode,
+      customer_email: email,
+      line_items: [{ price_data: priceData as never, quantity: 1 }],
+      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/pricing`,
+      metadata: { email, plan: planKey, discountCode: discountCode ?? "" },
+    };
+
+    if (discountCode) {
+      try {
+        const promos = await stripe.promotionCodes.list({
+          code: discountCode,
+          active: true,
+          limit: 1,
+        });
+        if (promos.data.length > 0) {
+          sessionParams.discounts = [{ promotion_code: promos.data[0].id }];
+        }
+      } catch {
+        // Invalid code — proceed without discount
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
+
+    const supabase = getSupabaseClient();
+    await supabase.from("orders").insert({
+      email,
+      stripe_session_id: session.id,
+      amount_cents: plan.amount,
+      status: "pending",
+      discount_code: discountCode ?? null,
+      plan_type: planKey,
+    });
+
+    return NextResponse.json({ url: session.url });
+  } catch (err) {
+    console.error("Checkout session creation failed:", err);
+    const message = err instanceof Error ? err.message : "Checkout failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const session = await stripe.checkout.sessions.create(sessionParams);
-
-  const supabase = getSupabaseClient();
-  await supabase.from("orders").insert({
-    email,
-    stripe_session_id: session.id,
-    amount_cents: plan.amount,
-    status: "pending",
-    discount_code: discountCode ?? null,
-    plan_type: planKey,
-  });
-
-  return NextResponse.json({ url: session.url });
 }

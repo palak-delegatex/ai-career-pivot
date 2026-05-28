@@ -242,8 +242,8 @@ export default function PivotPlanPage() {
             Get a comprehensive week-by-week plan, salary research, and personalized networking scripts.
           </p>
           <Link
-            href="/waitlist"
-            onClick={() => trackCtaClicked({ cta_text: "Get Full Access", cta_location: "plan_page", destination: "/waitlist" })}
+            href="/pricing"
+            onClick={() => trackCtaClicked({ cta_text: "Get Full Access", cta_location: "plan_page", destination: "/pricing" })}
             className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
             Get Full Access →
