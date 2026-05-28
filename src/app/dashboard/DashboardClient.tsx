@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import DashboardHero from "@/components/DashboardHero";
+import MilestoneChecklist from "@/components/MilestoneChecklist";
+import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
+import NextActionsWidget from "@/components/NextActionsWidget";
 
 interface Report {
   id: string;
@@ -13,10 +17,112 @@ interface Report {
   created_at: string;
 }
 
+interface MilestoneProgressRow {
+  phase: string;
+  milestone_index: number;
+  completed: boolean;
+  notes: string | null;
+  completed_at: string | null;
+}
+
+function progressKey(phase: string, idx: number) {
+  return `${phase}:${idx}`;
+}
+
+function buildPhases(plan: PivotPlan): PhaseData[] {
+  return [
+    {
+      key: "6mo",
+      label: "6 Months",
+      milestones: plan.sixMonthMilestones ?? [],
+      color: "emerald",
+    },
+    {
+      key: "1yr",
+      label: "1 Year",
+      milestones: plan.oneYearMilestones ?? [],
+      color: "teal",
+    },
+    {
+      key: "2yr",
+      label: "2 Years",
+      milestones: plan.twoYearMilestones ?? [],
+      color: "cyan",
+    },
+  ];
+}
+
+function computeScheduleStatus(
+  phases: PhaseData[],
+  statuses: Map<string, MilestoneState>
+): "on-track" | "behind-schedule" | "at-risk" {
+  const total = phases.reduce((s, p) => s + p.milestones.length, 0);
+  if (total === 0) return "on-track";
+
+  let completed = 0;
+  for (const phase of phases) {
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (statuses.get(progressKey(phase.key, i))?.completed) completed++;
+    }
+  }
+
+  const pct = completed / total;
+  if (pct >= 0.3) return "on-track";
+  if (pct >= 0.1) return "behind-schedule";
+  return completed > 0 ? "on-track" : "on-track";
+}
+
+function getNextActions(
+  phases: PhaseData[],
+  statuses: Map<string, MilestoneState>,
+  plan: PivotPlan
+) {
+  const items: {
+    phase: string;
+    phaseLabel: string;
+    milestone: string;
+    milestoneIndex: number;
+    actions: { title: string; instruction: string; timeEstimate: string }[];
+  }[] = [];
+
+  for (const phase of phases) {
+    for (let i = 0; i < phase.milestones.length; i++) {
+      const key = progressKey(phase.key, i);
+      const state = statuses.get(key);
+      if (!state || !state.completed) {
+        items.push({
+          phase: phase.key,
+          phaseLabel: phase.label,
+          milestone: phase.milestones[i],
+          milestoneIndex: i,
+          actions:
+            items.length === 0 && plan.weekOneActions
+              ? plan.weekOneActions.slice(0, 2).map((a) => ({
+                  title: a.title,
+                  instruction: a.instruction,
+                  timeEstimate: a.timeEstimate,
+                }))
+              : [],
+        });
+      }
+      if (items.length >= 3) break;
+    }
+    if (items.length >= 3) break;
+  }
+
+  return items;
+}
+
 export default function DashboardClient() {
   const [reports, setReports] = useState<Report[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
+  const [milestoneStatuses, setMilestoneStatuses] = useState<
+    Map<string, MilestoneState>
+  >(new Map());
+  const [progressLoaded, setProgressLoaded] = useState(false);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadReports() {
@@ -50,129 +156,190 @@ export default function DashboardClient() {
     loadReports();
   }, []);
 
+  const activeReport = reports?.[0];
+  const activePlan = activeReport?.plans[selectedPlanIndex];
+
+  const loadProgress = useCallback(async () => {
+    if (!activeReport) return;
+    try {
+      const res = await fetch(
+        `/api/roadmap/progress?reportId=${activeReport.id}&planIndex=${selectedPlanIndex}`
+      );
+      if (!res.ok) return;
+      const { progress: items } = (await res.json()) as {
+        progress: MilestoneProgressRow[];
+      };
+      const map = new Map<string, MilestoneState>();
+      for (const item of items) {
+        map.set(progressKey(item.phase, item.milestone_index), {
+          completed: item.completed,
+          notes: item.notes,
+          completed_at: item.completed_at,
+        });
+      }
+      setMilestoneStatuses(map);
+    } finally {
+      setProgressLoaded(true);
+    }
+  }, [activeReport, selectedPlanIndex]);
+
+  useEffect(() => {
+    if (activeReport) {
+      setProgressLoaded(false);
+      loadProgress();
+    }
+  }, [activeReport, loadProgress]);
+
+  async function handleToggle(phaseKey: string, milestoneIndex: number) {
+    if (!activeReport) return;
+    const key = progressKey(phaseKey, milestoneIndex);
+    const current = milestoneStatuses.get(key);
+    const wasCompleted = current?.completed ?? false;
+    const newCompleted = !wasCompleted;
+
+    setSavingKey(key);
+    setMilestoneStatuses((prev) => {
+      const updated = new Map(prev);
+      updated.set(key, {
+        completed: newCompleted,
+        notes: current?.notes ?? null,
+        completed_at: newCompleted ? new Date().toISOString() : null,
+      });
+      return updated;
+    });
+
+    try {
+      await fetch("/api/roadmap/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: activeReport.id,
+          planIndex: selectedPlanIndex,
+          phase: phaseKey,
+          milestoneIndex,
+          completed: newCompleted,
+          notes: current?.notes ?? null,
+        }),
+      });
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
   if (loading) {
     return (
       <main className="max-w-3xl mx-auto px-6 py-12 text-center">
         <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-400">Loading your roadmaps...</p>
+        <p className="text-slate-400">Loading your dashboard...</p>
       </main>
     );
   }
 
+  if (error) {
+    return (
+      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+        <p className="text-red-400 text-sm">{error}</p>
+      </main>
+    );
+  }
+
+  if (!reports || reports.length === 0) {
+    return (
+      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+        <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
+        <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
+        <Link
+          href="/pricing"
+          className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
+        >
+          Get Your Career Pivot Report
+        </Link>
+      </main>
+    );
+  }
+
+  const phases = activePlan ? buildPhases(activePlan) : [];
+  const totalMilestones = phases.reduce(
+    (s, p) => s + p.milestones.length,
+    0
+  );
+  let completedMilestones = 0;
+  for (const phase of phases) {
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (milestoneStatuses.get(progressKey(phase.key, i))?.completed)
+        completedMilestones++;
+    }
+  }
+  const completionPercent =
+    totalMilestones > 0
+      ? Math.round((completedMilestones / totalMilestones) * 100)
+      : 0;
+  const scheduleStatus = computeScheduleStatus(phases, milestoneStatuses);
+  const nextActions = activePlan
+    ? getNextActions(phases, milestoneStatuses, activePlan)
+    : [];
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-extrabold text-center mb-2">
-        Your Roadmaps
+        Your Dashboard
       </h1>
       <p className="text-slate-400 text-center mb-8">
-        Your career pivot reports linked to your account.
+        Track your career pivot progress
       </p>
 
-      {error && (
-        <p className="text-red-400 text-center text-sm mb-6">{error}</p>
-      )}
-
-      {reports !== null && reports.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-400 mb-4">No roadmaps found yet.</p>
-          <Link
-            href="/pricing"
-            className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
-          >
-            Get Your Career Pivot Report
-          </Link>
+      {activeReport && activeReport.plans.length > 1 && (
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {activeReport.plans.map((plan, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedPlanIndex(i)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
+                i === selectedPlanIndex
+                  ? "bg-teal-600 text-white"
+                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+              }`}
+            >
+              {plan.targetRole}
+            </button>
+          ))}
         </div>
       )}
 
-      {reports && reports.length > 0 && (
-        <div className="space-y-4">
-          <p className="text-slate-400 text-sm">
-            {reports.length} roadmap{reports.length > 1 ? "s" : ""} found
-          </p>
-          {reports.map((report) => (
-            <ReportCard key={report.id} report={report} />
-          ))}
+      {activePlan && (
+        <div className="space-y-6">
+          <DashboardHero
+            completionPercent={completionPercent}
+            status={scheduleStatus}
+            totalMilestones={totalMilestones}
+            completedMilestones={completedMilestones}
+            remainingMilestones={totalMilestones - completedMilestones}
+            targetRole={activePlan.targetRole}
+          />
 
-          <div className="mt-6 pt-6 border-t border-slate-700/50">
-            <p className="text-slate-400 text-sm text-center mb-3">
-              Ready to pick up where you left off?
-            </p>
+          {progressLoaded && (
+            <>
+              <NextActionsWidget items={nextActions} />
+
+              <MilestoneChecklist
+                phases={phases}
+                statuses={milestoneStatuses}
+                onToggle={handleToggle}
+                savingKey={savingKey}
+              />
+            </>
+          )}
+
+          <div className="pt-4 border-t border-slate-700/50">
             <Link
-              href={`/report/${reports[0].id}`}
+              href={`/report/${activeReport!.id}`}
               className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
             >
-              Continue My Roadmap
+              View Full Report
             </Link>
           </div>
         </div>
       )}
     </main>
-  );
-}
-
-function ReportCard({ report }: { report: Report }) {
-  const plan = report.plans[0];
-  const date = new Date(report.created_at).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  return (
-    <Link
-      href={`/report/${report.id}`}
-      className="block bg-slate-800/60 border border-slate-700 rounded-2xl p-6 hover:border-teal-500 transition-colors group"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="font-bold text-lg text-white group-hover:text-teal-400 transition-colors truncate">
-            {plan?.targetRole ?? "Career Pivot Report"}
-          </h3>
-          <p className="text-slate-400 text-sm mt-1">
-            {plan?.targetIndustry}
-            {plan?.estimatedTimeToTransition &&
-              ` · ${plan.estimatedTimeToTransition}`}
-          </p>
-          {report.plans.length > 1 && (
-            <p className="text-slate-500 text-xs mt-2">
-              +{report.plans.length - 1} more plan
-              {report.plans.length > 2 ? "s" : ""}
-            </p>
-          )}
-        </div>
-        <span className="text-slate-500 text-xs shrink-0">{date}</span>
-      </div>
-
-      {plan &&
-        ((plan.weekOneActions ?? []).length > 0 ||
-          (plan.keyActions ?? []).length > 0) && (
-          <div className="mt-4 pt-4 border-t border-slate-700/50">
-            <p className="text-sm font-medium text-slate-300 mb-2">
-              Next actions:
-            </p>
-            <ul className="space-y-1">
-              {plan.weekOneActions
-                ? plan.weekOneActions.slice(0, 3).map((action, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-xs text-slate-400"
-                    >
-                      <span className="text-teal-400 mt-0.5 shrink-0">○</span>
-                      <span className="line-clamp-1">{action.title}</span>
-                    </li>
-                  ))
-                : plan.keyActions!.slice(0, 3).map((action, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-xs text-slate-400"
-                    >
-                      <span className="text-teal-400 mt-0.5 shrink-0">○</span>
-                      <span className="line-clamp-1">{action}</span>
-                    </li>
-                  ))}
-            </ul>
-          </div>
-        )}
-    </Link>
   );
 }
