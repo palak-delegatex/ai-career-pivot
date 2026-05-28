@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { MenuIcon } from "lucide-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import type { User } from "@supabase/supabase-js";
 
 const NAV_LINKS = [
   { href: "/blog", label: "Blog" },
@@ -59,6 +61,18 @@ function Logo() {
 export default function SiteNav() {
   const pathname = usePathname();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <>
@@ -88,16 +102,32 @@ export default function SiteNav() {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <Button render={<Link href="/pricing" />} size="sm" className="ml-2">
-          Get Started
-        </Button>
+        {user ? (
+          <form action="/api/auth/signout" method="POST" className="ml-2">
+            <Button type="submit" variant="outline" size="sm">
+              Sign Out
+            </Button>
+          </form>
+        ) : (
+          <Button render={<Link href="/login" />} size="sm" className="ml-2">
+            Sign In
+          </Button>
+        )}
       </div>
 
       {/* Mobile nav */}
       <div className="sm:hidden flex items-center gap-2">
-        <Button render={<Link href="/pricing" />} size="sm">
-          Get Started
-        </Button>
+        {user ? (
+          <form action="/api/auth/signout" method="POST">
+            <Button type="submit" variant="outline" size="sm">
+              Sign Out
+            </Button>
+          </form>
+        ) : (
+          <Button render={<Link href="/login" />} size="sm">
+            Sign In
+          </Button>
+        )}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
             render={
@@ -127,16 +157,24 @@ export default function SiteNav() {
                 </SheetClose>
               ))}
               <Separator className="my-2" />
-              <SheetClose
-                render={
-                  <Link
-                    href="/pricing"
-                    className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
-                  />
-                }
-              >
-                Get Started
-              </SheetClose>
+              {user ? (
+                <form action="/api/auth/signout" method="POST">
+                  <button className="block w-full text-left rounded-lg px-3 py-2.5 text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
+                    Sign Out
+                  </button>
+                </form>
+              ) : (
+                <SheetClose
+                  render={
+                    <Link
+                      href="/login"
+                      className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+                    />
+                  }
+                >
+                  Sign In
+                </SheetClose>
+              )}
             </div>
           </SheetContent>
         </Sheet>

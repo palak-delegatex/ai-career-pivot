@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 interface Report {
   id: string;
@@ -13,56 +14,59 @@ interface Report {
 }
 
 export default function DashboardClient() {
-  const [email, setEmail] = useState("");
   const [reports, setReports] = useState<Report[] | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function handleLookup(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      setReports(data.reports);
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function loadReports() {
+      const supabase = getSupabaseBrowserClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user?.email) {
+        setError("Unable to determine your email. Please sign in again.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/dashboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email }),
+        });
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        setReports(data.reports);
+      } catch {
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
+
+    loadReports();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+        <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-slate-400">Loading your roadmaps...</p>
+      </main>
+    );
   }
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-extrabold text-center mb-2">Your Roadmaps</h1>
+      <h1 className="text-3xl font-extrabold text-center mb-2">
+        Your Roadmaps
+      </h1>
       <p className="text-slate-400 text-center mb-8">
-        Enter the email you used to purchase your career pivot report.
+        Your career pivot reports linked to your account.
       </p>
-
-      <form onSubmit={handleLookup} className="flex gap-3 max-w-md mx-auto mb-10">
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className="flex-1 px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors disabled:opacity-50"
-        >
-          {loading ? "Loading..." : "Look Up"}
-        </button>
-      </form>
 
       {error && (
         <p className="text-red-400 text-center text-sm mb-6">{error}</p>
@@ -70,7 +74,7 @@ export default function DashboardClient() {
 
       {reports !== null && reports.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-slate-400 mb-4">No roadmaps found for this email.</p>
+          <p className="text-slate-400 mb-4">No roadmaps found yet.</p>
           <Link
             href="/pricing"
             className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
@@ -139,33 +143,36 @@ function ReportCard({ report }: { report: Report }) {
         <span className="text-slate-500 text-xs shrink-0">{date}</span>
       </div>
 
-      {plan && ((plan.weekOneActions ?? []).length > 0 || (plan.keyActions ?? []).length > 0) && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50">
-          <p className="text-sm font-medium text-slate-300 mb-2">Next actions:</p>
-          <ul className="space-y-1">
-            {plan.weekOneActions
-              ? plan.weekOneActions.slice(0, 3).map((action, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-xs text-slate-400"
-                  >
-                    <span className="text-teal-400 mt-0.5 shrink-0">○</span>
-                    <span className="line-clamp-1">{action.title}</span>
-                  </li>
-                ))
-              : plan.keyActions!.slice(0, 3).map((action, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-xs text-slate-400"
-                  >
-                    <span className="text-teal-400 mt-0.5 shrink-0">○</span>
-                    <span className="line-clamp-1">{action}</span>
-                  </li>
-                ))
-            }
-          </ul>
-        </div>
-      )}
+      {plan &&
+        ((plan.weekOneActions ?? []).length > 0 ||
+          (plan.keyActions ?? []).length > 0) && (
+          <div className="mt-4 pt-4 border-t border-slate-700/50">
+            <p className="text-sm font-medium text-slate-300 mb-2">
+              Next actions:
+            </p>
+            <ul className="space-y-1">
+              {plan.weekOneActions
+                ? plan.weekOneActions.slice(0, 3).map((action, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-slate-400"
+                    >
+                      <span className="text-teal-400 mt-0.5 shrink-0">○</span>
+                      <span className="line-clamp-1">{action.title}</span>
+                    </li>
+                  ))
+                : plan.keyActions!.slice(0, 3).map((action, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-slate-400"
+                    >
+                      <span className="text-teal-400 mt-0.5 shrink-0">○</span>
+                      <span className="line-clamp-1">{action}</span>
+                    </li>
+                  ))}
+            </ul>
+          </div>
+        )}
     </Link>
   );
 }

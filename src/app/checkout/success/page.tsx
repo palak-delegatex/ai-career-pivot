@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 function CheckoutSuccessInner() {
   const router = useRouter();
@@ -19,11 +20,18 @@ function CheckoutSuccessInner() {
 
     fetch(`/api/checkout/verify?session_id=${sessionId}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then(async (data) => {
         if (data.paid) {
           trackPaymentVerified({ session_id: sessionId });
           sessionStorage.setItem("payment_session_id", sessionId);
           sessionStorage.setItem("payment_email", data.email);
+
+          const supabase = getSupabaseBrowserClient();
+          const { data: authData } = await supabase.auth.getUser();
+          if (!authData.user && data.email) {
+            sessionStorage.setItem("pending_auth_email", data.email);
+          }
+
           setStatus("success");
         } else {
           trackPaymentVerificationFailed({ session_id: sessionId });
