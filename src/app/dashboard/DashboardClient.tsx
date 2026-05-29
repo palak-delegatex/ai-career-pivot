@@ -8,6 +8,7 @@ import DashboardHero from "@/components/DashboardHero";
 import MilestoneChecklist from "@/components/MilestoneChecklist";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
 import NextActionsWidget from "@/components/NextActionsWidget";
+import JobBoard from "@/components/JobBoard";
 
 interface Report {
   id: string;
@@ -393,6 +394,8 @@ export default function DashboardClient() {
               />
             </>
           )}
+
+          <JobBoard targetRole={activePlan.targetRole} />
 
           <div className="pt-4 border-t border-slate-700/50">
             <Link
