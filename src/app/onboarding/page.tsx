@@ -614,19 +614,18 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <span className="block text-sm font-medium text-slate-300 mb-2">
                     Resume upload <span className="text-teal-400">*</span>
                     <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
-                  </label>
-                  <div
-                    className={`w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
+                  </span>
+                  <label
+                    className={`block w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
                       dropActive
                         ? "border-teal-400 bg-teal-950/30 scale-[1.01]"
                         : resumeFile
                           ? "border-teal-600"
                           : "border-slate-600 hover:border-teal-500"
                     }`}
-                    onClick={() => fileRef.current?.click()}
                     onDragOver={(e) => { e.preventDefault(); setDropActive(true); }}
                     onDragLeave={() => setDropActive(false)}
                     onDrop={(e) => {
@@ -647,11 +646,10 @@ export default function OnboardingPage() {
                       ref={fileRef}
                       type="file"
                       accept=".pdf,.docx,.doc,.txt"
-                      className="absolute w-0 h-0 overflow-hidden opacity-0"
-                      onClick={(e) => e.stopPropagation()}
+                      className="sr-only"
                       onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
                     />
-                  </div>
+                  </label>
                 </div>
 
                 <div>

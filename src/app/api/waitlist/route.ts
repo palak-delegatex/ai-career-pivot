@@ -1,12 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendDripEmail, TIER_THRESHOLDS, MILESTONE_EMAIL_STEP } from "@/lib/email-drip";
+import { getSupabaseClient } from "@/lib/supabase";
 import { randomBytes } from "crypto";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 function generateReferralCode(): string {
   return randomBytes(4).toString("hex");
@@ -43,6 +38,7 @@ export async function POST(req: NextRequest) {
     const nextEmailAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
     const referralCode = generateReferralCode();
 
+    const supabase = getSupabaseClient();
     const { error } = await supabase.from("waitlist").insert({
       name: trimmedName,
       email: trimmedEmail,
@@ -87,7 +83,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleReferral(refCode: string, newMemberFirstName: string) {
-  // Fetch referrer
+  const supabase = getSupabaseClient();
   const { data: referrer, error: fetchErr } = await supabase
     .from("waitlist")
     .select("id, name, email, referral_code, referral_count, current_tier")

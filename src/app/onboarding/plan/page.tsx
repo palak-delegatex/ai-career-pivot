@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
 import { Download, Loader2 } from "lucide-react";
-import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError, trackCtaClicked } from "@/lib/tracking";
+import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError, trackCtaClicked, trackExperimentConversion } from "@/lib/tracking";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
@@ -32,6 +32,13 @@ export default function PivotPlanPage() {
       setProfile(JSON.parse(storedProfile));
     }
   }, [router]);
+
+  function handlePlanSelected(i: number) {
+    trackPlanSelected({ plan_index: i, target_role: plans[i].targetRole, target_industry: plans[i].targetIndustry });
+    const ctaVariant = sessionStorage.getItem("ab_onboarding_cta_copy") ?? "control";
+    trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "plan_selected", page: "plan" });
+    setSelected(i);
+  }
 
   async function handleDownloadPdf() {
     const targetRole = plans[selected].targetRole;
@@ -84,14 +91,14 @@ export default function PivotPlanPage() {
         <PlanSelector
           plans={plans}
           selected={selected}
-          onSelect={(i) => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: plans[i].targetRole, target_industry: plans[i].targetIndustry }); }}
+          onSelect={(i) => { handlePlanSelected(i); }}
         />
 
         {/* Cross-path comparison */}
         {plans.length > 1 && (
           <PathComparison
             plans={plans}
-            onSelectPlan={(i) => { setSelected(i); trackPlanSelected({ plan_index: i, target_role: plans[i].targetRole, target_industry: plans[i].targetIndustry }); }}
+            onSelectPlan={(i) => { handlePlanSelected(i); }}
           />
         )}
 
