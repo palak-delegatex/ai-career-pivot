@@ -239,7 +239,7 @@ function StickyCtaBar() {
         onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar" })}
         className="px-6 py-3 min-h-[44px] flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 hover:scale-[1.02]"
       >
-        Get My Plan — $5 →
+        Get My Plan — <s className="text-slate-400 font-normal">$29</s> $5 →
       </Link>
     </motion.div>
   );
@@ -409,7 +409,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 onMouseEnter={handleHeroCtaHover}
                 className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
               >
-                <span className="relative z-10">Build My Pivot Plan Now — $5 →</span>
+                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $5 →</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
@@ -612,7 +612,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Start My Career Pivot — $5 →
+                  Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $5 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -642,7 +642,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $5", cta_location: "final_cta" })}
                     className="group inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Build My Pivot Plan — $5
+                    Build My Pivot Plan — <s className="text-white/60 font-normal">$29</s> $5
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -794,7 +794,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Get My Personalized Learning Path — $5 →
+                  Get My Personalized Learning Path — <s className="text-white/60 font-normal">$29</s> $5 →
                 </Link>
               </motion.div>
             </AnimatedSection>
