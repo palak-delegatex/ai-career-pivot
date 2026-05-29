@@ -28,29 +28,22 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.52-3.23 0-1.44.62-2.2.44-3.06-.4C3.79 16.17 4.36 9.02 8.94 8.74c1.28.07 2.17.74 2.92.78.98-.2 1.92-.78 2.97-.7 1.26.1 2.21.6 2.84 1.53-2.59 1.54-1.97 4.93.38 5.88-.46 1.18-1.04 2.35-2 3.05zM12.03 8.67c-.12-2.15 1.66-3.97 3.75-4.17.29 2.45-2.22 4.27-3.75 4.17z" />
-    </svg>
-  );
-}
 
 function LoginForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
-  const [loading, setLoading] = useState<"google" | "apple" | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(
     errorParam === "auth" ? "Authentication failed. Please try again." : ""
   );
 
-  async function signInWith(provider: "google" | "apple") {
-    setLoading(provider);
+  async function signInWithGoogle() {
+    setLoading(true);
     setError("");
 
     const supabase = getSupabaseBrowserClient();
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -58,7 +51,7 @@ function LoginForm() {
 
     if (error) {
       setError(error.message);
-      setLoading(null);
+      setLoading(false);
     }
   }
 
@@ -74,21 +67,12 @@ function LoginForm() {
 
         <div className="space-y-3">
           <button
-            onClick={() => signInWith("google")}
-            disabled={loading !== null}
+            onClick={signInWithGoogle}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-colors disabled:opacity-50"
           >
             <GoogleIcon />
-            {loading === "google" ? "Redirecting..." : "Continue with Google"}
-          </button>
-
-          <button
-            onClick={() => signInWith("apple")}
-            disabled={loading !== null}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-semibold text-sm hover:bg-slate-700 transition-colors disabled:opacity-50"
-          >
-            <AppleIcon />
-            {loading === "apple" ? "Redirecting..." : "Continue with Apple"}
+            {loading ? "Redirecting..." : "Continue with Google"}
           </button>
         </div>
 
