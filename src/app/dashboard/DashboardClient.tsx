@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
@@ -9,6 +9,11 @@ import MilestoneChecklist from "@/components/MilestoneChecklist";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
 import NextActionsWidget from "@/components/NextActionsWidget";
 import JobBoard from "@/components/JobBoard";
+import MomentumCard from "@/components/MomentumCard";
+import StreakCalendar from "@/components/StreakCalendar";
+import PhaseProgressCards from "@/components/PhaseProgressCards";
+import CompletionBadges from "@/components/CompletionBadges";
+import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 
 interface Report {
   id: string;
@@ -123,6 +128,136 @@ function getNextActions(
   return items;
 }
 
+function computeStreakData(statuses: Map<string, MilestoneState>) {
+  const completionDates: string[] = [];
+  for (const [, state] of statuses) {
+    if (state.completed && state.completed_at) {
+      completionDates.push(state.completed_at.slice(0, 10));
+    }
+  }
+
+  const uniqueDays = new Set(completionDates);
+  const sortedDays = [...uniqueDays].sort().reverse();
+
+  let streakDays = 0;
+  const today = new Date();
+  const checkDate = new Date(today);
+
+  for (let i = 0; i < 365; i++) {
+    const dateStr = checkDate.toISOString().slice(0, 10);
+    if (uniqueDays.has(dateStr)) {
+      streakDays++;
+    } else if (i > 0) {
+      break;
+    }
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  return { streakDays, activeDays: uniqueDays, sortedDays };
+}
+
+function computeWeeklyActivity(statuses: Map<string, MilestoneState>): number[] {
+  const counts = new Array(7).fill(0);
+  const now = new Date();
+  for (const [, state] of statuses) {
+    if (state.completed && state.completed_at) {
+      const completedDate = new Date(state.completed_at);
+      const diffDays = Math.floor(
+        (now.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (diffDays >= 0 && diffDays < 7) {
+        counts[6 - diffDays]++;
+      }
+    }
+  }
+  return counts;
+}
+
+function computeMonthlyStats(statuses: Map<string, MilestoneState>) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+  let thisMonthCount = 0;
+  let lastMonthCount = 0;
+
+  for (const [, state] of statuses) {
+    if (state.completed && state.completed_at) {
+      const d = new Date(state.completed_at);
+      if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) {
+        thisMonthCount++;
+      }
+      const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+      const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+      if (d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear) {
+        lastMonthCount++;
+      }
+    }
+  }
+
+  return { thisMonthCount, lastMonthCount };
+}
+
+function computePhaseForDay(
+  statuses: Map<string, MilestoneState>
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const [key, state] of statuses) {
+    if (state.completed && state.completed_at) {
+      const day = state.completed_at.slice(0, 10);
+      const phase = key.split(":")[0];
+      map.set(day, phase);
+    }
+  }
+  return map;
+}
+
+function computeCurrentPhaseLabel(
+  phases: PhaseData[],
+  statuses: Map<string, MilestoneState>
+): string {
+  for (const phase of phases) {
+    for (let i = 0; i < phase.milestones.length; i++) {
+      const state = statuses.get(progressKey(phase.key, i));
+      if (!state || !state.completed) {
+        return phase.label;
+      }
+    }
+  }
+  return phases[phases.length - 1]?.label ?? "";
+}
+
+function computeEarnedBadges(
+  phases: PhaseData[],
+  statuses: Map<string, MilestoneState>,
+  completionPercent: number,
+  streakDays: number,
+  completedMilestones: number
+): Set<string> {
+  const earned = new Set<string>();
+
+  if (completedMilestones >= 1) earned.add("first_step");
+
+  for (const phase of phases) {
+    let allDone = phase.milestones.length > 0;
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (!statuses.get(progressKey(phase.key, i))?.completed) {
+        allDone = false;
+        break;
+      }
+    }
+    if (allDone) {
+      earned.add("phase_complete");
+      break;
+    }
+  }
+
+  if (streakDays >= 7) earned.add("streak_master");
+  if (completionPercent >= 50) earned.add("halfway_there");
+  if (completionPercent >= 100) earned.add("career_ready");
+
+  return earned;
+}
+
 export default function DashboardClient() {
   const [reports, setReports] = useState<Report[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,6 +268,7 @@ export default function DashboardClient() {
   >(new Map());
   const [progressLoaded, setProgressLoaded] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [savedBadges, setSavedBadges] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function loadReports() {
@@ -193,12 +329,45 @@ export default function DashboardClient() {
     }
   }, [activeReport, selectedPlanIndex]);
 
+  const loadBadges = useCallback(async () => {
+    if (!activeReport) return;
+    try {
+      const res = await fetch(
+        `/api/dashboard/badges?reportId=${activeReport.id}&planIndex=${selectedPlanIndex}`
+      );
+      if (!res.ok) return;
+      const { badges } = await res.json();
+      setSavedBadges(
+        new Set((badges as { badge_key: string }[]).map((b) => b.badge_key))
+      );
+    } catch {}
+  }, [activeReport, selectedPlanIndex]);
+
   useEffect(() => {
     if (activeReport) {
       setProgressLoaded(false);
       loadProgress();
+      loadBadges();
     }
-  }, [activeReport, loadProgress]);
+  }, [activeReport, loadProgress, loadBadges]);
+
+  const saveBadge = useCallback(
+    async (badgeKey: string) => {
+      if (!activeReport) return;
+      try {
+        await fetch("/api/dashboard/badges", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reportId: activeReport.id,
+            planIndex: selectedPlanIndex,
+            badgeKey,
+          }),
+        });
+      } catch {}
+    },
+    [activeReport, selectedPlanIndex]
+  );
 
   async function handleToggle(phaseKey: string, milestoneIndex: number) {
     if (!activeReport) return;
@@ -207,7 +376,6 @@ export default function DashboardClient() {
     const currentCompleted = current?.completed ?? false;
     const hasRow = current !== undefined;
 
-    // Cycle: not-started → in-progress → completed → not-started
     let nextState: "not-started" | "in-progress" | "completed";
     if (!hasRow) {
       nextState = "in-progress";
@@ -293,7 +461,7 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
         <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-slate-400">Loading your dashboard...</p>
       </main>
@@ -302,7 +470,7 @@ export default function DashboardClient() {
 
   if (error) {
     return (
-      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
         <p className="text-red-400 text-sm">{error}</p>
       </main>
     );
@@ -310,7 +478,7 @@ export default function DashboardClient() {
 
   if (!reports || reports.length === 0) {
     return (
-      <main className="max-w-3xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
         <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
         <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
         <Link
@@ -344,8 +512,38 @@ export default function DashboardClient() {
     ? getNextActions(phases, milestoneStatuses, activePlan)
     : [];
 
+  const { streakDays, activeDays } = computeStreakData(milestoneStatuses);
+  const weeklyActivity = computeWeeklyActivity(milestoneStatuses);
+  const { thisMonthCount, lastMonthCount } = computeMonthlyStats(milestoneStatuses);
+  const phaseForDay = computePhaseForDay(milestoneStatuses);
+  const currentPhaseLabel = computeCurrentPhaseLabel(phases, milestoneStatuses);
+
+  const daysElapsed = Math.max(
+    1,
+    Math.ceil(
+      (Date.now() - new Date(activeReport!.created_at).getTime()) /
+        (1000 * 60 * 60 * 24)
+    )
+  );
+
+  const earnedBadges = computeEarnedBadges(
+    phases,
+    milestoneStatuses,
+    completionPercent,
+    streakDays,
+    completedMilestones
+  );
+
+  // Persist newly earned badges
+  for (const badgeKey of earnedBadges) {
+    if (!savedBadges.has(badgeKey)) {
+      saveBadge(badgeKey);
+      setSavedBadges((prev) => new Set([...prev, badgeKey]));
+    }
+  }
+
   return (
-    <main className="max-w-3xl mx-auto px-6 py-12">
+    <main className="max-w-5xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
@@ -380,11 +578,36 @@ export default function DashboardClient() {
             completedMilestones={completedMilestones}
             remainingMilestones={totalMilestones - completedMilestones}
             targetRole={activePlan.targetRole}
+            streakDays={streakDays}
+            daysElapsed={daysElapsed}
+            currentPhaseLabel={currentPhaseLabel}
           />
 
           {progressLoaded && (
             <>
-              <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
+              {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MomentumCard
+                  weeklyActivity={weeklyActivity}
+                  monthlyCompleted={thisMonthCount}
+                  previousMonthCompleted={lastMonthCount}
+                />
+                <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
+                <StreakCalendar
+                  activeDays={activeDays}
+                  phaseForDay={phaseForDay}
+                />
+              </div>
+
+              {/* Phase Progress Cards */}
+              <PhaseProgressCards
+                phases={phases}
+                statuses={milestoneStatuses}
+                reportId={activeReport!.id}
+              />
+
+              {/* Completion Badges */}
+              <CompletionBadges earnedBadges={earnedBadges} />
 
               <MilestoneChecklist
                 phases={phases}
@@ -397,10 +620,16 @@ export default function DashboardClient() {
 
           <JobBoard targetRole={activePlan.targetRole} />
 
-          <div className="pt-4 border-t border-slate-700/50">
+          <div className="pt-4 border-t border-slate-700/50 space-y-3">
+            <Link
+              href="/chat"
+              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
+            >
+              Talk to Career Coach
+            </Link>
             <Link
               href={`/report/${activeReport!.id}`}
-              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
+              className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
             >
               View Full Report
             </Link>

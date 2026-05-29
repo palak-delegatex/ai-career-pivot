@@ -10,7 +10,7 @@ import SkillTree from "@/components/SkillTree";
 import WeekOneActionCards from "@/components/WeekOneActionCards";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
-import FollowUpChat from "@/components/FollowUpChat";
+import ChatCTA from "@/components/ChatCTA";
 import MarketDataBanner, { MarketDataLoader } from "@/components/MarketDataBanner";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
@@ -143,11 +143,7 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           </div>
         ) : null}
 
-        <FollowUpChat
-          reportId={reportId}
-          planIndex={selected}
-          targetRole={plan.targetRole}
-        />
+        <ChatCTA targetRole={plan.targetRole} />
       </div>
     </>
       )}
