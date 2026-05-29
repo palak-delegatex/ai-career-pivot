@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (isBypassEmail(email)) {
       const bypassSessionId = `bypass_${randomUUID()}`;
       const supabase = getSupabaseClient();
-      await supabase.from("orders").insert({
+      const { error: insertError } = await supabase.from("orders").insert({
         email,
         stripe_session_id: bypassSessionId,
         amount_cents: 0,
@@ -29,6 +29,10 @@ export async function POST(req: NextRequest) {
         discount_code: "TEAM_BYPASS",
         plan_type: planKey,
       });
+      if (insertError) {
+        console.error("Bypass order insert failed:", insertError);
+        return NextResponse.json({ error: "Failed to create bypass order" }, { status: 500 });
+      }
       return NextResponse.json({
         url: `${origin}/checkout/success?session_id=${bypassSessionId}`,
       });
