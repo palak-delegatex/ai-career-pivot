@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target } from "lucide-react";
+import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch } from "lucide-react";
+import RoadmapTimeline from "@/components/RoadmapTimeline";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -111,6 +112,7 @@ export default function InteractiveRoadmap({
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [view, setView] = useState<"timeline" | "checklist">("timeline");
   const [selectedMilestone, setSelectedMilestone] = useState<{
     text: string;
     phase: Phase;
@@ -287,11 +289,40 @@ export default function InteractiveRoadmap({
             Your Progress
           </span>
         </div>
-        {loaded && (
-          <span className="text-xs text-slate-400">
-            <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones} milestones
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {loaded && (
+            <span className="text-xs text-slate-400">
+              <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones} milestones
+            </span>
+          )}
+          {/* View toggle */}
+          <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+            <button
+              onClick={() => setView("timeline")}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                view === "timeline"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              aria-label="Timeline view"
+            >
+              <GitBranch className="h-3.5 w-3.5" />
+              Timeline
+            </button>
+            <button
+              onClick={() => setView("checklist")}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                view === "checklist"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              aria-label="Checklist view"
+            >
+              <List className="h-3.5 w-3.5" />
+              Checklist
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Overall progress bar */}
@@ -304,7 +335,18 @@ export default function InteractiveRoadmap({
         </div>
       )}
 
-      {/* Phases */}
+      {/* Timeline view */}
+      {view === "timeline" && (
+        <RoadmapTimeline
+          phases={phases}
+          progress={progress}
+          saving={saving}
+          onCycleStatus={cycleMilestoneStatus}
+        />
+      )}
+
+      {/* Checklist view */}
+      {view === "checklist" && (
       <ol className="space-y-4" aria-label="Timeline phases">
         {phases.map((phase, phaseIdx) => {
           const colors = phaseColors[phase.color];
@@ -442,6 +484,7 @@ export default function InteractiveRoadmap({
           );
         })}
       </ol>
+      )}
 
       {/* Milestone Detail Sheet */}
       <Sheet

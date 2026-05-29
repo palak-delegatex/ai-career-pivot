@@ -125,9 +125,11 @@ export default function PivotPlanPage() {
 
           {/* Milestones */}
           <RoadmapTimeline
-            sixMonthMilestones={plan.sixMonthMilestones}
-            oneYearMilestones={plan.oneYearMilestones}
-            twoYearMilestones={plan.twoYearMilestones}
+            phases={[
+              { key: "6mo", label: "6 Months", deadline: "6 months", milestones: plan.sixMonthMilestones, color: "emerald" },
+              { key: "1yr", label: "1 Year", deadline: "1 year", milestones: plan.oneYearMilestones, color: "teal" },
+              { key: "2yr", label: "2 Years", deadline: "2 years", milestones: plan.twoYearMilestones, color: "cyan" },
+            ]}
           />
 
           {/* Skill Gap Analysis */}
