@@ -8,9 +8,10 @@ interface Props {
   reportId: string;
   planIndex: number;
   targetRole: string;
+  label?: string;
 }
 
-export default function DownloadPdfButton({ reportId, planIndex, targetRole }: Props) {
+export default function DownloadPdfButton({ reportId, planIndex, targetRole, label }: Props) {
   const [loading, setLoading] = useState(false);
 
   async function handleDownload() {
@@ -45,7 +46,7 @@ export default function DownloadPdfButton({ reportId, planIndex, targetRole }: P
       ) : (
         <Download className="w-4 h-4" />
       )}
-      {loading ? "Generating PDF..." : "Download PDF"}
+      {loading ? "Generating PDF..." : (label ?? "Download PDF")}
     </button>
   );
 }

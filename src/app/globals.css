@@ -103,8 +103,33 @@ html {
   z-index: -1;
 }
 
-.card-glow:hover::before {
+.card-glow:hover::before,
+.card-glow.glow-active::before {
   opacity: 1;
+}
+
+@keyframes confetti-burst {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.phase-confetti::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.4), rgba(6, 182, 212, 0.2), transparent 70%);
+  animation: confetti-burst 600ms ease-out forwards;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phase-confetti::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .dot-grid {

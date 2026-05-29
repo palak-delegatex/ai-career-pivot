@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch } from "lucide-react";
+import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download } from "lucide-react";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import {
   Collapsible,
@@ -98,6 +98,7 @@ export default function InteractiveRoadmap({
   planIndex,
   skillGaps = [],
   recommendedResources = [],
+  pdfButton,
 }: {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
@@ -106,6 +107,7 @@ export default function InteractiveRoadmap({
   planIndex: number;
   skillGaps?: SkillGap[];
   recommendedResources?: RecommendedResource[];
+  pdfButton?: React.ReactNode;
 }) {
   const [progress, setProgress] = useState<Map<string, MilestoneProgress>>(new Map());
   const [saving, setSaving] = useState<string | null>(null);
@@ -327,11 +329,18 @@ export default function InteractiveRoadmap({
 
       {/* Overall progress bar */}
       {loaded && totalMilestones > 0 && (
-        <div className="h-1.5 rounded-full bg-slate-700/50 overflow-hidden mb-6">
+        <div className="h-1.5 rounded-full bg-slate-700/50 overflow-hidden mb-4">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 transition-all duration-500"
             style={{ width: `${(totalCompleted / totalMilestones) * 100}%` }}
           />
+        </div>
+      )}
+
+      {/* Secondary action bar */}
+      {pdfButton && (
+        <div className="flex items-center justify-end mb-4">
+          {pdfButton}
         </div>
       )}
 
@@ -342,6 +351,10 @@ export default function InteractiveRoadmap({
           progress={progress}
           saving={saving}
           onCycleStatus={cycleMilestoneStatus}
+          onSelectMilestone={(text, phaseKey, index) => {
+            const phase = phases.find((p) => p.key === phaseKey);
+            if (phase) setSelectedMilestone({ text, phase, index });
+          }}
         />
       )}
 

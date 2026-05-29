@@ -29,10 +29,6 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
       <div className="space-y-6">
         <PlanHero plan={plan} />
 
-        <div className="flex justify-end">
-          <DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} />
-        </div>
-
         <MarketDataBanner targetRole={plan.targetRole} marketData={marketData[plan.targetRole]} />
 
         <InteractiveRoadmap
@@ -43,6 +39,7 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           planIndex={selected}
           skillGaps={plan.skillGaps}
           recommendedResources={plan.recommendedResources}
+          pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label="Download Static Report (PDF)" />}
         />
 
         {(plan.skillGaps ?? []).length > 0 && (
