@@ -100,6 +100,7 @@ export default function OnboardingPage() {
       posthog.onFeatureFlags(() => {
         const variant = getFeatureFlagVariant("onboarding_cta_copy", "control");
         setCtaVariant(variant);
+        sessionStorage.setItem("ab_onboarding_cta_copy", variant);
         trackExperimentViewed({ flag: "onboarding_cta_copy", variant, page: "onboarding" });
       });
     });
@@ -361,7 +362,7 @@ export default function OnboardingPage() {
           <div className="text-5xl mb-6">&#x1f512;</div>
           <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
           <p className="text-slate-400 mb-8 leading-relaxed">
-            Get your personalized career pivot roadmap for $29. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
+            Get your personalized career pivot roadmap for $5. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
           </p>
           <Link
             href="/pricing"
@@ -646,7 +647,7 @@ export default function OnboardingPage() {
                       ref={fileRef}
                       type="file"
                       accept=".pdf,.docx,.doc,.txt"
-                      className="hidden"
+                      className="absolute w-0 h-0 overflow-hidden opacity-0"
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
                     />
