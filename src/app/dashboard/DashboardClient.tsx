@@ -54,7 +54,8 @@ function buildPhases(plan: PivotPlan): PhaseData[] {
 
 function computeScheduleStatus(
   phases: PhaseData[],
-  statuses: Map<string, MilestoneState>
+  statuses: Map<string, MilestoneState>,
+  reportCreatedAt: string
 ): "on-track" | "behind-schedule" | "at-risk" {
   const total = phases.reduce((s, p) => s + p.milestones.length, 0);
   if (total === 0) return "on-track";
@@ -67,9 +68,17 @@ function computeScheduleStatus(
   }
 
   const pct = completed / total;
-  if (pct >= 0.3) return "on-track";
-  if (pct >= 0.1) return "behind-schedule";
-  return completed > 0 ? "on-track" : "on-track";
+  if (pct >= 1) return "on-track";
+
+  const created = new Date(reportCreatedAt).getTime();
+  const elapsedMonths = (Date.now() - created) / (1000 * 60 * 60 * 24 * 30);
+
+  if (elapsedMonths < 0.5) return "on-track";
+
+  const expectedPct = Math.min(elapsedMonths / 24, 1);
+  if (pct >= expectedPct * 0.7) return "on-track";
+  if (pct >= expectedPct * 0.4) return "behind-schedule";
+  return "at-risk";
 }
 
 function getNextActions(
@@ -194,16 +203,71 @@ export default function DashboardClient() {
     if (!activeReport) return;
     const key = progressKey(phaseKey, milestoneIndex);
     const current = milestoneStatuses.get(key);
-    const wasCompleted = current?.completed ?? false;
-    const newCompleted = !wasCompleted;
+    const currentCompleted = current?.completed ?? false;
+    const hasRow = current !== undefined;
+
+    // Cycle: not-started → in-progress → completed → not-started
+    let nextState: "not-started" | "in-progress" | "completed";
+    if (!hasRow) {
+      nextState = "in-progress";
+    } else if (!currentCompleted) {
+      nextState = "completed";
+    } else {
+      nextState = "not-started";
+    }
+
+    setSavingKey(key);
+    setMilestoneStatuses((prev) => {
+      const updated = new Map(prev);
+      if (nextState === "not-started") {
+        updated.delete(key);
+      } else {
+        updated.set(key, {
+          completed: nextState === "completed",
+          notes: current?.notes ?? null,
+          completed_at: nextState === "completed" ? new Date().toISOString() : null,
+        });
+      }
+      return updated;
+    });
+
+    try {
+      if (nextState === "not-started") {
+        await fetch(
+          `/api/roadmap/progress?reportId=${activeReport.id}&planIndex=${selectedPlanIndex}&phase=${phaseKey}&milestoneIndex=${milestoneIndex}`,
+          { method: "DELETE" }
+        );
+      } else {
+        await fetch("/api/roadmap/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reportId: activeReport.id,
+            planIndex: selectedPlanIndex,
+            phase: phaseKey,
+            milestoneIndex,
+            completed: nextState === "completed",
+            notes: current?.notes ?? null,
+          }),
+        });
+      }
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  async function handleMarkDone(phaseKey: string, milestoneIndex: number) {
+    if (!activeReport) return;
+    const key = progressKey(phaseKey, milestoneIndex);
+    const current = milestoneStatuses.get(key);
 
     setSavingKey(key);
     setMilestoneStatuses((prev) => {
       const updated = new Map(prev);
       updated.set(key, {
-        completed: newCompleted,
+        completed: true,
         notes: current?.notes ?? null,
-        completed_at: newCompleted ? new Date().toISOString() : null,
+        completed_at: new Date().toISOString(),
       });
       return updated;
     });
@@ -217,7 +281,7 @@ export default function DashboardClient() {
           planIndex: selectedPlanIndex,
           phase: phaseKey,
           milestoneIndex,
-          completed: newCompleted,
+          completed: true,
           notes: current?.notes ?? null,
         }),
       });
@@ -274,7 +338,7 @@ export default function DashboardClient() {
     totalMilestones > 0
       ? Math.round((completedMilestones / totalMilestones) * 100)
       : 0;
-  const scheduleStatus = computeScheduleStatus(phases, milestoneStatuses);
+  const scheduleStatus = computeScheduleStatus(phases, milestoneStatuses, activeReport!.created_at);
   const nextActions = activePlan
     ? getNextActions(phases, milestoneStatuses, activePlan)
     : [];
@@ -319,7 +383,7 @@ export default function DashboardClient() {
 
           {progressLoaded && (
             <>
-              <NextActionsWidget items={nextActions} />
+              <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
 
               <MilestoneChecklist
                 phases={phases}

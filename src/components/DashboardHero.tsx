@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Trophy } from "lucide-react";
 
 const RING_SIZE = 140;
 const STROKE_WIDTH = 12;
@@ -138,32 +139,46 @@ export default function DashboardHero({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2">
-            <div className="flex flex-col items-center md:items-start">
-              <span className="text-2xl font-bold text-white">
-                {totalMilestones}
-              </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wider">
-                Total
-              </span>
+          {completionPercent >= 100 ? (
+            <div className="flex items-center gap-3 mt-1 px-4 py-3 rounded-xl bg-emerald-900/30 border border-emerald-700/40">
+              <Trophy className="h-5 w-5 text-amber-400 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-300">
+                  All milestones complete!
+                </p>
+                <p className="text-xs text-slate-400">
+                  You&apos;ve finished every milestone on your roadmap to {targetRole}.
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <span className="text-2xl font-bold text-emerald-400">
-                {completedMilestones}
-              </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wider">
-                Done
-              </span>
+          ) : (
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2">
+              <div className="flex flex-col items-center md:items-start">
+                <span className="text-2xl font-bold text-white">
+                  {totalMilestones}
+                </span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                  Total
+                </span>
+              </div>
+              <div className="flex flex-col items-center md:items-start">
+                <span className="text-2xl font-bold text-emerald-400">
+                  {completedMilestones}
+                </span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                  Done
+                </span>
+              </div>
+              <div className="flex flex-col items-center md:items-start">
+                <span className="text-2xl font-bold text-slate-300">
+                  {remainingMilestones}
+                </span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                  Remaining
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <span className="text-2xl font-bold text-slate-300">
-                {remainingMilestones}
-              </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wider">
-                Remaining
-              </span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

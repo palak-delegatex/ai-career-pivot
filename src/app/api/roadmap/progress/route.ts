@@ -53,3 +53,29 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+export async function DELETE(req: NextRequest) {
+  const reportId = req.nextUrl.searchParams.get("reportId");
+  const planIndex = req.nextUrl.searchParams.get("planIndex");
+  const phase = req.nextUrl.searchParams.get("phase");
+  const milestoneIndex = req.nextUrl.searchParams.get("milestoneIndex");
+
+  if (!reportId || planIndex === null || !phase || milestoneIndex === null) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  const supabase = getSupabaseClient();
+  const { error } = await supabase
+    .from("milestone_progress")
+    .delete()
+    .eq("report_id", reportId)
+    .eq("plan_index", Number(planIndex))
+    .eq("phase", phase)
+    .eq("milestone_index", Number(milestoneIndex));
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}

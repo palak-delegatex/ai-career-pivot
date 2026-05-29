@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 
 interface NextAction {
   phase: string;
@@ -12,6 +12,7 @@ interface NextAction {
 
 interface NextActionsWidgetProps {
   items: NextAction[];
+  onMarkDone?: (phaseKey: string, milestoneIndex: number) => void;
 }
 
 const phaseAccent: Record<string, string> = {
@@ -26,7 +27,7 @@ const phaseBadge: Record<string, string> = {
   "2yr": "bg-cyan-900/40 border-cyan-700/40 text-cyan-300",
 };
 
-export default function NextActionsWidget({ items }: NextActionsWidgetProps) {
+export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidgetProps) {
   if (items.length === 0) return null;
 
   return (
@@ -82,6 +83,16 @@ export default function NextActionsWidget({ items }: NextActionsWidgetProps) {
                       </li>
                     ))}
                   </ul>
+                )}
+
+                {onMarkDone && (
+                  <button
+                    onClick={() => onMarkDone(item.phase, item.milestoneIndex)}
+                    className="mt-3 flex items-center gap-1.5 text-xs font-medium text-teal-400 hover:text-teal-300 transition-colors cursor-pointer bg-transparent border-0 p-0"
+                  >
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    Mark complete
+                  </button>
                 )}
               </div>
             </div>
