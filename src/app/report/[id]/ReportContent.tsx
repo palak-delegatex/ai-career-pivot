@@ -12,6 +12,8 @@ import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 import ChatCTA from "@/components/ChatCTA";
 import MarketDataBanner, { MarketDataLoader } from "@/components/MarketDataBanner";
+import TransferabilityBreakdown from "@/components/TransferabilityBreakdown";
+import SalaryTrajectory from "@/components/SalaryTrajectory";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -41,6 +43,10 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           recommendedResources={plan.recommendedResources}
           pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label="Download Static Report (PDF)" />}
         />
+
+        {(plan.skillGaps ?? []).length > 0 && (
+          <TransferabilityBreakdown skillGaps={plan.skillGaps!} />
+        )}
 
         {(plan.skillGaps ?? []).length > 0 && (
           <SkillGapChart skillGaps={plan.skillGaps!} />
@@ -85,6 +91,7 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
         )}
 
         {plan.financialSummary ? (
+          <>
           <div className="bg-slate-800/60 border border-emerald-700/30 rounded-2xl p-6">
             <h3 className="text-sm font-bold text-emerald-400 mb-5">Salary & Financial Bridge</h3>
 
@@ -136,6 +143,15 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
               <span className="text-white font-medium text-sm">{plan.financialSummary.roiTimeframe}</span>
             </div>
           </div>
+
+          {(plan.financialSummary.milestoneSalaries ?? []).length > 0 && (
+            <SalaryTrajectory
+              milestoneSalaries={plan.financialSummary.milestoneSalaries!}
+              currentSalaryRange={plan.financialSummary.currentSalaryRange}
+              targetSalaryRange={plan.financialSummary.targetSalaryRange}
+            />
+          )}
+          </>
         ) : plan.financialConsiderations ? (
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
             <h3 className="text-sm font-bold text-slate-300 mb-2">Financial Considerations</h3>

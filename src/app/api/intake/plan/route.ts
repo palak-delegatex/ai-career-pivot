@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateObject } from "ai";
 import { jsonSchema } from "ai";
-import type { UserProfile } from "@/lib/intake";
+import type { UserProfile, ValuesAssessment } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
 import { getStripeClient } from "@/lib/stripe";
 import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
@@ -36,8 +36,11 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
                 requiredLevel: { type: "string" },
                 priority: { type: "string", enum: ["high", "medium", "low"] },
                 resource: { type: "string" },
+                transferabilityScore: { type: "number" },
+                transferCategory: { type: "string", enum: ["direct-transfer", "partial-transfer", "new-skill"] },
+                transferNote: { type: "string" },
               },
-              required: ["skill", "currentLevel", "requiredLevel", "priority", "resource"],
+              required: ["skill", "currentLevel", "requiredLevel", "priority", "resource", "transferabilityScore", "transferCategory", "transferNote"],
             },
           },
           weekOneActions: {
@@ -64,8 +67,22 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
               salaryUpliftPercent: { type: "number" },
               transitionCosts: { type: "array", items: { type: "string" } },
               roiTimeframe: { type: "string" },
+              milestoneSalaries: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    phase: { type: "string", enum: ["6-month", "1-year", "2-year"] },
+                    expectedSalaryRange: { type: "string" },
+                    marketDemandLevel: { type: "string", enum: ["low", "moderate", "high", "very-high"] },
+                    demandTrend: { type: "string" },
+                  },
+                  required: ["phase", "expectedSalaryRange", "marketDemandLevel", "demandTrend"],
+                },
+              },
             },
-            required: ["currentSalaryRange", "targetSalaryRange", "salaryUpliftPercent", "transitionCosts", "roiTimeframe"],
+            required: ["currentSalaryRange", "targetSalaryRange", "salaryUpliftPercent", "transitionCosts", "roiTimeframe", "milestoneSalaries"],
           },
           recommendedResources: {
             type: "array",
@@ -131,17 +148,17 @@ type PivotPlan = {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
   twoYearMilestones: string[];
-  skillGaps: { skill: string; currentLevel: string; requiredLevel: string; priority: "high" | "medium" | "low"; resource?: string }[];
+  skillGaps: { skill: string; currentLevel: string; requiredLevel: string; priority: "high" | "medium" | "low"; resource?: string; transferabilityScore: number; transferCategory: "direct-transfer" | "partial-transfer" | "new-skill"; transferNote: string }[];
   weekOneActions: { title: string; instruction: string; timeEstimate: string; difficulty: "easy" | "medium" | "hard" }[];
   estimatedTimeToTransition: string;
-  financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string };
+  financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string; milestoneSalaries: { phase: "6-month" | "1-year" | "2-year"; expectedSalaryRange: string; marketDemandLevel: "low" | "moderate" | "high" | "very-high"; demandTrend: string }[] };
   recommendedResources: { name: string; provider: string; type: string; url: string; cost: string; timeEstimate: string }[];
   aiToolkit: { tool: string; category: string; useCase: string; proficiencyNeeded: "beginner" | "intermediate" | "advanced" }[];
   tradeoffs: { difficulty: "low" | "medium" | "high"; riskLevel: "low" | "medium" | "high"; timeToFirstRole: string; incomeImpactNear: string; incomePotentialLong: string; pros: string[]; cons: string[] };
 };
 
 export async function POST(req: NextRequest) {
-  const { profile, paymentSessionId }: { profile: UserProfile; paymentSessionId?: string } = await req.json();
+  const { profile, paymentSessionId, valuesAssessment }: { profile: UserProfile; paymentSessionId?: string; valuesAssessment?: ValuesAssessment } = await req.json();
 
   if (!profile) {
     return NextResponse.json({ error: "profile required" }, { status: 400 });
@@ -199,9 +216,9 @@ Frame AI as a career multiplier, not a threat. The narrative should be: "You + A
 RULES FOR EVERY FIELD:
 1. matchScore (0-100): overall fit score considering skills, experience, market demand, AI-readiness, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has. Boost matchScore for paths where AI tools significantly lower the barrier to entry.
 2. Each milestone string must be ≤15 words. Make them measurable and specific. At least 30% of milestones across all timeframes should involve AI tool adoption or AI skill development.
-3. skillGaps: for each gap, specify the skill name, currentLevel (e.g. "none", "beginner", "intermediate"), requiredLevel (e.g. "intermediate", "advanced"), priority ("high"/"medium"/"low"), and optionally a resource (specific course or book name with provider). Include AI-specific skill gaps.
+3. skillGaps: for each gap, specify the skill name, currentLevel (e.g. "none", "beginner", "intermediate"), requiredLevel (e.g. "intermediate", "advanced"), priority ("high"/"medium"/"low"), and optionally a resource (specific course or book name with provider). Include AI-specific skill gaps. TRANSFERABILITY SCORING: For every skill gap, also provide: transferabilityScore (0-100, how much of their existing experience applies), transferCategory ("direct-transfer" if the skill maps directly from their background, "partial-transfer" if related experience helps but retraining is needed, "new-skill" if they must learn from scratch), and transferNote (1 sentence explaining what from their background transfers and what's new). Example: a project manager pivoting to product management might have "Stakeholder Management" as direct-transfer (score: 90, "Your cross-functional PM experience maps directly"), "SQL/Data Analysis" as new-skill (score: 10, "Technical querying is new but your reporting instincts help"), "User Research" as partial-transfer (score: 55, "Your customer feedback loops translate; learn formal UX research methods").
 4. weekOneActions: exactly 3 actions the user can start THIS WEEK. Each has a short title, a detailed instruction, a timeEstimate (e.g. "2 hours", "30 minutes"), and difficulty ("easy"/"medium"/"hard"). Prioritize easy wins first. At least one action must involve trying an AI tool relevant to the target career.
-5. financialSummary: provide currentSalaryRange and targetSalaryRange as formatted ranges (e.g. "$85,000-$105,000"), salaryUpliftPercent as a number, transitionCosts as an array of line items (e.g. ["Google Data Analytics Certificate: $49/mo x 6 = $294", "Career coaching: $500"]), and roiTimeframe (e.g. "6-9 months after transition"). Note that many AI certifications and tools are free or low-cost, which reduces transition costs.
+5. financialSummary: provide currentSalaryRange and targetSalaryRange as formatted ranges (e.g. "$85,000-$105,000"), salaryUpliftPercent as a number, transitionCosts as an array of line items (e.g. ["Google Data Analytics Certificate: $49/mo x 6 = $294", "Career coaching: $500"]), and roiTimeframe (e.g. "6-9 months after transition"). Note that many AI certifications and tools are free or low-cost, which reduces transition costs. MILESTONE SALARY FORECASTING: Also provide milestoneSalaries — an array of 3 objects (one per phase: "6-month", "1-year", "2-year") with: expectedSalaryRange (realistic range at that career stage, e.g. "$70,000-$85,000" during transition, growing toward target), marketDemandLevel ("low"/"moderate"/"high"/"very-high" for the role at that experience level), and demandTrend (1 sentence on market outlook, e.g. "AI product managers are seeing 25% YoY demand growth"). This creates a salary trajectory showing progression from current to target.
 6. recommendedResources: 3-5 specific resources with name, provider, type (e.g. "course", "certification", "book", "community"), url, cost (e.g. "$49/mo", "Free"), and timeEstimate (e.g. "40 hours", "6 weeks"). At least 2 must be AI-related.
 7. rationale must reference how AI is transforming the target industry, current market conditions, and explain why THIS person's specific background combined with AI tools gives them a unique edge.
 8. Favor paths that leverage existing domain expertise combined with AI tools over starting from scratch.
@@ -228,6 +245,14 @@ ${profile.circumstances?.riskTolerance ? `- Risk tolerance: ${profile.circumstan
 ${profile.circumstances?.willingnessToRelocate ? `- Relocation: ${profile.circumstances.willingnessToRelocate}` : ""}
 
 ${profile.location || profile.circumstances ? `CONSTRAINT-AWARE PLANNING: If the user provided location, salary, timeline, dependents, risk tolerance, or relocation preferences, you MUST factor these into every plan. Salary ranges must respect the salary floor. Timelines must match their preferred pace. Risk-averse users need moonlight-first strategies. Location-bound users need local or remote job market data. Reference their specific constraints in rationale and milestones.` : ""}
+${valuesAssessment ? `
+VALUES & PERSONALITY PROFILE:
+- Work style preference: ${valuesAssessment.workStyle}
+- Top values (ranked): ${valuesAssessment.topValues.join(", ")}
+- Energy profile: ${Object.entries(valuesAssessment.energyProfile).map(([k, v]) => `${k}: ${v}/100`).join(", ")}
+- Dealbreakers: ${valuesAssessment.dealbreakers.length > 0 ? valuesAssessment.dealbreakers.join(", ") : "None specified"}
+
+VALUES-AWARE PLANNING: Factor the user's values, work style, and energy profile into every plan. Prioritize career paths that align with their top values. Avoid recommending roles that conflict with their dealbreakers. Match work environments to their energy profile (e.g. introvert-leaning users should see remote-friendly or small-team roles). Reference their specific values in rationale.` : ""}
 Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.`,
   });
 
@@ -238,6 +263,7 @@ Generate deeply personalized, immediately actionable plans. Reference their spec
         email: profile.email,
         profile,
         plans: object.plans,
+        ...(valuesAssessment ? { values_assessment: valuesAssessment } : {}),
       })
       .select("id")
       .single();

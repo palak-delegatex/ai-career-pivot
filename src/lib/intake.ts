@@ -13,6 +13,13 @@ export interface Education {
   year: number | null;
 }
 
+export interface ValuesAssessment {
+  workStyle: string;
+  topValues: string[];
+  energyProfile: Record<string, number>;
+  dealbreakers: string[];
+}
+
 export interface UserCircumstances {
   salaryFloor?: string;
   dependents?: "none" | "partner" | "children" | "caretaker";
@@ -53,6 +60,9 @@ export interface SkillGap {
   requiredLevel: string;
   priority: "high" | "medium" | "low";
   resource?: string;
+  transferabilityScore?: number;
+  transferCategory?: "direct-transfer" | "partial-transfer" | "new-skill";
+  transferNote?: string;
 }
 
 export interface WeekOneAction {
@@ -62,12 +72,20 @@ export interface WeekOneAction {
   difficulty: "easy" | "medium" | "hard";
 }
 
+export interface MilestoneSalary {
+  phase: "6-month" | "1-year" | "2-year";
+  expectedSalaryRange: string;
+  marketDemandLevel: "low" | "moderate" | "high" | "very-high";
+  demandTrend: string;
+}
+
 export interface FinancialSummary {
   currentSalaryRange: string;
   targetSalaryRange: string;
   salaryUpliftPercent: number;
   transitionCosts: string[];
   roiTimeframe: string;
+  milestoneSalaries?: MilestoneSalary[];
 }
 
 export interface RecommendedResource {
@@ -133,6 +151,14 @@ export interface MarketData {
   growthLabel: string;
   source: string;
   updatedAt: string;
+}
+
+export interface TransferabilityAnalysis {
+  totalSkillsAssessed: number;
+  directTransferCount: number;
+  partialTransferCount: number;
+  newSkillCount: number;
+  overallTransferabilityPercent: number;
 }
 
 export interface IntakeResult {

@@ -234,6 +234,30 @@ export default function PathComparison({ plans, onSelectPlan, marketData }: { pl
                 </span>
               ))}
             />
+            {/* Salary Trajectory */}
+            <CompareRow
+              label="Salary Trajectory"
+              values={plansWithTradeoffs.map((p) => {
+                const ms = p.financialSummary?.milestoneSalaries;
+                if (!ms || ms.length === 0) {
+                  return <span key={p.targetRole} className="text-xs text-slate-500">—</span>;
+                }
+                const demandColors = { low: "text-slate-400", moderate: "text-amber-400", high: "text-emerald-400", "very-high": "text-teal-300" } as const;
+                return (
+                  <div key={p.targetRole} className="space-y-1.5">
+                    {ms.map((m) => (
+                      <div key={m.phase} className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500 w-12 shrink-0">{m.phase}</span>
+                        <span className="text-xs font-medium text-teal-300">{m.expectedSalaryRange}</span>
+                        <span className={`text-[10px] capitalize ${demandColors[m.marketDemandLevel] ?? "text-slate-400"}`}>
+                          {m.marketDemandLevel}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            />
             <CompareRow
               label="Pros"
               values={plansWithTradeoffs.map((p) => (
