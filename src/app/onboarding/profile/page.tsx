@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { UserProfile } from "@/lib/intake";
+import type { ValuesAssessment } from "@/lib/intake";
 import { trackProfileReviewed, trackPlanGenerationStarted, trackPlanGenerationCompleted, trackPlanGenerationError } from "@/lib/tracking";
+import { MatchScoreCard } from "@/components/MatchScoreCard";
 
 export default function ProfileReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen bg-slate-900 items-center justify-center">
+        <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <ProfileReviewContent />
+    </Suspense>
+  );
+}
+
+function ProfileReviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [autoGenerate, setAutoGenerate] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_profile");
@@ -19,7 +35,17 @@ export default function ProfileReviewPage() {
     }
     setProfile(JSON.parse(stored));
     trackProfileReviewed();
-  }, [router]);
+    if (searchParams.get("generate") === "1") {
+      setAutoGenerate(true);
+    }
+  }, [router, searchParams]);
+
+  useEffect(() => {
+    if (autoGenerate && profile && !generating) {
+      handleGenerate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoGenerate, profile]);
 
   async function handleGenerate() {
     if (!profile) return;
@@ -32,10 +58,14 @@ export default function ProfileReviewPage() {
     setError("");
     try {
       const paymentSessionId = sessionStorage.getItem("payment_session_id");
+      const storedAssessment = sessionStorage.getItem("values_assessment");
+      const valuesAssessment: ValuesAssessment | undefined = storedAssessment
+        ? JSON.parse(storedAssessment)
+        : undefined;
       const res = await fetch("/api/intake/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile, paymentSessionId }),
+        body: JSON.stringify({ profile, paymentSessionId, valuesAssessment }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Plan generation failed");
       const data = await res.json();
@@ -44,6 +74,7 @@ export default function ProfileReviewPage() {
         sessionStorage.removeItem("payment_session_id");
         sessionStorage.removeItem("payment_email");
         sessionStorage.removeItem("intake_profile");
+        sessionStorage.removeItem("values_assessment");
         router.push(`/report/${data.reportId}`);
       } else {
         trackPlanGenerationCompleted({ plans_count: data.plans?.length ?? 0, has_report_id: false });
@@ -200,11 +231,26 @@ export default function ProfileReviewPage() {
           </div>
         )}
 
+        <MatchScoreCard profile={profile} />
+
         {error && (
           <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3 mb-6">
             {error}
           </p>
         )}
+
+        <div className="bg-slate-800/60 border border-teal-700/30 rounded-2xl p-6 mb-6">
+          <h2 className="text-lg font-bold text-teal-400 mb-2">Personalize Your Roadmap</h2>
+          <p className="text-slate-400 text-sm mb-4">
+            Take a quick values assessment (5-8 min) to get more tailored career recommendations.
+          </p>
+          <button
+            onClick={() => router.push("/assessment")}
+            className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-sm transition-colors shadow-lg shadow-teal-900/50"
+          >
+            Take Values Assessment →
+          </button>
+        </div>
 
         <div className="flex gap-4">
           <button
@@ -217,7 +263,7 @@ export default function ProfileReviewPage() {
             onClick={handleGenerate}
             className="flex-[2] px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Generate My Pivot Plans →
+            Skip Assessment & Generate →
           </button>
         </div>
 
