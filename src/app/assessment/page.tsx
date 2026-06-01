@@ -129,9 +129,8 @@ export default function AssessmentPage() {
     router.push("/onboarding/profile?generate=1");
   }, [router]);
 
-  const handleComplete = useCallback(async () => {
+  const handleComplete = useCallback(() => {
     setSaving(true);
-    const profile = JSON.parse(sessionStorage.getItem("intake_profile") || "{}");
 
     const assessment: ValuesAssessment = {
       workStyle: workStyle || "independent",
@@ -141,16 +140,6 @@ export default function AssessmentPage() {
     };
 
     sessionStorage.setItem("values_assessment", JSON.stringify(assessment));
-
-    try {
-      await fetch("/api/assessment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: profile.email, assessment }),
-      });
-    } catch {
-      // Non-fatal — assessment is also stored in sessionStorage
-    }
 
     router.push("/onboarding/profile?generate=1");
   }, [workStyle, rankedValues, energy, dealbreakers, router]);
