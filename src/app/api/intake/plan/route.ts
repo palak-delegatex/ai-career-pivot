@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateObject } from "ai";
+import { streamObject } from "ai";
 import { jsonSchema } from "ai";
 import type { UserProfile, ValuesAssessment } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
@@ -194,10 +194,49 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  let reportId: string | undefined;
+  if (paymentSessionId) {
+    const { data: report } = await supabase
+      .from("reports")
+      .insert({
+        email: profile.email,
+        profile,
+        plans: [],
+        ...(valuesAssessment ? { values_assessment: valuesAssessment } : {}),
+      })
+      .select("id")
+      .single();
+
+    if (report) {
+      reportId = report.id;
+      await supabase
+        .from("orders")
+        .update({ report_id: report.id })
+        .eq("stripe_session_id", paymentSessionId);
+    }
+  }
+
   try {
-  const { object } = await generateObject({
+  const result = streamObject({
     model: anthropic("claude-sonnet-4-6"),
     schema: pivotPlanJsonSchema,
+    onFinish: async ({ object }) => {
+      if (reportId && object) {
+        await supabase
+          .from("reports")
+          .update({ plans: object.plans })
+          .eq("id", reportId);
+
+        const firstName = (profile.name ?? "").split(" ")[0] || "there";
+        scheduleMilestoneEmails(
+          supabase,
+          reportId,
+          profile.email,
+          firstName,
+          object.plans
+        ).catch((err) => console.error("Milestone email scheduling error:", err));
+      }
+    },
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
 Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic. Each plan MUST include a tradeoffs object with: difficulty ("low"/"medium"/"high"), riskLevel ("low"/"medium"/"high"), timeToFirstRole (e.g. "8-12 months"), incomeImpactNear (e.g. "-10% for 6 months"), incomePotentialLong (e.g. "+40% within 2 years"), pros (3-5 specific advantages for this person), cons (2-4 honest drawbacks). Make tradeoffs comparison-ready so the user can pick the best path for their situation.
@@ -256,38 +295,11 @@ VALUES-AWARE PLANNING: Factor the user's values, work style, and energy profile 
 Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.`,
   });
 
-  if (paymentSessionId && object) {
-    const { data: report } = await supabase
-      .from("reports")
-      .insert({
-        email: profile.email,
-        profile,
-        plans: object.plans,
-        ...(valuesAssessment ? { values_assessment: valuesAssessment } : {}),
-      })
-      .select("id")
-      .single();
-
-    if (report) {
-      await supabase
-        .from("orders")
-        .update({ report_id: report.id })
-        .eq("stripe_session_id", paymentSessionId);
-
-      const firstName = (profile.name ?? "").split(" ")[0] || "there";
-      scheduleMilestoneEmails(
-        supabase,
-        report.id,
-        profile.email,
-        firstName,
-        object.plans
-      ).catch((err) => console.error("Milestone email scheduling error:", err));
-
-      return NextResponse.json({ ...object, reportId: report.id });
-    }
-  }
-
-  return NextResponse.json(object);
+  return result.toTextStreamResponse({
+    headers: {
+      ...(reportId ? { "x-report-id": reportId } : {}),
+    },
+  });
   } catch (err) {
     console.error("Plan generation error:", err);
     return NextResponse.json(

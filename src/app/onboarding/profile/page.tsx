@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { UserProfile } from "@/lib/intake";
+import type { UserProfile, PivotPlan } from "@/lib/intake";
 import type { ValuesAssessment } from "@/lib/intake";
 import { trackProfileReviewed, trackPlanGenerationStarted, trackPlanGenerationCompleted, trackPlanGenerationError } from "@/lib/tracking";
 import { MatchScoreCard } from "@/components/MatchScoreCard";
+import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 
 export default function ProfileReviewPage() {
   return (
@@ -47,7 +48,7 @@ function ProfileReviewContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoGenerate, profile]);
 
-  async function handleGenerate() {
+  function handleGenerate() {
     if (!profile) return;
     trackPlanGenerationStarted({
       current_title: profile.currentTitle,
@@ -56,38 +57,28 @@ function ProfileReviewContent() {
     });
     setGenerating(true);
     setError("");
-    try {
-      const paymentSessionId = sessionStorage.getItem("payment_session_id");
-      const storedAssessment = sessionStorage.getItem("values_assessment");
-      const valuesAssessment: ValuesAssessment | undefined = storedAssessment
-        ? JSON.parse(storedAssessment)
-        : undefined;
-      const res = await fetch("/api/intake/plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile, paymentSessionId, valuesAssessment }),
-      });
-      if (!res.ok) throw new Error((await res.json()).error ?? "Plan generation failed");
-      const data = await res.json();
-      if (data.reportId) {
-        trackPlanGenerationCompleted({ plans_count: 1, has_report_id: true });
-        sessionStorage.removeItem("payment_session_id");
-        sessionStorage.removeItem("payment_email");
-        sessionStorage.removeItem("intake_profile");
-        sessionStorage.removeItem("values_assessment");
-        router.push(`/report/${data.reportId}`);
-      } else {
-        trackPlanGenerationCompleted({ plans_count: data.plans?.length ?? 0, has_report_id: false });
-        sessionStorage.setItem("intake_plans", JSON.stringify(data.plans));
-        router.push("/onboarding/plan");
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      trackPlanGenerationError({ error: message });
-      setError(message);
-      setGenerating(false);
-    }
   }
+
+  const handleStreamComplete = useCallback((plans: PivotPlan[], reportId?: string) => {
+    if (reportId) {
+      trackPlanGenerationCompleted({ plans_count: plans.length, has_report_id: true });
+      sessionStorage.removeItem("payment_session_id");
+      sessionStorage.removeItem("payment_email");
+      sessionStorage.removeItem("intake_profile");
+      sessionStorage.removeItem("values_assessment");
+      router.push(`/report/${reportId}`);
+    } else {
+      trackPlanGenerationCompleted({ plans_count: plans.length, has_report_id: false });
+      sessionStorage.setItem("intake_plans", JSON.stringify(plans));
+      router.push("/onboarding/plan");
+    }
+  }, [router]);
+
+  const handleStreamError = useCallback((message: string) => {
+    trackPlanGenerationError({ error: message });
+    setError(message);
+    setGenerating(false);
+  }, []);
 
   if (!profile) {
     return (
@@ -97,15 +88,21 @@ function ProfileReviewContent() {
     );
   }
 
-  if (generating) {
+  if (generating && profile) {
+    const storedPaymentId = typeof window !== "undefined" ? sessionStorage.getItem("payment_session_id") : null;
+    const storedAssessment = typeof window !== "undefined" ? sessionStorage.getItem("values_assessment") : null;
+    const parsedAssessment: ValuesAssessment | undefined = storedAssessment
+      ? JSON.parse(storedAssessment)
+      : undefined;
+
     return (
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
-        <div className="max-w-md w-full text-center">
-          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-8" />
-          <h2 className="text-2xl font-bold mb-3">Generating your pivot plans…</h2>
-          <p className="text-slate-400">Building personalized 6-month, 1-year, and 2-year roadmaps</p>
-        </div>
-      </div>
+      <StreamingPlanGeneration
+        profile={profile}
+        paymentSessionId={storedPaymentId ?? undefined}
+        valuesAssessment={parsedAssessment}
+        onComplete={handleStreamComplete}
+        onError={handleStreamError}
+      />
     );
   }
 
