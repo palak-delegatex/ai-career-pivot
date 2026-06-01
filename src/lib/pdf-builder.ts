@@ -88,6 +88,11 @@ function ensureSpace(doc: PDFKit.PDFDocument, needed: number, pageNum: { value: 
   }
 }
 
+function textHeight(doc: PDFKit.PDFDocument, text: string, fontSize: number, width: number): number {
+  doc.fontSize(fontSize);
+  return doc.heightOfString(text, { width }) + 4;
+}
+
 export function buildPivotPlanPdf(
   profile: UserProfile,
   plan: PivotPlan,
@@ -146,6 +151,8 @@ export function buildPivotPlanPdf(
 
   sectionTitle(doc, "Executive Summary");
 
+  const rationaleH = textHeight(doc, plan.rationale, 10, CONTENT_W);
+  ensureSpace(doc, rationaleH, pageNum);
   doc.fontSize(10).fillColor(TEXT).text(plan.rationale, MARGIN, doc.y, { width: CONTENT_W, lineGap: 3 });
   doc.moveDown(1.2);
 
@@ -160,19 +167,25 @@ export function buildPivotPlanPdf(
     doc.moveDown(0.5);
 
     if (plan.tradeoffs.pros.length) {
+      ensureSpace(doc, 20, pageNum);
       doc.fontSize(10).fillColor(EMERALD).text("Advantages:", MARGIN, doc.y);
       doc.fillColor(TEXT);
       for (const p of plan.tradeoffs.pros) {
-        doc.text(`  \u2713  ${p}`, MARGIN, doc.y, { indent: 8, width: CONTENT_W });
+        const pH = textHeight(doc, `  \u2713  ${p}`, 10, CONTENT_W) + 2;
+        ensureSpace(doc, pH, pageNum);
+        doc.fontSize(10).fillColor(TEXT).text(`  \u2713  ${p}`, MARGIN, doc.y, { indent: 8, width: CONTENT_W });
         doc.moveDown(0.15);
       }
     }
     doc.moveDown(0.3);
     if (plan.tradeoffs.cons.length) {
+      ensureSpace(doc, 20, pageNum);
       doc.fontSize(10).fillColor(AMBER).text("Considerations:", MARGIN, doc.y);
       doc.fillColor(TEXT);
       for (const c of plan.tradeoffs.cons) {
-        doc.text(`  \u2022  ${c}`, MARGIN, doc.y, { indent: 8, width: CONTENT_W });
+        const cH = textHeight(doc, `  \u2022  ${c}`, 10, CONTENT_W) + 2;
+        ensureSpace(doc, cH, pageNum);
+        doc.fontSize(10).fillColor(TEXT).text(`  \u2022  ${c}`, MARGIN, doc.y, { indent: 8, width: CONTENT_W });
         doc.moveDown(0.15);
       }
     }
@@ -218,8 +231,10 @@ export function buildPivotPlanPdf(
       doc.moveDown(0.5);
 
       for (const m of milestones) {
-        ensureSpace(doc, 20, pageNum);
-        doc.fontSize(10).fillColor(TEXT).text(`  \u2022  ${m}`, MARGIN + 14, doc.y, { indent: 4, width: CONTENT_W - 18 });
+        const mText = `  \u2022  ${m}`;
+        const mH = textHeight(doc, mText, 10, CONTENT_W - 18) + 4;
+        ensureSpace(doc, mH, pageNum);
+        doc.fontSize(10).fillColor(TEXT).text(mText, MARGIN + 14, doc.y, { indent: 4, width: CONTENT_W - 18 });
         doc.moveDown(0.25);
       }
 
@@ -271,7 +286,8 @@ export function buildPivotPlanPdf(
   if (plan.weekOneActions && plan.weekOneActions.length > 0) {
     for (let i = 0; i < plan.weekOneActions.length; i++) {
       const action = plan.weekOneActions[i];
-      ensureSpace(doc, 55, pageNum);
+      const actionH = Math.max(56, textHeight(doc, action.instruction, 9, CONTENT_W - 44) + 36);
+      ensureSpace(doc, actionH, pageNum);
 
       doc.save();
       doc.roundedRect(MARGIN, doc.y, CONTENT_W, 48, 4).fill(LIGHT_BG);
@@ -292,7 +308,8 @@ export function buildPivotPlanPdf(
     }
   } else if (plan.keyActions && plan.keyActions.length > 0) {
     for (const action of plan.keyActions) {
-      ensureSpace(doc, 20, pageNum);
+      const aH = textHeight(doc, `  \u2713  ${action}`, 10, CONTENT_W) + 4;
+      ensureSpace(doc, aH, pageNum);
       doc.fontSize(10).fillColor(TEXT).text(`  \u2713  ${action}`, MARGIN, doc.y, { indent: 8, width: CONTENT_W });
       doc.moveDown(0.3);
     }
@@ -392,7 +409,8 @@ export function buildPivotPlanPdf(
 
   if (plan.recommendedResources && plan.recommendedResources.length > 0) {
     for (const r of plan.recommendedResources) {
-      ensureSpace(doc, 35, pageNum);
+      const rH = textHeight(doc, r.name, 11, CONTENT_W) + textHeight(doc, `${r.provider}  \u00B7  ${r.type}  \u00B7  ${r.cost}  \u00B7  ~${r.timeEstimate}`, 9, CONTENT_W - 8) + 8;
+      ensureSpace(doc, rH, pageNum);
       doc.fontSize(11).fillColor(TEXT).text(r.name, MARGIN, doc.y, { width: CONTENT_W });
       doc.fontSize(9).fillColor(MUTED).text(`${r.provider}  \u00B7  ${r.type}  \u00B7  ${r.cost}  \u00B7  ~${r.timeEstimate}`, MARGIN + 8, doc.y, { width: CONTENT_W - 8 });
       doc.moveDown(0.6);
