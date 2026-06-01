@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download } from "lucide-react";
+import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download, LayoutGrid } from "lucide-react";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
+import RoadmapKanban from "@/components/RoadmapKanban";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -114,12 +115,23 @@ export default function InteractiveRoadmap({
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [view, setView] = useState<"timeline" | "checklist">("timeline");
+  const [view, setView] = useState<"timeline" | "checklist" | "board">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("roadmap_view_preference");
+      if (saved === "timeline" || saved === "checklist" || saved === "board") return saved;
+    }
+    return "timeline";
+  });
   const [selectedMilestone, setSelectedMilestone] = useState<{
     text: string;
     phase: Phase;
     index: number;
   } | null>(null);
+
+  function setViewAndPersist(v: "timeline" | "checklist" | "board") {
+    setView(v);
+    localStorage.setItem("roadmap_view_preference", v);
+  }
 
   const phases: Phase[] = [
     { key: "6mo", label: "6 Months", milestones: sixMonthMilestones, color: "emerald", deadline: "6 months" },
@@ -300,7 +312,7 @@ export default function InteractiveRoadmap({
           {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
             <button
-              onClick={() => setView("timeline")}
+              onClick={() => setViewAndPersist("timeline")}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
                 view === "timeline"
                   ? "bg-slate-700 text-white"
@@ -312,7 +324,7 @@ export default function InteractiveRoadmap({
               Timeline
             </button>
             <button
-              onClick={() => setView("checklist")}
+              onClick={() => setViewAndPersist("checklist")}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
                 view === "checklist"
                   ? "bg-slate-700 text-white"
@@ -322,6 +334,18 @@ export default function InteractiveRoadmap({
             >
               <List className="h-3.5 w-3.5" />
               Checklist
+            </button>
+            <button
+              onClick={() => setViewAndPersist("board")}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                view === "board"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              aria-label="Board view"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Board
             </button>
           </div>
         </div>
@@ -497,6 +521,20 @@ export default function InteractiveRoadmap({
           );
         })}
       </ol>
+      )}
+
+      {/* Board view */}
+      {view === "board" && (
+        <RoadmapKanban
+          phases={phases}
+          progress={progress}
+          saving={saving}
+          onCycleStatus={cycleMilestoneStatus}
+          onSelectMilestone={(text, phaseKey, index) => {
+            const phase = phases.find((p) => p.key === phaseKey);
+            if (phase) setSelectedMilestone({ text, phase, index });
+          }}
+        />
       )}
 
       {/* Milestone Detail Sheet */}
