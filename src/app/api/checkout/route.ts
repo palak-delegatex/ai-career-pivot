@@ -21,14 +21,14 @@ export async function POST(req: NextRequest) {
     if (isBypassEmail(email)) {
       const bypassSessionId = `bypass_${randomUUID()}`;
       const supabase = getSupabaseClient();
-      const { error: insertError } = await supabase.from("orders").insert({
+      const bypassRow: Record<string, unknown> = {
         email,
         stripe_session_id: bypassSessionId,
         amount_cents: 0,
         status: "paid",
         discount_code: "TEAM_BYPASS",
-        plan_type: planKey,
-      });
+      };
+      const { error: insertError } = await supabase.from("orders").insert(bypassRow);
       if (insertError) {
         console.error("Bypass order insert failed:", insertError);
         return NextResponse.json({ error: "Failed to create bypass order" }, { status: 500 });
@@ -85,7 +85,6 @@ export async function POST(req: NextRequest) {
       amount_cents: plan.amount,
       status: "pending",
       discount_code: discountCode ?? null,
-      plan_type: planKey,
     });
 
     return NextResponse.json({ url: session.url });
