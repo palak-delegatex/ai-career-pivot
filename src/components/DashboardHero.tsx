@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trophy } from "lucide-react";
+import { Trophy, Flame, Calendar } from "lucide-react";
 
 const RING_SIZE = 140;
 const STROKE_WIDTH = 12;
@@ -17,6 +17,9 @@ interface DashboardHeroProps {
   completedMilestones: number;
   remainingMilestones: number;
   targetRole: string;
+  streakDays?: number;
+  daysElapsed?: number;
+  currentPhaseLabel?: string;
 }
 
 const statusConfig: Record<
@@ -114,6 +117,9 @@ export default function DashboardHero({
   completedMilestones,
   remainingMilestones,
   targetRole,
+  streakDays = 0,
+  daysElapsed,
+  currentPhaseLabel,
 }: DashboardHeroProps) {
   const cfg = statusConfig[status];
 
@@ -137,6 +143,28 @@ export default function DashboardHero({
             >
               {cfg.label}
             </span>
+            {currentPhaseLabel && (
+              <span className="text-xs font-medium px-3 py-1 rounded-full border bg-teal-900/40 border-teal-700/40 text-teal-300">
+                {currentPhaseLabel}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+            <div className={`flex items-center gap-1.5 text-sm font-semibold ${
+              streakDays > 0 ? "text-amber-400" : "text-slate-500"
+            }`}>
+              <Flame className="h-4 w-4" />
+              {streakDays > 0
+                ? `${streakDays}-day streak`
+                : "Resume your streak"}
+            </div>
+            {daysElapsed !== undefined && (
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <Calendar className="h-3.5 w-3.5" />
+                Day {daysElapsed}
+              </div>
+            )}
           </div>
 
           {completionPercent >= 100 ? (

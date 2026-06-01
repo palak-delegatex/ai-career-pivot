@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowRight, CheckCircle } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  BookOpen,
+  Briefcase,
+  Rocket,
+  Clock,
+} from "lucide-react";
 
 interface NextAction {
   phase: string;
@@ -25,6 +32,24 @@ const phaseBadge: Record<string, string> = {
   "6mo": "bg-emerald-900/40 border-emerald-700/40 text-emerald-300",
   "1yr": "bg-teal-900/40 border-teal-700/40 text-teal-300",
   "2yr": "bg-cyan-900/40 border-cyan-700/40 text-cyan-300",
+};
+
+const phaseDot: Record<string, string> = {
+  "6mo": "bg-emerald-500",
+  "1yr": "bg-teal-500",
+  "2yr": "bg-cyan-500",
+};
+
+const phaseIcon: Record<string, React.ReactNode> = {
+  "6mo": <BookOpen className="h-3.5 w-3.5" />,
+  "1yr": <Briefcase className="h-3.5 w-3.5" />,
+  "2yr": <Rocket className="h-3.5 w-3.5" />,
+};
+
+const phaseEstimate: Record<string, string> = {
+  "6mo": "within 6 months",
+  "1yr": "within 1 year",
+  "2yr": "within 2 years",
 };
 
 export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidgetProps) {
@@ -54,12 +79,20 @@ export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidg
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
+                  <span className={`w-2 h-2 rounded-full ${phaseDot[item.phase] ?? "bg-teal-500"}`} />
+                  <span className="text-teal-400">
+                    {phaseIcon[item.phase] ?? phaseIcon["1yr"]}
+                  </span>
                   <span
                     className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
                       phaseBadge[item.phase] ?? phaseBadge["1yr"]
                     }`}
                   >
                     {item.phaseLabel}
+                  </span>
+                  <span className="flex items-center gap-1 text-[10px] text-slate-500">
+                    <Clock className="h-2.5 w-2.5" />
+                    {phaseEstimate[item.phase] ?? ""}
                   </span>
                 </div>
                 <p className="font-semibold text-white text-sm leading-snug mb-1">

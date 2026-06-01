@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 import SiteNav from "@/components/SiteNav";
-import type { PivotPlan, UserProfile } from "@/lib/intake";
+import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import ReportContent from "./ReportContent";
+import CareerProfileCard from "@/components/CareerProfileCard";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,6 +23,7 @@ export default async function ReportPage({ params }: Props) {
 
   const profile = report.profile as UserProfile;
   const plans = report.plans as PivotPlan[];
+  const valuesAssessment = report.values_assessment as ValuesAssessment | null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -42,6 +44,10 @@ export default async function ReportPage({ params }: Props) {
             </p>
           )}
         </div>
+
+        {valuesAssessment && (
+          <CareerProfileCard assessment={valuesAssessment} />
+        )}
 
         {profile.transferableSkills.length > 0 && (
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 mb-8">
