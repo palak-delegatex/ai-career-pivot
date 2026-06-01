@@ -103,11 +103,16 @@ export default function SiteNav() {
           </NavigationMenuList>
         </NavigationMenu>
         {user ? (
-          <form action="/api/auth/signout" method="POST" className="ml-2">
-            <Button type="submit" variant="outline" size="sm">
-              Sign Out
-            </Button>
-          </form>
+          <div className="flex items-center gap-3 ml-2">
+            <span className="text-sm text-slate-300 truncate max-w-[150px]">
+              {user.user_metadata?.full_name || user.email}
+            </span>
+            <form action="/api/auth/signout" method="POST">
+              <Button type="submit" variant="outline" size="sm">
+                Sign Out
+              </Button>
+            </form>
+          </div>
         ) : (
           <Button render={<Link href="/login" />} size="sm" className="ml-2">
             Sign In
@@ -118,11 +123,16 @@ export default function SiteNav() {
       {/* Mobile nav */}
       <div className="sm:hidden flex items-center gap-2">
         {user ? (
-          <form action="/api/auth/signout" method="POST">
-            <Button type="submit" variant="outline" size="sm">
-              Sign Out
-            </Button>
-          </form>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-300 truncate max-w-[100px]">
+              {user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0]}
+            </span>
+            <form action="/api/auth/signout" method="POST">
+              <Button type="submit" variant="outline" size="sm">
+                Sign Out
+              </Button>
+            </form>
+          </div>
         ) : (
           <Button render={<Link href="/login" />} size="sm">
             Sign In
@@ -158,11 +168,16 @@ export default function SiteNav() {
               ))}
               <Separator className="my-2" />
               {user ? (
-                <form action="/api/auth/signout" method="POST">
-                  <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
-                    Sign Out
-                  </button>
-                </form>
+                <>
+                  <div className="px-3 py-2 text-xs text-slate-400 truncate">
+                    {user.user_metadata?.full_name || user.email}
+                  </div>
+                  <form action="/api/auth/signout" method="POST">
+                    <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
+                      Sign Out
+                    </button>
+                  </form>
+                </>
               ) : (
                 <SheetClose
                   render={
