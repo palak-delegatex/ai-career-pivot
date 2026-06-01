@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("PDF generation failed:", err);
     return NextResponse.json(
       { error: "PDF generation failed" },
       { status: 500 }
