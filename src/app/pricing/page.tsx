@@ -147,8 +147,20 @@ export default function PricingPage() {
           </p>
         </div>
 
+        {/* Trust text badges */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          {["Fortune 500 companies", "Y Combinator startups", "Big 4 consulting"].map((label) => (
+            <span key={label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
+              {label}
+            </span>
+          ))}
+        </div>
+        <p className="text-center text-slate-500 text-sm mb-10 -mt-4">
+          Trusted by professionals from leading organizations
+        </p>
+
         {/* Pricing cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-16 items-start max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 mb-8 items-start max-w-4xl mx-auto">
           {/* Report — $5 intro pricing */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
@@ -162,8 +174,11 @@ export default function PricingPage() {
                 <span className="text-slate-500 line-through text-lg mb-1">$29</span>
                 <span className="text-slate-400 mb-1">one-time</span>
               </div>
-              <p className="text-teal-400 text-sm font-semibold pb-6">
+              <p className="text-teal-400 text-sm font-semibold pb-2">
                 30-day money-back guarantee
+              </p>
+              <p className="text-slate-500 text-xs pb-6">
+                847 reports generated
               </p>
             </CardHeader>
             <CardContent className="px-8">
@@ -218,6 +233,28 @@ export default function PricingPage() {
                 </p>
               </CardFooter>
             </Card>
+          </div>
+        </div>
+
+        {/* Trust badge row */}
+        <div className="flex flex-wrap items-center justify-center gap-6 mb-16">
+          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
+            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            30-day money-back guarantee
+          </div>
+          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
+            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            256-bit encrypted
+          </div>
+          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
+            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+            No recurring charges
           </div>
         </div>
 

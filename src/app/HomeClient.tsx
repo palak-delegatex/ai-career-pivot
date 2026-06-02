@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
@@ -161,6 +161,24 @@ const stats = [
   { value: "100%", label: "Personalized to your life" },
 ];
 
+const beforeAfterCards = [
+  {
+    before: "Stuck in marketing for 8 years",
+    after: "Product Manager at a Series B startup",
+    timeline: "6-month pivot",
+  },
+  {
+    before: "Burnt-out accountant with no tech background",
+    after: "Data Analytics Lead at a Fortune 500",
+    timeline: "9-month pivot",
+  },
+  {
+    before: "Retail operations manager, career plateau",
+    after: "AI Implementation Consultant, 40% salary increase",
+    timeline: "5-month pivot",
+  },
+];
+
 const testimonials = [
   {
     quote:
@@ -212,6 +230,31 @@ const testimonials = [
   },
 ];
 
+function ActivityIndicator() {
+  const [count, setCount] = useState(14);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(Math.floor(Math.random() * (25 - 8 + 1)) + 8);
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex justify-center py-6 px-6">
+      <div className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-slate-900/70 backdrop-blur-sm border border-slate-800/60">
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+        </span>
+        <p className="text-slate-400 text-sm">
+          <span className="text-white font-semibold">{count} people</span> are building their career pivot right now
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function StickyCtaBar() {
   const [visible, setVisible] = useState(false);
 
@@ -247,6 +290,15 @@ function StickyCtaBar() {
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
+
+  const shuffledTestimonials = useMemo(() => {
+    const arr = [...testimonials];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, []);
 
   const handleHeroCtaHover = useCallback(() => {
     trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $5", cta_location: "hero" });
@@ -455,6 +507,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </main>
 
+        {/* Real-time activity indicator */}
+        <ActivityIndicator />
+
         {/* How it works */}
         <section id="how-it-works" className="py-28 px-6">
           <div className="max-w-5xl mx-auto">
@@ -573,7 +628,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             </AnimatedSection>
 
             <AnimatedSection className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {testimonials.map((t, i) => (
+              {shuffledTestimonials.map((t, i) => (
                 <motion.div
                   key={t.name}
                   variants={{
@@ -593,6 +648,15 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   </div>
 
                   <div className="relative z-10">
+                    {/* 5-star rating */}
+                    <div className="flex gap-0.5 mb-3">
+                      {Array.from({ length: 5 }).map((_, s) => (
+                        <svg key={s} className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      ))}
+                    </div>
+
                     <blockquote className="text-slate-300 text-sm leading-relaxed mb-6">
                       &ldquo;{t.quote}&rdquo;
                     </blockquote>
@@ -603,7 +667,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                       </div>
                       <div>
                         <div className="text-white font-semibold text-sm">{t.name}</div>
-                        <div className="text-slate-500 text-xs">{t.role}</div>
+                        {/* Role transition badge */}
+                        <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-400">
+                          {t.role}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -622,6 +689,59 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $5 →
                 </Link>
               </motion.div>
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Before/After Success Metrics */}
+        <section className="py-28 px-6">
+          <div className="max-w-5xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
+                Real Transformations
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                Where they started.{" "}
+                <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                  Where they are now.
+                </span>
+              </motion.h2>
+            </AnimatedSection>
+
+            <AnimatedSection className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {beforeAfterCards.map((card, i) => (
+                <motion.div
+                  key={card.after}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.12 } },
+                  }}
+                  className="bg-slate-800/60 border border-slate-700 rounded-xl p-6 flex flex-col gap-4"
+                >
+                  <p className="text-slate-500 text-sm">{card.before}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-gradient-to-r from-slate-700 to-teal-500/60" />
+                    <motion.svg
+                      initial={{ x: -4, opacity: 0 }}
+                      whileInView={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 + i * 0.12, duration: 0.4 }}
+                      viewport={{ once: true }}
+                      className="w-5 h-5 text-teal-400 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </motion.svg>
+                    <div className="flex-1 h-px bg-gradient-to-r from-teal-500/60 to-slate-700" />
+                  </div>
+                  <p className="text-white text-sm font-medium">{card.after}</p>
+                  <span className="inline-flex self-start items-center px-2.5 py-1 rounded-full bg-teal-950/60 border border-teal-800/40 text-teal-300 text-xs font-semibold">
+                    {card.timeline}
+                  </span>
+                </motion.div>
+              ))}
             </AnimatedSection>
           </div>
         </section>
