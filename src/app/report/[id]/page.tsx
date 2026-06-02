@@ -4,6 +4,7 @@ import SiteNav from "@/components/SiteNav";
 import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import ReportContent from "./ReportContent";
 import CareerProfileCard from "@/components/CareerProfileCard";
+import ActivityTracker from "@/components/ActivityTracker";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,6 +29,7 @@ export default async function ReportPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
+      <ActivityTracker reportId={id} />
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-3">

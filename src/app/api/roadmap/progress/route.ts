@@ -52,6 +52,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Update last_active_at on the report
+  await supabase
+    .from("reports")
+    .update({ last_active_at: new Date().toISOString() })
+    .eq("id", reportId);
+
   // Fire celebration email when a milestone is marked complete
   if (completed) {
     void (async () => {
@@ -64,16 +70,32 @@ export async function POST(req: NextRequest) {
         if (report?.email) {
           const firstName = (report.profile?.name as string | undefined)?.split(" ")[0] ?? "there";
           const plan = (report.plans as { targetRole?: string; sixMonthMilestones?: string[]; oneYearMilestones?: string[]; twoYearMilestones?: string[] }[] | undefined)?.[planIndex];
-          const allMilestones: string[] = [
-            ...(plan?.sixMonthMilestones ?? []),
-            ...(plan?.oneYearMilestones ?? []),
-            ...(plan?.twoYearMilestones ?? []),
+          const phaseKey = `${phase}Milestones` as "sixMonthMilestones" | "oneYearMilestones" | "twoYearMilestones";
+          const milestoneText = plan?.[phaseKey]?.[milestoneIndex] ?? "a milestone";
+
+          const { data: allProgress } = await supabase
+            .from("milestone_progress")
+            .select("phase, milestone_index, completed")
+            .eq("report_id", reportId)
+            .eq("plan_index", planIndex);
+
+          const completedSet = new Set(
+            (allProgress ?? []).filter((p) => p.completed).map((p) => `${p.phase}:${p.milestone_index}`)
+          );
+          completedSet.add(`${phase}:${milestoneIndex}`);
+
+          const allMilestones = [
+            ...(plan?.sixMonthMilestones ?? []).map((m, i) => ({ key: `sixMonth:${i}`, text: m })),
+            ...(plan?.oneYearMilestones ?? []).map((m, i) => ({ key: `oneYear:${i}`, text: m })),
+            ...(plan?.twoYearMilestones ?? []).map((m, i) => ({ key: `twoYear:${i}`, text: m })),
           ];
-          const milestoneText = allMilestones[milestoneIndex] ?? "a milestone";
+          const nextMilestone = allMilestones.find((m) => !completedSet.has(m.key));
+
           await sendDripEmail(report.email, firstName, 15, {
             milestoneName: milestoneText,
             reportId,
             planIndex,
+            ...(nextMilestone ? { nextAction: nextMilestone.text } : {}),
           });
         }
       } catch {

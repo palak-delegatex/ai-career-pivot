@@ -426,17 +426,17 @@ export function getEmailTemplate(
       };
     }
 
-    // Re-engagement nudge: user hasn't returned in 14 days
+    // Re-engagement nudge: user hasn't returned in 7+ days
     case 14: {
       const roadmapLink = opts?.reportId
         ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "milestone_nudge")
         : utmLink("/dashboard", "milestone_nudge");
       return {
         subject: `${name}, your career roadmap is waiting`,
-        previewText: "It's been a couple weeks — your roadmap is ready when you are.",
+        previewText: "It's been a while — your roadmap is ready when you are.",
         html: baseHtml(`
           ${h1(`Still thinking about your next move, ${name}?`)}
-          ${p("It's been a couple of weeks since you last checked in on your career roadmap. Life gets busy — we get it.")}
+          ${p("It's been a bit since you last checked in on your career roadmap. Life gets busy — we get it.")}
           ${p("But your roadmap doesn't expire. Your milestones, skill gaps, and action items are all still there, personalized to your background and constraints.")}
           ${p("Even 10 minutes can help:")}
           <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
@@ -456,12 +456,13 @@ export function getEmailTemplate(
     // Milestone celebration: user just completed a milestone
     case 15: {
       const milestone = opts?.milestoneName ?? "a milestone";
+      const nextAction = (opts as { nextAction?: string })?.nextAction;
       const roadmapLink = opts?.reportId
         ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "milestone_celebration")
         : utmLink("/dashboard", "milestone_celebration");
       return {
         subject: `You completed "${milestone}" — nice work`,
-        previewText: "Progress made. Your roadmap is updating.",
+        previewText: nextAction ? `Next up: ${nextAction}` : "Progress made. Your roadmap is updating.",
         html: baseHtml(`
           ${h1(`Nice work, ${name}.`)}
           <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
@@ -469,9 +470,15 @@ export function getEmailTemplate(
             <p style="color:#f1f5f9;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
           </div>
           ${p("Every step forward is real movement — not just planning.")}
-          ${p("Your roadmap has updated. Check what's next and keep the momentum going.")}
+          ${nextAction
+            ? `<div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:0 0 24px 0;border-radius:0 8px 8px 0;">
+                <p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Your next milestone</p>
+                <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
+              </div>`
+            : p("Your roadmap has updated. Check what's next and keep the momentum going.")
+          }
           <div style="margin:32px 0;">
-            ${cta("See what's next →", roadmapLink)}
+            ${cta("See my roadmap →", roadmapLink)}
           </div>
           ${sig()}
         `),
