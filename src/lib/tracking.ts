@@ -106,6 +106,19 @@ export function trackScrollDepth(props: { depth_percent: number; section_visible
   capture("scroll_depth", props);
 }
 
+// Preview flow
+export function trackPreviewStarted(props: { current_role: string; target_role: string }) {
+  capture("preview_started", props);
+}
+
+export function trackPreviewCompleted(props: { current_role: string; target_role: string; match_score: number }) {
+  capture("preview_completed", props);
+}
+
+export function trackPreviewCtaClicked(props: { cta_location: string; destination: string }) {
+  capture("preview_cta_clicked", props);
+}
+
 // Referral
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");
