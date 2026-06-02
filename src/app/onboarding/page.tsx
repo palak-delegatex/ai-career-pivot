@@ -32,6 +32,11 @@ function linkedinUrlStatus(url: string): "empty" | "valid" | "invalid" {
   return /linkedin\.com\/(in|pub)\/[^/]+/i.test(url) ? "valid" : "invalid";
 }
 
+function extractLinkedinUsername(url: string): string | null {
+  const match = url.match(/linkedin\.com\/(?:in|pub)\/([^/?#]+)/i);
+  return match ? decodeURIComponent(match[1]).replace(/-/g, " ") : null;
+}
+
 const WIZARD_STEPS = ["Your Background", "Additional Sources", "Life Circumstances"];
 
 const ANALYSIS_STEPS = [
@@ -105,6 +110,34 @@ export default function OnboardingPage() {
 
   const [dropActive, setDropActive] = useState(false);
   const [gpsResolved, setGpsResolved] = useState(false);
+  const [linkedinPasting, setLinkedinPasting] = useState(false);
+  const [linkedinPreview, setLinkedinPreview] = useState<{ username: string } | null>(null);
+
+  useEffect(() => {
+    if (linkedinUrlStatus(linkedinUrl) === "valid") {
+      const username = extractLinkedinUsername(linkedinUrl);
+      setLinkedinPreview(username ? { username } : null);
+    } else {
+      setLinkedinPreview(null);
+    }
+  }, [linkedinUrl]);
+
+  async function pasteLinkedinFromClipboard() {
+    try {
+      setLinkedinPasting(true);
+      const text = await navigator.clipboard.readText();
+      const normalized = normalizeLinkedinUrl(text.trim());
+      if (linkedinUrlStatus(normalized) === "valid") {
+        setLinkedinUrl(normalized);
+      } else if (text.trim()) {
+        setLinkedinUrl(text.trim());
+      }
+    } catch {
+      // Clipboard permission denied — ignore silently
+    } finally {
+      setLinkedinPasting(false);
+    }
+  }
 
   useEffect(() => {
     const paymentEmail = sessionStorage.getItem("payment_email");
@@ -686,44 +719,75 @@ export default function OnboardingPage() {
                     LinkedIn URL
                     <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={linkedinUrl}
-                      onChange={(e) => setLinkedinUrl(e.target.value)}
-                      onBlur={() => {
-                        const normalized = normalizeLinkedinUrl(linkedinUrl);
-                        if (normalized !== linkedinUrl) setLinkedinUrl(normalized);
-                      }}
-                      onPaste={(e) => {
-                        // Normalize immediately on paste
-                        const pasted = e.clipboardData.getData("text");
-                        const normalized = normalizeLinkedinUrl(pasted);
-                        if (normalized !== pasted) {
-                          e.preventDefault();
-                          setLinkedinUrl(normalized);
-                        }
-                      }}
-                      placeholder="linkedin.com/in/yourname"
-                      className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
-                        linkedinUrlStatus(linkedinUrl) === "valid"
-                          ? "border-teal-500/70 focus:border-teal-400"
-                          : linkedinUrlStatus(linkedinUrl) === "invalid"
-                          ? "border-amber-500/60 focus:border-amber-400"
-                          : "border-slate-600 focus:border-teal-500"
-                      }`}
-                    />
-                    {linkedinUrlStatus(linkedinUrl) === "valid" && (
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">✓</span>
-                    )}
-                    {linkedinUrlStatus(linkedinUrl) === "invalid" && (
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs pointer-events-none">?</span>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={linkedinUrl}
+                        onChange={(e) => setLinkedinUrl(e.target.value)}
+                        onBlur={() => {
+                          const normalized = normalizeLinkedinUrl(linkedinUrl);
+                          if (normalized !== linkedinUrl) setLinkedinUrl(normalized);
+                        }}
+                        onPaste={(e) => {
+                          const pasted = e.clipboardData.getData("text");
+                          const normalized = normalizeLinkedinUrl(pasted);
+                          if (normalized !== pasted) {
+                            e.preventDefault();
+                            setLinkedinUrl(normalized);
+                          }
+                        }}
+                        placeholder="linkedin.com/in/yourname"
+                        className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
+                          linkedinUrlStatus(linkedinUrl) === "valid"
+                            ? "border-teal-500/70 focus:border-teal-400"
+                            : linkedinUrlStatus(linkedinUrl) === "invalid"
+                            ? "border-amber-500/60 focus:border-amber-400"
+                            : "border-slate-600 focus:border-teal-500"
+                        }`}
+                      />
+                      {linkedinUrlStatus(linkedinUrl) === "valid" && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">&#10003;</span>
+                      )}
+                      {linkedinUrlStatus(linkedinUrl) === "invalid" && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs pointer-events-none">?</span>
+                      )}
+                    </div>
+                    {!linkedinUrl && (
+                      <button
+                        type="button"
+                        onClick={pasteLinkedinFromClipboard}
+                        disabled={linkedinPasting}
+                        className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+                        title="Paste LinkedIn URL from clipboard"
+                      >
+                        {linkedinPasting ? (
+                          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                          </svg>
+                        )}
+                      </button>
                     )}
                   </div>
                   {linkedinUrlStatus(linkedinUrl) === "invalid" && (
                     <p className="mt-1.5 text-xs text-amber-400/80">
-                      Should look like linkedin.com/in/yourname — paste your profile URL from the browser.
+                      Should look like linkedin.com/in/yourname &#8212; paste your full profile URL from the browser address bar.
                     </p>
+                  )}
+                  {linkedinPreview && linkedinUrlStatus(linkedinUrl) === "valid" && (
+                    <div className="mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-teal-950/30 border border-teal-800/30">
+                      <div className="w-7 h-7 rounded-full bg-teal-600/30 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm text-teal-300/90 capitalize truncate">{linkedinPreview.username}</span>
+                    </div>
                   )}
                 </div>
 

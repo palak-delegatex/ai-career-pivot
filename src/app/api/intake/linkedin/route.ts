@@ -34,23 +34,48 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "linkedinUrl and email required" }, { status: 400 });
   }
 
+  if (!/linkedin\.com\/(in|pub)\/[^/]+/i.test(linkedinUrl)) {
+    return NextResponse.json(
+      { error: "That doesn't look like a LinkedIn profile URL. It should look like linkedin.com/in/yourname." },
+      { status: 400 }
+    );
+  }
+
   const proxycurlKey = process.env.PROXYCURL_API_KEY;
   if (!proxycurlKey) {
     return NextResponse.json(
-      { error: "LinkedIn parsing is not yet configured. Please upload your resume instead." },
+      { error: "LinkedIn import is not yet configured. Please upload your resume instead." },
       { status: 503 }
     );
   }
 
-  // Fetch LinkedIn profile via Proxycurl
   const proxycurlRes = await fetch(
     `https://nubela.co/proxycurl/api/v2/linkedin?url=${encodeURIComponent(linkedinUrl)}&fallback_to_cache=on-error&use_cache=if-recent`,
     { headers: { Authorization: `Bearer ${proxycurlKey}` } }
   );
 
   if (!proxycurlRes.ok) {
+    const status = proxycurlRes.status;
+    if (status === 404) {
+      return NextResponse.json(
+        { error: "LinkedIn profile not found. Double-check the URL and make sure your profile is public." },
+        { status: 404 }
+      );
+    }
+    if (status === 429) {
+      return NextResponse.json(
+        { error: "We're experiencing high demand. Please try again in a minute, or upload your resume instead." },
+        { status: 429 }
+      );
+    }
+    if (status === 401 || status === 403) {
+      return NextResponse.json(
+        { error: "LinkedIn import is temporarily unavailable. Please upload your resume instead." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
-      { error: "Could not fetch LinkedIn profile. Check that your profile is public." },
+      { error: "Could not fetch your LinkedIn profile. Make sure your profile is set to public, or upload your resume instead." },
       { status: 502 }
     );
   }
