@@ -628,6 +628,12 @@ export default function DashboardClient() {
               Talk to Career Coach
             </Link>
             <Link
+              href="/mock-interview"
+              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
+            >
+              Practice Mock Interview
+            </Link>
+            <Link
               href={`/report/${activeReport!.id}`}
               className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
             >
