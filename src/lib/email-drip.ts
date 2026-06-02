@@ -453,6 +453,69 @@ export function getEmailTemplate(
       };
     }
 
+    // Milestone celebration: user just completed a milestone
+    case 15: {
+      const milestone = opts?.milestoneName ?? "a milestone";
+      const roadmapLink = opts?.reportId
+        ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "milestone_celebration")
+        : utmLink("/dashboard", "milestone_celebration");
+      return {
+        subject: `You completed "${milestone}" — nice work`,
+        previewText: "Progress made. Your roadmap is updating.",
+        html: baseHtml(`
+          ${h1(`Nice work, ${name}.`)}
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+            <p style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Milestone completed</p>
+            <p style="color:#f1f5f9;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
+          </div>
+          ${p("Every step forward is real movement — not just planning.")}
+          ${p("Your roadmap has updated. Check what's next and keep the momentum going.")}
+          <div style="margin:32px 0;">
+            ${cta("See what's next →", roadmapLink)}
+          </div>
+          ${sig()}
+        `),
+      };
+    }
+
+    // Weekly digest: personalized progress summary
+    case 16: {
+      const roadmapLink = opts?.reportId
+        ? utmLink(`/report/${opts.reportId}?plan=${opts.planIndex ?? 0}`, "weekly_digest")
+        : utmLink("/dashboard", "weekly_digest");
+      const completedCount = (opts as { completedCount?: number })?.completedCount ?? 0;
+      const nextAction = (opts as { nextAction?: string })?.nextAction;
+      const targetRole = (opts as { targetRole?: string })?.targetRole;
+      return {
+        subject: completedCount > 0
+          ? `Your week: ${completedCount} milestone${completedCount > 1 ? "s" : ""} done — here's what's next`
+          : `Your career roadmap — this week's focus`,
+        previewText: nextAction ? `Next up: ${nextAction}` : "Stay on track with your roadmap.",
+        html: baseHtml(`
+          ${h1(`Weekly check-in, ${name}.`)}
+          ${targetRole ? `<p style="color:#64748b;font-size:14px;margin:0 0 24px 0;">Roadmap: ${targetRole}</p>` : ""}
+          ${completedCount > 0
+            ? `<div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:0 0 24px 0;text-align:center;">
+                <p style="color:#2dd4bf;font-weight:700;font-size:32px;margin:0 0 4px 0;">${completedCount}</p>
+                <p style="color:#94a3b8;font-size:15px;margin:0;">milestone${completedCount > 1 ? "s" : ""} completed this week</p>
+              </div>`
+            : `${p("You haven't marked any milestones complete this week — no pressure, but even 10 minutes can keep you moving.")}`
+          }
+          ${nextAction
+            ? `<div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:0 0 24px 0;border-radius:0 8px 8px 0;">
+                <p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Recommended next action</p>
+                <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
+              </div>`
+            : ""
+          }
+          <div style="margin:32px 0;">
+            ${cta("Open my roadmap →", roadmapLink)}
+          </div>
+          ${sig()}
+        `),
+      };
+    }
+
     default:
       return null;
   }

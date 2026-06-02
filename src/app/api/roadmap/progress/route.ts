@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
+import { sendDripEmail } from "@/lib/email-drip";
 
 export async function GET(req: NextRequest) {
   const reportId = req.nextUrl.searchParams.get("reportId");
@@ -49,6 +50,36 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Fire celebration email when a milestone is marked complete
+  if (completed) {
+    void (async () => {
+      try {
+        const { data: report } = await supabase
+          .from("reports")
+          .select("email, profile, plans")
+          .eq("id", reportId)
+          .single();
+        if (report?.email) {
+          const firstName = (report.profile?.name as string | undefined)?.split(" ")[0] ?? "there";
+          const plan = (report.plans as { targetRole?: string; sixMonthMilestones?: string[]; oneYearMilestones?: string[]; twoYearMilestones?: string[] }[] | undefined)?.[planIndex];
+          const allMilestones: string[] = [
+            ...(plan?.sixMonthMilestones ?? []),
+            ...(plan?.oneYearMilestones ?? []),
+            ...(plan?.twoYearMilestones ?? []),
+          ];
+          const milestoneText = allMilestones[milestoneIndex] ?? "a milestone";
+          await sendDripEmail(report.email, firstName, 15, {
+            milestoneName: milestoneText,
+            reportId,
+            planIndex,
+          });
+        }
+      } catch {
+        // Non-critical — don't fail the progress save
+      }
+    })();
   }
 
   return NextResponse.json({ ok: true });
