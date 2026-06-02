@@ -6,6 +6,7 @@ import type { JobListing } from "@/app/api/jobs/route";
 
 interface JobBoardProps {
   targetRole: string;
+  location?: string;
 }
 
 const JOB_BOARD_LINKS = [
@@ -25,7 +26,7 @@ function timeAgo(dateStr: string | undefined): string {
   return `${Math.floor(days / 30)}mo ago`;
 }
 
-export default function JobBoard({ targetRole }: JobBoardProps) {
+export default function JobBoard({ targetRole, location }: JobBoardProps) {
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -34,7 +35,9 @@ export default function JobBoard({ targetRole }: JobBoardProps) {
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(`/api/jobs?role=${encodeURIComponent(targetRole)}`);
+      const params = new URLSearchParams({ role: targetRole });
+      if (location) params.set("location", location);
+      const res = await fetch(`/api/jobs?${params.toString()}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setJobs(data.jobs ?? []);
@@ -47,18 +50,24 @@ export default function JobBoard({ targetRole }: JobBoardProps) {
 
   useEffect(() => {
     fetchJobs();
-  }, [targetRole]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [targetRole, location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/60">
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4 text-teal-400" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Briefcase className="h-4 w-4 text-teal-400 shrink-0" />
           <h3 className="text-sm font-bold text-teal-400">Remote Jobs</h3>
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-teal-900/40 border border-teal-700/40 text-teal-300">
             {targetRole}
           </span>
+          {location && (
+            <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-700/60 border border-slate-600/40 text-slate-300">
+              <MapPin className="h-2.5 w-2.5" />
+              {location}
+            </span>
+          )}
         </div>
         {!loading && (
           <button

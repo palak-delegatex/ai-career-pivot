@@ -28,12 +28,13 @@ function buildSearchQuery(role: string): string {
 
 export async function GET(req: NextRequest) {
   const role = req.nextUrl.searchParams.get("role") ?? "";
+  const location = req.nextUrl.searchParams.get("location") ?? "";
   if (!role) {
     return NextResponse.json({ jobs: [], source: "none" }, { status: 400 });
   }
 
   const query = buildSearchQuery(role);
-  const cacheKey = query.toLowerCase();
+  const cacheKey = `${query.toLowerCase()}::${location.toLowerCase()}`;
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.at < CACHE_TTL) {
     return NextResponse.json({ jobs: cached.data, source: "remotive" });
@@ -41,8 +42,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const encodedQuery = encodeURIComponent(query);
+    const locationParam = location ? `&location=${encodeURIComponent(location)}` : "";
     const res = await fetch(
-      `https://remotive.com/api/remote-jobs?search=${encodedQuery}&limit=8`,
+      `https://remotive.com/api/remote-jobs?search=${encodedQuery}&limit=12${locationParam}`,
       { next: { revalidate: 3600 } }
     );
 

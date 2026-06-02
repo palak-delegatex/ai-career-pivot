@@ -618,7 +618,10 @@ export default function DashboardClient() {
             </>
           )}
 
-          <JobBoard targetRole={activePlan.targetRole} />
+          <JobBoard
+            targetRole={activePlan.targetRole}
+            location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
+          />
 
           <div className="pt-4 border-t border-slate-700/50 space-y-3">
             <Link

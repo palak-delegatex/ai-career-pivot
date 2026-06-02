@@ -14,6 +14,7 @@ import ChatCTA from "@/components/ChatCTA";
 import MarketDataBanner, { MarketDataLoader } from "@/components/MarketDataBanner";
 import TransferabilityBreakdown from "@/components/TransferabilityBreakdown";
 import SalaryTrajectory from "@/components/SalaryTrajectory";
+import JobBoard from "@/components/JobBoard";
 
 export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
   const [selected, setSelected] = useState(0);
@@ -158,6 +159,8 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
             <p className="text-slate-400 text-sm leading-relaxed">{plan.financialConsiderations}</p>
           </div>
         ) : null}
+
+        <JobBoard targetRole={plan.targetRole} />
 
         <ChatCTA targetRole={plan.targetRole} />
       </div>
