@@ -421,6 +421,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </Link>
             </div>
             <div className="flex flex-col items-center gap-1.5">
+              <Link
+                href="/free"
+                onClick={() => trackCtaClicked({ cta_text: "Try Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free" })}
+                className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
+              >
+                Or try the free skill-gap snapshot — no payment required →
+              </Link>
               <p className="text-slate-500 text-sm">
                 Takes 3 minutes · No subscription · Full roadmap yours to keep
               </p>
