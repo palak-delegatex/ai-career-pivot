@@ -125,10 +125,51 @@ html {
   z-index: 0;
 }
 
+@keyframes milestone-bounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.milestone-bounce {
+  animation: milestone-bounce 300ms ease-out;
+}
+
+@keyframes check-draw {
+  0% { stroke-dashoffset: 16; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.milestone-check-draw {
+  stroke-dasharray: 16;
+  animation: check-draw 300ms ease-out forwards;
+}
+
+@keyframes banner-slide-in {
+  0% { transform: translateY(-8px); opacity: 0; }
+  20% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-4px); opacity: 0; }
+}
+
+.phase-complete-banner {
+  animation: banner-slide-in 2s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phase-confetti::after {
     animation: none;
     opacity: 0;
+  }
+  .milestone-bounce {
+    animation: none;
+  }
+  .milestone-check-draw {
+    animation: none;
+  }
+  .phase-complete-banner {
+    animation: none;
   }
 }
 

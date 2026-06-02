@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Check, ChevronDown, Clock, Loader2, BookOpen, Target, Briefcase, Users } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Check, ChevronDown, Clock, Loader2, BookOpen, Target, Briefcase, Users, ChevronRight } from "lucide-react";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -49,6 +49,12 @@ const C = {
     cardBorder: "border-emerald-700/40",
     hoverBg: "hover:bg-emerald-900/20",
     text: "text-emerald-400",
+    pillBg: "bg-emerald-600",
+    pillText: "text-emerald-100",
+    pillInactive: "text-emerald-400 border-emerald-700/40",
+    glowRing: "shadow-[0_0_12px_rgba(16,185,129,0.5)]",
+    bannerBg: "bg-emerald-900/80 border-emerald-500/40",
+    bannerText: "text-emerald-300",
   },
   teal: {
     nodeBg: "bg-teal-600",
@@ -64,6 +70,12 @@ const C = {
     cardBorder: "border-teal-700/40",
     hoverBg: "hover:bg-teal-900/20",
     text: "text-teal-400",
+    pillBg: "bg-teal-600",
+    pillText: "text-teal-100",
+    pillInactive: "text-teal-400 border-teal-700/40",
+    glowRing: "shadow-[0_0_12px_rgba(20,184,166,0.5)]",
+    bannerBg: "bg-teal-900/80 border-teal-500/40",
+    bannerText: "text-teal-300",
   },
   cyan: {
     nodeBg: "bg-cyan-600",
@@ -79,6 +91,12 @@ const C = {
     cardBorder: "border-cyan-700/40",
     hoverBg: "hover:bg-cyan-900/20",
     text: "text-cyan-400",
+    pillBg: "bg-cyan-600",
+    pillText: "text-cyan-100",
+    pillInactive: "text-cyan-400 border-cyan-700/40",
+    glowRing: "shadow-[0_0_12px_rgba(6,182,212,0.5)]",
+    bannerBg: "bg-cyan-900/80 border-cyan-500/40",
+    bannerText: "text-cyan-300",
   },
 } as const;
 
@@ -113,7 +131,19 @@ function deriveStatus(item: MilestoneProgress | undefined): MilestoneStatus {
   return "in-progress";
 }
 
-function StatusIcon({ status, isSaving, color }: { status: MilestoneStatus; isSaving: boolean; color: keyof typeof C }) {
+function CheckmarkSvg({ animate }: { animate: boolean }) {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline
+        points="3.5 8.5 6.5 11.5 12.5 5"
+        className={`text-white ${animate ? "milestone-check-draw" : ""}`}
+        style={animate ? { strokeDasharray: 16, strokeDashoffset: 0 } : undefined}
+      />
+    </svg>
+  );
+}
+
+function StatusIcon({ status, isSaving, color, justCompleted }: { status: MilestoneStatus; isSaving: boolean; color: keyof typeof C; justCompleted: boolean }) {
   const c = C[color];
   if (isSaving) {
     return (
@@ -124,8 +154,8 @@ function StatusIcon({ status, isSaving, color }: { status: MilestoneStatus; isSa
   }
   if (status === "completed") {
     return (
-      <div className={`h-[44px] w-[44px] min-h-[44px] min-w-[44px] rounded-lg ${c.checkBg} border-2 ${c.checkBorder} flex items-center justify-center shrink-0 transition-all`}>
-        <Check className="h-3.5 w-3.5 text-white" />
+      <div className={`h-[44px] w-[44px] min-h-[44px] min-w-[44px] rounded-lg ${c.checkBg} border-2 ${c.checkBorder} flex items-center justify-center shrink-0 transition-all ${justCompleted ? "milestone-bounce" : ""}`}>
+        <CheckmarkSvg animate={justCompleted} />
       </div>
     );
   }
@@ -141,6 +171,58 @@ function StatusIcon({ status, isSaving, color }: { status: MilestoneStatus; isSa
   );
 }
 
+function PhaseNavBar({
+  phases,
+  phaseDoneMap,
+  activePhaseKey,
+  onClickPhase,
+}: {
+  phases: TimelinePhase[];
+  phaseDoneMap: Map<string, { done: number; total: number }>;
+  activePhaseKey: string;
+  onClickPhase: (key: string) => void;
+}) {
+  return (
+    <div className="sticky top-0 z-10 backdrop-blur-md bg-slate-900/70 border-b border-slate-700/50 -mx-1 px-1 py-2 mb-4 flex gap-2">
+      {phases.map((phase) => {
+        const c = C[phase.color];
+        const stats = phaseDoneMap.get(phase.key) ?? { done: 0, total: 0 };
+        const isActive = activePhaseKey === phase.key;
+
+        return (
+          <button
+            key={phase.key}
+            onClick={() => onClickPhase(phase.key)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+              isActive
+                ? `${c.pillBg} ${c.pillText} border-transparent shadow-md`
+                : `bg-transparent ${c.pillInactive} hover:bg-slate-800/60`
+            }`}
+          >
+            <span>{phase.label}</span>
+            <span className={`text-[10px] ${isActive ? "opacity-80" : "opacity-60"}`}>
+              {stats.done}/{stats.total}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function PhaseCompleteBanner({ phase, show }: { phase: TimelinePhase; show: boolean }) {
+  const c = C[phase.color];
+  if (!show) return null;
+  return (
+    <div className={`phase-complete-banner ${c.bannerBg} border rounded-lg px-4 py-2 mb-2 flex items-center gap-2`}>
+      <Check className={`h-4 w-4 ${c.bannerText}`} />
+      <span className={`text-sm font-medium ${c.bannerText}`}>
+        {phase.label} Complete!
+      </span>
+    </div>
+  );
+}
+
 export default function RoadmapTimeline({ phases, progress = new Map(), saving = null, onCycleStatus, onSelectMilestone }: RoadmapTimelineProps) {
   const totalMilestones = phases.reduce((s, p) => s + p.milestones.length, 0);
   const totalCompleted = phases.reduce((s, p) => {
@@ -153,7 +235,39 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
   const overallPct = totalMilestones > 0 ? (totalCompleted / totalMilestones) * 100 : 0;
 
   const [celebratingPhase, setCelebratingPhase] = useState<string | null>(null);
+  const [bannerPhase, setBannerPhase] = useState<string | null>(null);
+  const [recentlyCompleted, setRecentlyCompleted] = useState<Set<string>>(new Set());
+  const [activePhaseKey, setActivePhaseKey] = useState<string>(phases[0]?.key ?? "");
+  const [openPhases, setOpenPhases] = useState<Set<string>>(() => new Set(phases.length > 0 ? [phases[0].key] : []));
   const prevCompletedRef = useRef<Set<string>>(new Set());
+  const prevProgressRef = useRef<Map<string, MilestoneProgress>>(new Map());
+  const phaseRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const phaseDoneMap = new Map<string, { done: number; total: number }>();
+  for (const phase of phases) {
+    let done = 0;
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (progress.get(pKey(phase.key, i))?.completed) done++;
+    }
+    phaseDoneMap.set(phase.key, { done, total: phase.milestones.length });
+  }
+
+  useEffect(() => {
+    const newlyCompleted = new Set<string>();
+    for (const [key, val] of progress) {
+      const prev = prevProgressRef.current.get(key);
+      if (val.completed && !prev?.completed) {
+        newlyCompleted.add(key);
+      }
+    }
+    if (newlyCompleted.size > 0) {
+      setRecentlyCompleted(newlyCompleted);
+      const timer = setTimeout(() => setRecentlyCompleted(new Set()), 400);
+      return () => clearTimeout(timer);
+    }
+    prevProgressRef.current = new Map(progress);
+  }, [progress]);
 
   useEffect(() => {
     const nowComplete = new Set<string>();
@@ -169,18 +283,64 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
     for (const key of nowComplete) {
       if (!prevCompletedRef.current.has(key)) {
         setCelebratingPhase(key);
-        const timer = setTimeout(() => setCelebratingPhase(null), 700);
-        return () => clearTimeout(timer);
+        setBannerPhase(key);
+        const confettiTimer = setTimeout(() => setCelebratingPhase(null), 700);
+        const bannerTimer = setTimeout(() => setBannerPhase(null), 2000);
+        return () => { clearTimeout(confettiTimer); clearTimeout(bannerTimer); };
       }
     }
     prevCompletedRef.current = nowComplete;
   }, [progress, phases]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const key = entry.target.getAttribute("data-phase-key");
+            if (key) setActivePhaseKey(key);
+          }
+        }
+      },
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+    );
+    for (const [, el] of phaseRefs.current) {
+      observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [phases]);
+
+  const scrollToPhase = useCallback((key: string) => {
+    const el = phaseRefs.current.get(key);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      setOpenPhases((prev) => new Set(prev).add(key));
+    }
+  }, []);
+
+  const findCurrentPhaseKey = useCallback((): string | null => {
+    for (const phase of phases) {
+      const stats = phaseDoneMap.get(phase.key);
+      if (stats && stats.done < stats.total) return phase.key;
+    }
+    return null;
+  }, [phases, phaseDoneMap]);
+
+  const currentPhaseKey = findCurrentPhaseKey();
+
   return (
-    <div className="relative" role="list" aria-label="Career roadmap timeline">
-      {/* Timeline spine — desktop: gradient left line, mobile: thin left edge */}
+    <div className="relative" role="list" aria-label="Career roadmap timeline" ref={containerRef}>
+      {/* Sticky phase nav bar */}
+      <PhaseNavBar
+        phases={phases}
+        phaseDoneMap={phaseDoneMap}
+        activePhaseKey={activePhaseKey}
+        onClickPhase={scrollToPhase}
+      />
+
+      {/* Timeline spine */}
       <div
-        className="absolute left-5 md:left-[19px] top-0 bottom-0 w-0.5 md:w-1 rounded-full overflow-hidden"
+        className="absolute left-5 md:left-[19px] top-12 bottom-0 w-0.5 md:w-1 rounded-full overflow-hidden"
         aria-hidden="true"
       >
         <div className="absolute inset-0 bg-slate-700/40" />
@@ -196,6 +356,8 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
       {phases.map((phase, phaseIdx) => {
         const c = C[phase.color];
         const isLast = phaseIdx === phases.length - 1;
+        const isCurrentPhase = currentPhaseKey === phase.key;
+        const isOpen = openPhases.has(phase.key);
 
         let doneCount = 0;
         const items = phase.milestones.map((text, i) => {
@@ -207,6 +369,9 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
         const pct = phase.milestones.length > 0 ? Math.round((doneCount / phase.milestones.length) * 100) : 0;
         const allDone = doneCount === phase.milestones.length && phase.milestones.length > 0;
         const isCelebrating = celebratingPhase === phase.key;
+        const showBanner = bannerPhase === phase.key;
+
+        const nextUncompleted = items.find((it) => it.status !== "completed");
 
         const grouped = new Map<MilestoneType, typeof items>();
         for (const item of items) {
@@ -217,18 +382,41 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
         const typeOrder: MilestoneType[] = ["learn", "achieve", "do", "connect"];
 
         return (
-          <div key={phase.key} className={`relative flex gap-4 md:gap-6 ${isLast ? "" : "pb-6"}`} role="listitem">
-            {/* Phase node on spine */}
+          <div
+            key={phase.key}
+            ref={(el) => { if (el) phaseRefs.current.set(phase.key, el); }}
+            data-phase-key={phase.key}
+            className={`relative flex gap-4 md:gap-6 ${isLast ? "" : "pb-6"} scroll-mt-16`}
+            role="listitem"
+          >
+            {/* Phase node on spine — clickable with hover/pulse */}
             <div className="flex flex-col items-center shrink-0 z-10 pt-1">
-              <div
-                className={`relative h-10 w-10 rounded-full border-2 ${c.nodeBorder} ${allDone ? c.nodeBg : "bg-slate-800"} shadow-lg ${c.nodeGlow} flex items-center justify-center shrink-0 transition-all`}
+              <button
+                onClick={() => {
+                  scrollToPhase(phase.key);
+                  setOpenPhases((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(phase.key)) next.delete(phase.key);
+                    else next.add(phase.key);
+                    return next;
+                  });
+                }}
+                className="relative cursor-pointer bg-transparent border-0 p-0 group"
+                aria-label={`${phase.label}: ${doneCount}/${phase.milestones.length} complete. Click to expand.`}
               >
-                {allDone ? (
-                  <Check className="h-4 w-4 text-white" />
-                ) : (
-                  <span className={`text-xs font-bold ${c.nodeText}`}>{phaseIdx + 1}</span>
+                {isCurrentPhase && !allDone && (
+                  <span className="absolute inset-0 rounded-full animate-ping opacity-30 border-2 border-current" style={{ color: phase.color === "emerald" ? "#10b981" : phase.color === "teal" ? "#14b8a6" : "#06b6d4" }} />
                 )}
-              </div>
+                <div
+                  className={`relative h-10 w-10 rounded-full border-2 ${c.nodeBorder} ${allDone ? c.nodeBg : "bg-slate-800"} shadow-lg ${c.nodeGlow} flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:${c.glowRing}`}
+                >
+                  {allDone ? (
+                    <Check className="h-4 w-4 text-white" />
+                  ) : (
+                    <span className={`text-xs font-bold ${c.nodeText}`}>{phaseIdx + 1}</span>
+                  )}
+                </div>
+              </button>
             </div>
 
             {/* Horizontal connector (desktop only) */}
@@ -238,7 +426,17 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
 
             {/* Phase card */}
             <div className="flex-1 min-w-0">
-              <Collapsible defaultOpen={phaseIdx === 0}>
+              <PhaseCompleteBanner phase={phase} show={showBanner} />
+              <Collapsible
+                open={isOpen}
+                onOpenChange={(open) => {
+                  setOpenPhases((prev) => {
+                    const next = new Set(prev);
+                    if (open) next.add(phase.key); else next.delete(phase.key);
+                    return next;
+                  });
+                }}
+              >
                 <div
                   className={`relative bg-slate-800/60 border ${allDone ? c.cardBorder : "border-slate-700"} rounded-xl overflow-hidden transition-all ${allDone ? "card-glow glow-active" : ""} ${isCelebrating ? "phase-confetti" : ""}`}
                 >
@@ -268,6 +466,16 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
                     <ChevronDown className="h-4 w-4 text-slate-500 transition-transform group-data-[panel-open]:rotate-180 shrink-0" />
                   </CollapsibleTrigger>
 
+                  {/* Collapsed summary: next uncompleted milestone preview */}
+                  {!isOpen && nextUncompleted && (
+                    <div className="px-4 pb-3 flex items-center gap-2 text-xs text-slate-400">
+                      <ChevronRight className="h-3 w-3 text-slate-500 shrink-0" />
+                      <span className="truncate">
+                        Next: <span className={c.text}>{nextUncompleted.text}</span>
+                      </span>
+                    </div>
+                  )}
+
                   <CollapsibleContent className="overflow-hidden transition-all data-[ending-style]:h-0 data-[starting-style]:h-0">
                     <div className="px-4 pb-4 space-y-4">
                       {typeOrder.map((type) => {
@@ -285,6 +493,7 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
                             <div className="space-y-1.5">
                               {group.map(({ text, i, key, status }) => {
                                 const isSaving = saving === key;
+                                const justCompleted = recentlyCompleted.has(key);
                                 return (
                                   <div key={i} className={`flex items-start gap-3 bg-slate-800/50 border border-slate-700/60 rounded-xl px-3 py-2.5 ${c.hoverBg} transition-colors`}>
                                     <button
@@ -293,7 +502,7 @@ export default function RoadmapTimeline({ phases, progress = new Map(), saving =
                                       className={`shrink-0 bg-transparent border-0 p-0 mt-0.5 ${onCycleStatus ? "cursor-pointer" : "cursor-default"}`}
                                       aria-label={`${text}: ${status}${onCycleStatus ? ". Click to change." : ""}`}
                                     >
-                                      <StatusIcon status={status} isSaving={isSaving} color={phase.color} />
+                                      <StatusIcon status={status} isSaving={isSaving} color={phase.color} justCompleted={justCompleted} />
                                     </button>
                                     <button
                                       onClick={() => onSelectMilestone?.(text, phase.key, i)}
