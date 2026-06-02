@@ -104,9 +104,12 @@ export default function SiteNav() {
         </NavigationMenu>
         {user ? (
           <div className="flex items-center gap-3 ml-2">
-            <span className="text-sm text-slate-300 truncate max-w-[150px]">
+            <Link
+              href="/account"
+              className="text-sm text-slate-300 hover:text-white truncate max-w-[150px] transition-colors"
+            >
               {user.user_metadata?.full_name || user.email}
-            </span>
+            </Link>
             <form action="/api/auth/signout" method="POST">
               <Button type="submit" variant="outline" size="sm">
                 Sign Out
@@ -124,9 +127,12 @@ export default function SiteNav() {
       <div className="sm:hidden flex items-center gap-2">
         {user ? (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-300 truncate max-w-[100px]">
+            <Link
+              href="/account"
+              className="text-xs text-slate-300 hover:text-white truncate max-w-[100px] transition-colors"
+            >
               {user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0]}
-            </span>
+            </Link>
             <form action="/api/auth/signout" method="POST">
               <Button type="submit" variant="outline" size="sm">
                 Sign Out
@@ -169,6 +175,20 @@ export default function SiteNav() {
               <Separator className="my-2" />
               {user ? (
                 <>
+                  <SheetClose
+                    render={
+                      <Link
+                        href="/account"
+                        className={`block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-medium transition-colors ${
+                          pathname === "/account"
+                            ? "bg-muted text-white"
+                            : "text-slate-400 hover:text-white hover:bg-muted"
+                        }`}
+                      />
+                    }
+                  >
+                    Account
+                  </SheetClose>
                   <div className="px-3 py-2 text-xs text-slate-400 truncate">
                     {user.user_metadata?.full_name || user.email}
                   </div>

@@ -4,7 +4,7 @@ import LoginClient from "./LoginClient";
 
 export const metadata: Metadata = {
   title: "Sign In",
-  description: "Sign in with Google to access your career pivot roadmaps.",
+  description: "Sign in to access your career pivot roadmaps.",
 };
 
 export default function LoginPage() {
