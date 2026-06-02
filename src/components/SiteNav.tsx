@@ -87,7 +87,7 @@ export default function SiteNav() {
       <Logo />
 
       {/* Desktop nav */}
-      <div className="hidden sm:flex items-center gap-1">
+      <div className="hidden md:flex items-center gap-1">
         <NavigationMenu>
           <NavigationMenuList>
             {NAV_LINKS.map(({ href, label }) => (
@@ -124,27 +124,8 @@ export default function SiteNav() {
         )}
       </div>
 
-      {/* Mobile nav */}
-      <div className="sm:hidden flex items-center gap-2">
-        {user ? (
-          <div className="flex items-center gap-2">
-            <Link
-              href="/account"
-              className="text-xs text-slate-300 hover:text-white truncate max-w-[100px] transition-colors"
-            >
-              {user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0]}
-            </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button type="submit" variant="outline" size="sm">
-                Sign Out
-              </Button>
-            </form>
-          </div>
-        ) : (
-          <Button render={<Link href="/login" />} size="sm">
-            Sign In
-          </Button>
-        )}
+      {/* Mobile nav — only hamburger icon, everything else inside the sheet */}
+      <div className="md:hidden flex items-center">
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
             render={
@@ -155,7 +136,28 @@ export default function SiteNav() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetTitle className="sr-only">Navigation</SheetTitle>
-            <div className="flex flex-col gap-1 p-4 pt-10">
+            <div className="flex flex-col gap-1 p-4 pt-6">
+              {/* Logo at top of sheet */}
+              <div className="mb-4">
+                <Logo />
+              </div>
+
+              {/* Prominent CTA for non-auth users */}
+              {!user && (
+                <SheetClose
+                  render={
+                    <Link
+                      href="/preview"
+                      className="block rounded-lg px-4 py-3 min-h-[44px] flex items-center justify-center text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:shadow-lg hover:shadow-teal-500/30 transition-all mb-3"
+                    />
+                  }
+                >
+                  Get Started Free
+                </SheetClose>
+              )}
+
+              <Separator className="mb-2" />
+
               {NAV_LINKS.map(({ href, label }) => (
                 <SheetClose
                   key={href}
@@ -164,8 +166,8 @@ export default function SiteNav() {
                       href={href}
                       className={`block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-medium transition-colors ${
                         pathname === href
-                          ? "bg-muted text-white"
-                          : "text-slate-400 hover:text-white hover:bg-muted"
+                          ? "bg-muted text-white border-l-4 border-teal-500"
+                          : "text-slate-400 hover:text-white hover:bg-muted border-l-4 border-transparent"
                       }`}
                     />
                   }
@@ -182,8 +184,8 @@ export default function SiteNav() {
                         href="/account"
                         className={`block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-medium transition-colors ${
                           pathname === "/account"
-                            ? "bg-muted text-white"
-                            : "text-slate-400 hover:text-white hover:bg-muted"
+                            ? "bg-muted text-white border-l-4 border-teal-500"
+                            : "text-slate-400 hover:text-white hover:bg-muted border-l-4 border-transparent"
                         }`}
                       />
                     }

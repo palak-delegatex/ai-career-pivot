@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import StickyCtaBar from "@/components/StickyCtaBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export const metadata: Metadata = {
@@ -217,7 +218,7 @@ export default function HowItWorksPage() {
           {/* Why it works */}
           <section className="mb-20" aria-labelledby="why-heading">
             <h2 id="why-heading" className="text-2xl font-bold text-white mb-8">Why this approach works</h2>
-            <div className="grid sm:grid-cols-3 gap-5">
+            <div className="grid md:grid-cols-3 gap-5">
               {whyItWorks.map((item) => (
                 <Card key={item.title} className="bg-slate-900/60 border-slate-800 text-white rounded-xl py-0">
                   <CardContent className="p-5">
@@ -232,7 +233,7 @@ export default function HowItWorksPage() {
           {/* What you get */}
           <section className="mb-20 bg-slate-900/60 rounded-2xl border border-slate-800 p-8" aria-labelledby="output-heading">
             <h2 id="output-heading" className="text-xl font-bold text-white mb-4">What your roadmap includes</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               {[
                 "6-month, 1-year, and 2-year milestone plan",
                 "Skills gap analysis with prioritized learning path",
@@ -286,6 +287,7 @@ export default function HowItWorksPage() {
           </nav>
           <p>© 2026 AICareerPivot. Your career, your timeline.</p>
         </footer>
+        <StickyCtaBar />
       </div>
     </>
   );

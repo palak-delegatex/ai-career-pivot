@@ -10,6 +10,7 @@ import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
+import StickyCtaBar from "@/components/StickyCtaBar";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -255,38 +256,6 @@ function ActivityIndicator() {
   );
 }
 
-function StickyCtaBar() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    function onScroll() {
-      setVisible(window.scrollY > 600);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <motion.div
-      initial={{ y: 80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 80, opacity: 0 }}
-      className="fixed bottom-0 inset-x-0 z-50 bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-4"
-    >
-      <span className="hidden sm:block text-slate-400 text-sm">Ready to pivot your career?</span>
-      <Link
-        href="/pricing"
-        onClick={() => trackCtaClicked({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar", destination: "/pricing" })}
-        onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar" })}
-        className="px-6 py-3 min-h-[44px] flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 hover:scale-[1.02]"
-      >
-        Get My Plan — <s className="text-slate-400 font-normal">$29</s> $5 →
-      </Link>
-    </motion.div>
-  );
-}
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
@@ -525,7 +494,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </motion.p>
             </AnimatedSection>
 
-            <AnimatedSection className="grid sm:grid-cols-3 gap-5">
+            <AnimatedSection className="grid md:grid-cols-3 gap-5">
               {steps.map((step) => (
                 <motion.div
                   key={step.number}
@@ -581,7 +550,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </motion.p>
             </AnimatedSection>
 
-            <AnimatedSection className="grid sm:grid-cols-2 gap-3">
+            <AnimatedSection className="grid md:grid-cols-2 gap-3">
               {personas.map((item, i) => (
                 <motion.div
                   key={item.label}
@@ -627,7 +596,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </motion.p>
             </AnimatedSection>
 
-            <AnimatedSection className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatedSection className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {shuffledTestimonials.map((t, i) => (
                 <motion.div
                   key={t.name}
@@ -799,7 +768,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <AnimatedSection>
               <motion.div
                 variants={stagger}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
               >
                 {[
                   {
@@ -940,7 +909,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 All articles →
               </Link>
             </div>
-            <div className="grid sm:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recentPosts.map((post) => (
                 <Link
                   key={post.slug}
