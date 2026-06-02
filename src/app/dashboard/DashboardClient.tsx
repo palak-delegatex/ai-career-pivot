@@ -542,13 +542,32 @@ export default function DashboardClient() {
     }
   }
 
+  const MOTIVATIONAL_QUOTES = [
+    "The only way to do great work is to love what you do. — Steve Jobs",
+    "Every expert was once a beginner.",
+    "Your career is a marathon, not a sprint.",
+    "Small daily improvements lead to stunning results.",
+    "The best time to start was yesterday. The next best time is now.",
+    "Success is the sum of small efforts repeated day in and day out.",
+    "Don't watch the clock; do what it does — keep going.",
+    "The future belongs to those who believe in the beauty of their dreams.",
+    "It does not matter how slowly you go as long as you do not stop.",
+    "Believe you can and you're halfway there.",
+  ];
+
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+  const dailyQuote = MOTIVATIONAL_QUOTES[dayOfYear % MOTIVATIONAL_QUOTES.length];
+
   return (
     <main className="max-w-5xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
-      <p className="text-slate-400 text-center mb-8">
-        Track your career pivot progress
+      <p className="text-slate-400 text-center text-sm italic mb-8">
+        &ldquo;{dailyQuote}&rdquo;
       </p>
 
       {activeReport && activeReport.plans.length > 1 && (
@@ -596,6 +615,7 @@ export default function DashboardClient() {
                 <StreakCalendar
                   activeDays={activeDays}
                   phaseForDay={phaseForDay}
+                  streakDays={streakDays}
                 />
               </div>
 

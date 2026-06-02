@@ -49,6 +49,17 @@ export default function MomentumCard({
 }: MomentumCardProps) {
   const trend = monthlyCompleted - previousMonthCompleted;
   const trendUp = trend >= 0;
+  const hasAnyActivity = weeklyActivity.some((v) => v > 0) || monthlyCompleted > 0;
+
+  if (!hasAnyActivity) {
+    return (
+      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+        <TrendingUp className="h-8 w-8 text-teal-500/30 mb-2" />
+        <p className="text-sm font-semibold text-slate-400">No activity yet</p>
+        <p className="text-xs text-slate-500 mt-1">Complete a milestone to see your momentum build.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">

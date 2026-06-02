@@ -53,7 +53,15 @@ const phaseEstimate: Record<string, string> = {
 };
 
 export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidgetProps) {
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+        <CheckCircle className="h-8 w-8 text-emerald-500/40 mb-2" />
+        <p className="text-sm font-semibold text-slate-400">All caught up!</p>
+        <p className="text-xs text-slate-500 mt-1">You&apos;ve completed every milestone. Nice work.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
