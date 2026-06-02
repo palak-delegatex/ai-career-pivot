@@ -12,9 +12,8 @@ export interface JobListing {
   publication_date?: string;
 }
 
-// Cache results for 1 hour to avoid hammering the free API
 const cache = new Map<string, { data: JobListing[]; at: number }>();
-const CACHE_TTL = 60 * 60 * 1000;
+const CACHE_TTL = 24 * 60 * 60 * 1000;
 
 function buildSearchQuery(role: string): string {
   // Extract key terms from the role title for better search results
@@ -45,7 +44,7 @@ export async function GET(req: NextRequest) {
     const locationParam = location ? `&location=${encodeURIComponent(location)}` : "";
     const res = await fetch(
       `https://remotive.com/api/remote-jobs?search=${encodedQuery}&limit=12${locationParam}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 86400 } }
     );
 
     if (!res.ok) throw new Error(`Remotive returned ${res.status}`);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { PivotPlan, MarketData } from "@/lib/intake";
+import type { PivotPlan, MarketData, UserLocation } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import InteractiveRoadmap from "@/components/InteractiveRoadmap";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
@@ -16,7 +16,7 @@ import TransferabilityBreakdown from "@/components/TransferabilityBreakdown";
 import SalaryTrajectory from "@/components/SalaryTrajectory";
 import JobBoard from "@/components/JobBoard";
 
-export default function ReportContent({ plans, reportId }: { plans: PivotPlan[]; reportId: string }) {
+export default function ReportContent({ plans, reportId, location }: { plans: PivotPlan[]; reportId: string; location?: UserLocation }) {
   const [selected, setSelected] = useState(0);
   const plan = plans[selected];
   const roles = plans.map((p) => p.targetRole);
@@ -160,7 +160,7 @@ export default function ReportContent({ plans, reportId }: { plans: PivotPlan[];
           </div>
         ) : null}
 
-        <JobBoard targetRole={plan.targetRole} />
+        <JobBoard targetRole={plan.targetRole} location={location?.city || location?.region || location?.country} />
 
         <ChatCTA targetRole={plan.targetRole} />
       </div>
