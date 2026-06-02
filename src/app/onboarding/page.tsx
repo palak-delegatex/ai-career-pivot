@@ -10,6 +10,28 @@ import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError,
 
 type PageStep = "form" | "processing" | "error" | "no_payment";
 
+function normalizeLinkedinUrl(raw: string): string {
+  let url = raw.trim();
+  if (!url) return url;
+  // Add protocol if missing
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  try {
+    const u = new URL(url);
+    // Strip query params and hash, normalize to just the path
+    const clean = `https://www.linkedin.com${u.pathname}`.replace(/\/+$/, "");
+    // Validate it looks like a linkedin.com/in/ profile URL
+    if (/linkedin\.com\/(in|pub)\/[^/]+/i.test(clean)) return clean;
+  } catch {
+    // Fall through — return as-is
+  }
+  return url;
+}
+
+function linkedinUrlStatus(url: string): "empty" | "valid" | "invalid" {
+  if (!url) return "empty";
+  return /linkedin\.com\/(in|pub)\/[^/]+/i.test(url) ? "valid" : "invalid";
+}
+
 const WIZARD_STEPS = ["Your Background", "Additional Sources", "Life Circumstances"];
 
 const ANALYSIS_STEPS = [
@@ -304,7 +326,14 @@ export default function OnboardingPage() {
           } else {
             profile = { ...data.profile, email, linkedinUrl };
           }
+        } else if (!profile) {
+          // LinkedIn failed and we have no resume — show actionable guidance
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(
+            errData.error ?? "LinkedIn fetch failed. Make sure your profile is public, or upload your resume instead."
+          );
         }
+        // If LinkedIn fails but we already have resume data, silently continue
       }
 
       if (profile && profile.skills?.length > 0) {
@@ -657,13 +686,45 @@ export default function OnboardingPage() {
                     LinkedIn URL
                     <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
                   </label>
-                  <input
-                    type="url"
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={linkedinUrl}
+                      onChange={(e) => setLinkedinUrl(e.target.value)}
+                      onBlur={() => {
+                        const normalized = normalizeLinkedinUrl(linkedinUrl);
+                        if (normalized !== linkedinUrl) setLinkedinUrl(normalized);
+                      }}
+                      onPaste={(e) => {
+                        // Normalize immediately on paste
+                        const pasted = e.clipboardData.getData("text");
+                        const normalized = normalizeLinkedinUrl(pasted);
+                        if (normalized !== pasted) {
+                          e.preventDefault();
+                          setLinkedinUrl(normalized);
+                        }
+                      }}
+                      placeholder="linkedin.com/in/yourname"
+                      className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
+                        linkedinUrlStatus(linkedinUrl) === "valid"
+                          ? "border-teal-500/70 focus:border-teal-400"
+                          : linkedinUrlStatus(linkedinUrl) === "invalid"
+                          ? "border-amber-500/60 focus:border-amber-400"
+                          : "border-slate-600 focus:border-teal-500"
+                      }`}
+                    />
+                    {linkedinUrlStatus(linkedinUrl) === "valid" && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">✓</span>
+                    )}
+                    {linkedinUrlStatus(linkedinUrl) === "invalid" && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs pointer-events-none">?</span>
+                    )}
+                  </div>
+                  {linkedinUrlStatus(linkedinUrl) === "invalid" && (
+                    <p className="mt-1.5 text-xs text-amber-400/80">
+                      Should look like linkedin.com/in/yourname — paste your profile URL from the browser.
+                    </p>
+                  )}
                 </div>
 
                 {error && (
