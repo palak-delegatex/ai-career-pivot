@@ -14,6 +14,8 @@ import StreakCalendar from "@/components/StreakCalendar";
 import PhaseProgressCards from "@/components/PhaseProgressCards";
 import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
+import ShareableProgressCard from "@/components/ShareableProgressCard";
+import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 
 interface Report {
   id: string;
@@ -269,6 +271,8 @@ export default function DashboardClient() {
   const [progressLoaded, setProgressLoaded] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [savedBadges, setSavedBadges] = useState<Set<string>>(new Set());
+  const [celebratedPhases, setCelebratedPhases] = useState<Set<string>>(new Set());
+  const [celebratingPhase, setCelebratingPhase] = useState<{ label: string; color: "emerald" | "teal" | "cyan" } | null>(null);
 
   useEffect(() => {
     async function loadReports() {
@@ -542,6 +546,23 @@ export default function DashboardClient() {
     }
   }
 
+  // Detect newly completed phases for celebration
+  for (const phase of phases) {
+    if (phase.milestones.length === 0) continue;
+    let allDone = true;
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (!milestoneStatuses.get(progressKey(phase.key, i))?.completed) {
+        allDone = false;
+        break;
+      }
+    }
+    if (allDone && !celebratedPhases.has(phase.key) && !celebratingPhase) {
+      setCelebratedPhases((prev) => new Set([...prev, phase.key]));
+      setCelebratingPhase({ label: phase.label, color: phase.color });
+      break;
+    }
+  }
+
   const MOTIVATIONAL_QUOTES = [
     "The only way to do great work is to love what you do. — Steve Jobs",
     "Every expert was once a beginner.",
@@ -629,6 +650,18 @@ export default function DashboardClient() {
               {/* Completion Badges */}
               <CompletionBadges earnedBadges={earnedBadges} />
 
+              {/* Shareable Progress Card */}
+              <ShareableProgressCard
+                currentRole={activeReport!.profile.currentTitle || "Current Role"}
+                targetRole={activePlan.targetRole}
+                completionPercent={completionPercent}
+                completedMilestones={completedMilestones}
+                totalMilestones={totalMilestones}
+                streakDays={streakDays}
+                earnedBadgeCount={earnedBadges.size}
+                reportId={activeReport!.id}
+              />
+
               <MilestoneChecklist
                 phases={phases}
                 statuses={milestoneStatuses}
@@ -665,6 +698,14 @@ export default function DashboardClient() {
             </Link>
           </div>
         </div>
+      )}
+
+      {celebratingPhase && (
+        <PhaseCompletionCelebration
+          phaseLabel={celebratingPhase.label}
+          phaseColor={celebratingPhase.color}
+          onDismiss={() => setCelebratingPhase(null)}
+        />
       )}
     </main>
   );
