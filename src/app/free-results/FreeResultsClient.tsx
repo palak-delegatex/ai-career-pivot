@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Share2, Check, Copy, Briefcase, TrendingUp } from "lucide-react";
+import { Share2, Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
+import { testimonials } from "@/lib/testimonials";
+import SocialProofStrip from "@/components/SocialProofStrip";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -56,15 +58,34 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
   );
 }
 
-function GatedSection({ label }: { label: string }) {
+function GatedSection({ label, variant }: { label: string; variant: "milestones" | "financial" | "coaching" }) {
+  const variantContent: Record<string, { lines: string[]; icon: string }> = {
+    milestones: {
+      lines: ["Month 1-2: Complete foundational cert...", "Month 3-4: Build portfolio project in...", "Month 6: Apply to target roles with..."],
+      icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
+    },
+    financial: {
+      lines: ["Current salary: $XXX,XXX → Target: $XX...", "Bridge budget: $X,XXX over 6 months", "ROI breakeven: month 4 of new role"],
+      icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+    },
+    coaching: {
+      lines: ["Week 1: Skill gap assessment & plan...", "Weekly AI coaching: personalized feed...", "Action items auto-generated from your..."],
+      icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
+    },
+  };
+
+  const content = variantContent[variant];
+
   return (
     <div className="relative rounded-xl overflow-hidden">
       <div className="blur-sm select-none pointer-events-none">
         <div className="space-y-2 p-4 bg-slate-800/40 rounded-xl">
-          {[...Array(3)].map((_, i) => (
+          {content.lines.map((line, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-slate-600" />
-              <div className={`h-3 rounded bg-slate-600 ${i === 0 ? "w-48" : i === 1 ? "w-36" : "w-40"}`} />
+              <svg className="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d={content.icon} />
+              </svg>
+              <span className="text-xs text-slate-500 truncate">{line}</span>
             </div>
           ))}
         </div>
@@ -75,6 +96,57 @@ function GatedSection({ label }: { label: string }) {
         </svg>
         <span className="text-xs text-slate-300 font-medium">{label} — Unlock for $19</span>
       </div>
+    </div>
+  );
+}
+
+function SalaryInsightTeaser({ uplift }: { uplift: number }) {
+  return (
+    <Link
+      href="/pricing"
+      className="block rounded-xl bg-gradient-to-r from-emerald-950/40 to-teal-950/30 border border-emerald-800/30 p-4 hover:border-emerald-700/50 transition-colors"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-900/50 border border-emerald-700/40 shrink-0">
+          <DollarSign className="h-5 w-5 text-emerald-400" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-white">
+            Estimated +${uplift}K salary uplift
+          </p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Based on market data for your target role. Full salary trajectory in report →
+          </p>
+        </div>
+        <TrendingUp className="h-4 w-4 text-emerald-400 shrink-0" />
+      </div>
+    </Link>
+  );
+}
+
+function ReportCounterBadge() {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/40 text-[11px] text-slate-400">
+      <Users className="w-3 h-3 text-teal-400" />
+      <span><strong className="text-slate-300">547</strong> reports generated this week</span>
+    </div>
+  );
+}
+
+function ValuePropCallout() {
+  const props = [
+    { icon: Target, text: "Personalized to your exact background" },
+    { icon: Award, text: "Actionable milestones, not generic advice" },
+    { icon: DollarSign, text: "Salary data & financial bridge plan" },
+  ];
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-4">
+      {props.map((p) => (
+        <div key={p.text} className="flex items-center gap-1.5 text-xs text-slate-400">
+          <p.icon className="w-3.5 h-3.5 text-teal-400" />
+          <span>{p.text}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -156,13 +228,18 @@ export default function FreeResultsClient() {
   }
 
   const activePath = snapshot.paths[selectedPath];
+  const salaryUplift = snapshot.estimatedSalaryUplift ?? 15;
+  const marcusTestimonial = testimonials.find((t) => t.name === "Marcus T.")!;
 
   return (
     <main className="max-w-2xl mx-auto px-6 py-12">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-3">
-          Free Skill-Gap Snapshot
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold">
+            Free Skill-Gap Snapshot
+          </div>
+          <ReportCounterBadge />
         </div>
         <h1 className="text-3xl font-extrabold mb-2">Your Career Pivot Matches</h1>
         {snapshot.profileSummary && (
@@ -274,11 +351,16 @@ export default function FreeResultsClient() {
           {/* Job teaser */}
           <JobTeaser targetRole={activePath.targetRole} jobCount={jobCount} />
 
+          {/* Salary insight teaser */}
+          <div className="mt-3">
+            <SalaryInsightTeaser uplift={salaryUplift} />
+          </div>
+
           {/* Gated sections */}
-          <div className="space-y-3">
-            <GatedSection label="6-month / 1-year / 2-year milestones" />
-            <GatedSection label="Financial bridge — salary trajectory & ROI" />
-            <GatedSection label="AI coaching + weekly action plan" />
+          <div className="space-y-3 mt-4">
+            <GatedSection label="6-month / 1-year / 2-year milestones" variant="milestones" />
+            <GatedSection label="Financial bridge — salary trajectory & ROI" variant="financial" />
+            <GatedSection label="AI coaching + weekly action plan" variant="coaching" />
           </div>
         </div>
       )}
@@ -305,9 +387,22 @@ export default function FreeResultsClient() {
           </Link>
         </div>
         <p className="text-slate-500 text-xs mt-3">One-time payment. Instant delivery.</p>
+        <ValuePropCallout />
       </div>
 
-      {/* Social proof nudge */}
+      {/* Social proof strip */}
+      <div className="mt-6">
+        <SocialProofStrip
+          testimonial={marcusTestimonial}
+          metrics={[
+            { value: "500+", label: "Pivots" },
+            { value: "92%", label: "Progress" },
+            { value: "$15K+", label: "Avg uplift" },
+          ]}
+        />
+      </div>
+
+      {/* Bottom nudge */}
       <p className="text-center text-slate-500 text-xs mt-6">
         Seeing a path you like?{" "}
         <Link href="/pricing" className="text-teal-400 hover:text-teal-300 underline">

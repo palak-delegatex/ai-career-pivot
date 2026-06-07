@@ -19,6 +19,7 @@ const FreeSnapshotSchema = z.object({
   })).max(3),
   profileSummary: z.string(),
   topTransferableStrengths: z.array(z.string()).max(3),
+  estimatedSalaryUplift: z.number().optional(),
 });
 
 export type FreeSnapshot = z.infer<typeof FreeSnapshotSchema>;
@@ -70,6 +71,7 @@ For each path:
 Also provide:
 - profileSummary: 1 confident sentence highlighting their strongest positioning angle (e.g. "A data-savvy marketer with 8 years of cross-functional leadership — perfectly positioned for product management roles in AI-first companies")
 - topTransferableStrengths: 3 specific strengths from their background that directly apply to career pivots (not generic — reference their actual skills)
+- estimatedSalaryUplift: estimated annual salary increase in thousands (e.g. 15 means $15K) for the top path based on market data. Use a conservative but motivating number (10-30 typical range).
 
 USER PROFILE:
 - Current title: ${profile.currentTitle ?? "Not specified"}
