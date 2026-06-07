@@ -207,19 +207,6 @@ export default function AboutPage() {
           </section>
         </main>
 
-        <footer className="py-8 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm mt-10">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
-            <span className="text-slate-500 font-medium">AICareerPivot</span>
-          </div>
-          <nav className="flex items-center justify-center gap-4 mb-2" aria-label="Footer navigation">
-            <Link href="/" className="hover:text-slate-400 transition-colors">Home</Link>
-            <Link href="/about" className="hover:text-slate-400 transition-colors">About</Link>
-            <Link href="/how-it-works" className="hover:text-slate-400 transition-colors">How It Works</Link>
-            <Link href="/faq" className="hover:text-slate-400 transition-colors">FAQ</Link>
-          </nav>
-          <p>© 2026 AICareerPivot. Your career, your timeline.</p>
-        </footer>
       </div>
     </>
   );

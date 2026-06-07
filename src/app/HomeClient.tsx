@@ -878,21 +878,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-8 pb-20 px-6 border-t border-slate-800/60 text-center text-slate-600 text-sm">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-teal-500 to-emerald-600" />
-            <span className="text-slate-500 font-medium">AICareerPivot</span>
-          </div>
-          <nav className="flex items-center justify-center flex-wrap gap-1 mb-2" aria-label="Footer navigation">
-            <Link href="/about" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">About</Link>
-            <Link href="/how-it-works" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">How It Works</Link>
-            <Link href="/faq" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">FAQ</Link>
-            <Link href="/blog" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">Blog</Link>
-            <Link href="/pricing" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 hover:text-slate-400 transition-colors">Pricing</Link>
-          </nav>
-          <p>© 2026 AICareerPivot. Your career, your timeline.</p>
-        </footer>
       </div>
     </>
   );
