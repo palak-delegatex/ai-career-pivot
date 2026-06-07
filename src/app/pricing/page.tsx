@@ -4,6 +4,8 @@ import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Building2, Rocket, Briefcase } from "lucide-react";
+import { testimonials } from "@/lib/testimonials";
 
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
@@ -146,18 +148,54 @@ export default function PricingPage() {
             before they give you actionable advice. That&apos;s $750–$1,250 before you
             get a single roadmap. AICareerPivot builds your complete roadmap in minutes.
           </p>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            </span>
+            <span className="text-slate-300 text-sm font-medium">847 reports generated</span>
+          </div>
         </div>
 
         {/* Trust text badges */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-          {["Fortune 500 companies", "Y Combinator startups", "Big 4 consulting"].map((label) => (
+          {[
+            { label: "Used by Fortune 500 professionals", icon: Building2 },
+            { label: "Trusted by YC startup founders", icon: Rocket },
+            { label: "Adopted by Big 4 consultants", icon: Briefcase },
+          ].map(({ label, icon: Icon }) => (
             <span key={label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
+              <Icon className="w-4 h-4 text-teal-400" />
               {label}
             </span>
           ))}
         </div>
         <p className="text-center text-slate-500 text-sm mb-10 -mt-4">
           Trusted by professionals from leading organizations
+        </p>
+
+        {/* Value comparison strip */}
+        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-6">
+          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-slate-300 mb-1">Career Coach</h3>
+            <p className="text-2xl font-bold text-white">$750–$1,250</p>
+            <p className="text-xs text-slate-500 mt-2">3–5 sessions before actionable advice</p>
+          </div>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-slate-300 mb-1">ChatGPT</h3>
+            <p className="text-2xl font-bold text-white">Free</p>
+            <p className="text-xs text-slate-500 mt-2">Generic advice, 30–45 min prompting per session</p>
+          </div>
+          <div className="bg-teal-950/20 border-2 border-teal-500 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-teal-400 mb-1">AICareerPivot</h3>
+            <p className="text-2xl font-bold text-white">$19</p>
+            <p className="text-xs text-slate-400 mt-2">Personalized roadmap in minutes, not sessions</p>
+          </div>
+        </div>
+
+        {/* Value prop callout */}
+        <p className="text-slate-400 text-sm italic max-w-md mx-auto text-center mb-12">
+          The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills.
         </p>
 
         {/* Pricing cards */}
@@ -175,11 +213,8 @@ export default function PricingPage() {
                 <span className="text-slate-500 line-through text-lg mb-1">$29</span>
                 <span className="text-slate-400 mb-1">one-time</span>
               </div>
-              <p className="text-teal-400 text-sm font-semibold pb-2">
+              <p className="text-teal-400 text-sm font-semibold pb-6">
                 30-day money-back guarantee
-              </p>
-              <p className="text-slate-500 text-xs pb-6">
-                847 reports generated
               </p>
             </CardHeader>
             <CardContent className="px-8">
@@ -235,6 +270,33 @@ export default function PricingPage() {
               </CardFooter>
             </Card>
           </div>
+        </div>
+
+        {/* Pricing testimonials */}
+        <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-10">
+          {testimonials
+            .filter((t) => t.name === "Sarah K." || t.name === "James L.")
+            .map((t) => (
+              <div
+                key={t.name}
+                className="bg-slate-900/60 border border-slate-800 rounded-xl p-5"
+              >
+                <p className="text-sm text-slate-300 italic leading-relaxed mb-3">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-xs shrink-0`}
+                  >
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-200">{t.name}</p>
+                    <p className="text-xs text-slate-500">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
 
         {/* Trust badge row */}
