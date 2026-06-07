@@ -8,20 +8,20 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
   description:
-    "Get a personalized career pivot roadmap with AI certifications starting at just $5 intro pricing. AI-powered analysis of your resume and LinkedIn profile.",
+    "Get a personalized career pivot roadmap with AI certifications starting at just $19 intro pricing. AI-powered analysis of your resume and LinkedIn profile.",
   alternates: { canonical: "https://ai-career-pivot.com/pricing" },
   openGraph: {
     title: "Pricing — AICareerPivot",
     description:
-      "Personalized career pivot roadmap with AI certifications starting at just $5 intro pricing. Lifetime access for $149.",
+      "Personalized career pivot roadmap with AI certifications starting at just $19 intro pricing. Lifetime access for $149.",
     url: "https://ai-career-pivot.com/pricing",
   },
 };
 
 const FAQ_ITEMS = [
   {
-    q: "What do I get with the $5 report?",
-    a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, AI certifications roadmap tailored to your pivot, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice. The $5 intro price is a limited-time offer.",
+    q: "What do I get with the $19 report?",
+    a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, AI certifications roadmap tailored to your pivot, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice. The $19 intro price is a limited-time offer.",
   },
   {
     q: "What does Lifetime ($149) include?",
@@ -74,7 +74,7 @@ export default function PricingPage() {
       {
         "@type": "Offer",
         name: "Report (Intro Pricing)",
-        price: "5.00",
+        price: "19.00",
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
         url: "https://ai-career-pivot.com/pricing",
@@ -162,7 +162,7 @@ export default function PricingPage() {
 
         {/* Pricing cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8 items-start max-w-4xl mx-auto">
-          {/* Report — $5 intro pricing */}
+          {/* Report — $19 intro pricing */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
               <span className="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
@@ -171,7 +171,7 @@ export default function PricingPage() {
               <h2 className="text-2xl font-bold text-white mb-1">Report</h2>
               <p className="text-slate-400 text-sm">One-time career pivot roadmap</p>
               <div className="flex items-end gap-2 mt-4 mb-1">
-                <span className="text-4xl font-extrabold text-white font-serif">$5</span>
+                <span className="text-4xl font-extrabold text-white font-serif">$19</span>
                 <span className="text-slate-500 line-through text-lg mb-1">$29</span>
                 <span className="text-slate-400 mb-1">one-time</span>
               </div>

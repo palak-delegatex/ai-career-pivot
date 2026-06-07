@@ -153,7 +153,7 @@ export default function FreeUploadClient() {
 
       <p className="text-slate-500 text-xs text-center mt-6">
         Your resume is processed securely and never shared. Want the full roadmap?
-        The complete report is just $5.
+        The complete report is just $19.
       </p>
     </main>
   );

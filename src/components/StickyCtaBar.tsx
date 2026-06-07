@@ -27,11 +27,11 @@ export default function StickyCtaBar() {
     >
       <Link
         href="/pricing"
-        onClick={() => trackCtaClicked({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar_mobile", destination: "/pricing" })}
-        onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $5", cta_location: "sticky_bar_mobile" })}
+        onClick={() => trackCtaClicked({ cta_text: "Get My Plan — $19", cta_location: "sticky_bar_mobile", destination: "/pricing" })}
+        onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Plan — $19", cta_location: "sticky_bar_mobile" })}
         className="px-6 py-3 min-h-[44px] flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-sm text-white hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200"
       >
-        Get My Plan — <s className="text-slate-400 font-normal ml-1 mr-1">$29</s> $5 →
+        Get My Plan — <s className="text-slate-400 font-normal ml-1 mr-1">$29</s> $19 →
       </Link>
     </motion.div>
   );

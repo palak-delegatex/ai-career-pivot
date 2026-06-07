@@ -10,7 +10,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
   const [error, setError] = useState("");
 
   const labels: Record<string, string> = {
-    report: "Get My Report — $5",
+    report: "Get My Report — $19",
     lifetime: "Get Lifetime Access — $149",
   };
 

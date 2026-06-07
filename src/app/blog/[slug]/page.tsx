@@ -54,7 +54,7 @@ function WaitlistCTA() {
         href="/pricing"
         className="inline-block px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-colors"
       >
-        Get My Roadmap — $5 →
+        Get My Roadmap — $19 →
       </Link>
     </div>
   );

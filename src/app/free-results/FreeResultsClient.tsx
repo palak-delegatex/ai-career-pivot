@@ -52,7 +52,7 @@ function GatedSection({ label }: { label: string }) {
         <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <span className="text-xs text-slate-300 font-medium">{label} — Unlock for $5</span>
+        <span className="text-xs text-slate-300 font-medium">{label} — Unlock for $19</span>
       </div>
     </div>
   );
@@ -199,14 +199,14 @@ export default function FreeResultsClient() {
         <h3 className="text-xl font-bold mb-2">Unlock Your Full Roadmap</h3>
         <p className="text-slate-400 text-sm mb-4 leading-relaxed">
           Get the complete plan: 6 / 12 / 24-month milestones, salary trajectory,
-          financial bridge, AI toolkit, and unlimited coaching — all for $5.
+          financial bridge, AI toolkit, and unlimited coaching — all for $19.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/pricing"
             className="px-6 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors shadow-lg shadow-teal-900/30"
           >
-            Get Full Report — $5 →
+            Get Full Report — $19 →
           </Link>
           <Link
             href="/free"
@@ -222,7 +222,7 @@ export default function FreeResultsClient() {
       <p className="text-center text-slate-500 text-xs mt-6">
         Seeing a path you like?{" "}
         <Link href="/pricing" className="text-teal-400 hover:text-teal-300 underline">
-          Get the complete plan with milestones, salary data, and AI coaching for $5.
+          Get the complete plan with milestones, salary data, and AI coaching for $19.
         </Link>
       </p>
     </main>

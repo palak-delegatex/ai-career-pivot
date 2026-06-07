@@ -139,7 +139,7 @@ export default function FAQPage() {
               href="/pricing"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
-              Get My Roadmap — $5 →
+              Get My Roadmap — $19 →
             </Link>
           </div>
         </main>

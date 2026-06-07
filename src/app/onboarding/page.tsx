@@ -424,7 +424,7 @@ export default function OnboardingPage() {
           <div className="text-5xl mb-6">&#x1f512;</div>
           <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
           <p className="text-slate-400 mb-8 leading-relaxed">
-            Get your personalized career pivot roadmap for $5. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
+            Get your personalized career pivot roadmap for $19. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
           </p>
           <Link
             href="/pricing"

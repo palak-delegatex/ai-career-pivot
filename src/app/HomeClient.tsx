@@ -53,7 +53,7 @@ const softwareApplicationSchema = {
     "AI-powered career transition planning tool that creates personalized roadmaps with concrete 6-month, 1-year, and 2-year milestones.",
   offers: {
     "@type": "Offer",
-    price: "5",
+    price: "19",
     priceCurrency: "USD",
     description: "Personalized career pivot roadmap — intro pricing",
   },
@@ -270,7 +270,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   }, []);
 
   const handleHeroCtaHover = useCallback(() => {
-    trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $5", cta_location: "hero" });
+    trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero" });
   }, []);
 
   useEffect(() => {
@@ -361,7 +361,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Intro Pricing — Just $5 (was $29) · Limited time
+            Intro Pricing — Just $19 (was $29) · Limited time
           </motion.div>
 
           <motion.h1
@@ -426,11 +426,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/pricing"
-                onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan Now — $5", cta_location: "hero", destination: "/pricing" })}
+                onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero", destination: "/pricing" })}
                 onMouseEnter={handleHeroCtaHover}
                 className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
               >
-                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $5 →</span>
+                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $19 →</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
@@ -651,11 +651,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <motion.div variants={fadeUp}>
                 <Link
                   href="/pricing"
-                  onClick={() => trackCtaClicked({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials", destination: "/pricing" })}
-                  onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $5", cta_location: "testimonials" })}
+                  onClick={() => trackCtaClicked({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials", destination: "/pricing" })}
+                  onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $5 →
+                  Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $19 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -734,11 +734,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
                   <Link
                     href="/pricing"
-                    onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan — $5", cta_location: "final_cta", destination: "/pricing" })}
-                    onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $5", cta_location: "final_cta" })}
+                    onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan — $19", cta_location: "final_cta", destination: "/pricing" })}
+                    onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $19", cta_location: "final_cta" })}
                     className="group inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Build My Pivot Plan — <s className="text-white/60 font-normal">$29</s> $5
+                    Build My Pivot Plan — <s className="text-white/60 font-normal">$29</s> $19
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -886,11 +886,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 </p>
                 <Link
                   href="/pricing"
-                  onClick={() => trackCtaClicked({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses", destination: "/pricing" })}
-                  onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $5", cta_location: "courses" })}
+                  onClick={() => trackCtaClicked({ cta_text: "Get My Personalized Learning Path — $19", cta_location: "courses", destination: "/pricing" })}
+                  onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $19", cta_location: "courses" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Get My Personalized Learning Path — <s className="text-white/60 font-normal">$29</s> $5 →
+                  Get My Personalized Learning Path — <s className="text-white/60 font-normal">$29</s> $19 →
                 </Link>
               </motion.div>
             </AnimatedSection>

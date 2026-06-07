@@ -197,12 +197,12 @@ export default function AboutPage() {
           {/* CTA */}
           <section className="text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to build your real escape plan?</h2>
-            <p className="text-slate-400 mb-8">Get your personalized career pivot roadmap today — just $5 intro pricing.</p>
+            <p className="text-slate-400 mb-8">Get your personalized career pivot roadmap today — just $19 intro pricing.</p>
             <Link
               href="/pricing"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
-              Get My Roadmap — $5 →
+              Get My Roadmap — $19 →
             </Link>
           </section>
         </main>

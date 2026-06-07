@@ -17,7 +17,7 @@ export const PLANS: Record<
   }
 > = {
   report: {
-    amount: 500,
+    amount: 1900,
     label: "Career Pivot Report — Intro Pricing",
     description:
       "Personalized AI career pivot roadmap with certifications, 6-month, 1-year, and 2-year milestones",
