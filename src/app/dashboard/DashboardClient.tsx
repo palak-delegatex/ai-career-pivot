@@ -641,6 +641,7 @@ export default function DashboardClient() {
           <JobBoard
             targetRole={activePlan.targetRole}
             location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
+            userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
           />
 
           <div className="pt-4 border-t border-slate-700/50 space-y-3">

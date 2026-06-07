@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { Share2, Check, Copy, Briefcase, TrendingUp } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -35,6 +36,26 @@ function MatchScoreRing({ score }: { score: number }) {
   );
 }
 
+function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: number }) {
+  if (jobCount === 0) return null;
+  return (
+    <div className="rounded-xl bg-gradient-to-r from-teal-950/40 to-emerald-950/30 border border-teal-800/30 p-4 flex items-center gap-3">
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-teal-900/50 border border-teal-700/40 shrink-0">
+        <Briefcase className="h-5 w-5 text-teal-400" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-white">
+          {jobCount} job{jobCount > 1 ? "s" : ""} hiring for {targetRole}
+        </p>
+        <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+          <TrendingUp className="h-3 w-3 text-emerald-400" />
+          Personalized match scores available in full report
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function GatedSection({ label }: { label: string }) {
   return (
     <div className="relative rounded-xl overflow-hidden">
@@ -58,16 +79,57 @@ function GatedSection({ label }: { label: string }) {
   );
 }
 
+function buildShareUrl(snapshot: FreeSnapshot) {
+  const paths = snapshot.paths.map((p) => ({
+    role: p.targetRole,
+    match: p.matchScore,
+  }));
+  const params = new URLSearchParams();
+  params.set("paths", JSON.stringify(paths));
+  if (snapshot.topTransferableStrengths?.length) {
+    params.set("strengths", JSON.stringify(snapshot.topTransferableStrengths));
+  }
+  return `/api/og/career-map?${params.toString()}`;
+}
+
 export default function FreeResultsClient() {
   const [snapshot, setSnapshot] = useState<FreeSnapshot | null>(null);
   const [selectedPath, setSelectedPath] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [jobCount, setJobCount] = useState(0);
+
+  const handleShare = useCallback(async () => {
+    if (!snapshot) return;
+    const topPath = snapshot.paths[0];
+    const text = topPath
+      ? `I'm a ${topPath.matchScore}% match for ${topPath.targetRole}! See where your career could go:`
+      : "See where your career could go:";
+    const url = `${window.location.origin}/free`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My Career Snapshot", text, url });
+        return;
+      } catch {}
+    }
+    await navigator.clipboard.writeText(`${text} ${url}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [snapshot]);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("free_snapshot");
     if (!raw) { setNotFound(true); return; }
     try {
-      setSnapshot(JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      setSnapshot(parsed);
+      if (parsed.paths?.[0]?.targetRole) {
+        fetch(`/api/jobs?role=${encodeURIComponent(parsed.paths[0].targetRole)}`)
+          .then((r) => r.json())
+          .then((d) => setJobCount(d.total ?? 0))
+          .catch(() => {});
+      }
     } catch {
       setNotFound(true);
     }
@@ -107,6 +169,30 @@ export default function FreeResultsClient() {
           <p className="text-slate-400 text-sm">{snapshot.profileSummary}</p>
         )}
       </div>
+
+      {/* Share button */}
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-400">Link copied!</span>
+            </>
+          ) : (
+            <>
+              <Share2 className="w-4 h-4" />
+              Share my results
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* OG image preview (hidden, for social sharing meta) */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={buildShareUrl(snapshot)} alt="" className="hidden" />
 
       {/* Transferable strengths */}
       {snapshot.topTransferableStrengths?.length > 0 && (
@@ -184,6 +270,9 @@ export default function FreeResultsClient() {
               ))}
             </div>
           </div>
+
+          {/* Job teaser */}
+          <JobTeaser targetRole={activePath.targetRole} jobCount={jobCount} />
 
           {/* Gated sections */}
           <div className="space-y-3">
