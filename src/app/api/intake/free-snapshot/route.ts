@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
+import { sendDripEmail } from "@/lib/email-drip";
 
 const FreeSnapshotSchema = z.object({
   paths: z.array(z.object({
@@ -59,11 +60,16 @@ export async function POST(req: NextRequest) {
   const { output } = await generateText({
     model: anthropic("claude-haiku-4-5-20251001"),
     output: Output.object({ schema: FreeSnapshotSchema }),
-    prompt: `You are a career strategist. Based on this professional's background, generate 2-3 career pivot paths as a free skill-gap snapshot. Be specific and insightful.
+    prompt: `You are an elite career strategist who specializes in AI-era career pivots. Based on this professional's background, generate 2-3 compelling career pivot paths as a free skill-gap snapshot. Your goal: make the user feel excited about their potential AND aware that a detailed plan would accelerate their transition.
 
-For each path: give a matchScore (0-100), a 2-sentence rationale explaining why this person is a good fit, and the top 3 skill gaps they'd need to close. For each skill gap, give a transferabilityScore (0-100, higher means they have more existing skills that carry over).
+For each path:
+- matchScore (0-100): be generous but honest — show them they have real potential. Scores between 55-85 are ideal (high enough to excite, low enough to show room for growth that a full plan addresses).
+- rationale: 2 sentences. First sentence: why their specific background makes them a strong candidate. Second sentence: how AI is creating new demand in this role RIGHT NOW (June 2026) and why acting soon matters.
+- topSkillGaps: the 3 most important gaps to close. For each, give a transferabilityScore (0-100, how much existing experience carries over). Higher scores show "you're closer than you think"; lower scores show "this is where the full plan helps."
 
-Also provide a 1-sentence profileSummary and 3 topTransferableStrengths from their background.
+Also provide:
+- profileSummary: 1 confident sentence highlighting their strongest positioning angle (e.g. "A data-savvy marketer with 8 years of cross-functional leadership — perfectly positioned for product management roles in AI-first companies")
+- topTransferableStrengths: 3 specific strengths from their background that directly apply to career pivots (not generic — reference their actual skills)
 
 USER PROFILE:
 - Current title: ${profile.currentTitle ?? "Not specified"}
@@ -73,8 +79,23 @@ USER PROFILE:
 - Transferable skills: ${profile.transferableSkills.slice(0, 8).join(", ")}
 - Education: ${profile.education.map(e => `${e.degree} in ${e.field}`).join("; ") || "Not specified"}
 
-Generate paths ranked by matchScore descending. Return JSON matching the schema exactly.`,
+Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.`,
   });
+
+  if (profile.email && output?.paths?.length) {
+    const firstName = profile.experience?.[0]?.title
+      ? profile.currentTitle?.split(" ")[0] ?? "there"
+      : "there";
+    sendDripEmail(profile.email, firstName, 17, {
+      freeSnapshotPaths: output.paths.map((p) => ({
+        targetRole: p.targetRole,
+        targetIndustry: p.targetIndustry,
+        matchScore: p.matchScore,
+        rationale: p.rationale,
+      })),
+      topStrengths: output.topTransferableStrengths,
+    }).catch(() => {});
+  }
 
   return NextResponse.json({ snapshot: output, profile });
 }
