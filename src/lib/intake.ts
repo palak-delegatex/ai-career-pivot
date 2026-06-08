@@ -104,6 +104,15 @@ export interface AIToolkitItem {
   proficiencyNeeded: "beginner" | "intermediate" | "advanced";
 }
 
+export interface RiskAssessment {
+  obstacle: string;
+  likelihood: number;
+  impact: "high" | "medium" | "low";
+  timeframe: string;
+  category: "market" | "skill" | "financial" | "personal" | "industry";
+  mitigationSteps: string[];
+}
+
 export interface PathTradeoffs {
   difficulty: "low" | "medium" | "high";
   riskLevel: "low" | "medium" | "high";
@@ -129,6 +138,7 @@ export interface PivotPlan {
   financialSummary?: FinancialSummary;
   recommendedResources?: RecommendedResource[];
   aiToolkit?: AIToolkitItem[];
+  riskAssessments?: RiskAssessment[];
   tradeoffs?: PathTradeoffs;
   /** @deprecated Use skillGaps (structured) instead */
   legacySkillGaps?: string[];

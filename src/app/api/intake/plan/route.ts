@@ -114,6 +114,22 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
               required: ["tool", "category", "useCase", "proficiencyNeeded"],
             },
           },
+          riskAssessments: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                obstacle: { type: "string" },
+                likelihood: { type: "number" },
+                impact: { type: "string", enum: ["high", "medium", "low"] },
+                timeframe: { type: "string" },
+                category: { type: "string", enum: ["market", "skill", "financial", "personal", "industry"] },
+                mitigationSteps: { type: "array", items: { type: "string" } },
+              },
+              required: ["obstacle", "likelihood", "impact", "timeframe", "category", "mitigationSteps"],
+            },
+          },
           tradeoffs: {
             type: "object",
             additionalProperties: false,
@@ -132,7 +148,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
         required: ["targetRole", "targetIndustry", "rationale", "matchScore", "skillMatchPercent",
           "sixMonthMilestones", "oneYearMilestones", "twoYearMilestones", "skillGaps",
           "weekOneActions", "estimatedTimeToTransition", "financialSummary",
-          "recommendedResources", "aiToolkit", "tradeoffs"],
+          "recommendedResources", "aiToolkit", "riskAssessments", "tradeoffs"],
       },
     },
   },
@@ -154,6 +170,7 @@ type PivotPlan = {
   financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string; milestoneSalaries: { phase: "6-month" | "1-year" | "2-year"; expectedSalaryRange: string; marketDemandLevel: "low" | "moderate" | "high" | "very-high"; demandTrend: string }[] };
   recommendedResources: { name: string; provider: string; type: string; url: string; cost: string; timeEstimate: string }[];
   aiToolkit: { tool: string; category: string; useCase: string; proficiencyNeeded: "beginner" | "intermediate" | "advanced" }[];
+  riskAssessments: { obstacle: string; likelihood: number; impact: "high" | "medium" | "low"; timeframe: string; category: "market" | "skill" | "financial" | "personal" | "industry"; mitigationSteps: string[] }[];
   tradeoffs: { difficulty: "low" | "medium" | "high"; riskLevel: "low" | "medium" | "high"; timeToFirstRole: string; incomeImpactNear: string; incomePotentialLong: string; pros: string[]; cons: string[] };
 };
 
@@ -253,6 +270,16 @@ Every plan must be AI-native. This means:
 - aiToolkit: provide 4-6 specific AI tools the user should master for the target role. For each tool, specify: the tool name (e.g. "Claude", "ChatGPT", "Midjourney", "GitHub Copilot", "Cursor", "v0", "Jasper", "Notion AI", "Runway", "Descript", "HubSpot AI", "Salesforce Einstein"), category (e.g. "AI coding assistant", "AI writing & analysis", "AI design", "AI video", "AI sales intelligence"), useCase describing exactly how they'd use it daily in the target role, and proficiencyNeeded ("beginner"/"intermediate"/"advanced").
 
 Frame AI as a career multiplier, not a threat. The narrative should be: "You + AI tools = a professional who delivers 3x the output of someone who doesn't use AI."
+
+RISK ASSESSMENT — REQUIRED FOR EVERY PLAN:
+Each plan MUST include a riskAssessments array with 4-6 realistic obstacles this person will face during their pivot. For each risk:
+- obstacle: a specific, concrete risk statement (not generic — reference their situation)
+- likelihood: 0-100 probability of occurring
+- impact: "high", "medium", or "low" — how severely it would derail the transition
+- timeframe: when this risk is most relevant (e.g. "First 3 months", "Month 6-12", "Ongoing")
+- category: one of "market" (job market/demand shifts), "skill" (capability gaps), "financial" (income/cost risks), "personal" (burnout, family, motivation), "industry" (sector-specific disruptions)
+- mitigationSteps: 2-4 specific, actionable steps to reduce or eliminate the risk
+Aim for variety across categories. Include at least one high-impact and one low-impact risk. Tailor risks to the user's specific circumstances (dependents, salary floor, risk tolerance, location).
 
 RULES FOR EVERY FIELD:
 1. matchScore (0-100): overall fit score considering skills, experience, market demand, AI-readiness, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has. Boost matchScore for paths where AI tools significantly lower the barrier to entry.

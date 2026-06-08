@@ -5,6 +5,7 @@ import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
+import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
@@ -124,6 +125,10 @@ function StreamedPlanCard({ plan, index }: { plan: DeepPartial<PivotPlan>; index
       ) : hasMilestones ? (
         <SectionSkeleton label="Analyzing skill gaps..." />
       ) : null}
+
+      {(plan.riskAssessments?.length ?? 0) > 0 && (
+        <RiskAssessmentCard riskAssessments={plan.riskAssessments as NonNullable<PivotPlan["riskAssessments"]>} />
+      )}
 
       {hasWeekOneActions ? (
         <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">

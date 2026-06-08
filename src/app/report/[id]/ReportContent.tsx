@@ -13,6 +13,7 @@ import PlanSelector from "@/components/PlanSelector";
 import ChatCTA from "@/components/ChatCTA";
 import MarketDataBanner, { MarketDataLoader } from "@/components/MarketDataBanner";
 import TransferabilityBreakdown from "@/components/TransferabilityBreakdown";
+import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import SalaryTrajectory from "@/components/SalaryTrajectory";
 import JobBoard from "@/components/JobBoard";
 
@@ -47,6 +48,10 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
 
         {(plan.skillGaps ?? []).length > 0 && (
           <TransferabilityBreakdown skillGaps={plan.skillGaps!} />
+        )}
+
+        {(plan.riskAssessments ?? []).length > 0 && (
+          <RiskAssessmentCard riskAssessments={plan.riskAssessments!} />
         )}
 
         {(plan.skillGaps ?? []).length > 0 && (
