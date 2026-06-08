@@ -7,12 +7,16 @@ export async function POST(req: NextRequest) {
     mode,
     targetRole,
     jobDescription,
+    template,
+    tone,
     profile,
     plan,
   }: {
     mode: "resume" | "cover-letter";
     targetRole: string;
     jobDescription?: string;
+    template?: "professional" | "modern" | "minimal";
+    tone?: "professional" | "conversational" | "bold";
     profile: {
       name?: string;
       email?: string;
@@ -60,8 +64,8 @@ export async function POST(req: NextRequest) {
 
   const systemPrompt =
     mode === "resume"
-      ? buildResumePrompt(targetRole, profileSection, jdSection)
-      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name);
+      ? buildResumePrompt(targetRole, profileSection, jdSection, template)
+      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name, tone);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),
@@ -83,9 +87,19 @@ export async function POST(req: NextRequest) {
 function buildResumePrompt(
   targetRole: string,
   profile: string,
-  jdSection: string
+  jdSection: string,
+  template?: "professional" | "modern" | "minimal"
 ): string {
+  const templateInstructions = {
+    professional: "Use a traditional, corporate-friendly format with clear section dividers. Formal language, conservative structure.",
+    modern: "Use a contemporary layout with subtle stylistic touches. Slightly more personality in language while staying professional.",
+    minimal: "Use an ultra-clean, streamlined format. Short bullet points, no filler, maximum information density.",
+  };
+  const styleGuide = templateInstructions[template ?? "professional"];
+
   return `You are a professional resume writer who specializes in career pivots and ATS optimization. Generate a complete, ATS-optimized resume for this candidate targeting a ${targetRole} position.
+
+STYLE: ${styleGuide}
 
 CANDIDATE PROFILE:
 ${profile}${jdSection}
@@ -115,8 +129,16 @@ function buildCoverLetterPrompt(
   targetRole: string,
   profile: string,
   jdSection: string,
-  name?: string
+  name?: string,
+  tone?: "professional" | "conversational" | "bold"
 ): string {
+  const toneInstructions = {
+    professional: "Professional tone — confident but not arrogant. Formal language, polished structure.",
+    conversational: "Conversational tone — warm, personable, and approachable. Write as if speaking to a colleague, while maintaining professionalism.",
+    bold: "Bold tone — confident, assertive, and direct. Lead with strong claims backed by evidence. Show conviction about the value you bring.",
+  };
+  const toneGuide = toneInstructions[tone ?? "professional"];
+
   return `You are a professional cover letter writer who specializes in career pivots. Generate a compelling, tailored cover letter for ${name || "the candidate"} targeting a ${targetRole} position.
 
 CANDIDATE PROFILE:
@@ -124,7 +146,7 @@ ${profile}${jdSection}
 
 COVER LETTER REQUIREMENTS:
 - Output in Markdown format
-- Professional tone — confident but not arrogant
+- ${toneGuide}
 - 3-4 paragraphs, approximately 300-400 words
 - Opening: Hook that connects the candidate's background to the target role. No generic "I'm writing to apply" openings.
 - Body paragraph 1: Highlight the most relevant transferable skills and achievements with specific examples. If a JD is provided, directly address its top 2-3 requirements.

@@ -71,6 +71,7 @@ export default function CoverLetterSheet({
           mode: "cover-letter",
           targetRole: job.title,
           jobDescription: jd,
+          tone,
           profile: {
             name: profile.name,
             email: profile.email,

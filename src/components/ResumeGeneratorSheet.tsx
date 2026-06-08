@@ -102,6 +102,7 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
         body: JSON.stringify({
           mode: "resume",
           targetRole: plan.targetRole,
+          template,
           profile: {
             name: profile.name,
             email: profile.email,
