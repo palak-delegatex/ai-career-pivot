@@ -28,6 +28,9 @@ export function Footer() {
               <li><Link href="/pricing" className="text-slate-400 hover:text-teal-400 transition-colors">Pricing</Link></li>
               <li><Link href="/free" className="text-slate-400 hover:text-teal-400 transition-colors">Free Assessment</Link></li>
               <li><Link href="/mock-interview" className="text-slate-400 hover:text-teal-400 transition-colors">Mock Interview</Link></li>
+              <li><Link href="/gap-analysis" className="text-slate-400 hover:text-teal-400 transition-colors">Gap Analysis</Link></li>
+              <li><Link href="/ats-score" className="text-slate-400 hover:text-teal-400 transition-colors">ATS Score</Link></li>
+              <li><Link href="/resume-generator" className="text-slate-400 hover:text-teal-400 transition-colors">Resume Generator</Link></li>
               <li><Link href="/dashboard" className="text-slate-400 hover:text-teal-400 transition-colors">Dashboard</Link></li>
             </ul>
           </div>
