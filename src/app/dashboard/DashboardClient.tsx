@@ -16,6 +16,7 @@ import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
+import DocumentsCard from "@/components/DocumentsCard";
 
 interface Report {
   id: string;
@@ -647,6 +648,9 @@ export default function DashboardClient() {
                 reportId={activeReport!.id}
               />
 
+              {/* My Documents */}
+              <DocumentsCard />
+
               {/* Completion Badges */}
               <CompletionBadges earnedBadges={earnedBadges} />
 
@@ -675,6 +679,8 @@ export default function DashboardClient() {
             targetRole={activePlan.targetRole}
             location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
             userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
+            profile={activeReport.profile}
+            plan={activePlan}
           />
 
           <div className="pt-4 border-t border-slate-700/50 space-y-3">

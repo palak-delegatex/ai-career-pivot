@@ -16,7 +16,7 @@ import TransferabilityBreakdown from "@/components/TransferabilityBreakdown";
 import SalaryTrajectory from "@/components/SalaryTrajectory";
 import JobBoard from "@/components/JobBoard";
 
-export default function ReportContent({ plans, reportId, location }: { plans: PivotPlan[]; reportId: string; location?: UserLocation }) {
+export default function ReportContent({ plans, reportId, location, profile }: { plans: PivotPlan[]; reportId: string; location?: UserLocation; profile?: import("@/lib/intake").UserProfile }) {
   const [selected, setSelected] = useState(0);
   const plan = plans[selected];
   const roles = plans.map((p) => p.targetRole);
@@ -30,7 +30,7 @@ export default function ReportContent({ plans, reportId, location }: { plans: Pi
       {plans.length > 1 && <PathComparison plans={plans} onSelectPlan={setSelected} marketData={marketData} />}
 
       <div className="space-y-6">
-        <PlanHero plan={plan} />
+        <PlanHero plan={plan} profile={profile} />
 
         <MarketDataBanner targetRole={plan.targetRole} marketData={marketData[plan.targetRole]} />
 
@@ -160,7 +160,7 @@ export default function ReportContent({ plans, reportId, location }: { plans: Pi
           </div>
         ) : null}
 
-        <JobBoard targetRole={plan.targetRole} location={location?.city || location?.region || location?.country} />
+        <JobBoard targetRole={plan.targetRole} location={location?.city || location?.region || location?.country} profile={profile} plan={plan} />
 
         <ChatCTA targetRole={plan.targetRole} />
       </div>

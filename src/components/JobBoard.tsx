@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ExternalLink, Briefcase, RefreshCw, MapPin, TrendingUp, Sparkles } from "lucide-react";
+import { ExternalLink, Briefcase, RefreshCw, MapPin, TrendingUp, Sparkles, FileSignature } from "lucide-react";
 import type { EnrichedJob } from "@/lib/job-match";
+import type { UserProfile, PivotPlan } from "@/lib/intake";
+import CoverLetterSheet from "@/components/CoverLetterSheet";
 
 interface JobBoardProps {
   targetRole: string;
   location?: string;
   userSkills?: string[];
+  profile?: UserProfile;
+  plan?: PivotPlan;
 }
 
 const JOB_BOARD_LINKS = [
@@ -44,11 +48,12 @@ function MatchBadge({ score }: { score: number }) {
   );
 }
 
-export default function JobBoard({ targetRole, location, userSkills = [] }: JobBoardProps) {
+export default function JobBoard({ targetRole, location, userSkills = [], profile, plan }: JobBoardProps) {
   const [jobs, setJobs] = useState<EnrichedJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasMatchScores, setHasMatchScores] = useState(false);
+  const [coverLetterJob, setCoverLetterJob] = useState<EnrichedJob | null>(null);
 
   async function fetchJobs() {
     setLoading(true);
@@ -142,20 +147,22 @@ export default function JobBoard({ targetRole, location, userSkills = [] }: JobB
         )}
 
         {!loading && jobs.map((job) => (
-          <a
+          <div
             key={job.id}
-            href={job.url}
-            target="_blank"
-            rel="noopener noreferrer"
             className="flex items-start gap-3 px-5 py-4 hover:bg-slate-700/30 transition-colors group"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors line-clamp-1">
+                    <a
+                      href={job.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors line-clamp-1 hover:underline"
+                    >
                       {job.title}
-                    </p>
+                    </a>
                     {job.publication_date && timeAgo(job.publication_date) === "Today" && (
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-600/30 border border-teal-500/40 text-teal-300 uppercase">
                         New
@@ -164,7 +171,21 @@ export default function JobBoard({ targetRole, location, userSkills = [] }: JobB
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">{job.company_name}</p>
                 </div>
-                <ExternalLink className="h-3.5 w-3.5 text-slate-600 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors" />
+                <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                  {profile && plan && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setCoverLetterJob(job); }}
+                      className="text-[10px] text-slate-500 hover:text-teal-400 transition-colors flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 max-md:opacity-100"
+                      title="Generate Cover Letter"
+                    >
+                      <FileSignature className="h-3 w-3" />
+                      <span className="hidden sm:inline">Cover Letter</span>
+                    </button>
+                  )}
+                  <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-slate-600 group-hover:text-slate-400 transition-colors">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
@@ -211,7 +232,7 @@ export default function JobBoard({ targetRole, location, userSkills = [] }: JobB
                 </div>
               )}
             </div>
-          </a>
+          </div>
         ))}
       </div>
 
@@ -233,6 +254,16 @@ export default function JobBoard({ targetRole, location, userSkills = [] }: JobB
           ))}
         </div>
       </div>
+
+      {profile && plan && coverLetterJob && (
+        <CoverLetterSheet
+          job={coverLetterJob}
+          profile={profile}
+          plan={plan}
+          open={!!coverLetterJob}
+          onOpenChange={(open) => { if (!open) setCoverLetterJob(null); }}
+        />
+      )}
     </div>
   );
 }
