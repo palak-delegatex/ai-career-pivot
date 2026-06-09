@@ -171,6 +171,60 @@ export interface TransferabilityAnalysis {
   overallTransferabilityPercent: number;
 }
 
+export interface ExtractedSkill {
+  name: string;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  proficiency: "expert" | "advanced" | "intermediate" | "beginner";
+  yearsUsed: number | null;
+  source: string;
+}
+
+export interface TargetRoleSkill {
+  name: string;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  importance: "critical" | "important" | "nice-to-have";
+}
+
+export interface DirectMatchSkill {
+  userSkill: string;
+  targetSkill: string;
+  proficiency: string;
+  matchConfidence: number;
+}
+
+export interface TransferableSkill {
+  userSkill: string;
+  targetSkill: string;
+  transferScore: number;
+  explanation: string;
+  bridgeActions: string[];
+}
+
+export interface GapSkill {
+  skill: string;
+  importance: "critical" | "important" | "nice-to-have";
+  difficultyToAcquire: "low" | "medium" | "high";
+  estimatedWeeksToAcquire: number;
+  learningResources: string[];
+  priorityRank: number;
+}
+
+export interface SkillsEngineResult {
+  userSkillGraph: ExtractedSkill[];
+  targetRoleSkills: TargetRoleSkill[];
+  overlapScore: number;
+  directMatches: DirectMatchSkill[];
+  transferableMatches: TransferableSkill[];
+  gaps: GapSkill[];
+  summary: {
+    directMatchPercent: number;
+    transferablePercent: number;
+    gapPercent: number;
+    readinessLabel: string;
+    topTransferNarrative: string;
+  };
+}
+
 export interface IntakeResult {
   profile: UserProfile;
   plans: PivotPlan[];
