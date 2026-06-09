@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ExternalLink, Briefcase, RefreshCw, MapPin, TrendingUp, Sparkles, FileSignature } from "lucide-react";
+import { ExternalLink, Briefcase, RefreshCw, MapPin, TrendingUp, Sparkles, FileSignature, Target, Wand2 } from "lucide-react";
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import CoverLetterSheet from "@/components/CoverLetterSheet";
+import GapAnalysisSheet from "@/components/GapAnalysisSheet";
+import ResumeTailorSheet from "@/components/ResumeTailorSheet";
 
 interface JobBoardProps {
   targetRole: string;
@@ -54,6 +56,8 @@ export default function JobBoard({ targetRole, location, userSkills = [], profil
   const [error, setError] = useState(false);
   const [hasMatchScores, setHasMatchScores] = useState(false);
   const [coverLetterJob, setCoverLetterJob] = useState<EnrichedJob | null>(null);
+  const [gapAnalysisJob, setGapAnalysisJob] = useState<EnrichedJob | null>(null);
+  const [tailorJob, setTailorJob] = useState<EnrichedJob | null>(null);
 
   async function fetchJobs() {
     setLoading(true);
@@ -174,12 +178,32 @@ export default function JobBoard({ targetRole, location, userSkills = [], profil
                 <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                   {profile && plan && (
                     <button
+                      onClick={(e) => { e.stopPropagation(); setGapAnalysisJob(job); }}
+                      className="text-[10px] text-slate-500 hover:text-teal-400 transition-colors flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 max-md:opacity-100"
+                      title="Analyze Job Fit"
+                    >
+                      <Target className="h-3 w-3" />
+                      <span className="hidden sm:inline">Analyze Fit</span>
+                    </button>
+                  )}
+                  {profile && plan && (
+                    <button
                       onClick={(e) => { e.stopPropagation(); setCoverLetterJob(job); }}
                       className="text-[10px] text-slate-500 hover:text-teal-400 transition-colors flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 max-md:opacity-100"
                       title="Generate Cover Letter"
                     >
                       <FileSignature className="h-3 w-3" />
                       <span className="hidden sm:inline">Cover Letter</span>
+                    </button>
+                  )}
+                  {profile && plan && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setTailorJob(job); }}
+                      className="text-[10px] text-slate-500 hover:text-teal-400 transition-colors flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 max-md:opacity-100"
+                      title="Tailor Resume"
+                    >
+                      <Wand2 className="h-3 w-3" />
+                      <span className="hidden sm:inline">Tailor Resume</span>
                     </button>
                   )}
                   <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-slate-600 group-hover:text-slate-400 transition-colors">
@@ -262,6 +286,28 @@ export default function JobBoard({ targetRole, location, userSkills = [], profil
           plan={plan}
           open={!!coverLetterJob}
           onOpenChange={(open) => { if (!open) setCoverLetterJob(null); }}
+        />
+      )}
+
+      {profile && plan && gapAnalysisJob && (
+        <GapAnalysisSheet
+          job={gapAnalysisJob}
+          profile={profile}
+          plan={plan}
+          open={!!gapAnalysisJob}
+          onOpenChange={(open) => { if (!open) setGapAnalysisJob(null); }}
+          onOpenCoverLetter={() => setCoverLetterJob(gapAnalysisJob)}
+          onOpenTailor={() => setTailorJob(gapAnalysisJob)}
+        />
+      )}
+
+      {profile && plan && tailorJob && (
+        <ResumeTailorSheet
+          job={tailorJob}
+          profile={profile}
+          plan={plan}
+          open={!!tailorJob}
+          onOpenChange={(open) => { if (!open) setTailorJob(null); }}
         />
       )}
     </div>
