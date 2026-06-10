@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import {
+  computeATSMatchBreakdown,
+  type MatchRateBreakdown,
+  type JDKeywords,
+} from "@/lib/ats-scoring";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -16,16 +21,9 @@ const JDAnalysisSchema = z.object({
   responsibilities: z.array(z.string()),
 });
 
-const ATSMatchSchema = z.object({
-  score: z.number().min(0).max(100),
-  keywordMatches: z.array(z.string()),
-  missingKeywords: z.array(z.string()),
-  sectionScores: z.array(
-    z.object({
-      section: z.string(),
-      score: z.number().min(0).max(100),
-      note: z.string(),
-    })
+const SemanticMatchesSchema = z.object({
+  semanticMatches: z.array(z.string()).describe(
+    "JD keywords that are semantically present in the resume but not as exact text"
   ),
 });
 
@@ -43,8 +41,15 @@ const TailoredResumeSchema = z.object({
 });
 
 export type JDAnalysis = z.infer<typeof JDAnalysisSchema>;
-export type ATSMatch = z.infer<typeof ATSMatchSchema>;
 export type TailoredResume = z.infer<typeof TailoredResumeSchema>;
+
+export interface ATSMatch {
+  score: number;
+  keywordMatches: string[];
+  missingKeywords: string[];
+  sectionScores: { section: string; score: number; note: string }[];
+  breakdown: MatchRateBreakdown["summary"];
+}
 
 export interface TailorResponse {
   jdAnalysis: JDAnalysis;
@@ -148,46 +153,72 @@ Extract:
   return output;
 }
 
-async function scoreResumeAgainstJD(
+function scoreResumeWithEngine(
+  resumeContent: string,
+  jdAnalysis: JDAnalysis,
+  semanticMatches?: string[]
+): ATSMatch {
+  const jdKeywords: JDKeywords = {
+    required: jdAnalysis.requiredSkills,
+    preferred: jdAnalysis.preferredSkills,
+    keywords: jdAnalysis.keywords,
+  };
+
+  const breakdown = computeATSMatchBreakdown(resumeContent, jdKeywords, {
+    semanticMatches,
+  });
+
+  return {
+    score: breakdown.overallScore,
+    keywordMatches: breakdown.keywordMatches
+      .filter(m => m.matched)
+      .map(m => m.keyword),
+    missingKeywords: breakdown.keywordMatches
+      .filter(m => !m.matched)
+      .map(m => m.keyword),
+    sectionScores: breakdown.sectionScores.map(s => ({
+      section: s.section,
+      score: s.coverage,
+      note: s.present
+        ? `${s.keywordsFound.length} keywords found${s.keywordsMissing.length > 0 ? `, ${s.keywordsMissing.length} missing` : ""}`
+        : "Section not found in resume",
+    })),
+    breakdown: breakdown.summary,
+  };
+}
+
+async function getSemanticMatches(
   resumeContent: string,
   jdAnalysis: JDAnalysis
-): Promise<ATSMatch> {
+): Promise<string[]> {
   const allKeywords = [
     ...jdAnalysis.requiredSkills,
     ...jdAnalysis.preferredSkills,
     ...jdAnalysis.keywords,
   ];
 
-  const { output } = await generateText({
-    model,
-    output: Output.object({ schema: ATSMatchSchema }),
-    messages: [
-      {
+  try {
+    const { output } = await generateText({
+      model,
+      output: Output.object({ schema: SemanticMatchesSchema }),
+      messages: [{
         role: "user",
-        content: `Score this resume's ATS compatibility against the target job requirements.
+        content: `Given this resume and target keywords, identify keywords that are SEMANTICALLY present but not as exact text matches.
 
 RESUME:
 """
 ${resumeContent.slice(0, 8000)}
 """
 
-TARGET JOB REQUIREMENTS:
-- Role: ${jdAnalysis.roleTitle} (${jdAnalysis.seniorityLevel})
-- Industry: ${jdAnalysis.industry}
-- Required skills: ${jdAnalysis.requiredSkills.join(", ")}
-- Preferred skills: ${jdAnalysis.preferredSkills.join(", ")}
-- Keywords to look for: ${allKeywords.join(", ")}
-- Key responsibilities: ${jdAnalysis.responsibilities.join("; ")}
+KEYWORDS TO CHECK: ${allKeywords.join(", ")}
 
-Score 0-100 for overall ATS match. Identify which keywords are present and which are missing. Score each resume section (Summary, Skills, Experience, Education) on relevance to this specific JD.
-
-Be precise — only mark a keyword as matched if it actually appears in the resume or a very close synonym is used.`,
-      },
-    ],
-  });
-
-  if (!output) throw new Error("Failed to score resume");
-  return output;
+Return only keywords where the resume demonstrates the skill/concept through different wording (e.g. "team leadership" matching "managed a team of 8").`,
+      }],
+    });
+    return output?.semanticMatches || [];
+  } catch {
+    return [];
+  }
 }
 
 async function tailorResume(
@@ -226,6 +257,7 @@ TARGET JOB:
 CURRENT ATS GAPS:
 - Missing keywords: ${originalScore.missingKeywords.join(", ")}
 - Current score: ${originalScore.score}/100
+- Match breakdown: ${originalScore.breakdown.requiredHit}/${originalScore.breakdown.requiredTotal} required, ${originalScore.breakdown.preferredHit}/${originalScore.breakdown.preferredTotal} preferred
 
 INSTRUCTIONS:
 1. Rewrite the complete resume in Markdown, optimized for this specific JD.
@@ -282,13 +314,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Step 1: Parse the job description
     const jdAnalysis = await parseJobDescription(jobDescription);
 
-    // Step 2: Score the original resume
-    const originalScore = await scoreResumeAgainstJD(resumeContent, jdAnalysis);
+    const semanticMatches = await getSemanticMatches(resumeContent, jdAnalysis);
+    const originalScore = scoreResumeWithEngine(resumeContent, jdAnalysis, semanticMatches);
 
-    // Step 3: Tailor the resume
     const profileStr = formatProfile(profile);
     const tailored = await tailorResume(
       resumeContent,
@@ -297,10 +327,14 @@ export async function POST(req: NextRequest) {
       originalScore
     );
 
-    // Step 4: Score the tailored resume
-    const tailoredScore = await scoreResumeAgainstJD(
+    const tailoredSemanticMatches = await getSemanticMatches(
       tailored.tailoredContent,
       jdAnalysis
+    );
+    const tailoredScore = scoreResumeWithEngine(
+      tailored.tailoredContent,
+      jdAnalysis,
+      tailoredSemanticMatches
     );
 
     const response: TailorResponse = {

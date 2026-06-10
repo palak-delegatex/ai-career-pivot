@@ -11,25 +11,41 @@ import {
   ChevronUp,
   Loader2,
   ArrowRight,
+  Target,
+  Search,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
+
+// ── Types ────────────────────────────────────────────────────────────────────
 
 interface FormatIssue {
   issue: string;
   severity: "critical" | "warning" | "minor";
   fix: string;
+  category: string;
+}
+
+interface FoundKeyword {
+  keyword: string;
+  matchType: "exact" | "variant" | "semantic";
+  foundIn: string[];
 }
 
 interface MissingKeyword {
   keyword: string;
   importance: "critical" | "important" | "helpful";
   suggestion: string;
+  suggestedSection: string | null;
 }
 
 interface SectionItem {
   section: string;
   present: boolean;
   quality: "strong" | "adequate" | "weak" | "missing";
+  keywordsFound: string[];
+  keywordsMissing: string[];
+  coverage: number;
   suggestion: string;
 }
 
@@ -39,14 +55,30 @@ interface ContentSuggestion {
   improved: string;
 }
 
+interface MatchSummary {
+  totalKeywords: number;
+  matchedKeywords: number;
+  missingKeywords: number;
+  exactMatches: number;
+  variantMatches: number;
+  semanticMatches: number;
+  requiredHit: number;
+  requiredTotal: number;
+  preferredHit: number;
+  preferredTotal: number;
+}
+
 interface ATSResult {
   overallScore: number;
   scoreLabel: string;
+  formattingScore: number;
+  keywordScore: number;
   formatIssues: FormatIssue[];
   keywordAnalysis: {
-    foundKeywords: string[];
+    foundKeywords: FoundKeyword[];
     missingKeywords: MissingKeyword[];
     keywordDensityScore: number;
+    summary: MatchSummary;
   };
   sectionAnalysis: SectionItem[];
   contentSuggestions: ContentSuggestion[];
@@ -61,6 +93,8 @@ interface ATSResult {
 
 type Phase = "upload" | "loading" | "results";
 
+// ── Styles ───────────────────────────────────────────────────────────────────
+
 const SEVERITY_STYLE = {
   critical: "text-red-400 bg-red-900/30 border-red-700/40",
   warning: "text-amber-400 bg-amber-900/30 border-amber-700/40",
@@ -74,16 +108,26 @@ const QUALITY_STYLE = {
   missing: "text-red-400",
 };
 
+const MATCH_TYPE_STYLE = {
+  exact: "bg-emerald-900/30 border-emerald-700/40 text-emerald-300",
+  variant: "bg-blue-900/30 border-blue-700/40 text-blue-300",
+  semantic: "bg-purple-900/30 border-purple-700/40 text-purple-300",
+};
+
+const MATCH_TYPE_LABEL = {
+  exact: "Exact",
+  variant: "Variant",
+  semantic: "Semantic",
+};
+
+// ── Components ───────────────────────────────────────────────────────────────
+
 function ScoreRing({ score, size = 144 }: { score: number; size?: number }) {
   const radius = (size / 2) - 12;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   const color =
-    score >= 80
-      ? "text-emerald-400"
-      : score >= 60
-        ? "text-amber-400"
-        : "text-red-400";
+    score >= 80 ? "text-emerald-400" : score >= 60 ? "text-amber-400" : "text-red-400";
   const strokeColor =
     score >= 80 ? "#34d399" : score >= 60 ? "#fbbf24" : "#f87171";
 
@@ -104,6 +148,36 @@ function ScoreRing({ score, size = 144 }: { score: number; size?: number }) {
     </div>
   );
 }
+
+function MiniBar({ value, max = 100, color = "bg-blue-500" }: { value: number; max?: number; color?: string }) {
+  const pct = Math.min(100, Math.round((value / max) * 100));
+  return (
+    <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+      <div className={`h-full rounded-full transition-all duration-700 ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  );
+}
+
+function MatchBreakdownBadges({ summary }: { summary: MatchSummary }) {
+  return (
+    <div className="grid grid-cols-3 gap-2 text-center">
+      <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-lg p-2">
+        <div className="text-lg font-bold text-emerald-400">{summary.exactMatches}</div>
+        <div className="text-[10px] text-emerald-300/70">Exact</div>
+      </div>
+      <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-2">
+        <div className="text-lg font-bold text-blue-400">{summary.variantMatches}</div>
+        <div className="text-[10px] text-blue-300/70">Variant</div>
+      </div>
+      <div className="bg-purple-900/20 border border-purple-700/30 rounded-lg p-2">
+        <div className="text-lg font-bold text-purple-400">{summary.semanticMatches}</div>
+        <div className="text-[10px] text-purple-300/70">Semantic</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ───────────────────────────────────────────────────────────
 
 export default function ATSScoreClient() {
   const [phase, setPhase] = useState<Phase>("upload");
@@ -169,7 +243,7 @@ export default function ATSScoreClient() {
         <Loader2 className="w-10 h-10 text-blue-400 animate-spin mx-auto mb-4" />
         <h2 className="text-xl font-bold mb-2">Scanning Your Resume</h2>
         <p className="text-slate-400 text-sm">
-          Checking ATS compatibility, keywords, formatting, and content...
+          Running formatting checks, keyword matching, and content analysis...
         </p>
       </main>
     );
@@ -178,6 +252,7 @@ export default function ATSScoreClient() {
   if (phase === "results" && result) {
     const criticals = result.formatIssues.filter((i) => i.severity === "critical");
     const warnings = result.formatIssues.filter((i) => i.severity === "warning");
+    const summary = result.keywordAnalysis.summary;
 
     return (
       <main className="max-w-4xl mx-auto px-6 py-12">
@@ -195,7 +270,7 @@ export default function ATSScoreClient() {
             onClick={() => { setPhase("upload"); setResult(null); setFile(null); }}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
           >
-            Scan another resume →
+            Scan another resume
           </button>
         </div>
 
@@ -225,13 +300,15 @@ export default function ATSScoreClient() {
           </div>
         </div>
 
-        {/* Sub-scores */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* Sub-scores row */}
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-blue-400">
-              {result.keywordAnalysis.keywordDensityScore}
-            </div>
+            <div className="text-2xl font-bold text-blue-400">{result.keywordScore}</div>
             <div className="text-xs text-slate-400 mt-1">Keyword Match</div>
+          </div>
+          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-emerald-400">{result.formattingScore}</div>
+            <div className="text-xs text-slate-400 mt-1">Formatting</div>
           </div>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-purple-400">
@@ -240,29 +317,79 @@ export default function ATSScoreClient() {
             <div className="text-xs text-slate-400 mt-1">Quantification</div>
           </div>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">
+            <div className="text-2xl font-bold text-amber-400">
               {result.sectionAnalysis.filter((s) => s.present).length}/{result.sectionAnalysis.length}
             </div>
-            <div className="text-xs text-slate-400 mt-1">Sections Found</div>
+            <div className="text-xs text-slate-400 mt-1">Sections</div>
           </div>
         </div>
 
-        {/* Format Issues */}
-        {result.formatIssues.length > 0 && (
+        {/* Match Rate Breakdown */}
+        {summary && (
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
-              Format Issues ({criticals.length} critical, {warnings.length} warnings)
+              <Target className="w-5 h-5 text-blue-400" />
+              Match Rate Breakdown
             </h2>
-            <div className="space-y-3">
-              {result.formatIssues.map((issue, i) => (
-                <div key={i} className={`rounded-xl p-4 border ${SEVERITY_STYLE[issue.severity]}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-sm">{issue.issue}</span>
-                    <span className="text-xs font-medium capitalize">{issue.severity}</span>
+            <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+              <div className="grid grid-cols-2 gap-6 mb-5">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-300">Required Skills</span>
+                    <span className="text-sm font-bold text-white">{summary.requiredHit}/{summary.requiredTotal}</span>
                   </div>
-                  <p className="text-sm text-slate-300">{issue.fix}</p>
+                  <MiniBar
+                    value={summary.requiredHit}
+                    max={Math.max(summary.requiredTotal, 1)}
+                    color={summary.requiredHit / Math.max(summary.requiredTotal, 1) >= 0.7 ? "bg-emerald-500" : "bg-red-500"}
+                  />
                 </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-300">Preferred Skills</span>
+                    <span className="text-sm font-bold text-white">{summary.preferredHit}/{summary.preferredTotal}</span>
+                  </div>
+                  <MiniBar
+                    value={summary.preferredHit}
+                    max={Math.max(summary.preferredTotal, 1)}
+                    color={summary.preferredHit / Math.max(summary.preferredTotal, 1) >= 0.5 ? "bg-emerald-500" : "bg-amber-500"}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-slate-300">Overall Keywords</span>
+                <span className="text-sm font-bold text-white">{summary.matchedKeywords}/{summary.totalKeywords} matched</span>
+              </div>
+              <MiniBar
+                value={summary.matchedKeywords}
+                max={Math.max(summary.totalKeywords, 1)}
+                color="bg-blue-500"
+              />
+              <div className="mt-4">
+                <div className="text-xs text-slate-400 mb-2">Match types</div>
+                <MatchBreakdownBadges summary={summary} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Found Keywords */}
+        {result.keywordAnalysis.foundKeywords.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              Matched Keywords ({result.keywordAnalysis.foundKeywords.length})
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {result.keywordAnalysis.foundKeywords.map((kw, i) => (
+                <span
+                  key={i}
+                  className={`text-xs px-2.5 py-1.5 rounded-full border flex items-center gap-1.5 ${MATCH_TYPE_STYLE[kw.matchType]}`}
+                  title={`${MATCH_TYPE_LABEL[kw.matchType]} match · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
+                >
+                  {kw.keyword}
+                  <span className="text-[9px] opacity-60">{MATCH_TYPE_LABEL[kw.matchType]}</span>
+                </span>
               ))}
             </div>
           </section>
@@ -273,7 +400,7 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-400" />
-              Missing Keywords
+              Missing Keywords ({result.keywordAnalysis.missingKeywords.length})
             </h2>
             <div className="space-y-3">
               {result.keywordAnalysis.missingKeywords.map((kw, i) => (
@@ -287,38 +414,81 @@ export default function ATSScoreClient() {
                     }`}>
                       {kw.importance}
                     </span>
+                    {kw.suggestedSection && (
+                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <ArrowRight className="w-3 h-3" />
+                        {kw.suggestedSection}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-slate-400">{kw.suggestion}</p>
                 </div>
               ))}
             </div>
-            {result.keywordAnalysis.foundKeywords.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm text-slate-400 mb-2">Found keywords:</p>
-                <div className="flex flex-wrap gap-2">
-                  {result.keywordAnalysis.foundKeywords.map((kw, i) => (
-                    <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-emerald-900/30 border border-emerald-700/40 text-emerald-300">
-                      {kw}
-                    </span>
-                  ))}
+          </section>
+        )}
+
+        {/* Format Issues */}
+        {result.formatIssues.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
+              Format Issues ({criticals.length} critical, {warnings.length} warnings)
+            </h2>
+            <div className="space-y-3">
+              {result.formatIssues.map((issue, i) => (
+                <div key={i} className={`rounded-xl p-4 border ${SEVERITY_STYLE[issue.severity]}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold text-sm">{issue.issue}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-medium text-slate-400 capitalize">{issue.category.replace("_", " ")}</span>
+                      <span className="text-xs font-medium capitalize">{issue.severity}</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-300">{issue.fix}</p>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
           </section>
         )}
 
         {/* Section Analysis */}
         <section className="mb-8">
-          <h2 className="text-lg font-bold mb-4">Section Analysis</h2>
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <Search className="w-5 h-5 text-blue-400" />
+            Section Analysis
+          </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {result.sectionAnalysis.map((s, i) => (
               <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold text-sm">{s.section}</span>
                   <span className={`text-xs font-medium capitalize ${QUALITY_STYLE[s.quality]}`}>
                     {s.present ? s.quality : "missing"}
                   </span>
                 </div>
+                {s.present && (
+                  <div className="mb-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] text-slate-500">Keyword coverage</span>
+                      <span className="text-[10px] text-slate-400">{s.coverage}%</span>
+                    </div>
+                    <MiniBar
+                      value={s.coverage}
+                      color={s.coverage >= 75 ? "bg-emerald-500" : s.coverage >= 40 ? "bg-amber-500" : "bg-red-500"}
+                    />
+                  </div>
+                )}
+                {s.keywordsFound.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-1.5">
+                    {s.keywordsFound.slice(0, 5).map((kw, j) => (
+                      <span key={j} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
+                    ))}
+                    {s.keywordsFound.length > 5 && (
+                      <span className="text-[10px] text-slate-500">+{s.keywordsFound.length - 5} more</span>
+                    )}
+                  </div>
+                )}
                 <p className="text-xs text-slate-400">{s.suggestion}</p>
               </div>
             ))}
@@ -328,7 +498,10 @@ export default function ATSScoreClient() {
         {/* Content Improvements */}
         {result.contentSuggestions.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-lg font-bold mb-4">Content Improvements</h2>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-400" />
+              Content Improvements
+            </h2>
             <div className="space-y-4">
               {result.contentSuggestions.map((s, i) => (
                 <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
@@ -403,8 +576,8 @@ export default function ATSScoreClient() {
           Will Your Resume Pass?
         </h1>
         <p className="text-slate-400 leading-relaxed">
-          Upload your resume and get an instant ATS score with specific fixes
-          to beat applicant tracking systems.
+          Upload your resume and get an instant ATS score with formatting checks,
+          keyword matching, and specific fixes to beat applicant tracking systems.
         </p>
       </div>
 
@@ -466,7 +639,7 @@ export default function ATSScoreClient() {
         >
           <FileText className="w-4 h-4 text-blue-400" />
           Compare against a job description
-          <span className="text-xs text-slate-500 font-normal">(optional)</span>
+          <span className="text-xs text-slate-500 font-normal">(recommended)</span>
           {showJd ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
         {showJd && (
@@ -486,7 +659,7 @@ export default function ATSScoreClient() {
           disabled={!file}
           className="w-full px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-lg transition-colors shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Score My Resume →
+          Score My Resume
         </button>
 
         <p className="text-slate-500 text-xs text-center">
