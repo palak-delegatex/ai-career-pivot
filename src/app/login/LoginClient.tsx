@@ -36,14 +36,34 @@ function MailIcon() {
   );
 }
 
+function getAuthErrorMessage(errorParam: string | null, errorDescription: string | null, errorCode: string | null): string {
+  if (!errorParam) return "";
+
+  if (errorParam === "server_error" || errorParam === "exchange_failed") {
+    const desc = errorDescription ?? "";
+    if (desc.toLowerCase().includes("exchange") || errorCode === "unexpected_failure") {
+      return "Google sign-in is temporarily unavailable. Please try email sign-in, or try again later.";
+    }
+    return "Sign-in failed due to a server issue. Please try again or use email sign-in.";
+  }
+
+  if (errorParam === "access_denied") {
+    return "Access was denied. You may need to grant permissions to sign in with Google.";
+  }
+
+  return "Authentication failed. Please try again.";
+}
+
 function LoginForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
+  const errorDescription = searchParams.get("error_description");
+  const errorCode = searchParams.get("error_code");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState(
-    errorParam === "auth" ? "Authentication failed. Please try again." : ""
+    getAuthErrorMessage(errorParam, errorDescription, errorCode)
   );
 
   async function signInWithGoogle() {
