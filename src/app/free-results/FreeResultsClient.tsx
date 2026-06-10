@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Share2, Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target } from "lucide-react";
+import { Share2, Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
@@ -159,7 +159,7 @@ function buildShareUrl(snapshot: FreeSnapshot) {
   const params = new URLSearchParams();
   params.set("paths", JSON.stringify(paths));
   if (snapshot.topTransferableStrengths?.length) {
-    params.set("strengths", JSON.stringify(snapshot.topTransferableStrengths));
+    params.set("strengths", JSON.stringify(snapshot.topTransferableStrengths.map((s) => s.skill)));
   }
   return `/api/og/career-map?${params.toString()}`;
 }
@@ -171,13 +171,16 @@ export default function FreeResultsClient() {
   const [copied, setCopied] = useState(false);
   const [jobCount, setJobCount] = useState(0);
 
+  const topPath = snapshot?.paths[0];
+  const shareText = topPath
+    ? `I'm a ${topPath.matchScore}% match for ${topPath.targetRole}! See where your career could go:`
+    : "See where your career could go:";
+  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/free` : "https://aicareerpivot.com/free";
+
   const handleShare = useCallback(async () => {
     if (!snapshot) return;
-    const topPath = snapshot.paths[0];
-    const text = topPath
-      ? `I'm a ${topPath.matchScore}% match for ${topPath.targetRole}! See where your career could go:`
-      : "See where your career could go:";
-    const url = `${window.location.origin}/free`;
+    const text = shareText;
+    const url = shareUrl;
 
     if (navigator.share) {
       try {
@@ -188,7 +191,7 @@ export default function FreeResultsClient() {
     await navigator.clipboard.writeText(`${text} ${url}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [snapshot]);
+  }, [snapshot, shareText, shareUrl]);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("free_snapshot");
@@ -247,8 +250,8 @@ export default function FreeResultsClient() {
         )}
       </div>
 
-      {/* Share button */}
-      <div className="flex justify-center mb-6">
+      {/* Share buttons */}
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
         <button
           onClick={handleShare}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
@@ -256,30 +259,58 @@ export default function FreeResultsClient() {
           {copied ? (
             <>
               <Check className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400">Link copied!</span>
+              <span className="text-emerald-400">Copied!</span>
             </>
           ) : (
             <>
-              <Share2 className="w-4 h-4" />
-              Share my results
+              <LinkIcon className="w-4 h-4" />
+              Copy Link
             </>
           )}
         </button>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on X
+        </a>
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Share on LinkedIn
+        </a>
       </div>
 
       {/* OG image preview (hidden, for social sharing meta) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={buildShareUrl(snapshot)} alt="" className="hidden" />
 
-      {/* Transferable strengths */}
+      {/* Transferable strengths with confidence bars */}
       {snapshot.topTransferableStrengths?.length > 0 && (
-        <div className="rounded-2xl bg-teal-950/30 border border-teal-800/30 p-4 mb-6">
-          <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-2">Your Strongest Assets</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="rounded-2xl bg-teal-950/30 border border-teal-800/30 p-5 mb-6">
+          <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-4">Hidden Strengths You Didn&apos;t Know You Had</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {snapshot.topTransferableStrengths.map((s) => (
-              <span key={s} className="px-3 py-1 rounded-full bg-teal-900/40 border border-teal-700/40 text-teal-300 text-xs font-medium">
-                {s}
-              </span>
+              <div key={s.skill} className="rounded-xl bg-slate-800/50 border border-slate-700/40 p-4">
+                <p className="text-sm font-semibold text-white mb-1">{s.skill}</p>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-1 h-2 rounded-full bg-slate-700 overflow-hidden">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-1000 ease-out"
+                      style={{ width: `${s.confidence}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-teal-400 w-8 text-right">{s.confidence}</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">{s.aiBoostExplanation}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -367,11 +398,23 @@ export default function FreeResultsClient() {
 
       {/* Upsell CTA */}
       <div className="rounded-2xl bg-gradient-to-br from-teal-900/40 to-slate-800/60 border border-teal-700/40 p-6 text-center">
-        <h3 className="text-xl font-bold mb-2">Unlock Your Full Roadmap</h3>
-        <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-          Get the complete plan: 6 / 12 / 24-month milestones, salary trajectory,
-          financial bridge, AI toolkit, and unlimited coaching — all for $19.
+        <h3 className="text-xl font-bold mb-2">Your Full Roadmap Is Ready</h3>
+        <p className="text-slate-400 text-sm mb-3 leading-relaxed">
+          We&apos;ve already built your personalized plan. Here&apos;s what&apos;s inside:
         </p>
+        <ul className="text-left max-w-sm mx-auto space-y-2 mb-4">
+          {[
+            "6 / 12 / 24-month milestone timeline",
+            "AI certifications roadmap for your target role",
+            "Financial modeling — salary trajectory & bridge budget",
+            "Week-by-week action plan with AI coaching",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
+              <Check className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/pricing"
@@ -386,7 +429,7 @@ export default function FreeResultsClient() {
             Try a different resume
           </Link>
         </div>
-        <p className="text-slate-500 text-xs mt-3">One-time payment. Instant delivery.</p>
+        <p className="text-slate-500 text-xs mt-3">One-time payment. 30-day money-back guarantee.</p>
         <ValuePropCallout />
       </div>
 

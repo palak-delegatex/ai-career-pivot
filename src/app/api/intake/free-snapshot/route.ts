@@ -18,7 +18,11 @@ const FreeSnapshotSchema = z.object({
     })).max(3),
   })).max(3),
   profileSummary: z.string(),
-  topTransferableStrengths: z.array(z.string()).max(3),
+  topTransferableStrengths: z.array(z.object({
+    skill: z.string(),
+    confidence: z.number().min(0).max(100),
+    aiBoostExplanation: z.string(),
+  })).max(3),
   estimatedSalaryUplift: z.number().optional(),
 });
 
@@ -70,7 +74,10 @@ For each path:
 
 Also provide:
 - profileSummary: 1 confident sentence highlighting their strongest positioning angle (e.g. "A data-savvy marketer with 8 years of cross-functional leadership — perfectly positioned for product management roles in AI-first companies")
-- topTransferableStrengths: 3 specific strengths from their background that directly apply to career pivots (not generic — reference their actual skills)
+- topTransferableStrengths: 3 "hidden strengths" — surprising transferable skills that career changers typically overlook. For each, provide:
+  - skill: the specific strength (reference their actual background, not generic terms)
+  - confidence: 0-100 score for how strongly this skill transfers to their target roles
+  - aiBoostExplanation: 1 sentence on how AI tools amplify this existing strength in the new role (e.g. "Your data storytelling pairs with AI visualization tools to produce executive dashboards 3× faster")
 - estimatedSalaryUplift: estimated annual salary increase in thousands (e.g. 15 means $15K) for the top path based on market data. Use a conservative but motivating number (10-30 typical range).
 
 USER PROFILE:
@@ -95,7 +102,7 @@ Generate paths ranked by matchScore descending. Make them feel personalized and 
         matchScore: p.matchScore,
         rationale: p.rationale,
       })),
-      topStrengths: output.topTransferableStrengths,
+      topStrengths: output.topTransferableStrengths.map((s) => s.skill),
     }).catch(() => {});
   }
 
