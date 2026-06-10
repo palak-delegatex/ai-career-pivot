@@ -67,18 +67,20 @@ function MilestoneDot({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
-          className="absolute top-1/2 -translate-y-1/2 z-10"
+        <button
+          type="button"
+          className="absolute top-1/2 z-10 w-[32px] h-[32px] sm:w-[44px] sm:h-[44px] flex items-center justify-center bg-transparent border-0 p-0 cursor-default"
           style={{ left: `${position}%`, transform: `translate(-50%, -50%)` }}
+          title={label}
         >
           {state === "completed" && (
             <div
-              className="w-3.5 h-3.5 rounded-full border-2 border-slate-800"
+              className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border-2 border-slate-800"
               style={{ backgroundColor: fill, filter: glow }}
             />
           )}
           {state === "current" && (
-            <div className="relative w-3.5 h-3.5">
+            <div className="relative w-2.5 h-2.5 sm:w-3.5 sm:h-3.5">
               <div
                 className="absolute inset-0 rounded-full animate-ping opacity-40"
                 style={{ backgroundColor: fill }}
@@ -90,9 +92,9 @@ function MilestoneDot({
             </div>
           )}
           {state === "future" && (
-            <div className="w-3 h-3 rounded-full border-2 border-slate-500 bg-slate-800" />
+            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full border-2 border-slate-500 bg-slate-800" />
           )}
-        </div>
+        </button>
       </TooltipTrigger>
       <TooltipContent>
         <p className="text-xs">{label}</p>

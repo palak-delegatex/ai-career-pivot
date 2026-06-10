@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react";
 import { Trophy, Flame, Calendar } from "lucide-react";
 
-const RING_SIZE = 140;
-const STROKE_WIDTH = 12;
-const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const RING_SIZE_SM = 100;
+const RING_SIZE_MD = 140;
+const STROKE_WIDTH_SM = 10;
+const STROKE_WIDTH_MD = 12;
+const RADIUS_SM = (RING_SIZE_SM - STROKE_WIDTH_SM) / 2;
+const RADIUS_MD = (RING_SIZE_MD - STROKE_WIDTH_MD) / 2;
+const CIRCUMFERENCE_SM = 2 * Math.PI * RADIUS_SM;
+const CIRCUMFERENCE_MD = 2 * Math.PI * RADIUS_MD;
 
 type ScheduleStatus = "on-track" | "behind-schedule" | "at-risk";
 
@@ -42,71 +46,111 @@ const statusConfig: Record<
   },
 };
 
+function RingSvg({
+  size,
+  radius,
+  strokeWidth,
+  circumference,
+  offset,
+  gradientId,
+}: {
+  size: number;
+  radius: number;
+  strokeWidth: number;
+  circumference: number;
+  offset: number;
+  gradientId: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      className="-rotate-90"
+    >
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        className="text-slate-700"
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke={`url(#${gradientId})`}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        style={{ transition: "stroke-dashoffset 1.2s ease-out" }}
+      />
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#10b981" />
+          <stop offset="50%" stopColor="#14b8a6" />
+          <stop offset="100%" stopColor="#06b6d4" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
 function ProgressRing({ percent }: { percent: number }) {
-  const [offset, setOffset] = useState(CIRCUMFERENCE);
+  const [offsetSm, setOffsetSm] = useState(CIRCUMFERENCE_SM);
+  const [offsetMd, setOffsetMd] = useState(CIRCUMFERENCE_MD);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setOffset(CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE);
+      setOffsetSm(CIRCUMFERENCE_SM - (percent / 100) * CIRCUMFERENCE_SM);
+      setOffsetMd(CIRCUMFERENCE_MD - (percent / 100) * CIRCUMFERENCE_MD);
     }, 100);
     return () => clearTimeout(timer);
   }, [percent]);
 
   return (
-    <div
-      className="relative shrink-0"
-      style={{ width: RING_SIZE, height: RING_SIZE }}
-    >
-      <svg
-        width={RING_SIZE}
-        height={RING_SIZE}
-        viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
-        className="-rotate-90"
+    <>
+      {/* Small ring: below md */}
+      <div
+        className="relative shrink-0 md:hidden"
+        style={{ width: RING_SIZE_SM, height: RING_SIZE_SM }}
       >
-        <circle
-          cx={RING_SIZE / 2}
-          cy={RING_SIZE / 2}
-          r={RADIUS}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={STROKE_WIDTH}
-          className="text-slate-700"
+        <RingSvg
+          size={RING_SIZE_SM}
+          radius={RADIUS_SM}
+          strokeWidth={STROKE_WIDTH_SM}
+          circumference={CIRCUMFERENCE_SM}
+          offset={offsetSm}
+          gradientId="dashboardGradientSm"
         />
-        <circle
-          cx={RING_SIZE / 2}
-          cy={RING_SIZE / 2}
-          r={RADIUS}
-          fill="none"
-          stroke="url(#dashboardGradient)"
-          strokeWidth={STROKE_WIDTH}
-          strokeLinecap="round"
-          strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 1.2s ease-out" }}
-        />
-        <defs>
-          <linearGradient
-            id="dashboardGradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
-            <stop offset="0%" stopColor="#10b981" />
-            <stop offset="50%" stopColor="#14b8a6" />
-            <stop offset="100%" stopColor="#06b6d4" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-extrabold text-white">
-          {percent}%
-        </span>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wider">
-          Complete
-        </span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-2xl font-extrabold text-white">{percent}%</span>
+          <span className="text-[9px] text-slate-400 uppercase tracking-wider">Complete</span>
+        </div>
       </div>
-    </div>
+      {/* Large ring: md+ */}
+      <div
+        className="relative shrink-0 hidden md:block"
+        style={{ width: RING_SIZE_MD, height: RING_SIZE_MD }}
+      >
+        <RingSvg
+          size={RING_SIZE_MD}
+          radius={RADIUS_MD}
+          strokeWidth={STROKE_WIDTH_MD}
+          circumference={CIRCUMFERENCE_MD}
+          offset={offsetMd}
+          gradientId="dashboardGradientMd"
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-3xl font-extrabold text-white">{percent}%</span>
+          <span className="text-[10px] text-slate-400 uppercase tracking-wider">Complete</span>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -124,7 +168,7 @@ export default function DashboardHero({
   const cfg = statusConfig[status];
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 border border-teal-700/30 rounded-2xl p-6 md:p-8 overflow-hidden">
+    <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 border border-teal-700/30 rounded-2xl p-4 sm:p-6 md:p-8 overflow-hidden">
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none"
         style={{ boxShadow: "inset 0 0 60px rgba(20, 184, 166, 0.06)" }}
@@ -180,28 +224,28 @@ export default function DashboardHero({
               </div>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 sm:gap-x-6 gap-y-2">
               <div className="flex flex-col items-center md:items-start">
-                <span className="text-2xl font-bold text-white">
+                <span className="text-xl sm:text-2xl font-bold text-white">
                   {totalMilestones}
                 </span>
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider">
                   Total
                 </span>
               </div>
               <div className="flex flex-col items-center md:items-start">
-                <span className="text-2xl font-bold text-emerald-400">
+                <span className="text-xl sm:text-2xl font-bold text-emerald-400">
                   {completedMilestones}
                 </span>
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider">
                   Done
                 </span>
               </div>
               <div className="flex flex-col items-center md:items-start">
-                <span className="text-2xl font-bold text-slate-300">
+                <span className="text-xl sm:text-2xl font-bold text-slate-300">
                   {remainingMilestones}
                 </span>
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider">
                   Remaining
                 </span>
               </div>
