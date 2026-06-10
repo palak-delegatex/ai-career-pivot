@@ -111,7 +111,7 @@ function JobCard({
       onDragStart={(e) => onDragStart(e, job.id)}
       className={`group relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-teal-500/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 ${isRejected ? "opacity-60" : ""}`}
     >
-      <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-40 transition-opacity">
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-40 md:opacity-0 md:group-hover:opacity-40 transition-opacity min-w-[44px] min-h-[44px] flex items-center justify-center">
         <GripVertical className="h-3.5 w-3.5 text-slate-500" />
       </div>
 
@@ -123,7 +123,7 @@ function JobCard({
 
       <button
         onClick={() => onDelete(job.id)}
-        className="absolute top-2.5 right-2.5 text-slate-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all z-10"
+        className="absolute top-2.5 right-2.5 text-slate-700 hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
       >
         <Trash2 className="h-3 w-3" />
       </button>
@@ -259,7 +259,7 @@ function MobileAccordion({
   }, [jobs]);
 
   return (
-    <div className="flex flex-col gap-2 sm:hidden">
+    <div className="flex flex-col gap-2 md:hidden">
       {STAGES.map((s) => {
         const stageJobs = grouped.get(s.key) ?? [];
         const isOpen = open === s.key;
@@ -675,7 +675,7 @@ function QuickAddModal({
           </div>
 
           {/* Manual fields */}
-          <div className="grid grid-cols-2 gap-3 mb-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
             <div>
               <label className="block text-[12px] font-medium text-slate-400 mb-1.5">
                 Role
@@ -905,7 +905,7 @@ export default function JobTrackerKanban({
       {view === "board" && (
         <>
           {/* Desktop Kanban */}
-          <div className="hidden sm:grid grid-cols-6 gap-3 overflow-x-auto pb-2 scroll-snap-x-mandatory -webkit-overflow-scrolling-touch kanban-grid">
+          <div className="hidden md:grid grid-cols-6 gap-3 overflow-x-auto pb-2 scroll-snap-x-mandatory -webkit-overflow-scrolling-touch kanban-grid">
             {STAGES.map((s) => (
               <KanbanColumn
                 key={s.key}
