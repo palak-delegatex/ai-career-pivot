@@ -18,6 +18,7 @@ import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import DocumentsCard from "@/components/DocumentsCard";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
+import NetworkingCRM from "@/components/NetworkingCRM";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Report {
@@ -617,6 +618,7 @@ export default function DashboardClient() {
           <TabsList className="w-full justify-start mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
+            <TabsTrigger value="network">Network</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -717,6 +719,10 @@ export default function DashboardClient() {
 
           <TabsContent value="gap-analysis">
             <GapAnalysisTab profile={activeReport!.profile} plan={activePlan} />
+          </TabsContent>
+
+          <TabsContent value="network">
+            <NetworkingCRM userEmail={activeReport!.email} />
           </TabsContent>
         </Tabs>
       )}
