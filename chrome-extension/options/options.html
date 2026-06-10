@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AICareerPivot — Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container { width: 100%; max-width: 480px; }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .section {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 16px;
+    }
+
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    input:focus, textarea:focus { border-color: #2dd4bf; }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .hint {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .btn-save {
+      padding: 10px 24px;
+      background: #2dd4bf;
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-save:hover { background: #5eead4; }
+
+    .btn-secondary {
+      padding: 10px 24px;
+      background: #334155;
+      color: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover { background: #475569; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #064e3b;
+      color: #6ee7b7;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .toast.show { opacity: 1; }
+
+    /* Onboarding stepper */
+    .onboarding-step {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .onboarding-step.active { display: block; }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2dd4bf;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .skill-input-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      min-height: 80px;
+      cursor: text;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: #064e3b;
+      color: #6ee7b7;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .skill-tag button {
+      background: none;
+      border: none;
+      color: #6ee7b7;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+    }
+
+    .skill-input {
+      border: none !important;
+      background: transparent !important;
+      padding: 4px !important;
+      min-width: 120px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AICareerPivot Extension</h1>
+    <p class="subtitle">Configure your profile for job matching and autofill</p>
+
+    <!-- Account -->
+    <div class="section">
+      <div class="section-title">Account</div>
+      <div class="field">
+        <label for="email">Email (must match your AICareerPivot account)</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="apiUrl">API URL</label>
+        <input type="url" id="apiUrl" placeholder="https://ai-career-pivot.vercel.app">
+        <div class="hint">Change only if using a custom deployment</div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="section">
+      <div class="section-title">Skills & Keywords</div>
+      <div class="field">
+        <label>Your skills (for ATS matching)</label>
+        <div class="skill-input-area" id="skillArea">
+          <input class="skill-input" id="skillInput" placeholder="Type a skill and press Enter...">
+        </div>
+        <div class="hint">Add 15-30 skills from your resume for best matching</div>
+      </div>
+    </div>
+
+    <!-- Autofill Profile -->
+    <div class="section">
+      <div class="section-title">Autofill Profile</div>
+      <div class="field">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName">
+      </div>
+      <div class="field">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName">
+      </div>
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone">
+      </div>
+      <div class="field">
+        <label for="linkedin">LinkedIn URL</label>
+        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/...">
+      </div>
+      <div class="field">
+        <label for="currentTitle">Current Title</label>
+        <input type="text" id="currentTitle">
+      </div>
+      <div class="field">
+        <label for="currentCompany">Current Company</label>
+        <input type="text" id="currentCompany">
+      </div>
+      <div class="field">
+        <label for="website">Website / Portfolio</label>
+        <input type="url" id="website">
+      </div>
+      <div class="field">
+        <label for="github">GitHub</label>
+        <input type="url" id="github" placeholder="https://github.com/...">
+      </div>
+      <div class="field">
+        <label for="city">City</label>
+        <input type="text" id="city">
+      </div>
+      <div class="field">
+        <label for="state">State / Province</label>
+        <input type="text" id="state">
+      </div>
+      <div class="field">
+        <label for="zip">ZIP / Postal Code</label>
+        <input type="text" id="zip">
+      </div>
+      <div class="field">
+        <label for="address">Street Address</label>
+        <input type="text" id="address">
+      </div>
+      <div class="field">
+        <label for="yearsExperience">Years of Experience</label>
+        <input type="number" id="yearsExperience" min="0" max="50">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-save" id="saveBtn">Save Settings</button>
+      <button class="btn-secondary" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Settings saved!</div>
+
+  <script>
+    const PROFILE_FIELDS = [
+      "firstName", "lastName", "phone", "linkedin", "currentTitle",
+      "currentCompany", "website", "github", "city", "state", "zip",
+      "address", "yearsExperience",
+    ];
+
+    let skills = [];
+
+    function renderSkills() {
+      const area = document.getElementById("skillArea");
+      area.querySelectorAll(".skill-tag").forEach((t) => t.remove());
+      const input = document.getElementById("skillInput");
+      for (const skill of skills) {
+        const tag = document.createElement("span");
+        tag.className = "skill-tag";
+        tag.innerHTML = `${escapeHtml(skill)} <button data-skill="${escapeHtml(skill)}">×</button>`;
+        area.insertBefore(tag, input);
+      }
+    }
+
+    document.getElementById("skillArea").addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON" && e.target.dataset.skill) {
+        skills = skills.filter((s) => s !== e.target.dataset.skill);
+        renderSkills();
+      } else {
+        document.getElementById("skillInput").focus();
+      }
+    });
+
+    document.getElementById("skillInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        const val = e.target.value.trim().replace(/,$/, "");
+        if (val && !skills.includes(val)) {
+          skills.push(val);
+          renderSkills();
+        }
+        e.target.value = "";
+      }
+      if (e.key === "Backspace" && !e.target.value && skills.length) {
+        skills.pop();
+        renderSkills();
+      }
+    });
+
+    async function loadSettings() {
+      const data = await chrome.storage.sync.get(["apiUrl", "userEmail", "userProfile"]);
+      document.getElementById("email").value = data.userEmail || "";
+      document.getElementById("apiUrl").value = data.apiUrl || "";
+
+      if (data.userProfile) {
+        skills = data.userProfile.skills || [];
+        renderSkills();
+        for (const field of PROFILE_FIELDS) {
+          const el = document.getElementById(field);
+          if (el && data.userProfile[field]) el.value = data.userProfile[field];
+        }
+      }
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const profile = { skills };
+      for (const field of PROFILE_FIELDS) {
+        const el = document.getElementById(field);
+        if (el) profile[field] = el.value.trim();
+      }
+
+      await chrome.storage.sync.set({
+        userEmail: document.getElementById("email").value.trim(),
+        apiUrl: document.getElementById("apiUrl").value.trim() || undefined,
+        userProfile: profile,
+      });
+
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+      if (confirm("Reset all extension data?")) {
+        await chrome.storage.sync.clear();
+        await chrome.storage.local.clear();
+        skills = [];
+        loadSettings();
+      }
+    });
+
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    loadSettings();
+  </script>
+</body>
+</html>
