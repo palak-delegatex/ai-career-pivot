@@ -3,6 +3,12 @@ import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/strip
 import { getSupabaseClient } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn(
+    "[checkout] SUPABASE_SERVICE_ROLE_KEY is not set — Supabase client will use anon key, which cannot write to orders (RLS)"
+  );
+}
+
 export async function POST(req: NextRequest) {
   const { email, discountCode, plan: planKey = "report" } = await req.json();
 
@@ -21,17 +27,20 @@ export async function POST(req: NextRequest) {
     if (isBypassEmail(email)) {
       const bypassSessionId = `bypass_${randomUUID()}`;
       const supabase = getSupabaseClient();
-      const bypassRow: Record<string, unknown> = {
+      const { error: insertError } = await supabase.from("orders").insert({
         email,
         stripe_session_id: bypassSessionId,
         amount_cents: 0,
         status: "paid",
         discount_code: "TEAM_BYPASS",
-      };
-      const { error: insertError } = await supabase.from("orders").insert(bypassRow);
+        plan_type: planKey,
+      });
       if (insertError) {
         console.error("Bypass order insert failed:", insertError);
-        return NextResponse.json({ error: "Failed to create bypass order" }, { status: 500 });
+        return NextResponse.json(
+          { error: "Failed to create bypass order — check SUPABASE_SERVICE_ROLE_KEY is set" },
+          { status: 500 }
+        );
       }
       return NextResponse.json({
         url: `${origin}/checkout/success?session_id=${bypassSessionId}`,
@@ -79,13 +88,17 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create(sessionParams);
 
     const supabase = getSupabaseClient();
-    await supabase.from("orders").insert({
+    const { error: orderError } = await supabase.from("orders").insert({
       email,
       stripe_session_id: session.id,
       amount_cents: plan.amount,
       status: "pending",
       discount_code: discountCode ?? null,
+      plan_type: planKey,
     });
+    if (orderError) {
+      console.error("Order insert failed (Stripe session created):", orderError);
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
