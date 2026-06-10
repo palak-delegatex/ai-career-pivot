@@ -19,6 +19,7 @@ import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration"
 import DocumentsCard from "@/components/DocumentsCard";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
+import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Report {
@@ -617,6 +618,7 @@ export default function DashboardClient() {
         <Tabs defaultValue="overview">
           <TabsList className="w-full justify-start mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="resumes">Resumes</TabsTrigger>
             <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
             <TabsTrigger value="network">Network</TabsTrigger>
           </TabsList>
@@ -715,6 +717,14 @@ export default function DashboardClient() {
                 </Link>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="resumes">
+            <ResumeVersionsTab
+              email={activeReport!.email}
+              profile={activeReport!.profile}
+              plan={activePlan}
+            />
           </TabsContent>
 
           <TabsContent value="gap-analysis">
