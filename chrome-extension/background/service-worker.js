@@ -203,7 +203,11 @@ async function getConfig() {
 
 // --- API ---
 
-async function apiRequest(path, options = {}) {
+function isTransientError(status) {
+  return status >= 500 || status === 408 || status === 429;
+}
+
+async function apiRequest(path, options = {}, retries = 3) {
   const { apiUrl } = await chrome.storage.sync.get("apiUrl");
   const session = await getSession();
   const url = `${apiUrl || DEFAULT_API_URL}${path}`;
@@ -213,12 +217,30 @@ async function apiRequest(path, options = {}) {
     headers["Authorization"] = `Bearer ${session.access_token}`;
   }
 
-  const res = await fetch(url, { headers, ...options });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `API ${res.status}`);
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, { headers, ...options });
+      if (res.ok) return res.json();
+
+      if (attempt < retries && isTransientError(res.status)) {
+        await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+        continue;
+      }
+
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `API ${res.status}`);
+    } catch (err) {
+      lastError = err;
+      if (err.message?.startsWith("API ")) throw err;
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+        continue;
+      }
+    }
   }
-  return res.json();
+
+  throw lastError || new Error("Request failed after retries");
 }
 
 // --- Jobs ---

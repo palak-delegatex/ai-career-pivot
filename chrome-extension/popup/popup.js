@@ -156,6 +156,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   let jobOnPage = null;
+  let isJobBoard = false;
+  let extractionFailed = false;
 
   if (tab?.id) {
     try {
@@ -164,12 +166,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         func: () => {
           if (window.__acpDetector) {
             const board = window.__acpDetector.detectBoard();
-            if (board) return window.__acpDetector.extractJobData(board);
+            if (board) {
+              const data = window.__acpDetector.extractJobData(board);
+              return { board: true, data };
+            }
           }
-          return null;
+          return { board: false, data: null };
         },
       });
-      jobOnPage = result?.result || null;
+      const extracted = result?.result || { board: false, data: null };
+      isJobBoard = extracted.board;
+      jobOnPage = extracted.data;
+      extractionFailed = isJobBoard && !jobOnPage;
     } catch {
       // Content script not injected on this page
     }
@@ -177,17 +185,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (jobOnPage) {
     await showJobView(jobOnPage, config);
+  } else if (extractionFailed) {
+    showErrorView(tab, config);
   } else {
     await showDefaultView(config);
   }
 
   // Sync status
-  try {
-    await msg("GET_JOBS");
-    setSyncStatus("green", "Synced");
-  } catch {
-    setSyncStatus("amber", "Offline — cached data");
-  }
+  await syncCheck();
 
   // --- Views ---
 
@@ -352,9 +357,99 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  function setSyncStatus(color, text) {
+  function setSyncStatus(color, text, showRetry = false) {
     $("#syncDot").className = `sync-dot ${color}`;
     $("#syncText").textContent = text;
+    $("#syncRetryBtn").hidden = !showRetry;
+  }
+
+  async function syncCheck() {
+    if (!navigator.onLine) {
+      setSyncStatus("red", "Offline", true);
+      return;
+    }
+    try {
+      await msg("GET_JOBS");
+      setSyncStatus("green", "Synced");
+    } catch {
+      setSyncStatus("amber", "Sync error", true);
+    }
+  }
+
+  $("#syncRetryBtn").addEventListener("click", async () => {
+    setSyncStatus("amber", "Retrying...");
+    await syncCheck();
+  });
+
+  window.addEventListener("online", () => syncCheck());
+  window.addEventListener("offline", () => setSyncStatus("red", "Offline", true));
+
+  // --- Error view ---
+
+  function showErrorView(tab, config) {
+    show("#errorView");
+
+    if (tab?.url) {
+      $("#errorPasteInput").value = tab.url;
+    }
+
+    $("#errorPasteGo").addEventListener("click", () => {
+      const url = $("#errorPasteInput").value.trim();
+      if (url) chrome.tabs.create({ url });
+    });
+
+    $("#errorRetryBtn").addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    $("#errorManualSave").addEventListener("click", () => {
+      showManualSaveView(tab, config);
+    });
+  }
+
+  function showManualSaveView(tab, config) {
+    show("#manualSaveView");
+    if (tab?.url) $("#manualUrl").value = tab.url;
+
+    $("#manualCancelBtn").addEventListener("click", () => {
+      showErrorView(tab, config);
+    });
+
+    $("#manualSaveBtn").addEventListener("click", async () => {
+      const role = $("#manualRole").value.trim();
+      const company = $("#manualCompany").value.trim();
+      const url = $("#manualUrl").value.trim();
+
+      if (!role || !company) {
+        $("#manualSaveError").textContent = "Title and company are required.";
+        $("#manualSaveError").hidden = false;
+        return;
+      }
+
+      const btn = $("#manualSaveBtn");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+      $("#manualSaveError").hidden = true;
+
+      const result = await msg("SAVE_JOB", {
+        role,
+        company,
+        url: url || tab?.url || "",
+        source: "manual",
+        stage: "saved",
+        match_score: 0,
+      });
+
+      if (result.ok) {
+        btn.textContent = "Saved!";
+        setTimeout(() => showDefaultView(config), 800);
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Save";
+        $("#manualSaveError").textContent = result.error || "Save failed. Please try again.";
+        $("#manualSaveError").hidden = false;
+      }
+    });
   }
 
   // Settings

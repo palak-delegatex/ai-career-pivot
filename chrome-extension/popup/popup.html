@@ -161,6 +161,42 @@
       </div>
     </div>
 
+    <!-- Extraction error state -->
+    <div id="errorView" class="view" hidden>
+      <div class="error-state">
+        <svg class="error-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p class="error-title">Couldn't extract job details</p>
+        <p class="error-desc">We detected a job page but couldn't read the listing. The site layout may have changed.</p>
+        <div class="error-actions">
+          <div class="paste-url-row">
+            <input id="errorPasteInput" class="paste-url-input" type="url" placeholder="Paste job URL...">
+            <button id="errorPasteGo" class="paste-url-go">Go</button>
+          </div>
+          <button id="errorManualSave" class="btn-secondary">Save Manually</button>
+          <button id="errorRetryBtn" class="btn-link">Retry Detection</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual save modal (for error state) -->
+    <div id="manualSaveView" class="view" hidden>
+      <div class="manual-save-form">
+        <p class="section-title">Save Job Manually</p>
+        <input id="manualRole" class="form-input" type="text" placeholder="Job title">
+        <input id="manualCompany" class="form-input" type="text" placeholder="Company">
+        <input id="manualUrl" class="form-input" type="url" placeholder="Job URL">
+        <div class="manual-save-actions">
+          <button id="manualSaveBtn" class="btn-primary">Save</button>
+          <button id="manualCancelBtn" class="btn-link">Cancel</button>
+        </div>
+        <p id="manualSaveError" class="signin-error" hidden></p>
+      </div>
+    </div>
+
     <!-- Loading state -->
     <div id="loadingView" class="view" hidden>
       <div class="skeleton-card">
@@ -175,6 +211,7 @@
     <footer id="footer">
       <span class="sync-dot" id="syncDot"></span>
       <span id="syncText">Checking...</span>
+      <button id="syncRetryBtn" class="sync-retry-btn" hidden>Retry</button>
     </footer>
   </div>
 
