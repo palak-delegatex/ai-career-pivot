@@ -754,6 +754,82 @@
   border-color: #10b981;
 }
 
+/* In-page keyword highlights */
+mark.acp-hl-matched {
+  all: initial;
+  background: transparent;
+  border-bottom: 2px solid #2dd4bf;
+  color: inherit;
+  font: inherit;
+  padding-bottom: 1px;
+  cursor: default;
+}
+
+mark.acp-hl-missing {
+  all: initial;
+  background: transparent;
+  border-bottom: 2px dotted #ef4444;
+  color: inherit;
+  font: inherit;
+  padding-bottom: 1px;
+  cursor: default;
+}
+
+mark.acp-hl-matched:hover,
+mark.acp-hl-missing:hover {
+  background: rgba(45, 212, 191, 0.08);
+}
+
+mark.acp-hl-missing:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.acp-hl-toggle {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 8px;
+  background: #1e293b;
+  border: none;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.acp-hl-toggle:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.acp-hl-toggle.acp-hl-active {
+  color: #2dd4bf;
+  background: #0f3d3a;
+}
+
+.acp-hl-toggle-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.acp-hl-toggle-label {
+  flex: 1;
+  text-align: left;
+}
+
+.acp-hl-toggle-count {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
@@ -769,7 +845,8 @@
   .acp-ai-gen-btn,
   .acp-review-btn,
   .acp-resume-upload-btn,
-  .acp-resume-picker-item {
+  .acp-resume-picker-item,
+  .acp-hl-toggle {
     transition: none;
   }
 }

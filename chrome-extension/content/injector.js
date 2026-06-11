@@ -4,6 +4,7 @@
   let currentJobData = null;
   let savedJob = null;
   let scoreData = null;
+  let highlightActive = false;
 
   function msg(type, payload) {
     return new Promise((resolve) => {
@@ -182,7 +183,11 @@
     scoreData = result.data;
     activeResumeId = resumeId;
     await msg("SET_ACTIVE_RESUME", { resumeId });
+    clearHighlightsFromPage();
     injectScorePanel();
+    if (highlightActive) {
+      highlightKeywordsInPage();
+    }
   }
 
   function createResumeBar() {
@@ -231,6 +236,139 @@
     ]);
   }
 
+  function buildHighlightTerms() {
+    if (!scoreData) return { matched: [], missing: [] };
+
+    const matchedTerms = scoreData.matched.map(m => {
+      const variants = [m.skill];
+      return { terms: variants, matchType: m.matchType };
+    });
+
+    const missingTerms = (scoreData.gaps || [])
+      .filter(g => g.importance === "critical" || g.importance === "important")
+      .map(g => g.keyword);
+
+    return { matched: matchedTerms, missing: missingTerms };
+  }
+
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function highlightKeywordsInPage() {
+    const board = window.__acpDetector?.detectBoard();
+    if (!board) return;
+
+    const descEl = (() => {
+      for (const sel of board.selectors.description) {
+        const found = document.querySelector(sel);
+        if (found) return found;
+      }
+      return null;
+    })();
+    if (!descEl) return;
+
+    clearHighlightsFromPage();
+
+    const { matched, missing } = buildHighlightTerms();
+
+    const patterns = [];
+    for (const m of matched) {
+      for (const term of m.terms) {
+        patterns.push({ regex: new RegExp("\\b" + escapeRegex(term) + "\\b", "gi"), cls: "acp-hl-matched" });
+      }
+    }
+    for (const term of missing) {
+      patterns.push({ regex: new RegExp("\\b" + escapeRegex(term) + "\\b", "gi"), cls: "acp-hl-missing" });
+    }
+    if (patterns.length === 0) return;
+
+    const walker = document.createTreeWalker(descEl, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    let node;
+    while ((node = walker.nextNode())) textNodes.push(node);
+
+    for (const textNode of textNodes) {
+      if (textNode.parentElement?.closest("mark.acp-hl-matched, mark.acp-hl-missing")) continue;
+
+      const text = textNode.textContent;
+      let lastIdx = 0;
+
+      const allMatches = [];
+      for (const p of patterns) {
+        p.regex.lastIndex = 0;
+        let m;
+        while ((m = p.regex.exec(text)) !== null) {
+          allMatches.push({ start: m.index, end: m.index + m[0].length, text: m[0], cls: p.cls });
+        }
+      }
+
+      allMatches.sort((a, b) => a.start - b.start || b.end - a.end);
+
+      const merged = [];
+      for (const am of allMatches) {
+        if (merged.length && am.start < merged[merged.length - 1].end) continue;
+        merged.push(am);
+      }
+
+      if (merged.length === 0) continue;
+
+      const frag = document.createDocumentFragment();
+      for (const am of merged) {
+        if (am.start > lastIdx) {
+          frag.appendChild(document.createTextNode(text.slice(lastIdx, am.start)));
+        }
+        const mark = document.createElement("mark");
+        mark.className = am.cls;
+        mark.textContent = am.text;
+        frag.appendChild(mark);
+        lastIdx = am.end;
+      }
+      if (lastIdx < text.length) {
+        frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+      }
+
+      textNode.parentNode.replaceChild(frag, textNode);
+    }
+  }
+
+  function clearHighlightsFromPage() {
+    const marks = document.querySelectorAll("mark.acp-hl-matched, mark.acp-hl-missing");
+    for (const mark of marks) {
+      const parent = mark.parentNode;
+      const text = document.createTextNode(mark.textContent);
+      parent.replaceChild(text, mark);
+      parent.normalize();
+    }
+  }
+
+  function createHighlightToggle() {
+    const { matched, missing } = buildHighlightTerms();
+    const total = matched.length + missing.length;
+
+    const btn = el("button", {
+      className: "acp-hl-toggle" + (highlightActive ? " acp-hl-active" : ""),
+      onClick: () => {
+        highlightActive = !highlightActive;
+        btn.classList.toggle("acp-hl-active", highlightActive);
+        if (highlightActive) {
+          highlightKeywordsInPage();
+        } else {
+          clearHighlightsFromPage();
+        }
+      },
+    }, [
+      el("span", {
+        className: "acp-hl-toggle-icon",
+        innerHTML: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>`,
+      }),
+      el("span", { className: "acp-hl-toggle-label", textContent: "Highlight Keywords" }),
+      el("span", { className: "acp-hl-toggle-count", textContent: `${total} terms` }),
+    ]);
+
+    return btn;
+  }
+
   function createScorePanel() {
     if (!scoreData || !currentJobData) return null;
 
@@ -249,6 +387,8 @@
     for (const child of buildScorePanelContent(scoreData)) {
       panel.appendChild(child);
     }
+
+    panel.appendChild(createHighlightToggle());
 
     return panel;
   }
@@ -290,6 +430,8 @@
 
   async function onJobDetected(e) {
     const { jobData, board } = e.detail;
+
+    clearHighlightsFromPage();
     currentJobData = jobData;
 
     const configResult = await msg("GET_CONFIG");
@@ -322,6 +464,9 @@
     injectSaveButton(board);
     if (scoreData && scoreData.score > 0) {
       injectScorePanel();
+      if (highlightActive) {
+        highlightKeywordsInPage();
+      }
     }
   }
 
