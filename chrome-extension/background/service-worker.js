@@ -337,6 +337,31 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           return { ok: true, data: { ...userProfile, email: config.userEmail } };
         }
 
+        case "GET_RESUME_VERSIONS": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          return {
+            ok: true,
+            data: await apiRequest(
+              `/api/resume-versions?email=${encodeURIComponent(config.userEmail)}`
+            ),
+          };
+        }
+
+        case "GET_ACTIVE_RESUME": {
+          const { activeResumeId } = await chrome.storage.sync.get(
+            "activeResumeId"
+          );
+          return { ok: true, data: { activeResumeId: activeResumeId || null } };
+        }
+
+        case "SET_ACTIVE_RESUME": {
+          await chrome.storage.sync.set({
+            activeResumeId: msg.payload.resumeId,
+          });
+          return { ok: true };
+        }
+
         default:
           return { ok: false, error: "Unknown message type" };
       }
@@ -372,7 +397,7 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    chrome.tabs.create({ url: "options/options.html?onboarding=true" });
+    chrome.tabs.create({ url: "onboarding/onboarding.html" });
   }
 });
 
