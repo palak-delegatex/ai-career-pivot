@@ -272,14 +272,260 @@
   outline-offset: 1px;
 }
 
+/* AI Generate button */
+.acp-ai-gen-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  margin: 6px 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #2dd4bf;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 10;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.acp-ai-gen-btn:hover {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.2);
+}
+
+.acp-ai-gen-btn.acp-ai-gen-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-ai-gen-btn svg {
+  flex-shrink: 0;
+  color: #2dd4bf;
+}
+
+.acp-ai-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #334155;
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: acp-spin 0.6s linear infinite;
+}
+
+@keyframes acp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.acp-ai-gen-error {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: #fca5a5;
+  background: #1c1917;
+  border: 1px solid #7f1d1d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  animation: acp-fade-in 0.2s ease-out;
+}
+
+@keyframes acp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Review modal overlay */
+.acp-ai-review-overlay {
+  all: initial;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-ai-review-modal {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  width: 560px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: acp-modal-in 0.2s ease-out;
+}
+
+@keyframes acp-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.acp-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-review-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f1f5f9;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.acp-review-title svg {
+  color: #2dd4bf;
+}
+
+.acp-review-close {
+  all: initial;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+  padding: 4px;
+}
+
+.acp-review-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-review-question {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #94a3b8;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  font-style: italic;
+}
+
+.acp-review-editor {
+  all: initial;
+  flex: 1;
+  min-height: 240px;
+  max-height: 50vh;
+  padding: 16px 20px;
+  background: transparent;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  border: none;
+  outline: none;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.acp-review-editor-loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.acp-review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #1e293b;
+  gap: 8px;
+}
+
+.acp-review-meta {
+  flex-shrink: 0;
+}
+
+.acp-review-wordcount {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.acp-review-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.acp-review-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.acp-review-btn-insert {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.acp-review-btn-insert:hover {
+  background: #5eead4;
+}
+
+.acp-review-btn-cancel {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.acp-review-btn-cancel:hover {
+  background: #1e293b;
+}
+
+.acp-review-btn-regen {
+  background: transparent;
+  color: #2dd4bf;
+  border: 1px solid #334155;
+}
+
+.acp-review-btn-regen:hover {
+  background: #1e293b;
+}
+
+.acp-review-btn-regen svg {
+  color: #2dd4bf;
+}
+
+.acp-review-btn:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
-  .acp-field-highlight {
+  .acp-field-highlight,
+  .acp-ai-review-overlay,
+  .acp-ai-review-modal,
+  .acp-ai-gen-error {
     animation: none;
   }
   .acp-save-btn,
-  .acp-banner-btn {
+  .acp-banner-btn,
+  .acp-ai-gen-btn,
+  .acp-review-btn {
     transition: none;
   }
 }

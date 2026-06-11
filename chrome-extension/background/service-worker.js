@@ -370,6 +370,35 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           };
         }
 
+        case "AI_GENERATE": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          const session = await getSession();
+          const genRes = await fetch(
+            `${config.apiUrl}/api/ai-generate`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({
+                type: msg.payload.type,
+                question: msg.payload.question || undefined,
+                jobDescription: msg.payload.jobDescription || undefined,
+                jobTitle: msg.payload.jobTitle || undefined,
+                company: msg.payload.company || undefined,
+                email: config.userEmail,
+              }),
+            }
+          );
+          if (!genRes.ok) {
+            const err = await genRes.json().catch(() => ({}));
+            throw new Error(err.error || `API ${genRes.status}`);
+          }
+          return { ok: true, data: await genRes.json() };
+        }
+
         case "GET_ACTIVE_RESUME": {
           const { activeResumeId } = await chrome.storage.sync.get(
             "activeResumeId"

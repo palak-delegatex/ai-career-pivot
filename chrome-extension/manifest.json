@@ -70,7 +70,20 @@
         "https://*.myworkdayjobs.com/*",
         "https://*.ashbyhq.com/*/application/*"
       ],
-      "js": ["content/autofill.js"],
+      "js": ["content/autofill.js", "content/ai-generate.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.linkedin.com/jobs/application/*",
+        "https://*.linkedin.com/talent/applications/*",
+        "https://*.indeed.com/applystart*",
+        "https://*.indeed.com/apply/*",
+        "https://*.glassdoor.com/apply/*",
+        "https://*.ziprecruiter.com/apply/*"
+      ],
+      "js": ["content/ai-generate.js"],
       "css": ["content/injector.css"],
       "run_at": "document_idle"
     }
