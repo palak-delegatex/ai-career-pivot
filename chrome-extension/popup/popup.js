@@ -301,14 +301,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (scoreData && scoreData.total > 0) {
       $("#scoreSection").hidden = false;
       $("#scoreRing").innerHTML = scoreRingSvg(scoreData.score, 96);
-      $("#matchedCount").textContent = scoreData.matched.length;
+
+      const exact = scoreData.matched.filter((m) => m.matchType === "exact");
+      const variant = scoreData.matched.filter((m) => m.matchType === "variant");
+      const semantic = scoreData.matched.filter((m) => m.matchType === "semantic");
+
+      $("#exactCount").textContent = exact.length;
+      $("#variantCount").textContent = variant.length;
+      $("#semanticCount").textContent = semantic.length;
       $("#missingCount").textContent = scoreData.missing.length;
-      $("#transferableCount").textContent = Math.min(scoreData.matched.length, 6);
 
       const kwContainer = $("#keywordBreakdown");
       kwContainer.innerHTML = "";
-      for (const kw of scoreData.matched) {
-        kwContainer.innerHTML += `<span class="kw-tag kw-match">${escapeHtml(kw)}</span>`;
+      const typeClass = { exact: "kw-exact", variant: "kw-variant", semantic: "kw-semantic" };
+      const typeLabel = { exact: "Exact", variant: "Variant", semantic: "Semantic" };
+      for (const m of scoreData.matched) {
+        kwContainer.innerHTML += `<span class="kw-tag ${typeClass[m.matchType]}">${escapeHtml(m.skill)} <span class="kw-badge">${typeLabel[m.matchType]}</span></span>`;
       }
       for (const kw of scoreData.missing.slice(0, 8)) {
         kwContainer.innerHTML += `<span class="kw-tag kw-miss">${escapeHtml(kw)}</span>`;

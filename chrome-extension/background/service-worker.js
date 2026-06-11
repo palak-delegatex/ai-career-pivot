@@ -286,15 +286,23 @@ function quickScore(jobDescription, userProfile) {
   for (const skill of userProfile.skills) {
     const skillLower = skill.toLowerCase();
     const skillWords = skillLower.split(/\s+/);
-    const found =
-      jdLower.includes(skillLower) ||
-      skillWords.every((w) => jdWords.has(w)) ||
+
+    if (jdLower.includes(skillLower)) {
+      matched.push({ skill, matchType: "exact" });
+    } else if (
       (userProfile.variants?.[skill] || []).some((v) =>
         jdLower.includes(v.toLowerCase())
-      );
-
-    if (found) matched.push(skill);
-    else missing.push(skill);
+      )
+    ) {
+      matched.push({ skill, matchType: "variant" });
+    } else if (
+      skillWords.length > 1 &&
+      skillWords.every((w) => jdWords.has(w))
+    ) {
+      matched.push({ skill, matchType: "semantic" });
+    } else {
+      missing.push(skill);
+    }
   }
 
   const total = userProfile.skills.length;

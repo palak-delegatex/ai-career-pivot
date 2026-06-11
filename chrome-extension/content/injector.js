@@ -117,23 +117,37 @@
           }),
         ]),
       ]),
-      el("div", { className: "acp-score-metrics" }, [
-        el("div", { className: "acp-metric" }, [
-          el("span", { className: "acp-metric-val", textContent: `${scoreData.matched.length}` }),
-          el("span", { className: "acp-metric-label", textContent: "Keywords" }),
-        ]),
-        el("div", { className: "acp-metric" }, [
-          el("span", { className: "acp-metric-val", textContent: `${scoreData.missing.length}` }),
-          el("span", { className: "acp-metric-label", textContent: "Missing" }),
-        ]),
-      ]),
+      (() => {
+        const exact = scoreData.matched.filter(m => m.matchType === "exact");
+        const variant = scoreData.matched.filter(m => m.matchType === "variant");
+        const semantic = scoreData.matched.filter(m => m.matchType === "semantic");
+        return el("div", { className: "acp-score-metrics" }, [
+          el("div", { className: "acp-metric" }, [
+            el("span", { className: "acp-metric-val", textContent: `${exact.length}` }),
+            el("span", { className: "acp-metric-label", textContent: "Exact" }),
+          ]),
+          el("div", { className: "acp-metric" }, [
+            el("span", { className: "acp-metric-val", textContent: `${variant.length}` }),
+            el("span", { className: "acp-metric-label", textContent: "Variant" }),
+          ]),
+          el("div", { className: "acp-metric" }, [
+            el("span", { className: "acp-metric-val", textContent: `${semantic.length}` }),
+            el("span", { className: "acp-metric-label", textContent: "Semantic" }),
+          ]),
+          el("div", { className: "acp-metric" }, [
+            el("span", { className: "acp-metric-val", textContent: `${scoreData.missing.length}` }),
+            el("span", { className: "acp-metric-label", textContent: "Missing" }),
+          ]),
+        ]);
+      })(),
       scoreData.matched.length > 0
         ? el("div", { className: "acp-keywords" }, [
             el("div", { className: "acp-kw-title", textContent: "Matched Skills" }),
             el("div", { className: "acp-kw-list" },
-              scoreData.matched.slice(0, 8).map(kw =>
-                el("span", { className: "acp-kw-tag acp-kw-match", textContent: kw })
-              )
+              scoreData.matched.slice(0, 8).map(m => {
+                const cls = { exact: "acp-kw-exact", variant: "acp-kw-variant", semantic: "acp-kw-semantic" }[m.matchType];
+                return el("span", { className: `acp-kw-tag ${cls}`, textContent: m.skill });
+              })
             ),
           ])
         : null,
