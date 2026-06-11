@@ -302,6 +302,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     let activeResumeId = null;
     let activeResumeName = null;
 
+    function importanceBadgeClass(imp) {
+      if (imp === "critical") return "kw-imp-critical";
+      if (imp === "important") return "kw-imp-important";
+      return "kw-imp-helpful";
+    }
+
     function renderScore(data) {
       if (!data || data.total <= 0) {
         $("#scoreSection").hidden = true;
@@ -314,11 +320,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const exact = data.matched.filter((m) => m.matchType === "exact");
       const variant = data.matched.filter((m) => m.matchType === "variant");
       const semantic = data.matched.filter((m) => m.matchType === "semantic");
+      const gaps = data.gaps || [];
 
       $("#exactCount").textContent = exact.length;
       $("#variantCount").textContent = variant.length;
       $("#semanticCount").textContent = semantic.length;
-      $("#missingCount").textContent = data.missing.length;
+      $("#missingCount").textContent = gaps.length || data.missing.length;
 
       const kwContainer = $("#keywordBreakdown");
       kwContainer.innerHTML = "";
@@ -327,8 +334,35 @@ document.addEventListener("DOMContentLoaded", async () => {
       for (const m of data.matched) {
         kwContainer.innerHTML += `<span class="kw-tag ${typeClass[m.matchType]}">${escapeHtml(m.skill)} <span class="kw-badge">${typeLabel[m.matchType]}</span></span>`;
       }
-      for (const kw of data.missing.slice(0, 8)) {
-        kwContainer.innerHTML += `<span class="kw-tag kw-miss">${escapeHtml(kw)}</span>`;
+
+      if (gaps.length > 0) {
+        const grouped = { critical: [], important: [], helpful: [] };
+        for (const g of gaps) grouped[g.importance]?.push(g);
+
+        const sections = [
+          { key: "critical", label: "Critical", icon: "!!" },
+          { key: "important", label: "Important", icon: "!" },
+          { key: "helpful", label: "Helpful", icon: "+" },
+        ];
+
+        for (const sec of sections) {
+          const items = grouped[sec.key];
+          if (!items.length) continue;
+
+          kwContainer.innerHTML += `<div class="kw-gap-group">
+            <div class="kw-gap-header ${importanceBadgeClass(sec.key)}">
+              <span class="kw-gap-icon">${sec.icon}</span> ${sec.label} <span class="kw-gap-count">${items.length}</span>
+            </div>
+            ${items.map((g) => `<div class="kw-gap-item">
+              <span class="kw-tag kw-miss"><span class="kw-imp-dot ${importanceBadgeClass(sec.key)}"></span>${escapeHtml(g.keyword)}</span>
+              <div class="kw-suggestion">${escapeHtml(g.suggestion)}</div>
+            </div>`).join("")}
+          </div>`;
+        }
+      } else {
+        for (const kw of data.missing.slice(0, 8)) {
+          kwContainer.innerHTML += `<span class="kw-tag kw-miss">${escapeHtml(kw)}</span>`;
+        }
       }
     }
 

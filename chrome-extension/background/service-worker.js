@@ -271,6 +271,95 @@ async function updateJob(id, updates) {
   });
 }
 
+const JD_STOP_WORDS = new Set([
+  "the","and","for","are","but","not","you","all","can","had","her","was","one",
+  "our","out","day","get","has","him","his","how","its","may","new","now","old",
+  "see","way","who","did","let","say","she","too","use","with","have","from",
+  "this","that","they","will","been","each","make","like","long","look","many",
+  "some","than","them","then","what","when","more","also","back","much","most",
+  "only","over","such","take","than","your","about","after","being","could",
+  "every","first","into","just","must","other","still","their","there","these",
+  "those","under","where","which","while","would","should","through","between",
+  "before","during","without","within","across","work","working","team","role",
+  "join","help","part","well","good","best","able","need","year","years","plus",
+  "including","using","strong","experience","ability","skills","knowledge",
+  "preferred","required","requirements","qualifications","responsibilities",
+  "description","position","candidate","company","looking","ideal","must",
+  "minimum","etc","e.g","i.e","per","via","based","related","relevant",
+  "proven","track","record","communicate","effectively","environment","fast",
+  "paced","bonus","salary","benefits","equal","opportunity","employer",
+]);
+
+function countOccurrences(text, term) {
+  const re = new RegExp("\\b" + term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "gi");
+  return (text.match(re) || []).length;
+}
+
+function extractJdGaps(jdText, matchedSkills) {
+  const jdLower = jdText.toLowerCase();
+  const matchedLower = new Set(matchedSkills.map((s) => s.toLowerCase()));
+
+  const words = jdLower.split(/[\s,;.()\/\[\]{}|]+/).filter((w) => w.length > 1);
+  const freq = {};
+  for (const w of words) {
+    if (!JD_STOP_WORDS.has(w) && w.length > 2 && !/^\d+$/.test(w)) {
+      freq[w] = (freq[w] || 0) + 1;
+    }
+  }
+
+  const bigrams = [];
+  for (let i = 0; i < words.length - 1; i++) {
+    const bi = words[i] + " " + words[i + 1];
+    if (!JD_STOP_WORDS.has(words[i]) && !JD_STOP_WORDS.has(words[i + 1])) {
+      bigrams.push(bi);
+    }
+  }
+  for (const bi of bigrams) {
+    freq[bi] = (freq[bi] || 0) + 1;
+  }
+
+  const gaps = [];
+  const seen = new Set();
+
+  const sorted = Object.entries(freq)
+    .filter(([term, count]) => count >= 1 && term.length > 2)
+    .sort((a, b) => b[1] - a[1]);
+
+  for (const [term, count] of sorted) {
+    if (seen.has(term)) continue;
+    if (matchedLower.has(term)) continue;
+
+    let covered = false;
+    for (const ms of matchedLower) {
+      if (ms.includes(term) || term.includes(ms)) { covered = true; break; }
+    }
+    if (covered) continue;
+
+    for (const g of gaps) {
+      if (g.keyword.includes(term) || term.includes(g.keyword)) { covered = true; break; }
+    }
+    if (covered) continue;
+
+    let importance, suggestion;
+    if (count >= 3) {
+      importance = "critical";
+      suggestion = `Mentioned ${count} times — add this skill to your resume`;
+    } else if (count >= 2) {
+      importance = "important";
+      suggestion = "Appears multiple times — highlight if you have this experience";
+    } else {
+      importance = "helpful";
+      suggestion = "Nice to have — mention if relevant to your background";
+    }
+
+    seen.add(term);
+    gaps.push({ keyword: term, importance, count, suggestion });
+    if (gaps.length >= 12) break;
+  }
+
+  return gaps;
+}
+
 function quickScore(jobDescription, userProfile) {
   if (!userProfile?.skills?.length)
     return { score: 0, matched: [], missing: [], total: 0 };
@@ -305,9 +394,12 @@ function quickScore(jobDescription, userProfile) {
     }
   }
 
+  const matchedSkillNames = matched.map((m) => m.skill);
+  const gaps = extractJdGaps(jobDescription, matchedSkillNames);
+
   const total = userProfile.skills.length;
   const score = total > 0 ? Math.round((matched.length / total) * 100) : 0;
-  return { score, matched, missing, total };
+  return { score, matched, missing, gaps, total };
 }
 
 async function checkIfSaved(url) {

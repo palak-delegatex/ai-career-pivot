@@ -511,6 +511,71 @@ body {
   margin-left: 2px;
 }
 
+/* Importance levels for missing keywords */
+.kw-gap-group {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.kw-gap-group:first-of-type { margin-top: 4px; }
+
+.kw-gap-header {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 0 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kw-gap-header.kw-imp-critical { color: #f87171; }
+.kw-gap-header.kw-imp-important { color: #fbbf24; }
+.kw-gap-header.kw-imp-helpful { color: #94a3b8; }
+
+.kw-gap-icon {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.kw-gap-count {
+  font-size: 9px;
+  opacity: 0.6;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.kw-gap-item {
+  margin: 3px 0;
+}
+
+.kw-gap-item .kw-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kw-imp-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kw-imp-dot.kw-imp-critical { background: #f87171; }
+.kw-imp-dot.kw-imp-important { background: #fbbf24; }
+.kw-imp-dot.kw-imp-helpful { background: #64748b; }
+
+.kw-suggestion {
+  font-size: 10px;
+  color: #64748b;
+  padding-left: 12px;
+  margin-top: 1px;
+  line-height: 1.3;
+}
+
 /* Resume bar */
 .resume-bar {
   display: flex;
