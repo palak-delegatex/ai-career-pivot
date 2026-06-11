@@ -354,7 +354,7 @@ export default function ResumeGeneratorClient() {
             </div>
 
             {phase === "done" && !editing && (
-              <div className="mt-6 flex gap-3 justify-center">
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
                 <button
                   onClick={switchMode}
                   className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
@@ -367,6 +367,14 @@ export default function ResumeGeneratorClient() {
                     ? "Now Generate Cover Letter →"
                     : "Now Generate Resume →"}
                 </button>
+                {mode === "resume" && (
+                  <Link
+                    href="/cover-letter"
+                    className="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-600 font-semibold text-sm transition-colors"
+                  >
+                    Create Cover Letter
+                  </Link>
+                )}
                 <Link
                   href="/ats-score"
                   className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"

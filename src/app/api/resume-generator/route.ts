@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     jobDescription,
     template,
     tone,
+    keyPoints,
     profile,
     plan,
   }: {
@@ -17,6 +18,7 @@ export async function POST(req: NextRequest) {
     jobDescription?: string;
     template?: "professional" | "modern" | "minimal";
     tone?: "professional" | "conversational" | "bold";
+    keyPoints?: string[];
     profile: {
       name?: string;
       email?: string;
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
   const systemPrompt =
     mode === "resume"
       ? buildResumePrompt(targetRole, profileSection, jdSection, template)
-      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name, tone);
+      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name, tone, keyPoints);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),
@@ -130,7 +132,8 @@ function buildCoverLetterPrompt(
   profile: string,
   jdSection: string,
   name?: string,
-  tone?: "professional" | "conversational" | "bold"
+  tone?: "professional" | "conversational" | "bold",
+  keyPoints?: string[]
 ): string {
   const toneInstructions = {
     professional: "Professional tone — confident but not arrogant. Formal language, polished structure.",
@@ -156,5 +159,9 @@ COVER LETTER REQUIREMENTS:
 - Mirror the language and priorities from the job description if provided
 - Address any obvious gaps proactively (reframe as advantages)
 
-Do NOT use placeholders like [Company Name] — if the JD mentions a company, use it. If not, write a generic version that works without a company name.`;
+Do NOT use placeholders like [Company Name] — if the JD mentions a company, use it. If not, write a generic version that works without a company name.${
+    keyPoints?.filter(Boolean).length
+      ? `\n\nKEY POINTS TO EMPHASIZE:\nThe candidate specifically wants to highlight these points — weave them naturally into the letter:\n${keyPoints.filter(Boolean).map((p) => `- ${p}`).join("\n")}`
+      : ""
+  }`;
 }
