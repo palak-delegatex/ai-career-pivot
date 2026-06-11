@@ -10,11 +10,15 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
+  Download,
+  Pencil,
+  Save,
 } from "lucide-react";
 import Link from "next/link";
 
 type Mode = "resume" | "cover-letter";
 type Phase = "setup" | "generating" | "done";
+type Tone = "professional" | "conversational" | "bold";
 
 const POPULAR_ROLES = [
   "Product Manager",
@@ -25,6 +29,12 @@ const POPULAR_ROLES = [
   "Operations Manager",
   "Data Scientist",
   "Project Manager",
+];
+
+const TONES: { key: Tone; label: string }[] = [
+  { key: "professional", label: "Professional" },
+  { key: "conversational", label: "Conversational" },
+  { key: "bold", label: "Bold" },
 ];
 
 function renderMarkdownBasic(text: string): React.ReactNode {
@@ -83,10 +93,14 @@ export default function ResumeGeneratorClient() {
   const [customRole, setCustomRole] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [showJd, setShowJd] = useState(false);
+  const [tone, setTone] = useState<Tone>("professional");
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState("");
+  const [saving, setSaving] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,6 +129,7 @@ export default function ResumeGeneratorClient() {
 
     setPhase("generating");
     setOutput("");
+    setEditing(false);
 
     try {
       const res = await fetch("/api/resume-generator", {
@@ -124,6 +139,7 @@ export default function ResumeGeneratorClient() {
           mode,
           targetRole: role,
           jobDescription: jobDescription.trim() || undefined,
+          tone: mode === "cover-letter" ? tone : undefined,
           profile,
         }),
       });
@@ -145,14 +161,43 @@ export default function ResumeGeneratorClient() {
 
       setOutput(content);
       setPhase("done");
+
+      if (mode === "cover-letter") {
+        saveCoverLetterToSupabase(content, role);
+      }
     } catch {
       setOutput("Sorry, something went wrong. Please try again.");
       setPhase("done");
     }
   }
 
+  async function saveCoverLetterToSupabase(content: string, role: string) {
+    const email = (profile as Record<string, unknown>)?.email as string | undefined;
+    if (!email) return;
+
+    setSaving(true);
+    try {
+      await fetch("/api/cover-letters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          title: `Cover Letter for ${role}`,
+          targetRole: role,
+          tone,
+          content,
+        }),
+      });
+    } catch {
+      // Silent failure — localStorage backup via document-store still works
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function copyToClipboard() {
-    navigator.clipboard.writeText(output);
+    const text = editing ? editContent : output;
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -160,6 +205,54 @@ export default function ResumeGeneratorClient() {
   function reset() {
     setPhase("setup");
     setOutput("");
+    setEditing(false);
+  }
+
+  function switchMode() {
+    const newMode = mode === "resume" ? "cover-letter" : "resume";
+    setMode(newMode);
+    setPhase("setup");
+    setOutput("");
+    setEditing(false);
+  }
+
+  async function handleDownloadPdf() {
+    const content = editing ? editContent : output;
+    if (!content) return;
+    const role = targetRole === "custom" ? customRole.trim() : targetRole;
+    try {
+      const res = await fetch("/api/resume/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+          targetRole: role,
+          name: (profile as Record<string, unknown>)?.name as string,
+          type: mode,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const prefix = mode === "resume" ? "Resume" : "CoverLetter";
+      a.download = `${prefix}_${role.replace(/\s+/g, "_")}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      copyToClipboard();
+    }
+  }
+
+  function startEditing() {
+    setEditContent(output);
+    setEditing(true);
+  }
+
+  function saveEdit() {
+    setOutput(editContent);
+    setEditing(false);
   }
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
@@ -182,12 +275,39 @@ export default function ResumeGeneratorClient() {
                 <p className="text-xs text-slate-400">
                   {displayRole}
                   {jobDescription.trim() && " · JD-tailored"}
+                  {mode === "cover-letter" && ` · ${tone}`}
+                  {saving && " · Saving..."}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {phase === "done" && (
                 <>
+                  {!editing && (
+                    <button
+                      onClick={startEditing}
+                      className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </button>
+                  )}
+                  {editing && (
+                    <button
+                      onClick={saveEdit}
+                      className="flex items-center gap-1.5 text-xs text-teal-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      Done
+                    </button>
+                  )}
+                  <button
+                    onClick={handleDownloadPdf}
+                    className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    PDF
+                  </button>
                   <button
                     onClick={copyToClipboard}
                     className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
@@ -218,7 +338,13 @@ export default function ResumeGeneratorClient() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-6 py-8">
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
-              {output ? (
+              {editing ? (
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
+                />
+              ) : output ? (
                 renderMarkdownBasic(output)
               ) : (
                 <div className="flex items-center justify-center h-48">
@@ -227,14 +353,10 @@ export default function ResumeGeneratorClient() {
               )}
             </div>
 
-            {phase === "done" && (
+            {phase === "done" && !editing && (
               <div className="mt-6 flex gap-3 justify-center">
                 <button
-                  onClick={() => {
-                    setMode(mode === "resume" ? "cover-letter" : "resume");
-                    setPhase("setup");
-                    setOutput("");
-                  }}
+                  onClick={switchMode}
                   className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
                     mode === "resume"
                       ? "bg-purple-600 hover:bg-purple-500"
@@ -242,8 +364,8 @@ export default function ResumeGeneratorClient() {
                   }`}
                 >
                   {mode === "resume"
-                    ? "Now Generate Cover Letter"
-                    : "Now Generate Resume"}
+                    ? "Now Generate Cover Letter →"
+                    : "Now Generate Resume →"}
                 </button>
                 <Link
                   href="/ats-score"
@@ -375,6 +497,30 @@ export default function ResumeGeneratorClient() {
           )}
         </div>
 
+        {/* Tone selector — cover letter mode only */}
+        {mode === "cover-letter" && (
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-3">
+              Tone
+            </label>
+            <div className="flex gap-2">
+              {TONES.map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTone(t.key)}
+                  className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-medium text-center transition-colors ${
+                    tone === t.key
+                      ? "bg-purple-600 text-white"
+                      : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Optional JD */}
         <div>
           <button
@@ -418,7 +564,7 @@ export default function ResumeGeneratorClient() {
         </button>
 
         <p className="text-slate-500 text-xs text-center">
-          Streams in real time · Copy or download when done
+          Streams in real time · Edit, copy, or download PDF when done
         </p>
       </div>
     </main>

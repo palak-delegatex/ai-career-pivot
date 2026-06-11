@@ -662,7 +662,7 @@ export default function DashboardClient() {
                   />
 
                   {/* My Documents */}
-                  <DocumentsCard />
+                  <DocumentsCard email={activeReport!.email} />
 
                   {/* Completion Badges */}
                   <CompletionBadges earnedBadges={earnedBadges} />
