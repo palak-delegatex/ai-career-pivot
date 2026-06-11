@@ -62,7 +62,7 @@ export function Footer() {
         <div className="mt-10 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-600 text-xs">
           <p>Your career, your timeline.</p>
           <nav className="flex items-center gap-4" aria-label="Legal">
-            <Link href="/about" className="hover:text-slate-400 transition-colors">Privacy</Link>
+            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
             <Link href="/about" className="hover:text-slate-400 transition-colors">Terms</Link>
             <a href="mailto:hello@ai-career-pivot.com" className="hover:text-slate-400 transition-colors">Contact</a>
           </nav>
