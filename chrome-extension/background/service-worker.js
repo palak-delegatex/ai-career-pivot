@@ -421,6 +421,86 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           return { ok: true };
         }
 
+        case "FETCH_RESUME_PDF": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          const session = await getSession();
+
+          const res = await apiRequest(
+            `/api/resume-versions?email=${encodeURIComponent(config.userEmail)}&status=ready`
+          );
+          const versions = res.versions || [];
+
+          const resumeId = msg.payload?.resumeId;
+          const { activeResumeId: storedId } = await chrome.storage.sync.get("activeResumeId");
+          const targetId = resumeId || storedId;
+
+          let resume = null;
+          if (targetId && versions.length) {
+            resume = versions.find((v) => v.id === targetId);
+          }
+          if (!resume && versions.length) {
+            resume = versions[0];
+          }
+          if (!resume) throw new Error("No resume versions available");
+
+          const pdfRes = await fetch(`${config.apiUrl}/api/resume/pdf`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              content: resume.generated_text,
+              targetRole: resume.target_role || "Professional",
+              name: config.user?.user_metadata?.full_name || config.userEmail,
+              type: "resume",
+            }),
+          });
+
+          if (!pdfRes.ok) throw new Error(`PDF generation failed: ${pdfRes.status}`);
+
+          const arrayBuf = await pdfRes.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuf);
+          let binary = "";
+          for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+          const base64 = btoa(binary);
+
+          return {
+            ok: true,
+            data: {
+              base64,
+              filename: `Resume_${(resume.target_role || "Professional").replace(/\s+/g, "_")}.pdf`,
+              resumeId: resume.id,
+              resumeName: resume.name,
+            },
+          };
+        }
+
+        case "GET_RESUME_LIST": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          const listRes = await apiRequest(
+            `/api/resume-versions?email=${encodeURIComponent(config.userEmail)}&status=ready`
+          );
+          const versions = listRes.versions || [];
+          const { activeResumeId: activeId } = await chrome.storage.sync.get("activeResumeId");
+          return {
+            ok: true,
+            data: {
+              resumes: versions.map((v) => ({
+                id: v.id,
+                name: v.name,
+                targetRole: v.target_role,
+                targetCompany: v.target_company,
+                matchScore: v.match_score,
+                updatedAt: v.updated_at,
+              })),
+              activeResumeId: activeId || null,
+            },
+          };
+        }
+
         default:
           return { ok: false, error: "Unknown message type" };
       }

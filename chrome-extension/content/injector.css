@@ -523,19 +523,176 @@
   pointer-events: none;
 }
 
+/* Resume upload */
+.acp-resume-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+  position: relative;
+}
+
+.acp-resume-upload-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #2dd4bf;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 10;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.acp-resume-upload-btn:hover {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.2);
+}
+
+.acp-resume-upload-btn svg {
+  flex-shrink: 0;
+  color: #2dd4bf;
+}
+
+.acp-resume-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-resume-done {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+  pointer-events: none;
+}
+
+.acp-resume-done svg {
+  color: #6ee7b7;
+}
+
+.acp-resume-status {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  min-height: 14px;
+}
+
+.acp-resume-success {
+  color: #6ee7b7;
+}
+
+.acp-resume-error {
+  color: #fca5a5;
+}
+
+.acp-resume-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 280px;
+  max-width: 400px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 4px;
+  z-index: 2147483647;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-resume-picker-item {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.1s;
+  box-sizing: border-box;
+}
+
+.acp-resume-picker-item:hover {
+  background: #1e293b;
+}
+
+.acp-resume-picker-item.acp-resume-active {
+  background: #0d3d56;
+  border: 1px solid #0ea5e9;
+}
+
+.acp-resume-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-resume-score {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.acp-resume-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #0ea5e9;
+  color: #0f172a;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.acp-banner-btn-resume {
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  color: #ccfbf1;
+  border: 1px solid #2dd4bf;
+}
+
+.acp-banner-btn-resume:hover {
+  background: #0f766e;
+}
+
+.acp-banner-btn-resume:disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-banner-btn-resume-done {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
   .acp-field-highlight,
   .acp-ai-review-overlay,
   .acp-ai-review-modal,
-  .acp-ai-gen-error {
+  .acp-ai-gen-error,
+  .acp-resume-picker {
     animation: none;
   }
   .acp-save-btn,
   .acp-banner-btn,
   .acp-ai-gen-btn,
-  .acp-review-btn {
+  .acp-review-btn,
+  .acp-resume-upload-btn,
+  .acp-resume-picker-item {
     transition: none;
   }
 }

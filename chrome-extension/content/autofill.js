@@ -21,6 +21,9 @@
 
   const SKIP_PATTERNS = /cover.?letter|salary|expectation|visa|sponsor|relocat|gender|race|ethnic|veteran|disability/i;
 
+  const RESUME_FILE_PATTERNS = /resume|cv|curriculum/i;
+  const RESUME_ACCEPT_TYPES = /\.pdf|\.doc|\.docx|application\/pdf|application\/msword/i;
+
   function msg(type, payload) {
     return new Promise((resolve) => {
       chrome.runtime.sendMessage({ type, payload }, resolve);
@@ -184,6 +187,250 @@
     document.body.prepend(banner);
   }
 
+  function detectFileInputs() {
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    const resumeInputs = [];
+
+    for (const input of fileInputs) {
+      if (input.offsetParent === null && !input.closest('[style*="opacity"]')) continue;
+      if (input.dataset.acpResumeHandled) continue;
+
+      const context = [
+        input.name,
+        input.id,
+        input.getAttribute("aria-label"),
+        input.getAttribute("accept"),
+        input.labels?.[0]?.textContent,
+        input.closest("label")?.textContent,
+        input.closest("[class*=upload], [class*=file], [class*=resume], [class*=attach]")?.textContent,
+      ].filter(Boolean).join(" ");
+
+      const accept = input.getAttribute("accept") || "";
+      const isResumeByContext = RESUME_FILE_PATTERNS.test(context);
+      const isResumeByType = RESUME_ACCEPT_TYPES.test(accept);
+
+      if (isResumeByContext || isResumeByType || accept === "") {
+        resumeInputs.push(input);
+      }
+    }
+
+    return resumeInputs;
+  }
+
+  function base64ToFile(base64, filename) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new File([bytes], filename, { type: "application/pdf" });
+  }
+
+  function injectFileToInput(fileInput, file) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+
+    fileInput.dispatchEvent(new Event("input", { bubbles: true }));
+    fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  async function uploadResume(fileInput, resumeId) {
+    const result = await msg("FETCH_RESUME_PDF", resumeId ? { resumeId } : {});
+    if (!result.ok) throw new Error(result.error || "Failed to fetch resume");
+
+    const file = base64ToFile(result.data.base64, result.data.filename);
+    injectFileToInput(fileInput, file);
+    return result.data;
+  }
+
+  function createResumeUploadBtn(fileInput) {
+    if (fileInput.dataset.acpResumeHandled) return;
+    fileInput.dataset.acpResumeHandled = "true";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "acp-resume-upload-wrapper";
+
+    const btn = document.createElement("button");
+    btn.className = "acp-resume-upload-btn";
+    btn.type = "button";
+    btn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <polyline points="9 15 12 12 15 15"/>
+      </svg>
+      <span>Upload from AICareerPivot</span>
+    `;
+
+    const statusEl = document.createElement("span");
+    statusEl.className = "acp-resume-status";
+
+    wrapper.appendChild(btn);
+    wrapper.appendChild(statusEl);
+
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      btn.classList.add("acp-resume-loading");
+      btn.querySelector("span").textContent = "Loading resumes…";
+
+      try {
+        const listResult = await msg("GET_RESUME_LIST");
+        if (!listResult.ok) throw new Error(listResult.error);
+
+        const { resumes, activeResumeId } = listResult.data;
+
+        if (!resumes.length) {
+          statusEl.textContent = "No resumes available — create one in your dashboard";
+          statusEl.className = "acp-resume-status acp-resume-error";
+          btn.classList.remove("acp-resume-loading");
+          btn.querySelector("span").textContent = "Upload from AICareerPivot";
+          return;
+        }
+
+        if (resumes.length === 1) {
+          await doUpload(fileInput, resumes[0], btn, statusEl);
+          return;
+        }
+
+        showResumePicker(fileInput, resumes, activeResumeId, btn, statusEl, wrapper);
+      } catch (err) {
+        statusEl.textContent = err.message;
+        statusEl.className = "acp-resume-status acp-resume-error";
+        btn.classList.remove("acp-resume-loading");
+        btn.querySelector("span").textContent = "Upload from AICareerPivot";
+      }
+    });
+
+    const anchor = fileInput.closest("label") || fileInput.closest("[class*=upload]") || fileInput;
+    if (anchor.parentNode) {
+      anchor.parentNode.insertBefore(wrapper, anchor.nextSibling);
+    }
+  }
+
+  async function doUpload(fileInput, resume, btn, statusEl) {
+    btn.querySelector("span").textContent = "Uploading…";
+    try {
+      const data = await uploadResume(fileInput, resume.id);
+      btn.classList.remove("acp-resume-loading");
+      btn.classList.add("acp-resume-done");
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>${data.resumeName}</span>
+      `;
+      statusEl.textContent = `Attached: ${data.filename}`;
+      statusEl.className = "acp-resume-status acp-resume-success";
+    } catch (err) {
+      btn.classList.remove("acp-resume-loading");
+      btn.querySelector("span").textContent = "Upload from AICareerPivot";
+      statusEl.textContent = err.message;
+      statusEl.className = "acp-resume-status acp-resume-error";
+    }
+  }
+
+  function showResumePicker(fileInput, resumes, activeResumeId, btn, statusEl, wrapper) {
+    const existing = wrapper.querySelector(".acp-resume-picker");
+    if (existing) { existing.remove(); return; }
+
+    btn.classList.remove("acp-resume-loading");
+    btn.querySelector("span").textContent = "Select a resume";
+
+    const picker = document.createElement("div");
+    picker.className = "acp-resume-picker";
+
+    const sorted = [...resumes].sort((a, b) => {
+      if (a.id === activeResumeId) return -1;
+      if (b.id === activeResumeId) return 1;
+      return 0;
+    });
+
+    for (const resume of sorted) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "acp-resume-picker-item";
+      if (resume.id === activeResumeId) item.classList.add("acp-resume-active");
+
+      const label = resume.targetRole
+        ? `${resume.name} — ${resume.targetRole}`
+        : resume.name;
+
+      const scoreHtml = resume.matchScore != null
+        ? `<span class="acp-resume-score">${resume.matchScore}%</span>`
+        : "";
+
+      item.innerHTML = `
+        <span class="acp-resume-name">${label}</span>
+        ${scoreHtml}
+        ${resume.id === activeResumeId ? '<span class="acp-resume-badge">Active</span>' : ""}
+      `;
+
+      item.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        picker.remove();
+        btn.classList.add("acp-resume-loading");
+        await doUpload(fileInput, resume, btn, statusEl);
+      });
+
+      picker.appendChild(item);
+    }
+
+    wrapper.appendChild(picker);
+
+    const dismiss = (e) => {
+      if (!wrapper.contains(e.target)) {
+        picker.remove();
+        btn.querySelector("span").textContent = "Upload from AICareerPivot";
+        document.removeEventListener("click", dismiss);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", dismiss), 0);
+  }
+
+  function showResumeUploadBanner(fileInputs) {
+    if (!fileInputs.length) return;
+    const banner = document.querySelector(".acp-autofill-banner");
+    if (!banner) return;
+
+    const existing = banner.querySelector(".acp-banner-btn-resume");
+    if (existing) return;
+
+    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
+    const resumeBtn = document.createElement("button");
+    resumeBtn.className = "acp-banner-btn acp-banner-btn-resume";
+    resumeBtn.textContent = "Upload Resume";
+
+    resumeBtn.addEventListener("click", async () => {
+      resumeBtn.textContent = "Uploading…";
+      resumeBtn.disabled = true;
+
+      try {
+        const result = await msg("FETCH_RESUME_PDF");
+        if (!result.ok) throw new Error(result.error);
+
+        const file = base64ToFile(result.data.base64, result.data.filename);
+        for (const input of fileInputs) {
+          injectFileToInput(input, file);
+        }
+
+        resumeBtn.textContent = "Resume attached ✓";
+        resumeBtn.classList.add("acp-banner-btn-resume-done");
+      } catch (err) {
+        resumeBtn.textContent = "Upload Resume";
+        resumeBtn.disabled = false;
+      }
+    });
+
+    if (skipBtn) {
+      banner.insertBefore(resumeBtn, skipBtn);
+    } else {
+      banner.appendChild(resumeBtn);
+    }
+  }
+
   async function init() {
     const config = await msg("GET_CONFIG");
     if (!config.ok || !config.data.userEmail || !config.data.userProfile) return;
@@ -193,13 +440,38 @@
 
     setTimeout(() => {
       const fields = detectFormFields();
-      if (fields.some(f => f.field)) showBanner();
+      const fileInputs = detectFileInputs();
+
+      if (fields.some(f => f.field) || fileInputs.length) showBanner();
+
+      for (const fi of fileInputs) {
+        createResumeUploadBtn(fi);
+      }
+
+      if (fileInputs.length) {
+        showResumeUploadBanner(fileInputs);
+      }
     }, 1500);
+
+    const observer = new MutationObserver(() => {
+      const newFileInputs = detectFileInputs();
+      for (const fi of newFileInputs) {
+        createResumeUploadBtn(fi);
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   init();
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === "TRIGGER_AUTOFILL") runAutofill();
+    if (message.type === "TRIGGER_RESUME_UPLOAD") {
+      const fileInputs = detectFileInputs();
+      if (fileInputs.length) {
+        const btn = fileInputs[0].parentNode?.querySelector(".acp-resume-upload-btn");
+        if (btn) btn.click();
+      }
+    }
   });
 })();
