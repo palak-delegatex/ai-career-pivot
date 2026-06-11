@@ -628,6 +628,28 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           };
         }
 
+        case "LINKEDIN_OPTIMIZE": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          const session = await getSession();
+          const optRes = await fetch(
+            `${config.apiUrl}/api/linkedin/optimize`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify(msg.payload),
+            }
+          );
+          if (!optRes.ok) {
+            const err = await optRes.json().catch(() => ({}));
+            throw new Error(err.error || `API ${optRes.status}`);
+          }
+          return { ok: true, data: await optRes.json() };
+        }
+
         default:
           return { ok: false, error: "Unknown message type" };
       }

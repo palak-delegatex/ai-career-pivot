@@ -84,6 +84,14 @@
     },
     {
       "matches": [
+        "https://*.linkedin.com/in/*"
+      ],
+      "js": ["content/linkedin-optimizer.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
         "https://*.linkedin.com/jobs/application/*",
         "https://*.linkedin.com/talent/applications/*",
         "https://*.indeed.com/applystart*",

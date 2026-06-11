@@ -30,6 +30,7 @@ const NAV_LINKS = [
   { href: "/dashboard", label: "My Roadmaps" },
   { href: "/job-tracker", label: "Job Tracker" },
   { href: "/cover-letter", label: "Cover Letter" },
+  { href: "/linkedin-optimizer", label: "LinkedIn" },
 ] as const;
 
 const LogoIcon = (
