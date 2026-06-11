@@ -51,18 +51,105 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `${Math.floor(hours / 24)}d ago`;
   }
 
-  // Check config
-  const configResult = await msg("GET_CONFIG");
-  if (!configResult.ok || !configResult.data.userEmail) {
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // --- Auth check ---
+
+  const sessionResult = await msg("GET_SESSION");
+  const session = sessionResult.ok ? sessionResult.data : null;
+
+  if (!session) {
     show("#signInView");
     setSyncStatus("red", "Not signed in");
-    $("#signInBtn").addEventListener("click", () => {
+
+    const signInBtn = $("#googleSignInBtn");
+    const signInError = $("#signInError");
+
+    signInBtn.addEventListener("click", async () => {
+      signInBtn.disabled = true;
+      signInBtn.querySelector("span").textContent = "Signing in...";
+      signInError.hidden = true;
+
+      const result = await msg("SIGN_IN_GOOGLE");
+      if (result.ok) {
+        window.location.reload();
+      } else {
+        signInBtn.disabled = false;
+        signInBtn.querySelector("span").textContent = "Continue with Google";
+        signInError.textContent = result.error || "Sign-in failed. Please try again.";
+        signInError.hidden = false;
+      }
+    });
+
+    // Settings still accessible
+    $("#settingsBtn").addEventListener("click", () => {
       chrome.runtime.openOptionsPage();
     });
     return;
   }
 
-  const config = configResult.data;
+  // --- Signed in: show user menu ---
+
+  const user = session.user;
+  const userName = user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
+  const userEmail = user.email || "";
+  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || "";
+
+  const userMenu = $("#userMenu");
+  const userInitial = $("#userInitial");
+  const userAvatarImg = $("#userAvatarImg");
+
+  userMenu.hidden = false;
+
+  if (avatarUrl) {
+    userAvatarImg.src = avatarUrl;
+    userAvatarImg.hidden = false;
+    userInitial.hidden = true;
+  } else {
+    userInitial.textContent = userName.charAt(0).toUpperCase();
+    userInitial.hidden = false;
+    userAvatarImg.hidden = true;
+  }
+
+  $("#dropdownName").textContent = userName;
+  $("#dropdownEmail").textContent = userEmail;
+
+  // User dropdown toggle
+  const userBtn = $("#userBtn");
+  const userDropdown = $("#userDropdown");
+
+  userBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    userDropdown.hidden = !userDropdown.hidden;
+  });
+
+  document.addEventListener("click", () => {
+    userDropdown.hidden = true;
+  });
+
+  userDropdown.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  // Sign out
+  $("#signOutBtn").addEventListener("click", async () => {
+    await msg("SIGN_OUT");
+    window.location.reload();
+  });
+
+  // Dropdown settings
+  $("#dropdownSettings").addEventListener("click", () => {
+    chrome.runtime.openOptionsPage();
+  });
+
+  // --- Load config and proceed ---
+
+  const configResult = await msg("GET_CONFIG");
+  const config = configResult.ok ? configResult.data : { apiUrl: "https://ai-career-pivot.vercel.app" };
 
   // Check active tab for job data
   show("#loadingView");
@@ -268,12 +355,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   function setSyncStatus(color, text) {
     $("#syncDot").className = `sync-dot ${color}`;
     $("#syncText").textContent = text;
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
   }
 
   // Settings

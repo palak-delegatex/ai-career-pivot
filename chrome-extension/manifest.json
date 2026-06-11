@@ -6,7 +6,9 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "identity",
+    "alarms"
   ],
   "host_permissions": [
     "https://*.linkedin.com/*",
