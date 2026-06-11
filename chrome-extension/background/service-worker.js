@@ -463,7 +463,35 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         case "GET_AUTOFILL_DATA": {
           const config = await getConfig();
           const { userProfile } = await chrome.storage.sync.get("userProfile");
-          return { ok: true, data: { ...userProfile, email: config.userEmail } };
+          const profile = userProfile || {};
+          const user = config.user;
+          const fullName = user?.user_metadata?.full_name || "";
+          const nameParts = fullName.split(" ");
+          return {
+            ok: true,
+            data: {
+              ...profile,
+              email: config.userEmail,
+              firstName: profile.firstName || nameParts[0] || "",
+              lastName: profile.lastName || nameParts.slice(1).join(" ") || "",
+            },
+          };
+        }
+
+        case "SYNC_PROFILE": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          try {
+            const profileRes = await apiRequest(
+              `/api/profile?email=${encodeURIComponent(config.userEmail)}`
+            );
+            if (profileRes) {
+              await chrome.storage.sync.set({ userProfile: profileRes });
+              return { ok: true, data: profileRes };
+            }
+          } catch {}
+          const { userProfile: stored } = await chrome.storage.sync.get("userProfile");
+          return { ok: true, data: stored || null };
         }
 
         case "GET_RESUME_VERSIONS": {

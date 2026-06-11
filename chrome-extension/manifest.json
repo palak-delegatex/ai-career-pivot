@@ -19,6 +19,9 @@
     "https://*.lever.co/*",
     "https://*.myworkdayjobs.com/*",
     "https://*.ashbyhq.com/*",
+    "https://*.icims.com/*",
+    "https://*.taleo.net/*",
+    "https://*.oraclecloud.com/*",
     "https://ai-career-pivot.vercel.app/*",
     "https://*.supabase.co/*"
   ],
@@ -68,7 +71,12 @@
         "https://boards.greenhouse.io/*",
         "https://*.lever.co/applications/*",
         "https://*.myworkdayjobs.com/*",
-        "https://*.ashbyhq.com/*/application/*"
+        "https://*.ashbyhq.com/*/application/*",
+        "https://*.icims.com/jobs/*/job*",
+        "https://*.icims.com/jobs/*/login*",
+        "https://*.icims.com/jobs/*/candidate*",
+        "https://*.taleo.net/careersection/*/jobapply*",
+        "https://*.oraclecloud.com/hcmUI/CandidateExperience/*"
       ],
       "js": ["content/autofill.js", "content/ai-generate.js"],
       "css": ["content/injector.css"],
