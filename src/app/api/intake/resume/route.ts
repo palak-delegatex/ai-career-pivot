@@ -30,10 +30,9 @@ const ProfileSchema = z.object({
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("resume") as File | null;
-  const email = formData.get("email") as string | null;
 
-  if (!file || !email) {
-    return NextResponse.json({ error: "resume file and email required" }, { status: 400 });
+  if (!file) {
+    return NextResponse.json({ error: "Resume file required" }, { status: 400 });
   }
 
   const allowedTypes = [
