@@ -119,6 +119,14 @@
       </div>
 
       <div id="scoreSection" class="score-section" hidden>
+        <div id="resumeBar" class="resume-bar" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span class="resume-bar-name" id="resumeName">Default Profile</span>
+          <button class="btn-link resume-switch-btn" id="resumeSwitchBtn">Switch</button>
+        </div>
         <div class="score-ring" id="scoreRing"></div>
         <div class="score-metrics">
           <div class="metric">
@@ -143,6 +151,14 @@
           <summary>Keyword Breakdown</summary>
           <div id="keywordBreakdown" class="keyword-list"></div>
         </details>
+      </div>
+
+      <div id="resumePicker" class="resume-picker" hidden>
+        <div class="resume-picker-header">
+          <span class="resume-picker-title">Select Resume</span>
+          <button class="resume-picker-close" id="resumePickerClose">&times;</button>
+        </div>
+        <div id="resumePickerList" class="resume-picker-list"></div>
       </div>
 
       <div id="saveCTA" class="save-cta">

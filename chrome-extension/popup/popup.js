@@ -297,35 +297,140 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (scoreResult.ok) scoreData = scoreResult.data;
     }
 
-    // Show score
-    if (scoreData && scoreData.total > 0) {
-      $("#scoreSection").hidden = false;
-      $("#scoreRing").innerHTML = scoreRingSvg(scoreData.score, 96);
+    // --- Resume state ---
+    let resumeVersions = [];
+    let activeResumeId = null;
+    let activeResumeName = null;
 
-      const exact = scoreData.matched.filter((m) => m.matchType === "exact");
-      const variant = scoreData.matched.filter((m) => m.matchType === "variant");
-      const semantic = scoreData.matched.filter((m) => m.matchType === "semantic");
+    function renderScore(data) {
+      if (!data || data.total <= 0) {
+        $("#scoreSection").hidden = true;
+        return;
+      }
+      scoreData = data;
+      $("#scoreSection").hidden = false;
+      $("#scoreRing").innerHTML = scoreRingSvg(data.score, 96);
+
+      const exact = data.matched.filter((m) => m.matchType === "exact");
+      const variant = data.matched.filter((m) => m.matchType === "variant");
+      const semantic = data.matched.filter((m) => m.matchType === "semantic");
 
       $("#exactCount").textContent = exact.length;
       $("#variantCount").textContent = variant.length;
       $("#semanticCount").textContent = semantic.length;
-      $("#missingCount").textContent = scoreData.missing.length;
+      $("#missingCount").textContent = data.missing.length;
 
       const kwContainer = $("#keywordBreakdown");
       kwContainer.innerHTML = "";
       const typeClass = { exact: "kw-exact", variant: "kw-variant", semantic: "kw-semantic" };
       const typeLabel = { exact: "Exact", variant: "Variant", semantic: "Semantic" };
-      for (const m of scoreData.matched) {
+      for (const m of data.matched) {
         kwContainer.innerHTML += `<span class="kw-tag ${typeClass[m.matchType]}">${escapeHtml(m.skill)} <span class="kw-badge">${typeLabel[m.matchType]}</span></span>`;
       }
-      for (const kw of scoreData.missing.slice(0, 8)) {
+      for (const kw of data.missing.slice(0, 8)) {
         kwContainer.innerHTML += `<span class="kw-tag kw-miss">${escapeHtml(kw)}</span>`;
+      }
+    }
+
+    async function rescoreWithResume(resumeId) {
+      if (!jobData.description) return;
+      const resume = resumeVersions.find((v) => v.id === resumeId);
+      const skills = resume?.enabled_skills;
+      if (!skills?.length) return;
+
+      const payload = { jobDescription: jobData.description, skills };
+      const result = await msg("QUICK_SCORE", payload);
+      if (result.ok) {
+        renderScore(result.data);
+        await msg("SET_ACTIVE_RESUME", { resumeId });
+        activeResumeId = resumeId;
+        activeResumeName = resume.name;
+        $("#resumeName").textContent = resume.name;
+      }
+    }
+
+    // Show initial score
+    renderScore(scoreData);
+
+    // Load resume versions and show resume bar
+    if (scoreData && scoreData.total > 0) {
+      const [versionsResult, activeResult] = await Promise.all([
+        msg("GET_RESUME_VERSIONS"),
+        msg("GET_ACTIVE_RESUME"),
+      ]);
+
+      if (versionsResult.ok) {
+        resumeVersions = (versionsResult.data?.versions || []).filter(
+          (v) => v.enabled_skills?.length > 0
+        );
+      }
+      if (activeResult.ok) {
+        activeResumeId = activeResult.data?.activeResumeId || null;
+      }
+
+      if (resumeVersions.length > 0) {
+        const active = activeResumeId
+          ? resumeVersions.find((v) => v.id === activeResumeId)
+          : null;
+        activeResumeName = active?.name || "Default Profile";
+        $("#resumeName").textContent = activeResumeName;
+        $("#resumeBar").hidden = false;
+      }
+
+      // Resume picker
+      $("#resumeSwitchBtn").addEventListener("click", () => {
+        const picker = $("#resumePicker");
+        if (!picker.hidden) {
+          picker.hidden = true;
+          return;
+        }
+        const list = $("#resumePickerList");
+        list.innerHTML = "";
+
+        for (const v of resumeVersions) {
+          const item = document.createElement("div");
+          item.className = "resume-picker-item" + (v.id === activeResumeId ? " active" : "");
+          const meta = [v.target_role, v.target_company].filter(Boolean).join(" · ");
+          item.innerHTML = `
+            <div class="resume-picker-info">
+              <div class="resume-picker-name">${escapeHtml(v.name)}</div>
+              ${meta ? `<div class="resume-picker-meta">${escapeHtml(meta)}</div>` : ""}
+            </div>
+            ${v.id === activeResumeId ? '<span class="resume-picker-check">✓</span>' : ""}
+          `;
+          item.addEventListener("click", async () => {
+            if (v.id === activeResumeId) {
+              picker.hidden = true;
+              return;
+            }
+            picker.hidden = true;
+            $("#resumeName").textContent = "Scoring...";
+            await rescoreWithResume(v.id);
+          });
+          list.appendChild(item);
+        }
+        picker.hidden = false;
+      });
+
+      $("#resumePickerClose").addEventListener("click", () => {
+        $("#resumePicker").hidden = true;
+      });
+    }
+
+    // Re-score handler for saved state
+    async function handleRescore() {
+      if (!jobData.description) return;
+      if (activeResumeId) {
+        await rescoreWithResume(activeResumeId);
+      } else {
+        const result = await msg("QUICK_SCORE", { jobDescription: jobData.description });
+        if (result.ok) renderScore(result.data);
       }
     }
 
     // Save / saved state
     if (savedJob) {
-      showSavedState(savedJob, config);
+      showSavedState(savedJob, config, handleRescore);
     } else {
       $("#saveCTA").hidden = false;
       $("#savedCTA").hidden = true;
@@ -345,7 +450,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (result.ok) {
-          showSavedState(result.data.job, config);
+          showSavedState(result.data.job, config, handleRescore);
         } else {
           btn.disabled = false;
           btn.textContent = result.error || "Error — try again";
@@ -355,7 +460,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function showSavedState(job, config) {
+  function showSavedState(job, config, onRescore) {
     $("#saveCTA").hidden = true;
     $("#savedCTA").hidden = false;
     $("#currentStage").textContent = job.stage?.replace("_", " ") || "saved";
@@ -363,6 +468,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#viewInTrackerBtn").addEventListener("click", () => {
       chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
     });
+
+    if (onRescore) {
+      $("#rescoreBtn").addEventListener("click", () => onRescore());
+    }
   }
 
   function setSyncStatus(color, text, showRetry = false) {

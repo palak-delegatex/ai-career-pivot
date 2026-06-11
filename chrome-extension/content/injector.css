@@ -194,6 +194,83 @@
   color: #fbbf24;
 }
 
+/* Resume bar (score panel) */
+.acp-resume-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #1e293b;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.acp-rbar-label {
+  flex: 1;
+  font-weight: 600;
+  color: #e2e8f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-rbar-switch {
+  all: initial;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #2dd4bf;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.acp-rbar-switch:hover { text-decoration: underline; }
+
+.acp-rbar-picker {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-rbar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.acp-rbar-item:hover { background: #334155; }
+
+.acp-rbar-active { background: #0f4c3a; }
+
+.acp-rbar-info { flex: 1; min-width: 0; }
+
+.acp-rbar-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-rbar-meta {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.acp-rbar-check {
+  color: #10b981;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
 /* Autofill banner */
 .acp-autofill-banner {
   all: initial;

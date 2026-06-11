@@ -100,75 +100,155 @@
     return btn;
   }
 
-  function createScorePanel() {
-    if (!scoreData || !currentJobData) return null;
+  let resumeVersions = [];
+  let activeResumeId = null;
 
-    const panel = el("div", { className: "acp-score-panel" }, [
+  function buildScorePanelContent(data) {
+    const exact = data.matched.filter(m => m.matchType === "exact");
+    const variant = data.matched.filter(m => m.matchType === "variant");
+    const semantic = data.matched.filter(m => m.matchType === "semantic");
+
+    const children = [
       el("div", { className: "acp-score-header" }, [
-        el("div", { className: "acp-score-ring", innerHTML: scoreRingSvg(scoreData.score, 64) }),
+        el("div", { className: "acp-score-ring", innerHTML: scoreRingSvg(data.score, 64) }),
         el("div", { className: "acp-score-meta" }, [
           el("div", {
             className: "acp-score-label",
-            textContent: scoreData.score >= 80 ? "Strong Match" : scoreData.score >= 60 ? "Good Match" : "Needs Work",
+            textContent: data.score >= 80 ? "Strong Match" : data.score >= 60 ? "Good Match" : "Needs Work",
           }),
           el("div", {
             className: "acp-score-detail",
-            textContent: `${scoreData.matched.length}/${scoreData.total} skills matched`,
+            textContent: `${data.matched.length}/${data.total} skills matched`,
           }),
         ]),
       ]),
-      (() => {
-        const exact = scoreData.matched.filter(m => m.matchType === "exact");
-        const variant = scoreData.matched.filter(m => m.matchType === "variant");
-        const semantic = scoreData.matched.filter(m => m.matchType === "semantic");
-        return el("div", { className: "acp-score-metrics" }, [
-          el("div", { className: "acp-metric" }, [
-            el("span", { className: "acp-metric-val", textContent: `${exact.length}` }),
-            el("span", { className: "acp-metric-label", textContent: "Exact" }),
-          ]),
-          el("div", { className: "acp-metric" }, [
-            el("span", { className: "acp-metric-val", textContent: `${variant.length}` }),
-            el("span", { className: "acp-metric-label", textContent: "Variant" }),
-          ]),
-          el("div", { className: "acp-metric" }, [
-            el("span", { className: "acp-metric-val", textContent: `${semantic.length}` }),
-            el("span", { className: "acp-metric-label", textContent: "Semantic" }),
-          ]),
-          el("div", { className: "acp-metric" }, [
-            el("span", { className: "acp-metric-val", textContent: `${scoreData.missing.length}` }),
-            el("span", { className: "acp-metric-label", textContent: "Missing" }),
-          ]),
-        ]);
-      })(),
-      scoreData.matched.length > 0
-        ? el("div", { className: "acp-keywords" }, [
-            el("div", { className: "acp-kw-title", textContent: "Matched Skills" }),
-            el("div", { className: "acp-kw-list" },
-              scoreData.matched.slice(0, 8).map(m => {
-                const cls = { exact: "acp-kw-exact", variant: "acp-kw-variant", semantic: "acp-kw-semantic" }[m.matchType];
-                return el("span", { className: `acp-kw-tag ${cls}`, textContent: m.skill });
-              })
-            ),
-          ])
-        : null,
-      scoreData.missing.length > 0
-        ? el("div", { className: "acp-keywords" }, [
-            el("div", { className: "acp-kw-title", textContent: "Missing Skills" }),
-            el("div", { className: "acp-kw-list" },
-              scoreData.missing.slice(0, 5).map(kw =>
-                el("span", { className: "acp-kw-tag acp-kw-miss", textContent: kw })
-              )
-            ),
-          ])
-        : null,
+      el("div", { className: "acp-score-metrics" }, [
+        el("div", { className: "acp-metric" }, [
+          el("span", { className: "acp-metric-val", textContent: `${exact.length}` }),
+          el("span", { className: "acp-metric-label", textContent: "Exact" }),
+        ]),
+        el("div", { className: "acp-metric" }, [
+          el("span", { className: "acp-metric-val", textContent: `${variant.length}` }),
+          el("span", { className: "acp-metric-label", textContent: "Variant" }),
+        ]),
+        el("div", { className: "acp-metric" }, [
+          el("span", { className: "acp-metric-val", textContent: `${semantic.length}` }),
+          el("span", { className: "acp-metric-label", textContent: "Semantic" }),
+        ]),
+        el("div", { className: "acp-metric" }, [
+          el("span", { className: "acp-metric-val", textContent: `${data.missing.length}` }),
+          el("span", { className: "acp-metric-label", textContent: "Missing" }),
+        ]),
+      ]),
+    ];
+
+    if (data.matched.length > 0) {
+      children.push(el("div", { className: "acp-keywords" }, [
+        el("div", { className: "acp-kw-title", textContent: "Matched Skills" }),
+        el("div", { className: "acp-kw-list" },
+          data.matched.slice(0, 8).map(m => {
+            const cls = { exact: "acp-kw-exact", variant: "acp-kw-variant", semantic: "acp-kw-semantic" }[m.matchType];
+            return el("span", { className: `acp-kw-tag ${cls}`, textContent: m.skill });
+          })
+        ),
+      ]));
+    }
+
+    if (data.missing.length > 0) {
+      children.push(el("div", { className: "acp-keywords" }, [
+        el("div", { className: "acp-kw-title", textContent: "Missing Skills" }),
+        el("div", { className: "acp-kw-list" },
+          data.missing.slice(0, 5).map(kw =>
+            el("span", { className: "acp-kw-tag acp-kw-miss", textContent: kw })
+          )
+        ),
+      ]));
+    }
+
+    return children;
+  }
+
+  async function rescorePanel(resumeId) {
+    if (!currentJobData?.description) return;
+    const resume = resumeVersions.find(v => v.id === resumeId);
+    if (!resume?.enabled_skills?.length) return;
+
+    const result = await msg("QUICK_SCORE", {
+      jobDescription: currentJobData.description,
+      skills: resume.enabled_skills,
+    });
+    if (!result.ok) return;
+
+    scoreData = result.data;
+    activeResumeId = resumeId;
+    await msg("SET_ACTIVE_RESUME", { resumeId });
+    injectScorePanel();
+  }
+
+  function createResumeBar() {
+    if (resumeVersions.length === 0) return null;
+
+    const active = activeResumeId
+      ? resumeVersions.find(v => v.id === activeResumeId)
+      : null;
+    const name = active?.name || "Default Profile";
+
+    const switchBtn = el("button", {
+      className: "acp-rbar-switch",
+      textContent: "Switch",
+      onClick: (e) => {
+        e.stopPropagation();
+        const existing = document.querySelector(".acp-rbar-picker");
+        if (existing) { existing.remove(); return; }
+
+        const picker = el("div", { className: "acp-rbar-picker" },
+          resumeVersions.map(v => {
+            const meta = [v.target_role, v.target_company].filter(Boolean).join(" · ");
+            return el("div", {
+              className: "acp-rbar-item" + (v.id === activeResumeId ? " acp-rbar-active" : ""),
+              onClick: () => {
+                picker.remove();
+                if (v.id !== activeResumeId) rescorePanel(v.id);
+              },
+            }, [
+              el("div", { className: "acp-rbar-info" }, [
+                el("div", { className: "acp-rbar-name", textContent: v.name }),
+                meta ? el("div", { className: "acp-rbar-meta", textContent: meta }) : null,
+              ].filter(Boolean)),
+              v.id === activeResumeId ? el("span", { className: "acp-rbar-check", textContent: "✓" }) : null,
+            ].filter(Boolean));
+          })
+        );
+
+        const panel = document.querySelector(".acp-score-panel");
+        if (panel) panel.appendChild(picker);
+      },
+    });
+
+    return el("div", { className: "acp-resume-bar" }, [
+      el("span", { className: "acp-rbar-label", textContent: name }),
+      switchBtn,
     ]);
+  }
+
+  function createScorePanel() {
+    if (!scoreData || !currentJobData) return null;
+
+    const panel = el("div", { className: "acp-score-panel" });
 
     const closeBtn = el("button", {
       className: "acp-panel-close",
       textContent: "×",
       onClick: () => panel.remove(),
     });
-    panel.prepend(closeBtn);
+    panel.appendChild(closeBtn);
+
+    const resumeBar = createResumeBar();
+    if (resumeBar) panel.appendChild(resumeBar);
+
+    for (const child of buildScorePanelContent(scoreData)) {
+      panel.appendChild(child);
+    }
 
     return panel;
   }
@@ -215,11 +295,13 @@
     const configResult = await msg("GET_CONFIG");
     if (!configResult.ok || !configResult.data.userEmail) return;
 
-    const [savedResult, scoreResult] = await Promise.all([
+    const [savedResult, scoreResult, versionsResult, activeResult] = await Promise.all([
       msg("CHECK_SAVED", { url: jobData.url }),
       jobData.description
         ? msg("QUICK_SCORE", { jobDescription: jobData.description })
         : Promise.resolve({ ok: true, data: null }),
+      msg("GET_RESUME_VERSIONS"),
+      msg("GET_ACTIVE_RESUME"),
     ]);
 
     if (savedResult.ok && savedResult.data) {
@@ -227,6 +309,14 @@
     }
     if (scoreResult.ok && scoreResult.data) {
       scoreData = scoreResult.data;
+    }
+    if (versionsResult.ok && versionsResult.data?.versions) {
+      resumeVersions = versionsResult.data.versions.filter(
+        (v) => v.enabled_skills?.length > 0
+      );
+    }
+    if (activeResult.ok) {
+      activeResumeId = activeResult.data?.activeResumeId || null;
     }
 
     injectSaveButton(board);

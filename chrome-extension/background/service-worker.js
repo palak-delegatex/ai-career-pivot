@@ -351,7 +351,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         case "QUICK_SCORE": {
           const { userProfile } = await chrome.storage.sync.get("userProfile");
-          const result = quickScore(msg.payload.jobDescription, userProfile);
+          let profile = userProfile;
+          if (msg.payload.skills) {
+            profile = {
+              skills: msg.payload.skills,
+              variants: userProfile?.variants || {},
+            };
+          }
+          const result = quickScore(msg.payload.jobDescription, profile);
           return { ok: true, data: result };
         }
 
