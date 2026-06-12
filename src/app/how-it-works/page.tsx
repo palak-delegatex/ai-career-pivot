@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "How It Works — AICareerPivot",
@@ -27,6 +28,7 @@ const howItWorksSchema = {
   description:
     "AICareerPivot uses AI to analyze your skills, financial situation, and family constraints to build a personalized career pivot roadmap with concrete milestones at 6 months, 1 year, and 2 years.",
   url: "https://ai-career-pivot.com/how-it-works",
+  dateModified: "2026-06-12",
   step: [
     {
       "@type": "HowToStep",
@@ -119,11 +121,12 @@ const whyItWorks = [
 ];
 
 export default function HowItWorksPage() {
+  const crumbs = breadcrumbSchema([{ name: "How It Works", path: "/how-it-works" }]);
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howItWorksSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([howItWorksSchema, crumbs]) }}
       />
 
       <div className="min-h-screen bg-slate-950 text-white">
@@ -173,6 +176,16 @@ export default function HowItWorksPage() {
         </section>
 
         <main className="max-w-4xl mx-auto px-6 py-20">
+
+          {/* TL;DR */}
+          <section className="mb-12 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
+            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+            <ul className="space-y-2 text-sm text-slate-300">
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Share your full situation (skills, finances, family constraints) — not just your resume.</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>AICareerPivot&apos;s AI builds a data-informed career transition strategy with transferable skills mapping and financial viability analysis.</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Get a concrete multi-year roadmap with specific milestones at 6 months, 1 year, and 2 years — not vague inspiration.</li>
+            </ul>
+          </section>
 
           {/* The three steps — tabbed on desktop */}
           <div className="mb-24">

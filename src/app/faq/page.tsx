@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "FAQ — AICareerPivot",
@@ -67,6 +68,7 @@ const faqs = [
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  dateModified: "2026-06-12",
   mainEntity: faqs.map((faq) => ({
     "@type": "Question",
     name: faq.question,
@@ -78,11 +80,12 @@ const faqSchema = {
 };
 
 export default function FAQPage() {
+  const crumbs = breadcrumbSchema([{ name: "FAQ", path: "/faq" }]);
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([faqSchema, crumbs]) }}
       />
 
       <div className="min-h-screen bg-slate-950 text-white">

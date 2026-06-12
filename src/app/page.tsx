@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog";
 import HomeClient from "./HomeClient";
+import { organizationSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "AICareerPivot — Your AI-Powered Career Transition Strategist",
@@ -25,16 +26,6 @@ export const metadata: Metadata = {
   },
 };
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "AICareerPivot",
-  url: "https://ai-career-pivot.com",
-  description:
-    "AI-powered personalized career transition roadmaps for professionals.",
-  sameAs: ["https://twitter.com/aicareer_pivot"],
-};
-
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -42,6 +33,7 @@ const websiteSchema = {
   url: "https://ai-career-pivot.com",
   description:
     "Personalized career transition roadmaps powered by AI. Analyzes your skills, finances, and constraints to build actionable pivot plans.",
+  dateModified: "2026-06-12",
   potentialAction: {
     "@type": "SearchAction",
     target: "https://ai-career-pivot.com/blog?q={search_term_string}",
@@ -51,12 +43,13 @@ const websiteSchema = {
 
 export default function Page() {
   const recentPosts = getAllPosts().slice(0, 3);
+  const orgSchema = organizationSchema();
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([organizationSchema, websiteSchema]),
+          __html: JSON.stringify([orgSchema, websiteSchema]),
         }}
       />
       <HomeClient recentPosts={recentPosts} />

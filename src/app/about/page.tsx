@@ -19,19 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
-const aboutSchema = {
+import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+
+const aboutPageSchema = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   name: "About AICareerPivot",
   url: "https://ai-career-pivot.com/about",
+  dateModified: "2026-06-12",
   description:
     "AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps by analyzing skills, financial constraints, and family circumstances.",
   mainEntity: {
-    "@type": "Organization",
-    name: "AICareerPivot",
-    url: "https://ai-career-pivot.com",
-    description:
-      "AI-powered career transition planning for professionals who need to account for their whole life — not just their resume.",
+    ...organizationSchema(),
     foundingDate: "2026",
     mission:
       "To help professionals make confident, well-planned career transitions that account for skills, income continuity, and family responsibilities.",
@@ -67,11 +66,12 @@ const principles = [
 ];
 
 export default function AboutPage() {
+  const crumbs = breadcrumbSchema([{ name: "About", path: "/about" }]);
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([aboutPageSchema, crumbs]) }}
       />
 
       <div className="min-h-screen bg-slate-950 text-white">
@@ -122,6 +122,16 @@ export default function AboutPage() {
         </section>
 
         <main className="max-w-4xl mx-auto px-6 py-20">
+
+          {/* TL;DR */}
+          <section className="mb-12 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
+            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+            <ul className="space-y-2 text-sm text-slate-300">
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps factoring in your skills, finances, and family constraints.</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Unlike generic career coaches, every roadmap includes concrete milestones at 6 months, 1 year, and 2 years with financial viability analysis.</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Built for the 95% of professionals who have mortgages, kids, and partners — not for people who can just quit and figure it out.</li>
+            </ul>
+          </section>
 
           {/* Mission */}
           <section className="mb-20" aria-labelledby="mission-heading">

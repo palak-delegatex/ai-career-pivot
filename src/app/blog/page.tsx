@@ -24,10 +24,11 @@ export default function BlogIndex() {
   const collectionSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Career Pivot Blog",
+    name: "AICareerPivot Career Pivot Blog",
     description:
       "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
     url: "https://ai-career-pivot.com/blog",
+    dateModified: posts[0]?.date ?? "2026-06-12",
     isPartOf: {
       "@type": "WebSite",
       name: "AICareerPivot",

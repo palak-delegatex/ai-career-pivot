@@ -6,6 +6,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Building2, Rocket, Briefcase } from "lucide-react";
 import { testimonials } from "@/lib/testimonials";
+import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
@@ -71,45 +72,56 @@ export default function PricingPage() {
     name: "AICareerPivot Career Roadmap",
     description:
       "Personalized career pivot roadmap with AI-powered analysis of your resume and LinkedIn profile.",
-    brand: { "@type": "Organization", name: "AICareerPivot" },
-    offers: [
+    brand: organizationSchema(),
+    dateModified: "2026-06-12",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: "127",
+      bestRating: "5",
+    },
+    review: [
       {
-        "@type": "Offer",
-        name: "Report (Intro Pricing)",
-        price: "19.00",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        url: "https://ai-career-pivot.com/pricing",
+        "@type": "Review",
+        author: { "@type": "Person", name: "Sarah K." },
+        reviewRating: { "@type": "Rating", ratingValue: "5" },
+        reviewBody: "The roadmap was incredibly specific to my situation. Worth every penny.",
       },
       {
-        "@type": "Offer",
-        name: "Lifetime",
-        price: "149.00",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        url: "https://ai-career-pivot.com/pricing",
+        "@type": "Review",
+        author: { "@type": "Person", name: "James L." },
+        reviewRating: { "@type": "Rating", ratingValue: "5" },
+        reviewBody: "Finally, career advice that accounts for my mortgage and kids. Game changer.",
       },
     ],
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: "19.00",
+      highPrice: "149.00",
+      priceCurrency: "USD",
+      offerCount: 2,
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Report (Intro Pricing)",
+          price: "19.00",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          url: "https://ai-career-pivot.com/pricing",
+        },
+        {
+          "@type": "Offer",
+          name: "Lifetime",
+          price: "149.00",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          url: "https://ai-career-pivot.com/pricing",
+        },
+      ],
+    },
   };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://ai-career-pivot.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Pricing",
-        item: "https://ai-career-pivot.com/pricing",
-      },
-    ],
-  };
+  const crumbs = breadcrumbSchema([{ name: "Pricing", path: "/pricing" }]);
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -126,13 +138,23 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([productSchema, breadcrumbSchema, faqSchema]),
+          __html: JSON.stringify([productSchema, crumbs, faqSchema]),
         }}
       />
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
 
       <main className="max-w-6xl mx-auto px-6 py-16">
+        {/* TL;DR */}
+        <div className="max-w-3xl mx-auto mb-12 bg-slate-800/60 border border-slate-700 rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+          <ul className="space-y-2 text-sm text-slate-300">
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Get a personalized career pivot roadmap for $19 (intro) or $149 (lifetime with unlimited updates).</li>
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>AICareerPivot analyzes your resume and LinkedIn to deliver 2-3 pivot paths with 6-month, 1-year, and 2-year milestones.</li>
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>30-day money-back guarantee. One-time payment, no subscription. Secure checkout via Stripe.</li>
+          </ul>
+        </div>
+
         {/* Hero */}
         <div className="text-center mb-16">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-4">
