@@ -156,6 +156,58 @@ async function fetchRemotive(query: string, location: string): Promise<EnrichedJ
   }));
 }
 
+async function fetchAdzunaJobs(query: string, location?: string): Promise<EnrichedJob[]> {
+  const appId = process.env.ADZUNA_APP_ID;
+  const appKey = process.env.ADZUNA_API_KEY;
+  if (!appId || !appKey) return [];
+
+  const params = new URLSearchParams({
+    app_id: appId,
+    app_key: appKey,
+    what: query,
+    results_per_page: "12",
+    "content-type": "application/json",
+  });
+  if (location) params.set("where", location);
+
+  const res = await fetch(
+    `https://api.adzuna.com/v1/api/jobs/us/search/1?${params}`,
+    { signal: AbortSignal.timeout(8000) }
+  );
+  if (!res.ok) return [];
+
+  const data = await res.json();
+  return (data.results || []).map((j: Record<string, unknown>) => {
+    const company = j.company as Record<string, string> | undefined;
+    const loc = j.location as Record<string, string> | undefined;
+    const salaryMin = j.salary_min as number | undefined;
+    const salaryMax = j.salary_max as number | undefined;
+    const salary =
+      salaryMin && salaryMax
+        ? `$${Math.round(salaryMin / 1000)}k–$${Math.round(salaryMax / 1000)}k/yr`
+        : salaryMin
+          ? `From $${Math.round(salaryMin / 1000)}k/yr`
+          : undefined;
+    const cat = j.category as Record<string, string> | undefined;
+
+    return {
+      id: `adzuna_${j.id}`,
+      title: j.title as string,
+      company_name: company?.display_name ?? "Unknown",
+      url: j.redirect_url as string,
+      salary,
+      job_type: (j.contract_type as string) || "Full-time",
+      tags: cat?.tag ? [cat.tag] : [],
+      location: loc?.display_name ?? "",
+      publication_date: j.created as string,
+      description_snippet: ((j.description as string) || "").slice(0, 200),
+      source: "adzuna" as const,
+      matchScore: 0,
+      matchedSkills: [],
+    };
+  });
+}
+
 export async function GET(req: NextRequest) {
   const role = req.nextUrl.searchParams.get("role") ?? "";
   const location = req.nextUrl.searchParams.get("location") ?? "";
@@ -178,13 +230,39 @@ export async function GET(req: NextRequest) {
     rawJobs = cached.data;
     source = rawJobs[0]?.source ?? "cache";
   } else {
-    // Try JSearch first, fall back to Remotive
-    rawJobs = await fetchJSearch(query, location);
-    source = "jsearch";
-    if (rawJobs.length === 0) {
+    // Fetch JSearch and Adzuna in parallel, fall back to Remotive if both empty
+    const [jsearchResult, adzunaResult] = await Promise.allSettled([
+      fetchJSearch(query, location),
+      fetchAdzunaJobs(query, location),
+    ]);
+
+    const jsearchJobs = jsearchResult.status === "fulfilled" ? jsearchResult.value : [];
+    const adzunaJobs = adzunaResult.status === "fulfilled" ? adzunaResult.value : [];
+
+    // Merge and deduplicate by title+company (case-insensitive)
+    const seen = new Set<string>();
+    const allJobs: EnrichedJob[] = [];
+    for (const job of [...jsearchJobs, ...adzunaJobs]) {
+      const key = `${job.title.toLowerCase()}::${job.company_name.toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        allJobs.push(job);
+      }
+    }
+
+    if (allJobs.length > 0) {
+      rawJobs = allJobs;
+      source = jsearchJobs.length > 0 && adzunaJobs.length > 0
+        ? "jsearch+adzuna"
+        : jsearchJobs.length > 0
+          ? "jsearch"
+          : "adzuna";
+    } else {
+      // Both empty — fall back to Remotive
       rawJobs = await fetchRemotive(query, location);
       source = "remotive";
     }
+
     if (rawJobs.length > 0) {
       cache.set(cacheKey, { data: rawJobs, at: Date.now() });
     }
@@ -198,10 +276,16 @@ export async function GET(req: NextRequest) {
 
   const sorted = sortByMatch(scored).slice(0, 10);
 
+  // Surface salary data when available (Adzuna often provides this)
+  const salaryData = sorted.filter((j) => j.salary).slice(0, 5);
+
   return NextResponse.json({
     jobs: sorted,
     source,
     total: sorted.length,
     hasMatchScores: userSkills.length > 0,
+    salaryRange: salaryData.length > 0
+      ? salaryData.map((j) => ({ title: j.title, salary: j.salary }))
+      : undefined,
   });
 }

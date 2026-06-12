@@ -9,7 +9,7 @@ export interface EnrichedJob {
   location?: string;
   publication_date?: string;
   description_snippet?: string;
-  source: "jsearch" | "remotive";
+  source: "jsearch" | "remotive" | "adzuna";
   matchScore: number;
   matchedSkills: string[];
 }

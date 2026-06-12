@@ -12,11 +12,29 @@ interface MilestoneProgress {
   completed_at: string | null;
 }
 
+interface JobStats {
+  total: number;
+  applied: number;
+  interviewing: number;
+  offered: number;
+}
+
+interface NetworkStats {
+  totalContacts: number;
+  strongConnections: number;
+  warmConnections: number;
+  pendingFollowUps: number;
+  overdueFollowUps: number;
+  recentInteractionCount: number;
+}
+
 function buildSystemPrompt(
   profile: UserProfile,
   plan: PivotPlan,
   progress: MilestoneProgress[],
-  priorMessages: { role: string; content: string }[]
+  priorMessages: { role: string; content: string }[],
+  jobStats: JobStats,
+  networkStats: NetworkStats
 ): string {
   const completedMilestones = progress.filter((m) => m.completed);
   const totalMilestones =
@@ -108,12 +126,20 @@ ${
 }
 ${priorContext}
 
+## Job Search Activity
+${jobStats.total > 0 ? `The user is tracking ${jobStats.total} job applications: ${jobStats.applied} applied, ${jobStats.interviewing} in interview stage, ${jobStats.offered} with offers.` : "The user hasn't started tracking job applications yet. Encourage them to use the Job Tracker."}
+
+## Networking Progress
+${networkStats.totalContacts > 0 ? `The user has ${networkStats.totalContacts} contacts in their network (${networkStats.strongConnections} strong, ${networkStats.warmConnections} warm). They have ${networkStats.pendingFollowUps} pending follow-ups${networkStats.overdueFollowUps > 0 ? ` (${networkStats.overdueFollowUps} overdue!)` : ""}.` : "The user hasn't added any networking contacts yet. Career pivots are relationship-driven — encourage them to start building their network."}
+${networkStats.recentInteractionCount > 0 ? `They've logged ${networkStats.recentInteractionCount} recent networking interactions — acknowledge their effort.` : ""}
+
 INSTRUCTIONS:
 1. If this is the first follow-up, greet them by name, acknowledge their progress (${completionRate}% complete), and ask what they'd like to focus on.
 2. If they report progress, celebrate it and suggest the next logical milestone.
 3. If they're stuck, help them break the obstacle into smaller steps. Suggest specific AI tools or resources from their plan.
 4. If their circumstances changed (new job, different timeline, etc.), help adjust the plan accordingly.
-5. Always end with a clear, actionable next step.`;
+5. When the user seems stuck or asks what to do next, check their job tracker and networking stats to give specific advice like "You have 3 overdue follow-ups — reaching out to your warm contacts could unlock referrals" or "You've applied to 5 jobs but haven't started networking — informational interviews could triple your response rate."
+6. Always end with a clear, actionable next step.`;
 }
 
 export async function POST(req: NextRequest) {
@@ -152,29 +178,85 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const { data: progressData } = await supabase
-    .from("milestone_progress")
-    .select("phase, milestone_index, completed, notes, completed_at")
-    .eq("report_id", reportId)
-    .eq("plan_index", planIndex ?? 0);
+  const email = profile.email ?? "";
 
-  let priorMessages: { role: string; content: string }[] = [];
-  if (sessionId) {
-    const { data: session } = await supabase
-      .from("conversation_sessions")
-      .select("messages")
-      .eq("id", sessionId)
-      .single();
-    if (session?.messages) {
-      priorMessages = session.messages as { role: string; content: string }[];
-    }
-  }
+  // Fetch all context data in parallel
+  const [
+    { data: progressData },
+    sessionResult,
+    jobTrackerRes,
+    contactsRes,
+    remindersRes,
+    interactionsRes,
+  ] = await Promise.all([
+    supabase
+      .from("milestone_progress")
+      .select("phase, milestone_index, completed, notes, completed_at")
+      .eq("report_id", reportId)
+      .eq("plan_index", planIndex ?? 0),
+    sessionId
+      ? supabase
+          .from("conversation_sessions")
+          .select("messages")
+          .eq("id", sessionId)
+          .single()
+      : Promise.resolve({ data: null }),
+    // Job tracker stats
+    supabase
+      .from("tracked_jobs")
+      .select("id, status, company, role")
+      .eq("user_email", email),
+    // Networking stats
+    supabase
+      .from("contacts")
+      .select("id, strength_tier")
+      .eq("user_email", email),
+    supabase
+      .from("follow_up_reminders")
+      .select("id, due_date, status")
+      .eq("user_email", email)
+      .eq("status", "pending"),
+    // Recent interactions
+    supabase
+      .from("contact_interactions")
+      .select("id, type, occurred_at")
+      .eq("user_email", email)
+      .order("occurred_at", { ascending: false })
+      .limit(10),
+  ]);
+
+  const priorMessages = (sessionResult?.data as { messages?: { role: string; content: string }[] } | null)?.messages ?? [];
+
+  const trackedJobs = jobTrackerRes.data ?? [];
+  const contacts = contactsRes.data ?? [];
+  const pendingReminders = remindersRes.data ?? [];
+  const recentInteractions = interactionsRes.data ?? [];
+
+  const jobStats: JobStats = {
+    total: trackedJobs.length,
+    applied: trackedJobs.filter((j) => j.status === "applied").length,
+    interviewing: trackedJobs.filter((j) => j.status === "interviewing").length,
+    offered: trackedJobs.filter((j) => j.status === "offered").length,
+  };
+
+  const networkStats: NetworkStats = {
+    totalContacts: contacts.length,
+    strongConnections: contacts.filter((c) => c.strength_tier === "strong").length,
+    warmConnections: contacts.filter((c) => c.strength_tier === "warm").length,
+    pendingFollowUps: pendingReminders.length,
+    overdueFollowUps: pendingReminders.filter(
+      (r) => new Date(r.due_date) < new Date()
+    ).length,
+    recentInteractionCount: recentInteractions.length,
+  };
 
   const systemPrompt = buildSystemPrompt(
     profile,
     plan,
     (progressData ?? []) as MilestoneProgress[],
-    priorMessages
+    priorMessages,
+    jobStats,
+    networkStats
   );
 
   const result = streamText({

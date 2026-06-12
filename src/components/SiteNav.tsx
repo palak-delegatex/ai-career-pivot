@@ -29,6 +29,7 @@ const NAV_LINKS = [
   { href: "/how-it-works", label: "How It Works" },
   { href: "/dashboard", label: "My Roadmaps" },
   { href: "/job-tracker", label: "Job Tracker" },
+  { href: "/networking", label: "Networking" },
   { href: "/cover-letter", label: "Cover Letter" },
   { href: "/linkedin-optimizer", label: "LinkedIn" },
 ] as const;
