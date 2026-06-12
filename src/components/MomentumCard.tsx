@@ -17,10 +17,9 @@ function Sparkline({ data }: { data: number[] }) {
 
   return (
     <svg
-      width={totalWidth}
-      height={height}
       viewBox={`0 0 ${totalWidth} ${height}`}
-      className="shrink-0"
+      className="w-full h-auto"
+      preserveAspectRatio="xMidYMax meet"
     >
       {data.map((val, i) => {
         const barHeight = Math.max((val / max) * height, 2);
@@ -70,7 +69,7 @@ export default function MomentumCard({
       </div>
       <div className="flex justify-between text-[10px] text-slate-500 mb-4">
         {DAYS.map((d, i) => (
-          <span key={i} style={{ width: 20, textAlign: "center" }}>
+          <span key={i} className="flex-1 text-center">
             {d}
           </span>
         ))}

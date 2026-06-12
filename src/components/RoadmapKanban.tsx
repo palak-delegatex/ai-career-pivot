@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, Target, Briefcase, Users, Check, Clock, Loader2 } from "lucide-react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 type MilestoneStatus = "not-started" | "in-progress" | "completed";
 
@@ -116,7 +117,7 @@ function KanbanCard({
             e.stopPropagation();
             onCycleStatus?.(entry.phaseKey, entry.index);
           }}
-          className="shrink-0 mt-0.5 cursor-pointer bg-transparent border-0 p-0"
+          className="shrink-0 cursor-pointer bg-transparent border-0 p-2 -m-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label={`Status: ${entry.status}. Click to change.`}
           disabled={entry.isSaving}
         >
@@ -185,45 +186,88 @@ export default function RoadmapKanban({
     items: entries.filter((e) => e.status === col.key),
   }));
 
+  const columnContent = (col: (typeof columns)[number]) => (
+    <>
+      {col.items.length === 0 ? (
+        <p className="text-xs text-slate-600 text-center py-8">{col.emptyText}</p>
+      ) : (
+        col.items.map((entry) => (
+          <KanbanCard
+            key={`${entry.phaseKey}:${entry.index}`}
+            entry={entry}
+            onCycleStatus={onCycleStatus}
+            onSelect={() =>
+              onSelectMilestone?.(entry.text, entry.phaseKey, entry.index)
+            }
+          />
+        ))
+      )}
+    </>
+  );
+
   return (
-    <div
-      className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1"
-      role="region"
-      aria-label="Milestone board"
-    >
-      {columns.map((col) => (
-        <div
-          key={col.key}
-          className="flex-1 min-w-[280px] snap-center"
-          role="group"
-          aria-label={`${col.label} — ${col.items.length} milestones`}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              {col.label}
-            </h3>
-            <span className="text-[10px] text-slate-500 font-medium bg-slate-800 px-2 py-0.5 rounded-full">
-              {col.items.length}
-            </span>
+    <>
+      {/* Mobile: vertical Accordion */}
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="not-started"
+        className="md:hidden"
+      >
+        {columns.map((col) => {
+          const completedCount = col.items.filter((e) => e.status === "completed").length;
+          const totalCount = col.items.length;
+          const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+          return (
+            <AccordionItem key={col.key} value={col.key}>
+              <AccordionTrigger className="min-h-[44px]">
+                <div className="flex items-center gap-2 flex-1">
+                  <span>{col.label}</span>
+                  <span className="text-[10px] text-slate-500 font-medium bg-slate-800 px-2 py-0.5 rounded-full">
+                    {totalCount}
+                  </span>
+                  {totalCount > 0 && (
+                    <span className="text-[10px] text-slate-500 ml-auto mr-2">
+                      {pct}%
+                    </span>
+                  )}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">{columnContent(col)}</div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+
+      {/* Desktop: horizontal kanban columns */}
+      <div
+        className="hidden md:flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1"
+        role="region"
+        aria-label="Milestone board"
+      >
+        {columns.map((col) => (
+          <div
+            key={col.key}
+            className="flex-1 min-w-[280px] snap-center"
+            role="group"
+            aria-label={`${col.label} — ${col.items.length} milestones`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                {col.label}
+              </h3>
+              <span className="text-[10px] text-slate-500 font-medium bg-slate-800 px-2 py-0.5 rounded-full">
+                {col.items.length}
+              </span>
+            </div>
+            <div className="bg-card/50 rounded-xl p-2 space-y-2 min-h-[200px]">
+              {columnContent(col)}
+            </div>
           </div>
-          <div className="bg-card/50 rounded-xl p-2 space-y-2 min-h-[200px]">
-            {col.items.length === 0 ? (
-              <p className="text-xs text-slate-600 text-center py-8">{col.emptyText}</p>
-            ) : (
-              col.items.map((entry) => (
-                <KanbanCard
-                  key={`${entry.phaseKey}:${entry.index}`}
-                  entry={entry}
-                  onCycleStatus={onCycleStatus}
-                  onSelect={() =>
-                    onSelectMilestone?.(entry.text, entry.phaseKey, entry.index)
-                  }
-                />
-              ))
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }
