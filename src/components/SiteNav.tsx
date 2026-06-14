@@ -32,6 +32,7 @@ const NAV_LINKS = [
   { href: "/networking", label: "Networking" },
   { href: "/cover-letter", label: "Cover Letter" },
   { href: "/linkedin-optimizer", label: "LinkedIn" },
+  { href: "/salary-negotiation", label: "Salary Coach" },
 ] as const;
 
 const LogoIcon = (
