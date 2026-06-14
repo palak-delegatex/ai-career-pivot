@@ -114,6 +114,22 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
               required: ["tool", "category", "useCase", "proficiencyNeeded"],
             },
           },
+          riskAssessments: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                obstacle: { type: "string" },
+                likelihood: { type: "number" },
+                impact: { type: "string", enum: ["high", "medium", "low"] },
+                timeframe: { type: "string" },
+                category: { type: "string", enum: ["market", "skill", "financial", "personal", "industry"] },
+                mitigationSteps: { type: "array", items: { type: "string" } },
+              },
+              required: ["obstacle", "likelihood", "impact", "timeframe", "category", "mitigationSteps"],
+            },
+          },
           tradeoffs: {
             type: "object",
             additionalProperties: false,
@@ -132,7 +148,7 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
         required: ["targetRole", "targetIndustry", "rationale", "matchScore", "skillMatchPercent",
           "sixMonthMilestones", "oneYearMilestones", "twoYearMilestones", "skillGaps",
           "weekOneActions", "estimatedTimeToTransition", "financialSummary",
-          "recommendedResources", "aiToolkit", "tradeoffs"],
+          "recommendedResources", "aiToolkit", "riskAssessments", "tradeoffs"],
       },
     },
   },
@@ -154,6 +170,7 @@ type PivotPlan = {
   financialSummary: { currentSalaryRange: string; targetSalaryRange: string; salaryUpliftPercent: number; transitionCosts: string[]; roiTimeframe: string; milestoneSalaries: { phase: "6-month" | "1-year" | "2-year"; expectedSalaryRange: string; marketDemandLevel: "low" | "moderate" | "high" | "very-high"; demandTrend: string }[] };
   recommendedResources: { name: string; provider: string; type: string; url: string; cost: string; timeEstimate: string }[];
   aiToolkit: { tool: string; category: string; useCase: string; proficiencyNeeded: "beginner" | "intermediate" | "advanced" }[];
+  riskAssessments: { obstacle: string; likelihood: number; impact: "high" | "medium" | "low"; timeframe: string; category: "market" | "skill" | "financial" | "personal" | "industry"; mitigationSteps: string[] }[];
   tradeoffs: { difficulty: "low" | "medium" | "high"; riskLevel: "low" | "medium" | "high"; timeToFirstRole: string; incomeImpactNear: string; incomePotentialLong: string; pros: string[]; cons: string[] };
 };
 
@@ -239,6 +256,8 @@ export async function POST(req: NextRequest) {
     },
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
+MARKET CONTEXT (June 2026): AI adoption is accelerating across all industries. Companies are actively hiring for AI-augmented roles. The window for early-mover advantage in AI-native positions is 12-18 months before saturation. Professionals who can demonstrate AI fluency alongside domain expertise are commanding 20-40% salary premiums.
+
 Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic. Each plan MUST include a tradeoffs object with: difficulty ("low"/"medium"/"high"), riskLevel ("low"/"medium"/"high"), timeToFirstRole (e.g. "8-12 months"), incomeImpactNear (e.g. "-10% for 6 months"), incomePotentialLong (e.g. "+40% within 2 years"), pros (3-5 specific advantages for this person), cons (2-4 honest drawbacks). Make tradeoffs comparison-ready so the user can pick the best path for their situation.
 
 CRITICAL — AI-NATIVE STRATEGY:
@@ -252,11 +271,21 @@ Every plan must be AI-native. This means:
 
 Frame AI as a career multiplier, not a threat. The narrative should be: "You + AI tools = a professional who delivers 3x the output of someone who doesn't use AI."
 
+RISK ASSESSMENT — REQUIRED FOR EVERY PLAN:
+Each plan MUST include a riskAssessments array with 4-6 realistic obstacles this person will face during their pivot. For each risk:
+- obstacle: a specific, concrete risk statement (not generic — reference their situation)
+- likelihood: 0-100 probability of occurring
+- impact: "high", "medium", or "low" — how severely it would derail the transition
+- timeframe: when this risk is most relevant (e.g. "First 3 months", "Month 6-12", "Ongoing")
+- category: one of "market" (job market/demand shifts), "skill" (capability gaps), "financial" (income/cost risks), "personal" (burnout, family, motivation), "industry" (sector-specific disruptions)
+- mitigationSteps: 2-4 specific, actionable steps to reduce or eliminate the risk
+Aim for variety across categories. Include at least one high-impact and one low-impact risk. Tailor risks to the user's specific circumstances (dependents, salary floor, risk tolerance, location).
+
 RULES FOR EVERY FIELD:
 1. matchScore (0-100): overall fit score considering skills, experience, market demand, AI-readiness, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has. Boost matchScore for paths where AI tools significantly lower the barrier to entry.
-2. Each milestone string must be ≤15 words. Make them measurable and specific. At least 30% of milestones across all timeframes should involve AI tool adoption or AI skill development.
+2. Each milestone string must start with a timing prefix and be specific + measurable. Format: "Week 1-2: [action]" for 6-month milestones, "Month 7-8: [action]" for 1-year milestones, "Month 13-15: [action]" for 2-year milestones. Each must be ≤18 words total. Include a clear deliverable or outcome (e.g. "Week 3-4: Complete Google Data Analytics Certificate Module 1-3" not "Learn data analytics"). At least 30% of milestones should involve AI tool adoption.
 3. skillGaps: for each gap, specify the skill name, currentLevel (e.g. "none", "beginner", "intermediate"), requiredLevel (e.g. "intermediate", "advanced"), priority ("high"/"medium"/"low"), and optionally a resource (specific course or book name with provider). Include AI-specific skill gaps. TRANSFERABILITY SCORING: For every skill gap, also provide: transferabilityScore (0-100, how much of their existing experience applies), transferCategory ("direct-transfer" if the skill maps directly from their background, "partial-transfer" if related experience helps but retraining is needed, "new-skill" if they must learn from scratch), and transferNote (1 sentence explaining what from their background transfers and what's new). Example: a project manager pivoting to product management might have "Stakeholder Management" as direct-transfer (score: 90, "Your cross-functional PM experience maps directly"), "SQL/Data Analysis" as new-skill (score: 10, "Technical querying is new but your reporting instincts help"), "User Research" as partial-transfer (score: 55, "Your customer feedback loops translate; learn formal UX research methods").
-4. weekOneActions: exactly 3 actions the user can start THIS WEEK. Each has a short title, a detailed instruction, a timeEstimate (e.g. "2 hours", "30 minutes"), and difficulty ("easy"/"medium"/"hard"). Prioritize easy wins first. At least one action must involve trying an AI tool relevant to the target career.
+4. weekOneActions: exactly 3 actions the user can start TODAY — not "this week", TODAY. Each has a short title, a detailed step-by-step instruction (be hyper-specific: include exact URLs, exact course names, exact tool names), a timeEstimate (e.g. "45 minutes", "2 hours"), and difficulty ("easy"/"medium"/"hard"). The FIRST action must be difficulty "easy" and completable in under 30 minutes — this is critical for momentum. At least one action must involve setting up an AI tool for their target role.
 5. financialSummary: provide currentSalaryRange and targetSalaryRange as formatted ranges (e.g. "$85,000-$105,000"), salaryUpliftPercent as a number, transitionCosts as an array of line items (e.g. ["Google Data Analytics Certificate: $49/mo x 6 = $294", "Career coaching: $500"]), and roiTimeframe (e.g. "6-9 months after transition"). Note that many AI certifications and tools are free or low-cost, which reduces transition costs. MILESTONE SALARY FORECASTING: Also provide milestoneSalaries — an array of 3 objects (one per phase: "6-month", "1-year", "2-year") with: expectedSalaryRange (realistic range at that career stage, e.g. "$70,000-$85,000" during transition, growing toward target), marketDemandLevel ("low"/"moderate"/"high"/"very-high" for the role at that experience level), and demandTrend (1 sentence on market outlook, e.g. "AI product managers are seeing 25% YoY demand growth"). This creates a salary trajectory showing progression from current to target.
 6. recommendedResources: 3-5 specific resources with name, provider, type (e.g. "course", "certification", "book", "community"), url, cost (e.g. "$49/mo", "Free"), and timeEstimate (e.g. "40 hours", "6 weeks"). At least 2 must be AI-related.
 7. rationale must reference how AI is transforming the target industry, current market conditions, and explain why THIS person's specific background combined with AI tools gives them a unique edge.

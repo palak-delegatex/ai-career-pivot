@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, ArrowLeft, Mic2, RotateCcw } from "lucide-react";
+import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
 type InterviewType = "behavioral" | "technical" | "situational";
@@ -53,6 +53,8 @@ export default function MockInterviewClient() {
   const [targetRole, setTargetRole] = useState("");
   const [customRole, setCustomRole] = useState("");
   const [interviewType, setInterviewType] = useState<InterviewType>("behavioral");
+  const [jobDescription, setJobDescription] = useState("");
+  const [showJdInput, setShowJdInput] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -101,6 +103,7 @@ export default function MockInterviewClient() {
         body: JSON.stringify({
           targetRole: role,
           interviewType,
+          jobDescription: jobDescription.trim() || undefined,
           messages: [{ role: "user", content: "Start the interview." }],
           questionCount: 0,
         }),
@@ -162,6 +165,7 @@ export default function MockInterviewClient() {
         body: JSON.stringify({
           targetRole: role,
           interviewType,
+          jobDescription: jobDescription.trim() || undefined,
           messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
           questionCount: willEnd ? 6 : nextQuestionCount,
         }),
@@ -218,6 +222,8 @@ export default function MockInterviewClient() {
     setQuestionCount(0);
     setShowEndOption(false);
     setInput("");
+    setJobDescription("");
+    setShowJdInput(false);
   }
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
@@ -243,7 +249,7 @@ export default function MockInterviewClient() {
           {/* Role selection */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-3">Target Role</label>
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
               {POPULAR_ROLES.map((role) => (
                 <button
                   key={role}
@@ -283,7 +289,7 @@ export default function MockInterviewClient() {
           {/* Interview type */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-3">Interview Type</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {INTERVIEW_TYPES.map(({ value, label, desc }) => (
                 <button
                   key={value}
@@ -301,6 +307,36 @@ export default function MockInterviewClient() {
             </div>
           </div>
 
+          {/* Job description (optional) */}
+          <div>
+            <button
+              onClick={() => setShowJdInput(!showJdInput)}
+              className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            >
+              <FileText className="w-4 h-4 text-purple-400" />
+              Paste a job description
+              <span className="text-xs text-slate-500 font-normal">(optional)</span>
+              {showJdInput ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+            {showJdInput && (
+              <div className="mt-3 space-y-2">
+                <textarea
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  placeholder="Paste the full job posting here — we'll tailor every question to what they're actually looking for…"
+                  rows={5}
+                  className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                />
+                {jobDescription.trim() && (
+                  <div className="flex items-center gap-2 text-xs text-emerald-400">
+                    <FileText className="w-3 h-3" />
+                    JD loaded — questions will be tailored to this role
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <button
             onClick={startInterview}
             disabled={!targetRole || (targetRole === "custom" && !customRole.trim())}
@@ -310,7 +346,7 @@ export default function MockInterviewClient() {
           </button>
 
           <p className="text-slate-500 text-xs text-center">
-            5 questions · ~10 minutes · Feedback scorecard at the end
+            5 questions · ~10 minutes · {jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
           </p>
         </div>
       </main>
@@ -336,7 +372,10 @@ export default function MockInterviewClient() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-white">Mock Interview</h1>
-              <p className="text-xs text-slate-400">{displayRole} · {interviewType}</p>
+              <p className="text-xs text-slate-400">
+                {displayRole} · {interviewType}
+                {jobDescription.trim() && <span className="text-purple-400"> · JD-tailored</span>}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">

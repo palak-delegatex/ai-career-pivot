@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Minus } from "lucide-react";
-import { MessageSquare } from "lucide-react";
+import { Send, Minus, MessageSquare } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface Message {
   role: "user" | "assistant";
@@ -121,11 +121,15 @@ export default function FollowUpChat({
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loadingSession, setLoadingSession] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+    if (desktopScrollRef.current) {
+      desktopScrollRef.current.scrollTop = desktopScrollRef.current.scrollHeight;
     }
   }, []);
 
@@ -275,102 +279,139 @@ export default function FollowUpChat({
     `What skills are most important for ${targetRole}?`,
   ];
 
+  const chatMessages = (
+    <>
+      {messages.length === 0 && !loadingSession && (
+        <div className="text-center py-6">
+          <p className="text-slate-400 text-sm mb-4">
+            Pick up where you left off. Ask about your progress, get advice on next steps, or update your plan.
+          </p>
+          <div className="flex flex-col gap-2">
+            {suggestions.map((s) => (
+              <button
+                key={s}
+                onClick={() => handleSend(s)}
+                className="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl transition-colors text-left min-h-[44px]"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {loadingSession && messages.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-slate-500 text-sm">Loading your session...</p>
+        </div>
+      )}
+
+      {messages.map((msg, i) => (
+        <ChatMessage key={i} msg={msg} />
+      ))}
+
+      {streaming &&
+        messages.length > 0 &&
+        messages[messages.length - 1].content === "" && (
+          <div className="flex justify-start">
+            <div className="bg-slate-700/60 rounded-2xl px-4 py-2.5">
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+              </div>
+            </div>
+          </div>
+        )}
+    </>
+  );
+
+  const chatInput = (
+    <div className="border-t border-slate-700 p-3">
+      <div className="flex gap-2 items-end">
+        <textarea
+          ref={inputRef}
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask about your career pivot..."
+          rows={1}
+          style={{ minHeight: "44px", maxHeight: "120px" }}
+          className="flex-1 bg-slate-900/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500 resize-none transition-colors overflow-y-auto"
+        />
+        <button
+          onClick={() => handleSend()}
+          disabled={!input.trim() || streaming}
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:hover:bg-teal-600 text-white rounded-xl transition-colors shrink-0"
+          aria-label="Send message"
+        >
+          <Send className="h-4 w-4" />
+        </button>
+      </div>
+      <p className="text-[10px] text-slate-600 mt-1.5 text-center">Enter to send · Shift+Enter for new line</p>
+    </div>
+  );
+
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-teal-900/30"
-      >
-        <MessageSquare className="h-5 w-5" />
-        Continue My Roadmap
-      </button>
+      <>
+        {/* Desktop: full-width button */}
+        <button
+          onClick={() => setOpen(true)}
+          className="hidden md:flex w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all items-center justify-center gap-3 shadow-lg shadow-teal-900/30 min-h-[44px]"
+        >
+          <MessageSquare className="h-5 w-5" />
+          Continue My Roadmap
+        </button>
+        {/* Mobile: FAB */}
+        <button
+          onClick={() => setOpen(true)}
+          className="md:hidden fixed bottom-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] right-6 z-40 w-14 h-14 rounded-full bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-900/40 flex items-center justify-center transition-colors"
+          aria-label="Open career advisor chat"
+        >
+          <MessageSquare className="h-6 w-6" />
+        </button>
+      </>
     );
   }
 
   return (
-    <div className="bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700 bg-slate-800/60">
-        <div>
-          <h3 className="font-bold text-sm text-white">Career Advisor</h3>
-          <p className="text-xs text-slate-400">Follow-up session for {targetRole}</p>
-        </div>
-        <button
-          onClick={() => setOpen(false)}
-          className="text-slate-400 hover:text-white transition-colors p-1"
-          aria-label="Minimize chat"
-        >
-          <Minus className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div ref={scrollRef} className="h-80 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 && !loadingSession && (
-          <div className="text-center py-6">
-            <p className="text-slate-400 text-sm mb-4">
-              Pick up where you left off. Ask about your progress, get advice on next steps, or update your plan.
-            </p>
-            <div className="flex flex-col gap-2">
-              {suggestions.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => handleSend(s)}
-                  className="text-xs bg-slate-700/60 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl transition-colors text-left"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+    <>
+      {/* Mobile: full-screen Sheet */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="bottom" className="md:hidden h-[100dvh] flex flex-col p-0">
+          <SheetHeader className="border-b border-slate-700 bg-slate-800/60 px-5 py-3">
+            <SheetTitle className="text-sm text-white">Career Advisor</SheetTitle>
+            <p className="text-xs text-slate-400">Follow-up session for {targetRole}</p>
+          </SheetHeader>
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {chatMessages}
           </div>
-        )}
+          {chatInput}
+        </SheetContent>
+      </Sheet>
 
-        {loadingSession && messages.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-slate-500 text-sm">Loading your session...</p>
+      {/* Desktop: inline panel */}
+      <div className="hidden md:block bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700 bg-slate-800/60">
+          <div>
+            <h3 className="font-bold text-sm text-white">Career Advisor</h3>
+            <p className="text-xs text-slate-400">Follow-up session for {targetRole}</p>
           </div>
-        )}
-
-        {messages.map((msg, i) => (
-          <ChatMessage key={i} msg={msg} />
-        ))}
-
-        {streaming &&
-          messages.length > 0 &&
-          messages[messages.length - 1].content === "" && (
-            <div className="flex justify-start">
-              <div className="bg-slate-700/60 rounded-2xl px-4 py-2.5">
-                <div className="flex gap-1">
-                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
-                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
-                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
-                </div>
-              </div>
-            </div>
-          )}
-      </div>
-
-      <div className="border-t border-slate-700 p-3">
-        <div className="flex gap-2 items-end">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask about your career pivot..."
-            rows={1}
-            style={{ minHeight: "40px", maxHeight: "120px" }}
-            className="flex-1 bg-slate-900/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500 resize-none transition-colors overflow-y-auto"
-          />
           <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || streaming}
-            className="p-2.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:hover:bg-teal-600 text-white rounded-xl transition-colors shrink-0"
-            aria-label="Send message"
+            onClick={() => setOpen(false)}
+            className="text-slate-400 hover:text-white transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Minimize chat"
           >
-            <Send className="h-4 w-4" />
+            <Minus className="h-4 w-4" />
           </button>
         </div>
-        <p className="text-[10px] text-slate-600 mt-1.5 text-center">Enter to send · Shift+Enter for new line</p>
+
+        <div ref={desktopScrollRef} className="h-[min(320px,50vh)] overflow-y-auto p-4 space-y-4">
+          {chatMessages}
+        </div>
+        {chatInput}
       </div>
-    </div>
+    </>
   );
 }

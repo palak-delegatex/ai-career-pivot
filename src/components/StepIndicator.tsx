@@ -21,7 +21,15 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 {completed ? (
                   <motion.div
                     initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
+                    animate={{
+                      scale: [0.8, 1.2, 1],
+                      boxShadow: [
+                        "0 0 0 0 rgba(74, 222, 128, 0)",
+                        "0 0 12px 4px rgba(74, 222, 128, 0.35)",
+                        "0 0 0 0 rgba(74, 222, 128, 0)",
+                      ],
+                    }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
                     className="w-9 h-9 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: "var(--chart-3)" }}
                   >

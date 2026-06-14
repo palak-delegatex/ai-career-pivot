@@ -6,11 +6,13 @@ export async function POST(req: NextRequest) {
   const {
     targetRole,
     interviewType = "behavioral",
+    jobDescription,
     messages,
     questionCount = 0,
   }: {
     targetRole: string;
     interviewType?: "behavioral" | "technical" | "situational";
+    jobDescription?: string;
     messages: { role: "user" | "assistant"; content: string }[];
     questionCount?: number;
   } = await req.json();
@@ -24,9 +26,10 @@ export async function POST(req: NextRequest) {
 
   const isEndOfInterview = questionCount >= 5;
 
+  const jd = jobDescription?.trim() || undefined;
   const systemPrompt = isEndOfInterview
-    ? buildFeedbackPrompt(targetRole)
-    : buildInterviewerPrompt(targetRole, interviewType, questionCount);
+    ? buildFeedbackPrompt(targetRole, jd)
+    : buildInterviewerPrompt(targetRole, interviewType, questionCount, jd);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),
@@ -40,9 +43,25 @@ export async function POST(req: NextRequest) {
 function buildInterviewerPrompt(
   targetRole: string,
   interviewType: string,
-  questionCount: number
+  questionCount: number,
+  jobDescription?: string
 ): string {
   const isFirst = questionCount === 0;
+
+  const jdSection = jobDescription
+    ? `\n\nJOB DESCRIPTION PROVIDED BY THE CANDIDATE:
+"""
+${jobDescription.slice(0, 4000)}
+"""
+
+CRITICAL: You have the actual job description. Use it to:
+- Extract the specific skills, qualifications, and responsibilities mentioned.
+- Craft questions that directly test whether the candidate meets the requirements listed.
+- Reference specific responsibilities from the JD in your questions (e.g. "This role mentions leading cross-functional teams — tell me about…").
+- Prioritize must-have qualifications and key responsibilities over nice-to-haves.`
+    : `\n\nROLE-SPECIFIC FOCUS for ${targetRole}:
+- Tailor questions to the specific skills, scenarios, and challenges common in ${targetRole} roles.
+- Reference real scenarios a ${targetRole} would face (stakeholder management, cross-functional decisions, metrics, etc).`;
 
   return `You are a senior hiring manager conducting a ${interviewType} interview for a ${targetRole} position at a top company.
 
@@ -59,14 +78,23 @@ INTERVIEW STRUCTURE:
 - Questions 3-4: Core competency (role-specific behavioral/situational)
 - Question 5: Challenging scenario (complex problem or conflict)
 
-${isFirst ? `This is the START of the interview. Briefly introduce yourself as a hiring manager (1 sentence), state this is a ${interviewType} interview for ${targetRole}, and immediately ask Question 1. Do not explain the format — just start.` : `Continue the interview naturally. Give brief feedback on their last answer, then ask the next question.`}
-
-ROLE-SPECIFIC FOCUS for ${targetRole}:
-- Tailor questions to the specific skills, scenarios, and challenges common in ${targetRole} roles.
-- Reference real scenarios a ${targetRole} would face (stakeholder management, cross-functional decisions, metrics, etc).`;
+${isFirst ? `This is the START of the interview. Briefly introduce yourself as a hiring manager (1 sentence), state this is a ${interviewType} interview for ${targetRole}, and immediately ask Question 1. Do not explain the format — just start.` : `Continue the interview naturally. Give brief feedback on their last answer, then ask the next question.`}${jdSection}`;
 }
 
-function buildFeedbackPrompt(targetRole: string): string {
+function buildFeedbackPrompt(targetRole: string, jobDescription?: string): string {
+  const jdSection = jobDescription
+    ? `\n\nJOB DESCRIPTION THE CANDIDATE IS TARGETING:
+"""
+${jobDescription.slice(0, 4000)}
+"""
+
+CRITICAL: Score the candidate against the SPECIFIC requirements in this job description. In your debrief:
+- Map their demonstrated skills to the JD's listed requirements.
+- Call out which JD requirements they addressed well and which they missed.
+- In "Areas to Improve", focus on gaps relative to this specific JD.
+- In "JD Fit Score", rate how well their answers demonstrate readiness for THIS specific role.`
+    : "";
+
   return `You are a senior hiring manager who just completed a mock interview for a ${targetRole} candidate.
 
 Generate a structured interview debrief with:
@@ -76,10 +104,10 @@ Generate a structured interview debrief with:
 **Strengths** (3 bullet points with specific examples from their answers)
 
 **Areas to Improve** (3 bullet points with concrete advice)
-
+${jobDescription ? `\n**JD Fit Score**: X/10 — How well do their answers match the specific job requirements? List 2-3 JD requirements they demonstrated and 2-3 they should prepare for.\n` : ""}
 **Recommended Practice** (2-3 specific resources, question types, or frameworks to practice)
 
 **Hiring Recommendation**: Would you advance them? (Yes / Maybe with coaching / Not yet — with brief reason)
 
-Be honest but constructive. Reference specific answers from the conversation. End with one sentence of encouragement.`;
+Be honest but constructive. Reference specific answers from the conversation. End with one sentence of encouragement.${jdSection}`;
 }

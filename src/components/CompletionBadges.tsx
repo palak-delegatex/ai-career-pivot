@@ -157,8 +157,9 @@ export default function CompletionBadges({
               return (
                 <Tooltip key={badge.key}>
                   <TooltipTrigger asChild>
-                    <div
-                      className={`relative w-14 h-14 rounded-xl flex items-center justify-center transition-all ${
+                    <button
+                      type="button"
+                      className={`relative w-14 h-14 rounded-xl flex items-center justify-center transition-all cursor-default ${
                         earned
                           ? "bg-slate-800 border-2 border-[hsl(var(--accent))] text-teal-400 shadow-lg shadow-teal-900/30 hover:animate-[badge-float_1.5s_ease-in-out_infinite]"
                           : "bg-slate-800/40 border border-slate-700 text-slate-600"
@@ -168,10 +169,11 @@ export default function CompletionBadges({
                           ? { animation: "badge-earn 300ms ease-out forwards" }
                           : undefined
                       }
+                      title={`${badge.label}: ${badge.description}${earned ? "" : " (Locked)"}`}
                     >
                       {isAnimating && <ParticleBurst />}
                       {earned ? badge.icon : <Lock className="h-4 w-4" />}
-                    </div>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-xs font-semibold">{badge.label}</p>

@@ -59,6 +59,13 @@ export interface EmailTemplate {
   html: string;
 }
 
+export interface FreeSnapshotPath {
+  targetRole: string;
+  targetIndustry: string;
+  matchScore: number;
+  rationale: string;
+}
+
 export interface EmailOpts {
   intakeSkillCount?: number;
   referralCode?: string;
@@ -69,6 +76,8 @@ export interface EmailOpts {
   milestoneName?: string;
   reportId?: string;
   planIndex?: number;
+  freeSnapshotPaths?: FreeSnapshotPath[];
+  topStrengths?: string[];
 }
 
 export function getEmailTemplate(
@@ -518,6 +527,64 @@ export function getEmailTemplate(
           <div style="margin:32px 0;">
             ${cta("Open my roadmap →", roadmapLink)}
           </div>
+          ${sig()}
+        `),
+      };
+    }
+
+    case 17: {
+      const paths = opts?.freeSnapshotPaths ?? [];
+      const strengths = opts?.topStrengths ?? [];
+      const topPath = paths[0];
+      const surprisePath = paths.length > 1 ? paths[paths.length - 1] : null;
+
+      const pathCards = paths.map((p) =>
+        `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:20px 24px;margin:0 0 12px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0;">${p.targetRole}</p>
+            <span style="background:#0d9488;color:#f9fafb;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;">${p.matchScore}% match</span>
+          </div>
+          <p style="color:#64748b;font-size:13px;margin:0 0 8px 0;">${p.targetIndustry}</p>
+          <p style="color:#94a3b8;font-size:14px;line-height:1.6;margin:0;">${p.rationale}</p>
+        </div>`
+      ).join("");
+
+      const strengthsList = strengths.length > 0
+        ? `<div style="margin:24px 0;">
+            <p style="color:#f1f5f9;font-weight:700;font-size:15px;margin:0 0 12px 0;">Your top transferable strengths:</p>
+            ${strengths.map(s => `<span style="display:inline-block;background:#042f2e;border:1px solid #0d9488;color:#2dd4bf;font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;margin:0 6px 6px 0;">${s}</span>`).join("")}
+          </div>`
+        : "";
+
+      return {
+        subject: topPath
+          ? `${name}, you're a ${topPath.matchScore}% match for ${topPath.targetRole}`
+          : `${name}, your career snapshot is ready`,
+        previewText: surprisePath
+          ? `Plus a career path you might not have considered: ${surprisePath.targetRole}`
+          : "See where your skills could take you.",
+        html: baseHtml(`
+          ${h1(`Your career snapshot, ${name}.`)}
+          ${p("We just analyzed your background. Here's what we found — skills you didn't know were transferable and career paths that actually fit.")}
+
+          ${pathCards}
+
+          ${strengthsList}
+
+          ${surprisePath ? `<div style="background:#1e1b4b;border:1px solid #4338ca;border-radius:12px;padding:20px 24px;margin:24px 0;">
+            <p style="color:#a5b4fc;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">One you might not have considered</p>
+            <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 8px 0;">${surprisePath.targetRole} — ${surprisePath.matchScore}% match</p>
+            <p style="color:#94a3b8;font-size:14px;line-height:1.6;margin:0;">${surprisePath.rationale}</p>
+          </div>` : ""}
+
+          ${p("This is just the snapshot. The full roadmap gives you a step-by-step plan for each path — with timelines, skill-building resources, salary projections, and a plan that works around your real-life constraints.")}
+
+          <div style="margin:32px 0;">
+            ${cta("Unlock My Full Roadmap — $19 →", utmLink("/pricing", "free_snapshot"))}
+          </div>
+
+          ${p("<span style=\"color:#64748b;\">30-day money-back guarantee. No subscription — pay once, yours forever.</span>")}
+
           ${sig()}
         `),
       };

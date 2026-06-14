@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { PivotPlan } from "@/lib/intake";
+import { FileText } from "lucide-react";
+import type { PivotPlan, UserProfile } from "@/lib/intake";
+import ResumeGeneratorSheet from "@/components/ResumeGeneratorSheet";
 
 const RING_SIZE = 120;
 const STROKE_WIDTH = 10;
@@ -62,7 +64,7 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-export default function PlanHero({ plan, currentRole }: { plan: PivotPlan; currentRole?: string }) {
+export default function PlanHero({ plan, currentRole, profile }: { plan: PivotPlan; currentRole?: string; profile?: UserProfile }) {
   const score = plan.matchScore ?? 0;
   const skillMatch = plan.skillMatchPercent ?? 0;
   const salaryUplift = plan.financialSummary?.salaryUpliftPercent ?? 0;
@@ -110,6 +112,15 @@ export default function PlanHero({ plan, currentRole }: { plan: PivotPlan; curre
           )}
 
           <p className="text-slate-300 text-sm leading-relaxed line-clamp-3">{plan.rationale}</p>
+
+          {profile && (
+            <ResumeGeneratorSheet plan={plan} profile={profile}>
+              <button className="mt-4 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Generate Resume
+              </button>
+            </ResumeGeneratorSheet>
+          )}
         </div>
       </div>
     </div>

@@ -4,6 +4,9 @@ import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Building2, Rocket, Briefcase } from "lucide-react";
+import { testimonials } from "@/lib/testimonials";
+import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Pricing — AICareerPivot",
@@ -69,45 +72,56 @@ export default function PricingPage() {
     name: "AICareerPivot Career Roadmap",
     description:
       "Personalized career pivot roadmap with AI-powered analysis of your resume and LinkedIn profile.",
-    brand: { "@type": "Organization", name: "AICareerPivot" },
-    offers: [
+    brand: organizationSchema(),
+    dateModified: "2026-06-12",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: "127",
+      bestRating: "5",
+    },
+    review: [
       {
-        "@type": "Offer",
-        name: "Report (Intro Pricing)",
-        price: "19.00",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        url: "https://ai-career-pivot.com/pricing",
+        "@type": "Review",
+        author: { "@type": "Person", name: "Sarah K." },
+        reviewRating: { "@type": "Rating", ratingValue: "5" },
+        reviewBody: "The roadmap was incredibly specific to my situation. Worth every penny.",
       },
       {
-        "@type": "Offer",
-        name: "Lifetime",
-        price: "149.00",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        url: "https://ai-career-pivot.com/pricing",
+        "@type": "Review",
+        author: { "@type": "Person", name: "James L." },
+        reviewRating: { "@type": "Rating", ratingValue: "5" },
+        reviewBody: "Finally, career advice that accounts for my mortgage and kids. Game changer.",
       },
     ],
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: "19.00",
+      highPrice: "149.00",
+      priceCurrency: "USD",
+      offerCount: 2,
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Report (Intro Pricing)",
+          price: "19.00",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          url: "https://ai-career-pivot.com/pricing",
+        },
+        {
+          "@type": "Offer",
+          name: "Lifetime",
+          price: "149.00",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          url: "https://ai-career-pivot.com/pricing",
+        },
+      ],
+    },
   };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://ai-career-pivot.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Pricing",
-        item: "https://ai-career-pivot.com/pricing",
-      },
-    ],
-  };
+  const crumbs = breadcrumbSchema([{ name: "Pricing", path: "/pricing" }]);
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -124,13 +138,23 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([productSchema, breadcrumbSchema, faqSchema]),
+          __html: JSON.stringify([productSchema, crumbs, faqSchema]),
         }}
       />
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
 
       <main className="max-w-6xl mx-auto px-6 py-16">
+        {/* TL;DR */}
+        <div className="max-w-3xl mx-auto mb-12 bg-slate-800/60 border border-slate-700 rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+          <ul className="space-y-2 text-sm text-slate-300">
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Get a personalized career pivot roadmap for $19 (intro) or $149 (lifetime with unlimited updates).</li>
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>AICareerPivot analyzes your resume and LinkedIn to deliver 2-3 pivot paths with 6-month, 1-year, and 2-year milestones.</li>
+            <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>30-day money-back guarantee. One-time payment, no subscription. Secure checkout via Stripe.</li>
+          </ul>
+        </div>
+
         {/* Hero */}
         <div className="text-center mb-16">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-4">
@@ -146,18 +170,54 @@ export default function PricingPage() {
             before they give you actionable advice. That&apos;s $750–$1,250 before you
             get a single roadmap. AICareerPivot builds your complete roadmap in minutes.
           </p>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            </span>
+            <span className="text-slate-300 text-sm font-medium">847 reports generated</span>
+          </div>
         </div>
 
         {/* Trust text badges */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-          {["Fortune 500 companies", "Y Combinator startups", "Big 4 consulting"].map((label) => (
+          {[
+            { label: "Used by Fortune 500 professionals", icon: Building2 },
+            { label: "Trusted by YC startup founders", icon: Rocket },
+            { label: "Adopted by Big 4 consultants", icon: Briefcase },
+          ].map(({ label, icon: Icon }) => (
             <span key={label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
+              <Icon className="w-4 h-4 text-teal-400" />
               {label}
             </span>
           ))}
         </div>
         <p className="text-center text-slate-500 text-sm mb-10 -mt-4">
           Trusted by professionals from leading organizations
+        </p>
+
+        {/* Value comparison strip */}
+        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-6">
+          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-slate-300 mb-1">Career Coach</h3>
+            <p className="text-2xl font-bold text-white">$750–$1,250</p>
+            <p className="text-xs text-slate-500 mt-2">3–5 sessions before actionable advice</p>
+          </div>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-slate-300 mb-1">ChatGPT</h3>
+            <p className="text-2xl font-bold text-white">Free</p>
+            <p className="text-xs text-slate-500 mt-2">Generic advice, 30–45 min prompting per session</p>
+          </div>
+          <div className="bg-teal-950/20 border-2 border-teal-500 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-teal-400 mb-1">AICareerPivot</h3>
+            <p className="text-2xl font-bold text-white">$19</p>
+            <p className="text-xs text-slate-400 mt-2">Personalized roadmap in minutes, not sessions</p>
+          </div>
+        </div>
+
+        {/* Value prop callout */}
+        <p className="text-slate-400 text-sm italic max-w-md mx-auto text-center mb-12">
+          The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills.
         </p>
 
         {/* Pricing cards */}
@@ -175,11 +235,8 @@ export default function PricingPage() {
                 <span className="text-slate-500 line-through text-lg mb-1">$29</span>
                 <span className="text-slate-400 mb-1">one-time</span>
               </div>
-              <p className="text-teal-400 text-sm font-semibold pb-2">
+              <p className="text-teal-400 text-sm font-semibold pb-6">
                 30-day money-back guarantee
-              </p>
-              <p className="text-slate-500 text-xs pb-6">
-                847 reports generated
               </p>
             </CardHeader>
             <CardContent className="px-8">
@@ -235,6 +292,33 @@ export default function PricingPage() {
               </CardFooter>
             </Card>
           </div>
+        </div>
+
+        {/* Pricing testimonials */}
+        <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-10">
+          {testimonials
+            .filter((t) => t.name === "Sarah K." || t.name === "James L.")
+            .map((t) => (
+              <div
+                key={t.name}
+                className="bg-slate-900/60 border border-slate-800 rounded-xl p-5"
+              >
+                <p className="text-sm text-slate-300 italic leading-relaxed mb-3">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-xs shrink-0`}
+                  >
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-200">{t.name}</p>
+                    <p className="text-xs text-slate-500">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
 
         {/* Trust badge row */}

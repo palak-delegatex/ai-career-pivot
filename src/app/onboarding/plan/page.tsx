@@ -9,6 +9,7 @@ import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, 
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
+import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 
@@ -131,6 +132,11 @@ export default function PivotPlanPage() {
               { key: "2yr", label: "2 Years", deadline: "2 years", milestones: plan.twoYearMilestones, color: "cyan" },
             ]}
           />
+
+          {/* Risk Assessment */}
+          {(plan.riskAssessments ?? []).length > 0 && (
+            <RiskAssessmentCard riskAssessments={plan.riskAssessments!} />
+          )}
 
           {/* Skill Gap Analysis */}
           {(plan.skillGaps ?? []).length > 0 && (

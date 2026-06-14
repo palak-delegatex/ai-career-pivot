@@ -3,6 +3,7 @@ import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "./PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -91,7 +92,10 @@ export default function RootLayout({
       className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-          <PostHogProvider>{children}</PostHogProvider>
+          <PostHogProvider>
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </PostHogProvider>
           <Analytics />
         </body>
     </html>

@@ -2,45 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-
-const caseStudies = [
-  {
-    name: "Sarah K.",
-    initials: "SK",
-    gradient: "from-teal-500 to-emerald-500",
-    borderGradient: "from-teal-500 via-emerald-500 to-cyan-500",
-    beforeRole: "Senior Engineer",
-    afterRole: "Product Lead",
-    timeline: "4 months",
-    keyMetric: "+40% comp increase",
-    quote:
-      "Most career advice ignores that you have a mortgage, kids, and a partner who also has a career. AICareerPivot finally accounts for the real constraints.",
-  },
-  {
-    name: "Marcus T.",
-    initials: "MT",
-    gradient: "from-sky-500 to-blue-600",
-    borderGradient: "from-sky-500 via-blue-500 to-indigo-500",
-    beforeRole: "Financial Analyst",
-    afterRole: "AI Strategy Consultant",
-    timeline: "6 months",
-    keyMetric: "2x client rate",
-    quote:
-      "I was paralyzed by the number of AI certifications out there. The roadmap cut through the noise and told me exactly which two to start with for my background.",
-  },
-  {
-    name: "Priya R.",
-    initials: "PR",
-    gradient: "from-violet-500 to-purple-600",
-    borderGradient: "from-violet-500 via-purple-500 to-fuchsia-500",
-    beforeRole: "Marketing Manager",
-    afterRole: "ML Ops Lead",
-    timeline: "8 months",
-    keyMetric: "$25K salary uplift",
-    quote:
-      "As a single parent, I can't afford to quit and 'figure it out.' The 6-month plan gave me a way to upskill nights and weekends without risking my income.",
-  },
-];
+import { caseStudies } from "@/lib/testimonials";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },

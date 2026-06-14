@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=360">
+  <link rel="stylesheet" href="popup.css">
+  <title>AICareerPivot</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header id="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span>AICareerPivot</span>
+      </div>
+      <div class="header-actions">
+        <div class="user-menu" id="userMenu" hidden>
+          <button id="userBtn" class="user-avatar-btn" title="Account">
+            <img id="userAvatarImg" class="avatar-img" hidden alt="">
+            <span id="userInitial" class="avatar-initial"></span>
+          </button>
+          <div id="userDropdown" class="user-dropdown" hidden>
+            <div class="user-info">
+              <div class="user-name" id="dropdownName"></div>
+              <div class="user-email" id="dropdownEmail"></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button id="dropdownSettings" class="dropdown-item">Settings</button>
+            <button id="signOutBtn" class="dropdown-item dropdown-item-danger">Sign Out</button>
+          </div>
+        </div>
+        <button id="settingsBtn" class="icon-btn" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Not signed in -->
+    <div id="signInView" class="view" hidden>
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="1.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <p class="signin-title">Welcome to AICareerPivot</p>
+        <p class="signin-desc">Save jobs, get ATS match scores, and autofill applications.</p>
+        <button id="googleSignInBtn" class="btn-google">
+          <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+        <p id="signInError" class="signin-error" hidden></p>
+        <p class="signin-hint">Uses the same account as your web dashboard</p>
+      </div>
+    </div>
+
+    <!-- Default state: pipeline + recent saves -->
+    <div id="defaultView" class="view" hidden>
+      <div id="pipeline" class="pipeline">
+        <div class="pipeline-stage" data-stage="saved">
+          <span class="pipeline-dot bg-slate"></span>
+          <span class="pipeline-count" id="countSaved">0</span>
+          <span class="pipeline-label">Saved</span>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage" data-stage="applied">
+          <span class="pipeline-dot bg-teal"></span>
+          <span class="pipeline-count" id="countApplied">0</span>
+          <span class="pipeline-label">Applied</span>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage" data-stage="interview">
+          <span class="pipeline-dot bg-amber"></span>
+          <span class="pipeline-count" id="countInterview">0</span>
+          <span class="pipeline-label">Interview</span>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage" data-stage="offer">
+          <span class="pipeline-dot bg-emerald"></span>
+          <span class="pipeline-count" id="countOffer">0</span>
+          <span class="pipeline-label">Offer</span>
+        </div>
+      </div>
+
+      <div class="section-title">Recent Saves</div>
+      <div id="recentSaves" class="recent-saves"></div>
+
+      <div class="actions">
+        <button id="pasteUrlBtn" class="btn-primary">Paste Job URL</button>
+        <button id="openDashboardBtn" class="btn-link">Open Dashboard &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Job detected state -->
+    <div id="jobView" class="view" hidden>
+      <div id="jobCard" class="job-card">
+        <div class="job-card-header">
+          <div class="company-icon" id="companyIcon"></div>
+          <div class="job-card-info">
+            <div class="job-title" id="jobTitle"></div>
+            <div class="job-company" id="jobCompany"></div>
+            <div class="job-meta">
+              <span id="jobLocation"></span>
+              <span id="jobSalary"></span>
+              <span class="source-badge" id="jobSource"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="scoreSection" class="score-section" hidden>
+        <div id="resumeBar" class="resume-bar" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span class="resume-bar-name" id="resumeName">Default Profile</span>
+          <button class="btn-link resume-switch-btn" id="resumeSwitchBtn">Switch</button>
+        </div>
+        <div class="score-ring" id="scoreRing"></div>
+        <div class="score-metrics">
+          <div class="metric">
+            <span class="metric-val" id="exactCount">0</span>
+            <span class="metric-label">Exact</span>
+          </div>
+          <div class="metric">
+            <span class="metric-val" id="variantCount">0</span>
+            <span class="metric-label">Variant</span>
+          </div>
+          <div class="metric">
+            <span class="metric-val" id="semanticCount">0</span>
+            <span class="metric-label">Semantic</span>
+          </div>
+          <div class="metric">
+            <span class="metric-val" id="missingCount">0</span>
+            <span class="metric-label">Missing</span>
+          </div>
+        </div>
+
+        <details class="keyword-details">
+          <summary>Keyword Breakdown</summary>
+          <div id="keywordBreakdown" class="keyword-list"></div>
+        </details>
+      </div>
+
+      <div id="resumePicker" class="resume-picker" hidden>
+        <div class="resume-picker-header">
+          <span class="resume-picker-title">Select Resume</span>
+          <button class="resume-picker-close" id="resumePickerClose">&times;</button>
+        </div>
+        <div id="resumePickerList" class="resume-picker-list"></div>
+      </div>
+
+      <div id="saveCTA" class="save-cta">
+        <button id="saveBtn" class="btn-primary btn-full">Save & Track</button>
+      </div>
+
+      <div id="savedCTA" class="save-cta" hidden>
+        <div class="saved-indicator">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <span>Saved</span>
+          <span class="stage-badge" id="currentStage"></span>
+        </div>
+        <div class="saved-actions">
+          <button id="viewInTrackerBtn" class="btn-link">View in Tracker</button>
+          <button id="rescoreBtn" class="btn-link">Re-score</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extraction error state -->
+    <div id="errorView" class="view" hidden>
+      <div class="error-state">
+        <svg class="error-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p class="error-title">Couldn't extract job details</p>
+        <p class="error-desc">We detected a job page but couldn't read the listing. The site layout may have changed.</p>
+        <div class="error-actions">
+          <div class="paste-url-row">
+            <input id="errorPasteInput" class="paste-url-input" type="url" placeholder="Paste job URL...">
+            <button id="errorPasteGo" class="paste-url-go">Go</button>
+          </div>
+          <button id="errorManualSave" class="btn-secondary">Save Manually</button>
+          <button id="errorRetryBtn" class="btn-link">Retry Detection</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual save modal (for error state) -->
+    <div id="manualSaveView" class="view" hidden>
+      <div class="manual-save-form">
+        <p class="section-title">Save Job Manually</p>
+        <input id="manualRole" class="form-input" type="text" placeholder="Job title">
+        <input id="manualCompany" class="form-input" type="text" placeholder="Company">
+        <input id="manualUrl" class="form-input" type="url" placeholder="Job URL">
+        <div class="manual-save-actions">
+          <button id="manualSaveBtn" class="btn-primary">Save</button>
+          <button id="manualCancelBtn" class="btn-link">Cancel</button>
+        </div>
+        <p id="manualSaveError" class="signin-error" hidden></p>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div id="loadingView" class="view" hidden>
+      <div class="skeleton-card">
+        <div class="skeleton-line w-60"></div>
+        <div class="skeleton-line w-40"></div>
+        <div class="skeleton-ring"></div>
+        <div class="skeleton-line w-80"></div>
+      </div>
+    </div>
+
+    <!-- Sync footer -->
+    <footer id="footer">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncText">Checking...</span>
+      <button id="syncRetryBtn" class="sync-retry-btn" hidden>Retry</button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

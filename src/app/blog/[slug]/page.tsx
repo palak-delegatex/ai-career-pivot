@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
+import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -30,6 +31,7 @@ export async function generateMetadata({
       title: post.title,
       description: post.description,
       publishedTime: post.date,
+      modifiedTime: post.lastModified,
       authors: ["AICareerPivot Team"],
     },
     twitter: {
@@ -92,55 +94,36 @@ export default async function BlogPost({
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.lastModified,
     author: {
-      "@type": "Organization",
-      name: "AICareerPivot Team",
-      url: "https://ai-career-pivot.com",
-    },
-    publisher: {
       "@type": "Organization",
       name: "AICareerPivot",
       url: "https://ai-career-pivot.com",
     },
+    publisher: organizationSchema(),
     url: `https://ai-career-pivot.com/blog/${slug}`,
     keywords: post.keywords.join(", "),
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://ai-career-pivot.com/blog/${slug}`,
+    },
   };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://ai-career-pivot.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: "https://ai-career-pivot.com/blog",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `https://ai-career-pivot.com/blog/${slug}`,
-      },
-    ],
-  };
+  const crumbs = breadcrumbSchema([
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${slug}` },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([articleSchema, breadcrumbSchema]),
+          __html: JSON.stringify([articleSchema, crumbs]),
         }}
       />
       <div className="min-h-screen bg-gray-950 text-white">
@@ -168,7 +151,24 @@ export default async function BlogPost({
             <h1 className="text-4xl font-extrabold tracking-tight leading-tight">
               {post.title}
             </h1>
+            <p className="text-xs text-slate-600 mt-2">
+              Last updated: {new Date(post.lastModified).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+            </p>
           </header>
+
+          {post.tldr && post.tldr.length > 0 && (
+            <section className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
+              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+              <ul className="space-y-2">
+                {post.tldr.map((point, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <span className="text-teal-400 mt-0.5 shrink-0">•</span>
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
             <MDXRemote source={post.content} components={components} />

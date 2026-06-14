@@ -5,6 +5,7 @@ import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
+import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
@@ -125,6 +126,10 @@ function StreamedPlanCard({ plan, index }: { plan: DeepPartial<PivotPlan>; index
         <SectionSkeleton label="Analyzing skill gaps..." />
       ) : null}
 
+      {(plan.riskAssessments?.length ?? 0) > 0 && (
+        <RiskAssessmentCard riskAssessments={plan.riskAssessments as NonNullable<PivotPlan["riskAssessments"]>} />
+      )}
+
       {hasWeekOneActions ? (
         <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
           <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
@@ -178,16 +183,80 @@ function StreamedPlanCard({ plan, index }: { plan: DeepPartial<PivotPlan>; index
   );
 }
 
+function ProfileSidebar({ profile }: { profile: UserProfile }) {
+  return (
+    <aside className="lg:w-72 shrink-0">
+      <div className="lg:sticky lg:top-6 bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+        <h3 className="text-sm font-bold text-teal-400 mb-4">Your Profile</h3>
+        <div className="space-y-3 text-sm">
+          {profile.currentTitle && (
+            <div>
+              <span className="text-slate-500 text-xs">Current Role</span>
+              <p className="text-white font-medium">{profile.currentTitle}</p>
+            </div>
+          )}
+          {profile.currentIndustry && (
+            <div>
+              <span className="text-slate-500 text-xs">Industry</span>
+              <p className="text-white font-medium">{profile.currentIndustry}</p>
+            </div>
+          )}
+          {profile.yearsExperience && (
+            <div>
+              <span className="text-slate-500 text-xs">Experience</span>
+              <p className="text-white font-medium">{profile.yearsExperience} years</p>
+            </div>
+          )}
+          {profile.transferableSkills?.length > 0 && (
+            <div>
+              <span className="text-slate-500 text-xs">Top Skills</span>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {profile.transferableSkills.slice(0, 8).map(skill => (
+                  <span key={skill} className="px-2 py-0.5 bg-teal-900/30 border border-teal-700/30 rounded-full text-teal-300 text-xs">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {profile.location && (
+            <div>
+              <span className="text-slate-500 text-xs">Location</span>
+              <p className="text-white font-medium">
+                {[profile.location.city, profile.location.region, profile.location.country].filter(Boolean).join(", ")}
+              </p>
+            </div>
+          )}
+          {profile.circumstances?.timeline && (
+            <div>
+              <span className="text-slate-500 text-xs">Timeline</span>
+              <p className="text-white font-medium">{profile.circumstances.timeline}</p>
+            </div>
+          )}
+          {profile.circumstances?.riskTolerance && (
+            <div>
+              <span className="text-slate-500 text-xs">Risk Tolerance</span>
+              <p className="text-white font-medium capitalize">{profile.circumstances.riskTolerance}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 export default function StreamingPlanGeneration({
   profile,
   paymentSessionId,
   valuesAssessment,
+  showProfileSummary,
   onComplete,
   onError,
 }: {
   profile: UserProfile;
   paymentSessionId?: string | null;
   valuesAssessment?: ValuesAssessment;
+  showProfileSummary?: boolean;
   onComplete: (plans: PivotPlan[], reportId?: string) => void;
   onError: (error: string) => void;
 }) {
@@ -251,51 +320,62 @@ export default function StreamingPlanGeneration({
 
   const plans = partialPlans.plans ?? [];
 
+  const mainContent = (
+    <>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-extrabold mb-3">
+          {done ? "Your Career Pivot Roadmaps" : "Building Your Roadmaps"}
+        </h1>
+        <p className="text-slate-400">
+          {done
+            ? `${plans.length} personalized paths based on your actual background`
+            : "Watch your personalized plans take shape in real time"}
+        </p>
+      </div>
+
+      {!done && <ProgressIndicator partialPlans={partialPlans} />}
+
+      {plans.length > 1 && (
+        <div className="flex gap-2 mb-6">
+          {plans.map((plan, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedPlan(i)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                i === selectedPlan
+                  ? "bg-teal-600 text-white"
+                  : "bg-slate-800 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {plan.targetRole ?? `Plan ${i + 1}`}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {plans[selectedPlan] && (
+        <StreamedPlanCard plan={plans[selectedPlan]} index={selectedPlan} />
+      )}
+
+      {plans.length === 0 && !done && (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-8" />
+          <p className="text-slate-400">Connecting to AI...</p>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 py-16">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold mb-3">
-            {done ? "Your Career Pivot Roadmaps" : "Building Your Roadmaps"}
-          </h1>
-          <p className="text-slate-400">
-            {done
-              ? `${plans.length} personalized paths based on your actual background`
-              : "Watch your personalized plans take shape in real time"}
-          </p>
+      {showProfileSummary ? (
+        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
+          <ProfileSidebar profile={profile} />
+          <div className="flex-1 min-w-0">{mainContent}</div>
         </div>
-
-        {!done && <ProgressIndicator partialPlans={partialPlans} />}
-
-        {plans.length > 1 && (
-          <div className="flex gap-2 mb-6">
-            {plans.map((plan, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedPlan(i)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  i === selectedPlan
-                    ? "bg-teal-600 text-white"
-                    : "bg-slate-800 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {plan.targetRole ?? `Plan ${i + 1}`}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {plans[selectedPlan] && (
-          <StreamedPlanCard plan={plans[selectedPlan]} index={selectedPlan} />
-        )}
-
-        {plans.length === 0 && !done && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-8" />
-            <p className="text-slate-400">Connecting to AI...</p>
-          </div>
-        )}
-      </div>
+      ) : (
+        <div className="max-w-3xl mx-auto">{mainContent}</div>
+      )}
     </div>
   );
 }

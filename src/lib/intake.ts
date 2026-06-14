@@ -104,6 +104,15 @@ export interface AIToolkitItem {
   proficiencyNeeded: "beginner" | "intermediate" | "advanced";
 }
 
+export interface RiskAssessment {
+  obstacle: string;
+  likelihood: number;
+  impact: "high" | "medium" | "low";
+  timeframe: string;
+  category: "market" | "skill" | "financial" | "personal" | "industry";
+  mitigationSteps: string[];
+}
+
 export interface PathTradeoffs {
   difficulty: "low" | "medium" | "high";
   riskLevel: "low" | "medium" | "high";
@@ -129,6 +138,7 @@ export interface PivotPlan {
   financialSummary?: FinancialSummary;
   recommendedResources?: RecommendedResource[];
   aiToolkit?: AIToolkitItem[];
+  riskAssessments?: RiskAssessment[];
   tradeoffs?: PathTradeoffs;
   /** @deprecated Use skillGaps (structured) instead */
   legacySkillGaps?: string[];
@@ -159,6 +169,60 @@ export interface TransferabilityAnalysis {
   partialTransferCount: number;
   newSkillCount: number;
   overallTransferabilityPercent: number;
+}
+
+export interface ExtractedSkill {
+  name: string;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  proficiency: "expert" | "advanced" | "intermediate" | "beginner";
+  yearsUsed: number | null;
+  source: string;
+}
+
+export interface TargetRoleSkill {
+  name: string;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  importance: "critical" | "important" | "nice-to-have";
+}
+
+export interface DirectMatchSkill {
+  userSkill: string;
+  targetSkill: string;
+  proficiency: string;
+  matchConfidence: number;
+}
+
+export interface TransferableSkill {
+  userSkill: string;
+  targetSkill: string;
+  transferScore: number;
+  explanation: string;
+  bridgeActions: string[];
+}
+
+export interface GapSkill {
+  skill: string;
+  importance: "critical" | "important" | "nice-to-have";
+  difficultyToAcquire: "low" | "medium" | "high";
+  estimatedWeeksToAcquire: number;
+  learningResources: string[];
+  priorityRank: number;
+}
+
+export interface SkillsEngineResult {
+  userSkillGraph: ExtractedSkill[];
+  targetRoleSkills: TargetRoleSkill[];
+  overlapScore: number;
+  directMatches: DirectMatchSkill[];
+  transferableMatches: TransferableSkill[];
+  gaps: GapSkill[];
+  summary: {
+    directMatchPercent: number;
+    transferablePercent: number;
+    gapPercent: number;
+    readinessLabel: string;
+    topTransferNarrative: string;
+  };
 }
 
 export interface IntakeResult {

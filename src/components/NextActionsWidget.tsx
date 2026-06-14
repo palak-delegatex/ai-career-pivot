@@ -117,7 +117,7 @@ export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidg
                         <span className="text-teal-400 mt-0.5 shrink-0">
                           {"\u25CB"}
                         </span>
-                        <span className="line-clamp-1">{action.title}</span>
+                        <span className="line-clamp-2 sm:line-clamp-1">{action.title}</span>
                         <span className="text-slate-600 shrink-0 ml-auto">
                           {action.timeEstimate}
                         </span>
@@ -129,7 +129,7 @@ export default function NextActionsWidget({ items, onMarkDone }: NextActionsWidg
                 {onMarkDone && (
                   <button
                     onClick={() => onMarkDone(item.phase, item.milestoneIndex)}
-                    className="mt-3 flex items-center gap-1.5 text-xs font-medium text-teal-400 hover:text-teal-300 transition-colors cursor-pointer bg-transparent border-0 p-0"
+                    className="mt-3 flex items-center gap-1.5 text-xs font-medium text-teal-400 hover:text-teal-300 transition-colors cursor-pointer bg-transparent border-0 py-2 px-1 -ml-1 min-h-[44px]"
                   >
                     <CheckCircle className="h-3.5 w-3.5" />
                     Mark complete

@@ -14,6 +14,13 @@ import StreakCalendar from "@/components/StreakCalendar";
 import PhaseProgressCards from "@/components/PhaseProgressCards";
 import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
+import ShareableProgressCard from "@/components/ShareableProgressCard";
+import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
+import DocumentsCard from "@/components/DocumentsCard";
+import GapAnalysisTab from "@/components/GapAnalysisTab";
+import NetworkingCRM from "@/components/NetworkingCRM";
+import ResumeVersionsTab from "@/components/ResumeVersionsTab";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Report {
   id: string;
@@ -269,6 +276,8 @@ export default function DashboardClient() {
   const [progressLoaded, setProgressLoaded] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [savedBadges, setSavedBadges] = useState<Set<string>>(new Set());
+  const [celebratedPhases, setCelebratedPhases] = useState<Set<string>>(new Set());
+  const [celebratingPhase, setCelebratingPhase] = useState<{ label: string; color: "emerald" | "teal" | "cyan" } | null>(null);
 
   useEffect(() => {
     async function loadReports() {
@@ -461,7 +470,7 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-slate-400">Loading your dashboard...</p>
       </main>
@@ -470,7 +479,7 @@ export default function DashboardClient() {
 
   if (error) {
     return (
-      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <p className="text-red-400 text-sm">{error}</p>
       </main>
     );
@@ -478,7 +487,7 @@ export default function DashboardClient() {
 
   if (!reports || reports.length === 0) {
     return (
-      <main className="max-w-5xl mx-auto px-6 py-12 text-center">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
         <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
         <Link
@@ -542,6 +551,23 @@ export default function DashboardClient() {
     }
   }
 
+  // Detect newly completed phases for celebration
+  for (const phase of phases) {
+    if (phase.milestones.length === 0) continue;
+    let allDone = true;
+    for (let i = 0; i < phase.milestones.length; i++) {
+      if (!milestoneStatuses.get(progressKey(phase.key, i))?.completed) {
+        allDone = false;
+        break;
+      }
+    }
+    if (allDone && !celebratedPhases.has(phase.key) && !celebratingPhase) {
+      setCelebratedPhases((prev) => new Set([...prev, phase.key]));
+      setCelebratingPhase({ label: phase.label, color: phase.color });
+      break;
+    }
+  }
+
   const MOTIVATIONAL_QUOTES = [
     "The only way to do great work is to love what you do. — Steve Jobs",
     "Every expert was once a beginner.",
@@ -562,11 +588,11 @@ export default function DashboardClient() {
   const dailyQuote = MOTIVATIONAL_QUOTES[dayOfYear % MOTIVATIONAL_QUOTES.length];
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-extrabold text-center mb-2">
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
-      <p className="text-slate-400 text-center text-sm italic mb-8">
+      <p className="text-slate-400 text-center text-sm italic mb-6 sm:mb-8">
         &ldquo;{dailyQuote}&rdquo;
       </p>
 
@@ -589,81 +615,134 @@ export default function DashboardClient() {
       )}
 
       {activePlan && (
-        <div className="space-y-6">
-          <DashboardHero
-            completionPercent={completionPercent}
-            status={scheduleStatus}
-            totalMilestones={totalMilestones}
-            completedMilestones={completedMilestones}
-            remainingMilestones={totalMilestones - completedMilestones}
-            targetRole={activePlan.targetRole}
-            streakDays={streakDays}
-            daysElapsed={daysElapsed}
-            currentPhaseLabel={currentPhaseLabel}
-          />
+        <Tabs defaultValue="overview">
+          <TabsList className="w-full justify-start mb-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="resumes">Resumes</TabsTrigger>
+            <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
+            <TabsTrigger value="network">Network</TabsTrigger>
+          </TabsList>
 
-          {progressLoaded && (
-            <>
-              {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <MomentumCard
-                  weeklyActivity={weeklyActivity}
-                  monthlyCompleted={thisMonthCount}
-                  previousMonthCompleted={lastMonthCount}
-                />
-                <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
-                <StreakCalendar
-                  activeDays={activeDays}
-                  phaseForDay={phaseForDay}
-                  streakDays={streakDays}
-                />
+          <TabsContent value="overview">
+            <div className="space-y-6">
+              <DashboardHero
+                completionPercent={completionPercent}
+                status={scheduleStatus}
+                totalMilestones={totalMilestones}
+                completedMilestones={completedMilestones}
+                remainingMilestones={totalMilestones - completedMilestones}
+                targetRole={activePlan.targetRole}
+                streakDays={streakDays}
+                daysElapsed={daysElapsed}
+                currentPhaseLabel={currentPhaseLabel}
+              />
+
+              {progressLoaded && (
+                <>
+                  {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <MomentumCard
+                      weeklyActivity={weeklyActivity}
+                      monthlyCompleted={thisMonthCount}
+                      previousMonthCompleted={lastMonthCount}
+                    />
+                    <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
+                    <StreakCalendar
+                      activeDays={activeDays}
+                      phaseForDay={phaseForDay}
+                      streakDays={streakDays}
+                    />
+                  </div>
+
+                  {/* Phase Progress Cards */}
+                  <PhaseProgressCards
+                    phases={phases}
+                    statuses={milestoneStatuses}
+                    reportId={activeReport!.id}
+                  />
+
+                  {/* My Documents */}
+                  <DocumentsCard email={activeReport!.email} />
+
+                  {/* Completion Badges */}
+                  <CompletionBadges earnedBadges={earnedBadges} />
+
+                  {/* Shareable Progress Card */}
+                  <ShareableProgressCard
+                    currentRole={activeReport!.profile.currentTitle || "Current Role"}
+                    targetRole={activePlan.targetRole}
+                    completionPercent={completionPercent}
+                    completedMilestones={completedMilestones}
+                    totalMilestones={totalMilestones}
+                    streakDays={streakDays}
+                    earnedBadgeCount={earnedBadges.size}
+                    reportId={activeReport!.id}
+                  />
+
+                  <MilestoneChecklist
+                    phases={phases}
+                    statuses={milestoneStatuses}
+                    onToggle={handleToggle}
+                    savingKey={savingKey}
+                  />
+                </>
+              )}
+
+              <JobBoard
+                targetRole={activePlan.targetRole}
+                location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
+                userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
+                profile={activeReport.profile}
+                plan={activePlan}
+              />
+
+              <div className="pt-4 border-t border-slate-700/50 space-y-3">
+                <Link
+                  href="/chat"
+                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
+                >
+                  Talk to Career Coach
+                </Link>
+                <Link
+                  href="/mock-interview"
+                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
+                >
+                  Practice Mock Interview
+                </Link>
+                <Link
+                  href={`/report/${activeReport!.id}`}
+                  className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
+                >
+                  View Full Report
+                </Link>
               </div>
+            </div>
+          </TabsContent>
 
-              {/* Phase Progress Cards */}
-              <PhaseProgressCards
-                phases={phases}
-                statuses={milestoneStatuses}
-                reportId={activeReport!.id}
-              />
+          <TabsContent value="resumes">
+            <ResumeVersionsTab
+              email={activeReport!.email}
+              profile={activeReport!.profile}
+              plan={activePlan}
+            />
+          </TabsContent>
 
-              {/* Completion Badges */}
-              <CompletionBadges earnedBadges={earnedBadges} />
+          <TabsContent value="gap-analysis">
+            <GapAnalysisTab profile={activeReport!.profile} plan={activePlan} />
+          </TabsContent>
 
-              <MilestoneChecklist
-                phases={phases}
-                statuses={milestoneStatuses}
-                onToggle={handleToggle}
-                savingKey={savingKey}
-              />
-            </>
-          )}
+          <TabsContent value="network">
+            <NetworkingCRM userEmail={activeReport!.email} />
+          </TabsContent>
+        </Tabs>
+      )}
 
-          <JobBoard
-            targetRole={activePlan.targetRole}
-            location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
-          />
-
-          <div className="pt-4 border-t border-slate-700/50 space-y-3">
-            <Link
-              href="/chat"
-              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
-            >
-              Talk to Career Coach
-            </Link>
-            <Link
-              href="/mock-interview"
-              className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
-            >
-              Practice Mock Interview
-            </Link>
-            <Link
-              href={`/report/${activeReport!.id}`}
-              className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
-            >
-              View Full Report
-            </Link>
-          </div>
-        </div>
+      {celebratingPhase && (
+        <PhaseCompletionCelebration
+          phaseLabel={celebratingPhase.label}
+          phaseColor={celebratingPhase.color}
+          onDismiss={() => setCelebratingPhase(null)}
+        />
       )}
     </main>
   );

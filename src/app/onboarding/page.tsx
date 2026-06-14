@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { StepIndicator } from "@/components/StepIndicator";
-import type { UserProfile, UserCircumstances, UserLocation } from "@/lib/intake";
+import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
+import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
-type PageStep = "form" | "processing" | "error" | "no_payment";
+type PageStep = "form" | "processing" | "error" | "no_payment" | "generating";
 
 function normalizeLinkedinUrl(raw: string): string {
   let url = raw.trim();
@@ -55,6 +56,39 @@ const FUN_FACTS = [
   "Action verbs like 'spearheaded' and 'orchestrated' outperform passive language.",
 ] as const;
 
+const SALARY_RANGES = [
+  { value: "", label: "Prefer not to say" },
+  { value: "Under $30,000", label: "Under $30,000" },
+  { value: "$30,000 – $50,000", label: "$30,000 – $50,000" },
+  { value: "$50,000 – $75,000", label: "$50,000 – $75,000" },
+  { value: "$75,000 – $100,000", label: "$75,000 – $100,000" },
+  { value: "$100,000 – $150,000", label: "$100,000 – $150,000" },
+  { value: "$150,000 – $200,000", label: "$150,000 – $200,000" },
+  { value: "Over $200,000", label: "Over $200,000" },
+] as const;
+
+function getUserTeasers(name: string): string[] {
+  return [
+    `${name}, your transferable skills may unlock more roles than you think.`,
+    `${name}, AI is mapping your experience to the latest market trends.`,
+    `We're identifying ${name}'s strongest career pivot angles.`,
+    `${name}, your background is being analyzed across 50+ industries.`,
+    `Personalized insights are being generated just for ${name}.`,
+  ];
+}
+
+function validateEmail(value: string): string {
+  if (!value) return "";
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "" : "Please enter a valid email address";
+}
+
+function validateResumeFile(file: File): string {
+  const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
+  if (![".pdf", ".docx", ".doc", ".txt"].includes(ext)) return "Please upload a PDF, DOCX, or TXT file";
+  if (file.size > 10 * 1024 * 1024) return "File must be under 10 MB";
+  return "";
+}
+
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? 300 : -300,
@@ -96,7 +130,11 @@ export default function OnboardingPage() {
   const [factVisible, setFactVisible] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
 
-  const [circumstances, setCircumstances] = useState<UserCircumstances>({});
+  const [circumstances, setCircumstances] = useState<UserCircumstances>({
+    timeline: "6-12 months",
+    riskTolerance: "moderate",
+    willingnessToRelocate: "remote-preferred",
+  });
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [locationText, setLocationText] = useState("");
   const [detectingLocation, setDetectingLocation] = useState(false);
@@ -112,6 +150,12 @@ export default function OnboardingPage() {
   const [gpsResolved, setGpsResolved] = useState(false);
   const [linkedinPasting, setLinkedinPasting] = useState(false);
   const [linkedinPreview, setLinkedinPreview] = useState<{ username: string } | null>(null);
+
+  const [emailError, setEmailError] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [resumeError, setResumeError] = useState("");
+  const [celebration, setCelebration] = useState<string | null>(null);
+  const [generatingProfile, setGeneratingProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     if (linkedinUrlStatus(linkedinUrl) === "valid") {
@@ -161,23 +205,7 @@ export default function OnboardingPage() {
     });
   }, []);
 
-  useEffect(() => {
-    if (pageStep !== "processing") return;
-    let timeout: ReturnType<typeof setTimeout>;
-    let current = 0;
-    function scheduleNext() {
-      const delay = 6000 + Math.random() * 2000;
-      timeout = setTimeout(() => {
-        current += 1;
-        if (current < ANALYSIS_STEPS.length) {
-          setActiveStep(current);
-          if (current < ANALYSIS_STEPS.length - 1) scheduleNext();
-        }
-      }, delay);
-    }
-    scheduleNext();
-    return () => clearTimeout(timeout);
-  }, [pageStep]);
+  // activeStep is now driven directly by handleSubmit API progress — no timer needed
 
   useEffect(() => {
     if (pageStep !== "processing" || insightsReady) return;
@@ -204,9 +232,7 @@ export default function OnboardingPage() {
     return () => clearInterval(cycle);
   }, [pageStep, insightsReady, aiInsights.length]);
 
-  const snapToComplete = useCallback(() => {
-    setActiveStep(ANALYSIS_STEPS.length - 1);
-  }, []);
+  // snapToComplete removed — activeStep is now set directly in handleSubmit
 
   function goNext() {
     setDirection(1);
@@ -218,17 +244,37 @@ export default function OnboardingPage() {
     setWizardStep((s) => Math.max(s - 1, 0));
   }
 
+  function celebrateThenAdvance(message: string) {
+    setCelebration(message);
+    setTimeout(() => {
+      setCelebration(null);
+      setDirection(1);
+      setWizardStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1));
+    }, 600);
+  }
+
   function canAdvanceStep1(): boolean {
     return !!email && (!!linkedinUrl || !!resumeFile);
   }
 
   function handleStep1Next() {
+    setEmailTouched(true);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setEmailError(emailErr);
+      return;
+    }
     if (!canAdvanceStep1()) {
       setError("Please provide your email and at least one source (LinkedIn URL or resume).");
       return;
     }
     setError("");
-    goNext();
+    setEmailError("");
+    celebrateThenAdvance("Background info saved");
+  }
+
+  function handleStep2Next() {
+    celebrateThenAdvance("Sources added");
   }
 
   async function fetchInsights(profile: UserProfile) {
@@ -310,6 +356,24 @@ export default function OnboardingPage() {
     }
   }
 
+  const handleStreamComplete = useCallback((plans: PivotPlan[], reportId?: string) => {
+    if (reportId) {
+      sessionStorage.removeItem("payment_session_id");
+      sessionStorage.removeItem("payment_email");
+      sessionStorage.removeItem("intake_profile");
+      sessionStorage.removeItem("values_assessment");
+      router.push(`/report/${reportId}`);
+    } else {
+      sessionStorage.setItem("intake_plans", JSON.stringify(plans));
+      router.push("/onboarding/plan");
+    }
+  }, [router]);
+
+  const handleStreamError = useCallback((message: string) => {
+    setPageStep("error");
+    setError(message);
+  }, []);
+
   async function handleSubmit() {
     const hasCircumstancesData = Object.values(circumstances).some(Boolean);
     trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "form_submitted", page: "onboarding" });
@@ -322,6 +386,7 @@ export default function OnboardingPage() {
     });
 
     setPageStep("processing");
+    setActiveStep(0);
     setError("");
 
     try {
@@ -336,10 +401,12 @@ export default function OnboardingPage() {
         if (!res.ok) throw new Error((await res.json()).error ?? "Resume parsing failed");
         const data = await res.json();
         profile = { ...data.profile, email };
+        setActiveStep(1);
       }
 
       if (linkedinUrl) {
         setProcessingMsg("Fetching LinkedIn profile...");
+        setActiveStep(2);
         const res = await fetch("/api/intake/linkedin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -360,13 +427,11 @@ export default function OnboardingPage() {
             profile = { ...data.profile, email, linkedinUrl };
           }
         } else if (!profile) {
-          // LinkedIn failed and we have no resume — show actionable guidance
           const errData = await res.json().catch(() => ({}));
           throw new Error(
             errData.error ?? "LinkedIn fetch failed. Make sure your profile is public, or upload your resume instead."
           );
         }
-        // If LinkedIn fails but we already have resume data, silently continue
       }
 
       if (profile && profile.skills?.length > 0) {
@@ -375,6 +440,7 @@ export default function OnboardingPage() {
 
       if (websiteUrl) {
         setProcessingMsg("Scanning your portfolio...");
+        setActiveStep(3);
         const res = await fetch("/api/intake/website", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -398,7 +464,7 @@ export default function OnboardingPage() {
       if (location) profile.location = location;
 
       if (profile.name) setUserName(profile.name.split(" ")[0]);
-      snapToComplete();
+      setActiveStep(ANALYSIS_STEPS.length - 1);
 
       trackOnboardingCompleted({
         has_resume: !!resumeFile,
@@ -408,7 +474,8 @@ export default function OnboardingPage() {
       });
 
       sessionStorage.setItem("intake_profile", JSON.stringify(profile));
-      router.push("/onboarding/profile");
+      setGeneratingProfile(profile);
+      setPageStep("generating");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       trackOnboardingError({ error: message, stage: "form_submission" });
@@ -437,13 +504,32 @@ export default function OnboardingPage() {
     );
   }
 
+  if (pageStep === "generating" && generatingProfile) {
+    const storedPaymentId = typeof window !== "undefined" ? sessionStorage.getItem("payment_session_id") : null;
+    const storedAssessment = typeof window !== "undefined" ? sessionStorage.getItem("values_assessment") : null;
+    const parsedAssessment: ValuesAssessment | undefined = storedAssessment ? JSON.parse(storedAssessment) : undefined;
+
+    return (
+      <StreamingPlanGeneration
+        profile={generatingProfile}
+        paymentSessionId={storedPaymentId ?? undefined}
+        valuesAssessment={parsedAssessment}
+        showProfileSummary
+        onComplete={handleStreamComplete}
+        onError={handleStreamError}
+      />
+    );
+  }
+
   if (pageStep === "processing") {
-    const headline = userName
-      ? `Analyzing ${userName}'s background...`
+    const displayName = linkedinPreview?.username ?? userName ?? (email ? email.split("@")[0] : null);
+    const headline = displayName
+      ? `Analyzing ${displayName}'s background...`
       : "Our AI is reading between the lines";
 
+    const teasers = displayName ? getUserTeasers(displayName) : null;
     const displayInsight = insightsReady ? aiInsights[insightIndex] : null;
-    const displayFact = !insightsReady ? FUN_FACTS[factIndex] : null;
+    const displayFact = !insightsReady ? (teasers ? teasers[factIndex % teasers.length] : FUN_FACTS[factIndex]) : null;
 
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
@@ -648,6 +734,21 @@ export default function OnboardingPage() {
 
         <StepIndicator steps={WIZARD_STEPS} currentStep={wizardStep} />
 
+        <AnimatePresence>
+          {celebration && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="text-center mb-4"
+            >
+              <span className="text-sm font-medium" style={{ color: "var(--chart-3)" }}>
+                &#10003; {celebration}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="relative overflow-hidden min-h-[340px]">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             {wizardStep === 0 && (
@@ -668,11 +769,24 @@ export default function OnboardingPage() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); if (emailTouched) setEmailError(validateEmail(e.target.value)); }}
+                    onBlur={() => { setEmailTouched(true); setEmailError(validateEmail(email)); }}
                     placeholder="you@example.com"
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
+                      emailTouched && emailError
+                        ? "border-[var(--destructive)] focus:border-[var(--destructive)]"
+                        : emailTouched && email && !emailError
+                          ? "border-teal-500/70 focus:border-teal-400"
+                          : "border-slate-600 focus:border-teal-500"
+                    }`}
                   />
+                  {emailTouched && emailError && (
+                    <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{emailError}</p>
+                  )}
+                  {emailTouched && email && !emailError && (
+                    <p className="mt-1.5 text-xs" style={{ color: "var(--chart-3)" }}>&#10003; Valid email</p>
+                  )}
                 </div>
 
                 <div>
@@ -694,7 +808,12 @@ export default function OnboardingPage() {
                       e.preventDefault();
                       setDropActive(false);
                       const file = e.dataTransfer.files?.[0];
-                      if (file) setResumeFile(file);
+                      if (file) {
+                        const err = validateResumeFile(file);
+                        if (err) { setResumeError(err); return; }
+                        setResumeError("");
+                        setResumeFile(file);
+                      }
                     }}
                   >
                     {resumeFile ? (
@@ -709,9 +828,20 @@ export default function OnboardingPage() {
                       type="file"
                       accept=".pdf,.docx,.doc,.txt"
                       className="sr-only"
-                      onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        if (file) {
+                          const err = validateResumeFile(file);
+                          if (err) { setResumeError(err); return; }
+                          setResumeError("");
+                        }
+                        setResumeFile(file);
+                      }}
                     />
                   </label>
+                  {resumeError && (
+                    <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{resumeError}</p>
+                  )}
                 </div>
 
                 <div>
@@ -890,7 +1020,7 @@ export default function OnboardingPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={goNext}
+                      onClick={handleStep2Next}
                       className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
                     >
                       Next &rarr;
@@ -919,76 +1049,90 @@ export default function OnboardingPage() {
                 className="flex flex-col gap-4"
               >
                 <p className="text-slate-400 text-sm mb-1">
-                  These details help us tailor your plan to your real-life constraints.
+                  Fine-tune your plan with real-life constraints. Smart defaults are pre-selected.
                 </p>
 
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
-                  <input
-                    type="text"
-                    value={circumstances.salaryFloor ?? ""}
-                    onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
-                    placeholder="e.g. $60,000"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-                  />
+                {/* Financial cluster */}
+                <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Financial</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
+                      <select
+                        value={circumstances.salaryFloor ?? ""}
+                        onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                      >
+                        {SALARY_RANGES.map((r) => (
+                          <option key={r.value} value={r.value}>{r.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
+                      <select
+                        value={circumstances.dependents ?? ""}
+                        onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                      >
+                        <option value="">Prefer not to say</option>
+                        <option value="none">No dependents</option>
+                        <option value="partner">Partner</option>
+                        <option value="children">Children</option>
+                        <option value="caretaker">Caretaker for family</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
-                  <select
-                    value={circumstances.dependents ?? ""}
-                    onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                  >
-                    <option value="">Prefer not to say</option>
-                    <option value="none">No dependents</option>
-                    <option value="partner">Partner</option>
-                    <option value="children">Children</option>
-                    <option value="caretaker">Caretaker for family</option>
-                  </select>
-                </div>
+                {/* Preferences cluster */}
+                <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Preferences</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Transition timeline</label>
+                      <select
+                        value={circumstances.timeline ?? ""}
+                        onChange={(e) => setCircumstances({ ...circumstances, timeline: (e.target.value || undefined) as UserCircumstances["timeline"] })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                      >
+                        <option value="">No preference</option>
+                        <option value="asap">As soon as possible</option>
+                        <option value="3-6 months">3-6 months</option>
+                        <option value="6-12 months">6-12 months</option>
+                        <option value="1-2 years">1-2 years</option>
+                      </select>
+                    </div>
 
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1.5">Transition timeline</label>
-                  <select
-                    value={circumstances.timeline ?? ""}
-                    onChange={(e) => setCircumstances({ ...circumstances, timeline: (e.target.value || undefined) as UserCircumstances["timeline"] })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                  >
-                    <option value="">No preference</option>
-                    <option value="asap">As soon as possible</option>
-                    <option value="3-6 months">3-6 months</option>
-                    <option value="6-12 months">6-12 months</option>
-                    <option value="1-2 years">1-2 years</option>
-                  </select>
-                </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Risk tolerance</label>
+                      <select
+                        value={circumstances.riskTolerance ?? ""}
+                        onChange={(e) => setCircumstances({ ...circumstances, riskTolerance: (e.target.value || undefined) as UserCircumstances["riskTolerance"] })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                      >
+                        <option value="">No preference</option>
+                        <option value="conservative">Conservative — keep income stable</option>
+                        <option value="moderate">Moderate — some income gap OK</option>
+                        <option value="aggressive">Aggressive — willing to take a leap</option>
+                      </select>
+                    </div>
 
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1.5">Risk tolerance</label>
-                  <select
-                    value={circumstances.riskTolerance ?? ""}
-                    onChange={(e) => setCircumstances({ ...circumstances, riskTolerance: (e.target.value || undefined) as UserCircumstances["riskTolerance"] })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                  >
-                    <option value="">No preference</option>
-                    <option value="conservative">Conservative — keep income stable</option>
-                    <option value="moderate">Moderate — some income gap OK</option>
-                    <option value="aggressive">Aggressive — willing to take a leap</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1.5">Willingness to relocate</label>
-                  <select
-                    value={circumstances.willingnessToRelocate ?? ""}
-                    onChange={(e) => setCircumstances({ ...circumstances, willingnessToRelocate: (e.target.value || undefined) as UserCircumstances["willingnessToRelocate"] })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                  >
-                    <option value="">No preference</option>
-                    <option value="yes">Yes, open to relocating</option>
-                    <option value="no">No, staying in current area</option>
-                    <option value="remote-preferred">Remote work preferred</option>
-                  </select>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Willingness to relocate</label>
+                      <select
+                        value={circumstances.willingnessToRelocate ?? ""}
+                        onChange={(e) => setCircumstances({ ...circumstances, willingnessToRelocate: (e.target.value || undefined) as UserCircumstances["willingnessToRelocate"] })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                      >
+                        <option value="">No preference</option>
+                        <option value="yes">Yes, open to relocating</option>
+                        <option value="no">No, staying in current area</option>
+                        <option value="remote-preferred">Remote work preferred</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
@@ -1016,9 +1160,10 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
+                    className="w-full min-h-[44px] text-sm font-medium transition-colors text-center mt-1 underline"
+                    style={{ color: "var(--muted-foreground)" }}
                   >
-                    Skip &amp; analyze now
+                    Skip &mdash; I&apos;ll let the AI decide
                   </button>
                 </div>
               </motion.div>

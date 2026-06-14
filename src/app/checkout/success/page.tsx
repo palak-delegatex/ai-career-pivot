@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import SocialProofStrip from "@/components/SocialProofStrip";
 
 function CheckoutSuccessInner() {
   const router = useRouter();
@@ -84,9 +85,28 @@ function CheckoutSuccessInner() {
           </svg>
         </div>
         <h1 className="text-3xl font-extrabold mb-3">Payment Confirmed!</h1>
-        <p className="text-slate-400 mb-8 leading-relaxed">
+        <p className="text-slate-400 mb-6 leading-relaxed">
           You&apos;re all set. Now upload your resume and LinkedIn profile so we can build your personalized career pivot roadmap.
         </p>
+
+        {/* What You Unlocked */}
+        <div className="text-left mb-8 space-y-2">
+          <p className="text-sm font-semibold text-slate-200 mb-3">What You Unlocked:</p>
+          {[
+            "Multi-timeline roadmap (6mo / 1yr / 2yr)",
+            "Salary trajectory & financial bridge plan",
+            "AI coaching + weekly action plan",
+            "Constraint-aware planning for your life",
+          ].map((item) => (
+            <div key={item} className="flex items-start gap-2">
+              <svg className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm text-slate-300">{item}</span>
+            </div>
+          ))}
+        </div>
+
         <Link
           href="/onboarding"
           onClick={() => trackCtaClicked({ cta_text: "Build My Roadmap", cta_location: "checkout_success", destination: "/onboarding" })}
@@ -94,7 +114,25 @@ function CheckoutSuccessInner() {
         >
           Build My Roadmap →
         </Link>
-        <p className="text-slate-500 text-xs mt-6">
+
+        {/* Social proof */}
+        <div className="mt-6 mb-4">
+          <SocialProofStrip
+            variant="minimal"
+            testimonial={{
+              quote: "The 6-month plan gave me a way to upskill nights and weekends.",
+              name: "Priya R.",
+              role: "Career Pivoter",
+              initials: "PR",
+              gradient: "from-teal-500 to-cyan-500",
+            }}
+            metrics={[]}
+            className="justify-center"
+          />
+          <p className="text-xs text-slate-500 mt-1">Join 500+ professionals</p>
+        </div>
+
+        <p className="text-slate-500 text-xs">
           Your receipt has been sent to your email.
         </p>
       </div>

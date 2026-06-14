@@ -1,0 +1,1017 @@
+.acp-save-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin: 4px 8px;
+  background: #0f172a;
+  color: #2dd4bf;
+  border: 1px solid #334155;
+  border-radius: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 2147483647;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.acp-save-btn:hover {
+  background: #1e293b;
+  border-color: #2dd4bf;
+}
+
+.acp-save-btn.acp-saving {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-save-btn.acp-saved {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+}
+
+.acp-save-btn svg {
+  flex-shrink: 0;
+}
+
+.acp-mini-score {
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.acp-stage-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-left: 4px;
+  text-transform: capitalize;
+}
+
+/* Score overlay panel */
+.acp-score-panel {
+  all: initial;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: acp-slide-in 0.2s ease-out;
+}
+
+@keyframes acp-slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.acp-panel-close {
+  all: initial;
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+}
+
+.acp-panel-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-score-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.acp-score-ring {
+  flex-shrink: 0;
+}
+
+.acp-score-meta {
+  flex: 1;
+}
+
+.acp-score-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 2px;
+}
+
+.acp-score-detail {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.acp-score-metrics {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.acp-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: #1e293b;
+  border-radius: 8px;
+}
+
+.acp-metric-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.acp-metric-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.acp-keywords {
+  margin-top: 8px;
+}
+
+.acp-kw-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.acp-kw-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.acp-kw-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.acp-kw-exact {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.acp-kw-variant {
+  background: #1e3a5f;
+  color: #7dd3fc;
+}
+
+.acp-kw-semantic {
+  background: #3b0764;
+  color: #d8b4fe;
+}
+
+.acp-kw-miss {
+  background: #451a03;
+  color: #fbbf24;
+}
+
+/* Resume bar (score panel) */
+.acp-resume-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #1e293b;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.acp-rbar-label {
+  flex: 1;
+  font-weight: 600;
+  color: #e2e8f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-rbar-switch {
+  all: initial;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #2dd4bf;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.acp-rbar-switch:hover { text-decoration: underline; }
+
+.acp-rbar-picker {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-rbar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.acp-rbar-item:hover { background: #334155; }
+
+.acp-rbar-active { background: #0f4c3a; }
+
+.acp-rbar-info { flex: 1; min-width: 0; }
+
+.acp-rbar-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-rbar-meta {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.acp-rbar-check {
+  color: #10b981;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Autofill banner */
+.acp-autofill-banner {
+  all: initial;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid #334155;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: #e2e8f0;
+  animation: acp-slide-down 0.2s ease-out;
+}
+
+@keyframes acp-slide-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.acp-autofill-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acp-autofill-banner-text svg {
+  color: #2dd4bf;
+}
+
+.acp-banner-btn {
+  all: initial;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: system-ui;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.acp-banner-btn-fill {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.acp-banner-btn-fill:hover {
+  background: #5eead4;
+}
+
+.acp-banner-btn-skip {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.acp-banner-btn-skip:hover {
+  background: #1e293b;
+}
+
+.acp-banner-btn-never {
+  background: transparent;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.acp-field-highlight {
+  outline: 2px solid #2dd4bf !important;
+  outline-offset: 1px;
+  animation: acp-flash 0.4s ease-out;
+}
+
+@keyframes acp-flash {
+  0% { background-color: rgba(45, 212, 191, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.acp-field-attention {
+  outline: 2px solid #f59e0b !important;
+  outline-offset: 1px;
+}
+
+/* AI Generate button */
+.acp-ai-gen-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  margin: 6px 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #2dd4bf;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 10;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.acp-ai-gen-btn:hover {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.2);
+}
+
+.acp-ai-gen-btn.acp-ai-gen-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-ai-gen-btn svg {
+  flex-shrink: 0;
+  color: #2dd4bf;
+}
+
+.acp-ai-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #334155;
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: acp-spin 0.6s linear infinite;
+}
+
+@keyframes acp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.acp-ai-gen-error {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: #fca5a5;
+  background: #1c1917;
+  border: 1px solid #7f1d1d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  animation: acp-fade-in 0.2s ease-out;
+}
+
+@keyframes acp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Review modal overlay */
+.acp-ai-review-overlay {
+  all: initial;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-ai-review-modal {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  width: 560px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: acp-modal-in 0.2s ease-out;
+}
+
+@keyframes acp-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.acp-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-review-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f1f5f9;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.acp-review-title svg {
+  color: #2dd4bf;
+}
+
+.acp-review-close {
+  all: initial;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+  padding: 4px;
+}
+
+.acp-review-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-review-question {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #94a3b8;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  font-style: italic;
+}
+
+.acp-review-editor {
+  all: initial;
+  flex: 1;
+  min-height: 240px;
+  max-height: 50vh;
+  padding: 16px 20px;
+  background: transparent;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  border: none;
+  outline: none;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.acp-review-editor-loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.acp-review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #1e293b;
+  gap: 8px;
+}
+
+.acp-review-meta {
+  flex-shrink: 0;
+}
+
+.acp-review-wordcount {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.acp-review-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.acp-review-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.acp-review-btn-insert {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.acp-review-btn-insert:hover {
+  background: #5eead4;
+}
+
+.acp-review-btn-cancel {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.acp-review-btn-cancel:hover {
+  background: #1e293b;
+}
+
+.acp-review-btn-regen {
+  background: transparent;
+  color: #2dd4bf;
+  border: 1px solid #334155;
+}
+
+.acp-review-btn-regen:hover {
+  background: #1e293b;
+}
+
+.acp-review-btn-regen svg {
+  color: #2dd4bf;
+}
+
+.acp-review-btn:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Resume upload */
+.acp-resume-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+  position: relative;
+}
+
+.acp-resume-upload-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #2dd4bf;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 10;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.acp-resume-upload-btn:hover {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.2);
+}
+
+.acp-resume-upload-btn svg {
+  flex-shrink: 0;
+  color: #2dd4bf;
+}
+
+.acp-resume-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-resume-done {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+  pointer-events: none;
+}
+
+.acp-resume-done svg {
+  color: #6ee7b7;
+}
+
+.acp-resume-status {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  min-height: 14px;
+}
+
+.acp-resume-success {
+  color: #6ee7b7;
+}
+
+.acp-resume-error {
+  color: #fca5a5;
+}
+
+.acp-resume-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 280px;
+  max-width: 400px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 4px;
+  z-index: 2147483647;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-resume-picker-item {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.1s;
+  box-sizing: border-box;
+}
+
+.acp-resume-picker-item:hover {
+  background: #1e293b;
+}
+
+.acp-resume-picker-item.acp-resume-active {
+  background: #0d3d56;
+  border: 1px solid #0ea5e9;
+}
+
+.acp-resume-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-resume-score {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.acp-resume-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #0ea5e9;
+  color: #0f172a;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.acp-banner-btn-resume {
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  color: #ccfbf1;
+  border: 1px solid #2dd4bf;
+}
+
+.acp-banner-btn-resume:hover {
+  background: #0f766e;
+}
+
+.acp-banner-btn-resume:disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-banner-btn-resume-done {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+}
+
+/* In-page keyword highlights */
+mark.acp-hl-matched {
+  all: initial;
+  background: transparent;
+  border-bottom: 2px solid #2dd4bf;
+  color: inherit;
+  font: inherit;
+  padding-bottom: 1px;
+  cursor: default;
+}
+
+mark.acp-hl-missing {
+  all: initial;
+  background: transparent;
+  border-bottom: 2px dotted #ef4444;
+  color: inherit;
+  font: inherit;
+  padding-bottom: 1px;
+  cursor: default;
+}
+
+mark.acp-hl-matched:hover,
+mark.acp-hl-missing:hover {
+  background: rgba(45, 212, 191, 0.08);
+}
+
+mark.acp-hl-missing:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.acp-hl-toggle {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 8px;
+  background: #1e293b;
+  border: none;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.acp-hl-toggle:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.acp-hl-toggle.acp-hl-active {
+  color: #2dd4bf;
+  background: #0f3d3a;
+}
+
+.acp-hl-toggle-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.acp-hl-toggle-label {
+  flex: 1;
+  text-align: left;
+}
+
+.acp-hl-toggle-count {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Persistent autofill indicator */
+.acp-autofilled {
+  outline: 2px solid #2dd4bf !important;
+  outline-offset: 1px;
+  background-color: rgba(45, 212, 191, 0.05) !important;
+}
+
+.acp-fill-indicator {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.15s;
+}
+
+.acp-fill-indicator:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.acp-fill-indicator:hover svg {
+  stroke: #ef4444;
+}
+
+/* Autofill summary panel */
+.acp-summary-panel {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 340px;
+  max-height: 70vh;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: acp-slide-up 0.25s ease-out;
+  overflow: hidden;
+}
+
+@keyframes acp-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.acp-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-summary-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.acp-summary-ats {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  text-transform: capitalize;
+}
+
+.acp-summary-close {
+  all: initial;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+  padding: 2px;
+}
+
+.acp-summary-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-summary-stats {
+  display: flex;
+  gap: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-summary-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.acp-stat-num {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.acp-stat-label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.acp-summary-details {
+  padding: 10px 16px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.acp-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+
+.acp-summary-item svg {
+  flex-shrink: 0;
+}
+
+.acp-summary-filled span {
+  color: #a7f3d0;
+}
+
+.acp-summary-attention span {
+  color: #fde68a;
+}
+
+.acp-summary-skipped span {
+  color: #64748b;
+}
+
+.acp-summary-hint {
+  padding: 10px 16px;
+  font-size: 11px;
+  color: #64748b;
+  border-top: 1px solid #1e293b;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acp-score-panel,
+  .acp-autofill-banner,
+  .acp-field-highlight,
+  .acp-ai-review-overlay,
+  .acp-ai-review-modal,
+  .acp-ai-gen-error,
+  .acp-resume-picker,
+  .acp-summary-panel {
+    animation: none;
+  }
+  .acp-save-btn,
+  .acp-banner-btn,
+  .acp-ai-gen-btn,
+  .acp-review-btn,
+  .acp-resume-upload-btn,
+  .acp-resume-picker-item,
+  .acp-hl-toggle,
+  .acp-fill-indicator {
+    transition: none;
+  }
+}
