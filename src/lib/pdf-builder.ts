@@ -36,6 +36,11 @@ const LEARN_KW = ["learn", "study", "course", "read", "research", "understand", 
 const ACHIEVE_KW = ["achieve", "earn", "obtain", "pass", "certif", "goal", "launch", "publish", "ship", "release", "degree", "award"];
 const CONNECT_KW = ["network", "connect", "mentor", "community", "meetup", "conference", "linkedin", "attend", "join", "collaborate", "reach out", "contact", "interview"];
 
+function s(val: unknown, fallback = ""): string {
+  if (val == null) return fallback;
+  return String(val);
+}
+
 function classifyMilestone(text: string): MilestoneType {
   const lower = text.toLowerCase();
   if (CONNECT_KW.some((k) => lower.includes(k))) return "connect";
@@ -99,6 +104,8 @@ export function buildPivotPlanPdf(
   createdAt?: string
 ): PDFKit.PDFDocument {
   const doc = new PDFDocument({ size: "A4", margin: MARGIN, bufferPages: true });
+
+  try {
   const pageNum = { value: 1 };
 
   // ─── PAGE 1: COVER ───
@@ -121,8 +128,8 @@ export function buildPivotPlanPdf(
   }
 
   doc.moveDown(1.5);
-  doc.fontSize(20).fillColor(WHITE).text(plan.targetRole, MARGIN, doc.y, { width: CONTENT_W });
-  doc.fontSize(12).fillColor(SECONDARY).text(plan.targetIndustry, MARGIN, doc.y + 4, { width: CONTENT_W });
+  doc.fontSize(20).fillColor(WHITE).text(s(plan.targetRole, "Target Role"), MARGIN, doc.y, { width: CONTENT_W });
+  doc.fontSize(12).fillColor(SECONDARY).text(s(plan.targetIndustry), MARGIN, doc.y + 4, { width: CONTENT_W });
 
   const metricsY = PAGE_H * 0.65;
   doc.fontSize(10).fillColor(TEXT);
@@ -130,7 +137,7 @@ export function buildPivotPlanPdf(
   const metricPairs: [string, string][] = [];
   if (plan.matchScore) metricPairs.push(["Match Score", `${plan.matchScore}%`]);
   if (plan.skillMatchPercent) metricPairs.push(["Skill Match", `${plan.skillMatchPercent}%`]);
-  metricPairs.push(["Timeline", plan.estimatedTimeToTransition]);
+  if (plan.estimatedTimeToTransition) metricPairs.push(["Timeline", plan.estimatedTimeToTransition]);
   if (plan.financialSummary) metricPairs.push(["Salary Uplift", `+${plan.financialSummary.salaryUpliftPercent}%`]);
 
   const colW = CONTENT_W / metricPairs.length;
@@ -151,19 +158,20 @@ export function buildPivotPlanPdf(
 
   sectionTitle(doc, "Executive Summary");
 
-  const rationaleH = textHeight(doc, plan.rationale, 10, CONTENT_W);
+  const rationale = s(plan.rationale, "See your personalized career pivot plan below.");
+  const rationaleH = textHeight(doc, rationale, 10, CONTENT_W);
   ensureSpace(doc, rationaleH, pageNum);
-  doc.fontSize(10).fillColor(TEXT).text(plan.rationale, MARGIN, doc.y, { width: CONTENT_W, lineGap: 3 });
+  doc.fontSize(10).fillColor(TEXT).text(rationale, MARGIN, doc.y, { width: CONTENT_W, lineGap: 3 });
   doc.moveDown(1.2);
 
   if (plan.tradeoffs) {
     doc.fontSize(12).fillColor(PRIMARY).text("Path Assessment", MARGIN, doc.y);
     doc.moveDown(0.4);
     doc.fontSize(10).fillColor(TEXT);
-    doc.text(`Difficulty: ${plan.tradeoffs.difficulty}  \u00B7  Risk: ${plan.tradeoffs.riskLevel}  \u00B7  Time to First Role: ${plan.tradeoffs.timeToFirstRole}`, MARGIN, doc.y, { width: CONTENT_W });
+    doc.text(`Difficulty: ${s(plan.tradeoffs.difficulty, "N/A")}  \u00B7  Risk: ${s(plan.tradeoffs.riskLevel, "N/A")}  \u00B7  Time to First Role: ${s(plan.tradeoffs.timeToFirstRole, "N/A")}`, MARGIN, doc.y, { width: CONTENT_W });
     doc.moveDown(0.3);
-    doc.text(`Near-term Income: ${plan.tradeoffs.incomeImpactNear}`, MARGIN, doc.y, { width: CONTENT_W });
-    doc.text(`Long-term Potential: ${plan.tradeoffs.incomePotentialLong}`, MARGIN, doc.y, { width: CONTENT_W });
+    doc.text(`Near-term Income: ${s(plan.tradeoffs.incomeImpactNear, "N/A")}`, MARGIN, doc.y, { width: CONTENT_W });
+    doc.text(`Long-term Potential: ${s(plan.tradeoffs.incomePotentialLong, "N/A")}`, MARGIN, doc.y, { width: CONTENT_W });
     doc.moveDown(0.5);
 
     if (plan.tradeoffs.pros.length) {
@@ -300,9 +308,9 @@ export function buildPivotPlanPdf(
       doc.fontSize(10).fillColor(WHITE).text(`${i + 1}`, MARGIN + 10, cardY + 1, { width: 12, align: "center" });
       doc.restore();
 
-      doc.fontSize(11).fillColor(TEXT).text(action.title, MARGIN + 34, cardY, { width: CONTENT_W - 44 });
-      doc.fontSize(9).fillColor(MUTED).text(action.instruction, MARGIN + 34, cardY + 16, { width: CONTENT_W - 44 });
-      doc.fontSize(8).fillColor(PRIMARY).text(`${action.timeEstimate}  \u00B7  ${action.difficulty}`, MARGIN + 34, cardY + 30, { width: CONTENT_W - 44 });
+      doc.fontSize(11).fillColor(TEXT).text(s(action.title, "Action"), MARGIN + 34, cardY, { width: CONTENT_W - 44 });
+      doc.fontSize(9).fillColor(MUTED).text(s(action.instruction), MARGIN + 34, cardY + 16, { width: CONTENT_W - 44 });
+      doc.fontSize(8).fillColor(PRIMARY).text(`${s(action.timeEstimate)}  \u00B7  ${s(action.difficulty)}`, MARGIN + 34, cardY + 30, { width: CONTENT_W - 44 });
 
       doc.y = doc.y + 56;
     }
@@ -330,10 +338,10 @@ export function buildPivotPlanPdf(
     for (const item of plan.aiToolkit) {
       ensureSpace(doc, 40, pageNum);
 
-      doc.fontSize(11).fillColor(TEXT).text(item.tool, MARGIN, doc.y, { continued: true });
-      doc.fontSize(9).fillColor(MUTED).text(`  (${item.proficiencyNeeded})`);
+      doc.fontSize(11).fillColor(TEXT).text(s(item.tool, "Tool"), MARGIN, doc.y, { continued: true });
+      doc.fontSize(9).fillColor(MUTED).text(`  (${s(item.proficiencyNeeded)})`);
       doc.moveDown(0.15);
-      doc.fontSize(9).fillColor(MUTED).text(`${item.category}  \u2014  ${item.useCase}`, MARGIN + 8, doc.y, { width: CONTENT_W - 8 });
+      doc.fontSize(9).fillColor(MUTED).text(`${s(item.category)}  \u2014  ${s(item.useCase)}`, MARGIN + 8, doc.y, { width: CONTENT_W - 8 });
       doc.moveDown(0.6);
     }
 
@@ -358,12 +366,12 @@ export function buildPivotPlanPdf(
     const halfW = CONTENT_W / 2;
 
     doc.fontSize(9).fillColor(MUTED).text("Current Salary Range", MARGIN + 16, fY, { width: halfW - 16 });
-    doc.fontSize(14).fillColor(TEXT).text(fs.currentSalaryRange, MARGIN + 16, fY + 14, { width: halfW - 16 });
+    doc.fontSize(14).fillColor(TEXT).text(s(fs.currentSalaryRange, "N/A"), MARGIN + 16, fY + 14, { width: halfW - 16 });
 
     doc.fontSize(9).fillColor(MUTED).text("Target Salary Range", MARGIN + halfW + 16, fY, { width: halfW - 32 });
-    doc.fontSize(14).fillColor(EMERALD).text(fs.targetSalaryRange, MARGIN + halfW + 16, fY + 14, { width: halfW - 32 });
+    doc.fontSize(14).fillColor(EMERALD).text(s(fs.targetSalaryRange, "N/A"), MARGIN + halfW + 16, fY + 14, { width: halfW - 32 });
 
-    doc.fontSize(10).fillColor(PRIMARY).text(`+${fs.salaryUpliftPercent}% uplift`, MARGIN + 16, fY + 40, { width: CONTENT_W - 32 });
+    doc.fontSize(10).fillColor(PRIMARY).text(`+${s(fs.salaryUpliftPercent, "0")}% uplift`, MARGIN + 16, fY + 40, { width: CONTENT_W - 32 });
 
     doc.y += 82;
 
@@ -372,8 +380,8 @@ export function buildPivotPlanPdf(
       doc.moveDown(0.5);
       for (const ms of fs.milestoneSalaries) {
         ensureSpace(doc, 22, pageNum);
-        doc.fontSize(10).fillColor(TEXT).text(`${ms.phase}: ${ms.expectedSalaryRange}`, MARGIN + 8, doc.y, { continued: true });
-        doc.fontSize(9).fillColor(MUTED).text(`  \u2014  demand: ${ms.marketDemandLevel} (${ms.demandTrend})`);
+        doc.fontSize(10).fillColor(TEXT).text(`${s(ms.phase)}: ${s(ms.expectedSalaryRange)}`, MARGIN + 8, doc.y, { continued: true });
+        doc.fontSize(9).fillColor(MUTED).text(`  \u2014  demand: ${s(ms.marketDemandLevel)} (${s(ms.demandTrend)})`);
         doc.moveDown(0.3);
       }
       doc.moveDown(0.6);
@@ -391,7 +399,7 @@ export function buildPivotPlanPdf(
     }
 
     doc.fontSize(10).fillColor(TEXT).text(`ROI Timeframe: `, MARGIN, doc.y, { continued: true });
-    doc.fillColor(PRIMARY).text(fs.roiTimeframe);
+    doc.fillColor(PRIMARY).text(s(fs.roiTimeframe, "N/A"));
   } else if (plan.financialConsiderations) {
     doc.fontSize(10).fillColor(TEXT).text(plan.financialConsiderations, MARGIN, doc.y, { width: CONTENT_W, lineGap: 3 });
   } else {
@@ -411,8 +419,8 @@ export function buildPivotPlanPdf(
     for (const r of plan.recommendedResources) {
       const rH = textHeight(doc, r.name, 11, CONTENT_W) + textHeight(doc, `${r.provider}  \u00B7  ${r.type}  \u00B7  ${r.cost}  \u00B7  ~${r.timeEstimate}`, 9, CONTENT_W - 8) + 8;
       ensureSpace(doc, rH, pageNum);
-      doc.fontSize(11).fillColor(TEXT).text(r.name, MARGIN, doc.y, { width: CONTENT_W });
-      doc.fontSize(9).fillColor(MUTED).text(`${r.provider}  \u00B7  ${r.type}  \u00B7  ${r.cost}  \u00B7  ~${r.timeEstimate}`, MARGIN + 8, doc.y, { width: CONTENT_W - 8 });
+      doc.fontSize(11).fillColor(TEXT).text(s(r.name, "Resource"), MARGIN, doc.y, { width: CONTENT_W });
+      doc.fontSize(9).fillColor(MUTED).text(`${s(r.provider)}  \u00B7  ${s(r.type)}  \u00B7  ${s(r.cost)}  \u00B7  ~${s(r.timeEstimate)}`, MARGIN + 8, doc.y, { width: CONTENT_W - 8 });
       doc.moveDown(0.6);
     }
   } else {
@@ -433,6 +441,10 @@ export function buildPivotPlanPdf(
   pageFooter(doc, pageNum.value);
 
   doc.end();
+  } catch (err) {
+    console.error("PDF builder error:", err);
+    doc.end();
+  }
   return doc;
 }
 
@@ -457,13 +469,13 @@ function drawSkillGapChart(doc: PDFKit.PDFDocument, gaps: SkillGap[], pageNum: {
     ensureSpace(doc, rowH + 4, pageNum);
 
     const y = doc.y;
-    const currentVal = toNum(gap.currentLevel);
-    const requiredVal = toNum(gap.requiredLevel);
+    const currentVal = toNum(s(gap.currentLevel, "beginner"));
+    const requiredVal = toNum(s(gap.requiredLevel, "intermediate"));
 
     const priorityColor = gap.priority === "high" ? AMBER : gap.priority === "medium" ? PRIMARY : MUTED;
 
-    doc.fontSize(9).fillColor(TEXT).text(gap.skill, MARGIN, y + 3, { width: labelW - 4, lineBreak: false });
-    doc.fontSize(7).fillColor(priorityColor).text(gap.priority, MARGIN, y + 15, { width: labelW - 4 });
+    doc.fontSize(9).fillColor(TEXT).text(s(gap.skill, "Skill"), MARGIN, y + 3, { width: labelW - 4, lineBreak: false });
+    doc.fontSize(7).fillColor(priorityColor).text(s(gap.priority, "medium"), MARGIN, y + 15, { width: labelW - 4 });
 
     const barX = MARGIN + labelW;
 
@@ -485,11 +497,11 @@ function drawSkillGapChart(doc: PDFKit.PDFDocument, gaps: SkillGap[], pageNum: {
 
     doc.fontSize(7).fillColor(WHITE);
     if (curW > 30) {
-      doc.text(gap.currentLevel, barX + 4, y + 7, { width: curW - 8, lineBreak: false });
+      doc.text(s(gap.currentLevel), barX + 4, y + 7, { width: curW - 8, lineBreak: false });
     }
     doc.fontSize(7).fillColor(MUTED);
     if (reqW > curW + 30) {
-      doc.text(gap.requiredLevel, barX + curW + 4, y + 7, { width: reqW - curW - 8, lineBreak: false });
+      doc.text(s(gap.requiredLevel), barX + curW + 4, y + 7, { width: reqW - curW - 8, lineBreak: false });
     }
 
     doc.y = y + rowH;

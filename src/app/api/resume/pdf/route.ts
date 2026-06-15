@@ -1,10 +1,9 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import PDFDocument from "pdfkit";
 
 const PRIMARY = "#0d9488";
 const TEXT = "#0f172a";
 const MUTED = "#64748b";
-const WHITE = "#ffffff";
 
 const PAGE_W = 595.28;
 const PAGE_H = 841.89;
@@ -12,6 +11,7 @@ const MARGIN = 50;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
 export async function POST(req: NextRequest) {
+  try {
   const { content, targetRole, name, type } = (await req.json()) as {
     content: string;
     targetRole: string;
@@ -20,10 +20,7 @@ export async function POST(req: NextRequest) {
   };
 
   if (!content) {
-    return new Response(JSON.stringify({ error: "content is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ error: "content is required" }, { status: 400 });
   }
 
   const doc = new PDFDocument({ size: "A4", margin: MARGIN, bufferPages: true });
@@ -31,8 +28,9 @@ export async function POST(req: NextRequest) {
 
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
 
-  const done = new Promise<Buffer>((resolve) => {
+  const done = new Promise<Buffer>((resolve, reject) => {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
   });
 
   const isResume = type !== "cover-letter";
@@ -147,4 +145,11 @@ export async function POST(req: NextRequest) {
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
+  } catch (err) {
+    console.error("Resume PDF generation failed:", err);
+    return NextResponse.json(
+      { error: "PDF generation failed" },
+      { status: 500 }
+    );
+  }
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, AlertCircle } from "lucide-react";
 import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError, trackCtaClicked, trackExperimentConversion } from "@/lib/tracking";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
@@ -19,6 +19,7 @@ export default function PivotPlanPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [selected, setSelected] = useState(0);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_plans");
@@ -45,26 +46,43 @@ export default function PivotPlanPage() {
     const targetRole = plans[selected].targetRole;
     trackPdfDownloadStarted({ source: "onboarding", target_role: targetRole });
     setDownloadingPdf(true);
-    try {
-      const res = await fetch("/api/plan/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile, plan: plans[selected] }),
-      });
-      if (!res.ok) throw new Error("Failed to generate PDF");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-      trackPdfDownloadCompleted({ source: "onboarding", target_role: targetRole });
-    } catch (err) {
-      trackPdfDownloadError({ source: "onboarding", error: err instanceof Error ? err.message : "Unknown error" });
-    } finally {
-      setDownloadingPdf(false);
+    setPdfError(null);
+
+    const MAX_RETRIES = 2;
+    let lastErr = "";
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30_000);
+        const res = await fetch("/api/plan/pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profile, plan: plans[selected] }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error(`Server error (${res.status})`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        trackPdfDownloadCompleted({ source: "onboarding", target_role: targetRole });
+        setDownloadingPdf(false);
+        return;
+      } catch (err) {
+        lastErr = err instanceof Error
+          ? (err.name === "AbortError" ? "Request timed out" : err.message)
+          : "Unknown error";
+      }
     }
+
+    trackPdfDownloadError({ source: "onboarding", error: lastErr });
+    setPdfError("PDF download failed. Please try again.");
+    setDownloadingPdf(false);
   }
 
   if (plans.length === 0) {
@@ -109,7 +127,7 @@ export default function PivotPlanPage() {
           <PlanHero plan={plan} />
 
           {/* PDF Download */}
-          <div className="flex justify-end">
+          <div className="flex flex-col items-end gap-1">
             <button
               onClick={handleDownloadPdf}
               disabled={downloadingPdf}
@@ -122,6 +140,12 @@ export default function PivotPlanPage() {
               )}
               {downloadingPdf ? "Generating PDF..." : "Download PDF"}
             </button>
+            {pdfError && (
+              <span className="inline-flex items-center gap-1 text-xs text-red-400">
+                <AlertCircle className="w-3 h-3" />
+                {pdfError}
+              </span>
+            )}
           </div>
 
           {/* Milestones */}
