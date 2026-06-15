@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseClient, getSupabaseAdmin } from "@/lib/supabase";
 import { randomUUID } from "crypto";
-
-if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn(
-    "[checkout] SUPABASE_SERVICE_ROLE_KEY is not set — Supabase client will use anon key, which cannot write to orders (RLS)"
-  );
-}
 
 export async function POST(req: NextRequest) {
   const { email, discountCode, plan: planKey = "report" } = await req.json();
@@ -25,8 +19,18 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
 
     if (isBypassEmail(email)) {
+      let supabase;
+      try {
+        supabase = getSupabaseAdmin();
+      } catch {
+        console.error("Bypass order blocked: SUPABASE_SERVICE_ROLE_KEY is not configured");
+        return NextResponse.json(
+          { error: "Server configuration error — please contact support" },
+          { status: 500 }
+        );
+      }
+
       const bypassSessionId = `bypass_${randomUUID()}`;
-      const supabase = getSupabaseClient();
       const { error: insertError } = await supabase.from("orders").insert({
         email,
         stripe_session_id: bypassSessionId,
@@ -36,9 +40,9 @@ export async function POST(req: NextRequest) {
         plan_type: planKey,
       });
       if (insertError) {
-        console.error("Bypass order insert failed:", insertError);
+        console.error("Bypass order insert failed:", JSON.stringify(insertError));
         return NextResponse.json(
-          { error: "Failed to create bypass order — check SUPABASE_SERVICE_ROLE_KEY is set" },
+          { error: "Failed to create order — please try again or contact support" },
           { status: 500 }
         );
       }
