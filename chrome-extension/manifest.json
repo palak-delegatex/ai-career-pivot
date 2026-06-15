@@ -22,6 +22,11 @@
     "https://*.icims.com/*",
     "https://*.taleo.net/*",
     "https://*.oraclecloud.com/*",
+    "https://*.smartrecruiters.com/*",
+    "https://*.bamboohr.com/*",
+    "https://*.applytojob.com/*",
+    "https://*.jazz.co/*",
+    "https://*.jobvite.com/*",
     "https://ai-career-pivot.vercel.app/*",
     "https://*.supabase.co/*"
   ],
@@ -76,7 +81,15 @@
         "https://*.icims.com/jobs/*/login*",
         "https://*.icims.com/jobs/*/candidate*",
         "https://*.taleo.net/careersection/*/jobapply*",
-        "https://*.oraclecloud.com/hcmUI/CandidateExperience/*"
+        "https://*.oraclecloud.com/hcmUI/CandidateExperience/*",
+        "https://*.smartrecruiters.com/*/application*",
+        "https://*.smartrecruiters.com/apply/*",
+        "https://*.bamboohr.com/careers/*/application*",
+        "https://*.bamboohr.com/jobs/view.php*",
+        "https://*.applytojob.com/apply/*",
+        "https://*.jazz.co/apply/*",
+        "https://*.jobvite.com/apply/*",
+        "https://*.jobvite.com/careers/*/job/*"
       ],
       "js": ["content/autofill.js", "content/ai-generate.js"],
       "css": ["content/injector.css"],

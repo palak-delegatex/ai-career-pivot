@@ -993,6 +993,45 @@ mark.acp-hl-missing:hover {
   text-align: center;
 }
 
+/* Job clip button (application pages) */
+.acp-clip-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  color: #ccfbf1;
+  border: 1px solid #2dd4bf;
+  border-radius: 6px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.acp-clip-btn:hover {
+  background: #0f766e;
+}
+
+.acp-clip-btn svg {
+  flex-shrink: 0;
+}
+
+.acp-clip-saving {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-clip-saved {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
@@ -1011,7 +1050,8 @@ mark.acp-hl-missing:hover {
   .acp-resume-upload-btn,
   .acp-resume-picker-item,
   .acp-hl-toggle,
-  .acp-fill-indicator {
+  .acp-fill-indicator,
+  .acp-clip-btn {
     transition: none;
   }
 }

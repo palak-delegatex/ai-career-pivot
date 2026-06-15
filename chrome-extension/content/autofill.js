@@ -137,6 +137,147 @@
       },
       resumeSelector: 'input[type="file"]',
     },
+    smartrecruiters: {
+      hostPattern: /smartrecruiters\.com/,
+      formSelector: '.application-form, form[class*="application"], form',
+      fieldOverrides: {
+        firstName: 'input[name="firstName"], input[id*="firstName"]',
+        lastName: 'input[name="lastName"], input[id*="lastName"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phoneNumber"], input[name="phone"]',
+        linkedin: 'input[name*="linkedin"], input[id*="linkedin"]',
+        website: 'input[name*="website"], input[name*="portfolio"]',
+        currentCompany: 'input[name*="company"], input[name*="currentCompany"]',
+        currentTitle: 'input[name*="title"], input[name*="currentTitle"]',
+        address: 'input[name*="address"], input[name*="street"]',
+        city: 'input[name*="city"]',
+        state: 'input[name*="state"], select[name*="state"]',
+        zip: 'input[name*="zip"], input[name*="postalCode"]',
+        country: 'select[name*="country"], input[name*="country"]',
+      },
+      resumeSelector: 'input[type="file"][name*="resume"], input[type="file"]',
+    },
+    bamboohr: {
+      hostPattern: /bamboohr\.com/,
+      formSelector: '.ResumatorJobApplication, form[id*="application"], form',
+      fieldOverrides: {
+        firstName: 'input[name="firstName"], input[id="firstName"]',
+        lastName: 'input[name="lastName"], input[id="lastName"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phone"], input[id="phone"]',
+        address: 'input[name="address"], input[name*="street"]',
+        city: 'input[name="city"]',
+        state: 'input[name="state"], select[name="state"]',
+        zip: 'input[name="zip"]',
+        linkedin: 'input[name*="linkedin"]',
+        website: 'input[name*="website"]',
+        coverLetter: 'textarea[name*="coverLetter"], textarea[name*="cover"]',
+      },
+      resumeSelector: 'input[type="file"][name*="resume"], input[type="file"]',
+    },
+    jazzhr: {
+      hostPattern: /applytojob\.com|jazz\.co/,
+      formSelector: '#applicationForm, form[id*="apply"], form',
+      fieldOverrides: {
+        firstName: 'input[name="first_name"], input[id="first_name"]',
+        lastName: 'input[name="last_name"], input[id="last_name"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phone"], input[id="phone"]',
+        address: 'input[name="address"], input[name*="address1"]',
+        city: 'input[name="city"]',
+        state: 'select[name="state"], input[name="state"]',
+        zip: 'input[name="zip"]',
+        linkedin: 'input[name*="linkedin"]',
+        website: 'input[name*="website"]',
+        currentCompany: 'input[name*="company"]',
+        currentTitle: 'input[name*="title"]',
+      },
+      resumeSelector: 'input[type="file"][name*="resume"], input[type="file"]',
+    },
+    jobvite: {
+      hostPattern: /jobvite\.com|jobs\.lever\.co/,
+      formSelector: '.jv-application, form[class*="application"], form',
+      fieldOverrides: {
+        firstName: 'input[name="firstName"], input[id*="firstName"]',
+        lastName: 'input[name="lastName"], input[id*="lastName"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phone"], input[id*="phone"]',
+        address: 'input[name*="address"]',
+        city: 'input[name*="city"]',
+        state: 'select[name*="state"], input[name*="state"]',
+        zip: 'input[name*="zip"], input[name*="postal"]',
+        linkedin: 'input[name*="linkedin"]',
+        website: 'input[name*="website"], input[name*="portfolio"]',
+        currentCompany: 'input[name*="employer"], input[name*="company"]',
+        currentTitle: 'input[name*="jobTitle"], input[name*="title"]',
+      },
+      resumeSelector: 'input[type="file"]',
+    },
+    linkedinApply: {
+      hostPattern: /linkedin\.com/,
+      formSelector: '.jobs-easy-apply-content, .jobs-apply-form, form',
+      fieldOverrides: {
+        firstName: 'input[id*="first-name"], input[name*="firstName"]',
+        lastName: 'input[id*="last-name"], input[name*="lastName"]',
+        email: 'input[id*="email"], input[name*="email"]',
+        phone: 'input[id*="phone"], input[name*="phone"]',
+        city: 'input[id*="city"], input[name*="city"]',
+        linkedin: 'input[id*="linkedin"], input[name*="linkedin"]',
+        website: 'input[id*="website"], input[name*="website"]',
+        currentCompany: 'input[id*="company"], input[name*="company"]',
+        currentTitle: 'input[id*="title"], input[name*="title"]',
+        school: 'input[id*="school"], input[name*="school"]',
+        degree: 'select[id*="degree"], input[name*="degree"]',
+        fieldOfStudy: 'input[id*="field-of-study"], input[name*="fieldOfStudy"]',
+        yearsExperience: 'input[id*="experience"], select[id*="experience"]',
+      },
+      resumeSelector: 'input[type="file"]',
+    },
+    indeedApply: {
+      hostPattern: /indeed\.com/,
+      formSelector: '#indeed-apply-widget, .ia-Application, form[id*="apply"], form',
+      fieldOverrides: {
+        fullName: 'input[id*="name"], input[name="name"]',
+        email: 'input[id*="email"], input[name="email"], input[type="email"]',
+        phone: 'input[id*="phone"], input[name="phone"], input[type="tel"]',
+        city: 'input[id*="city"], input[name*="city"]',
+        state: 'select[id*="state"], input[name*="state"]',
+        currentTitle: 'input[id*="title"], input[name*="jobTitle"]',
+        currentCompany: 'input[id*="company"], input[name*="company"]',
+        school: 'input[id*="school"], input[name*="school"]',
+        degree: 'select[id*="degree"], input[name*="degree"]',
+        yearsExperience: 'input[id*="experience"], select[id*="experience"]',
+      },
+      resumeSelector: 'input[type="file"][name*="resume"], input[type="file"]',
+    },
+    glassdoorApply: {
+      hostPattern: /glassdoor\.com/,
+      formSelector: '.applyForm, form[class*="apply"], form',
+      fieldOverrides: {
+        firstName: 'input[name="firstName"], input[id*="firstName"]',
+        lastName: 'input[name="lastName"], input[id*="lastName"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phone"], input[type="tel"]',
+        currentCompany: 'input[name*="company"]',
+        currentTitle: 'input[name*="title"]',
+        linkedin: 'input[name*="linkedin"]',
+      },
+      resumeSelector: 'input[type="file"]',
+    },
+    ziprecruiterApply: {
+      hostPattern: /ziprecruiter\.com/,
+      formSelector: '.apply-form, form[class*="apply"], form',
+      fieldOverrides: {
+        firstName: 'input[name="first_name"], input[id*="first_name"]',
+        lastName: 'input[name="last_name"], input[id*="last_name"]',
+        email: 'input[name="email"], input[type="email"]',
+        phone: 'input[name="phone"], input[type="tel"]',
+        city: 'input[name*="city"]',
+        state: 'select[name*="state"], input[name*="state"]',
+        zip: 'input[name*="zip"]',
+      },
+      resumeSelector: 'input[type="file"]',
+    },
   };
 
   function detectATS() {
@@ -847,6 +988,8 @@
     });
 
     document.body.prepend(banner);
+
+    injectClipButton();
   }
 
   function showResumeUploadBanner(fileInputs) {
@@ -887,6 +1030,121 @@
       banner.insertBefore(resumeBtn, skipBtn);
     } else {
       banner.appendChild(resumeBtn);
+    }
+  }
+
+  // --- One-click job clip ---
+
+  function extractJobFromApplicationPage() {
+    const url = window.location.href;
+    const host = window.location.hostname;
+
+    let company = "";
+    let role = "";
+    let source = "other";
+
+    if (/linkedin\.com/.test(host)) {
+      source = "linkedin";
+      role = document.querySelector('.jobs-unified-top-card__job-title, .t-24')?.textContent?.trim() || "";
+      company = document.querySelector('.jobs-unified-top-card__company-name, .job-details-jobs-unified-top-card__company-name')?.textContent?.trim() || "";
+    } else if (/indeed\.com/.test(host)) {
+      source = "indeed";
+      role = document.querySelector('.jobsearch-JobInfoHeader-title, h1')?.textContent?.trim() || "";
+      company = document.querySelector('[data-testid="inlineHeader-companyName"], .jobsearch-InlineCompanyRating a')?.textContent?.trim() || "";
+    } else if (/glassdoor\.com/.test(host)) {
+      source = "glassdoor";
+      role = document.querySelector("[data-test='job-title'], h1")?.textContent?.trim() || "";
+      company = document.querySelector("[data-test='employer-name']")?.textContent?.trim() || "";
+    } else if (/greenhouse\.io/.test(host)) {
+      source = "greenhouse";
+      role = document.querySelector('#header h1, .app-title')?.textContent?.trim() || "";
+      company = document.querySelector('.company-name, #header .company')?.textContent?.trim() || "";
+    } else if (/lever\.co/.test(host)) {
+      source = "lever";
+      role = document.querySelector('.posting-headline h2, .posting-title')?.textContent?.trim() || "";
+      company = document.querySelector('.posting-headline .company, .main-header-logo img')?.getAttribute('alt') || "";
+    } else {
+      role = document.querySelector('h1')?.textContent?.trim() || "";
+      const titleTag = document.title || "";
+      const titleParts = titleTag.split(/[|\-–—]/);
+      if (titleParts.length >= 2) {
+        if (!role) role = titleParts[0].trim();
+        company = titleParts[titleParts.length - 1].trim();
+      }
+    }
+
+    if (!role && !company) return null;
+
+    return {
+      role: role.slice(0, 200),
+      company: company.slice(0, 200),
+      url: url.split("?")[0],
+      source,
+      stage: "applied",
+    };
+  }
+
+  function createClipButton() {
+    if (document.querySelector(".acp-clip-btn")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "acp-clip-btn";
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Clip to Tracker</span>
+    `;
+
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const jobData = extractJobFromApplicationPage();
+      if (!jobData) {
+        btn.querySelector("span").textContent = "Could not detect job";
+        setTimeout(() => { btn.querySelector("span").textContent = "Clip to Tracker"; }, 2000);
+        return;
+      }
+
+      btn.classList.add("acp-clip-saving");
+      btn.querySelector("span").textContent = "Saving…";
+
+      const result = await msg("SAVE_JOB", jobData);
+
+      if (result.ok) {
+        btn.classList.remove("acp-clip-saving");
+        btn.classList.add("acp-clip-saved");
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Clipped ✓</span>
+        `;
+      } else {
+        btn.classList.remove("acp-clip-saving");
+        btn.querySelector("span").textContent = result.error || "Error";
+        setTimeout(() => { btn.querySelector("span").textContent = "Clip to Tracker"; }, 2000);
+      }
+    });
+
+    return btn;
+  }
+
+  function injectClipButton() {
+    const banner = document.querySelector(".acp-autofill-banner");
+    if (!banner) return;
+
+    const existing = banner.querySelector(".acp-clip-btn");
+    if (existing) return;
+
+    const btn = createClipButton();
+    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
+    if (skipBtn) {
+      banner.insertBefore(btn, skipBtn);
+    } else {
+      banner.appendChild(btn);
     }
   }
 
