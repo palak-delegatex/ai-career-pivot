@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         ? session.subscription
         : session.subscription?.id ?? null;
 
-    await supabase
+    const { error: updateError, count } = await supabase
       .from("orders")
       .update({
         status: "paid",
@@ -40,6 +40,12 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: subscriptionId,
       })
       .eq("stripe_session_id", session.id);
+
+    if (updateError) {
+      console.error(`[webhook] Order update failed for session ${session.id}:`, updateError);
+    } else if (count === 0) {
+      console.warn(`[webhook] No order found for session ${session.id} — order may not have been inserted yet`);
+    }
   }
 
   return NextResponse.json({ received: true });

@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
 import { getSupabaseClient } from "@/lib/supabase";
 import { randomUUID } from "crypto";
-
-if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn(
-    "[checkout] SUPABASE_SERVICE_ROLE_KEY is not set — Supabase client will use anon key, which cannot write to orders (RLS)"
-  );
-}
+import { withRetry } from "@/lib/with-retry";
 
 export async function POST(req: NextRequest) {
   const { email, discountCode, plan: planKey = "report" } = await req.json();
@@ -21,25 +16,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid plan" }, { status: 400 });
   }
 
+  const supabase = getSupabaseClient();
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error("[checkout] SUPABASE_SERVICE_ROLE_KEY is not set — orders table writes will fail due to RLS");
+    return NextResponse.json(
+      { error: "Payment system is temporarily unavailable. Please try again shortly." },
+      { status: 503 }
+    );
+  }
+
   try {
     const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
 
     if (isBypassEmail(email)) {
       const bypassSessionId = `bypass_${randomUUID()}`;
-      const supabase = getSupabaseClient();
-      const { error: insertError } = await supabase.from("orders").insert({
-        email,
-        stripe_session_id: bypassSessionId,
-        amount_cents: 0,
-        status: "paid",
-        discount_code: "TEAM_BYPASS",
-        plan_type: planKey,
-      });
+      const { error: insertError } = await withRetry(() =>
+        supabase.from("orders").insert({
+          email,
+          stripe_session_id: bypassSessionId,
+          amount_cents: 0,
+          status: "paid",
+          discount_code: "TEAM_BYPASS",
+          plan_type: planKey,
+        }).then((res) => { if (res.error) throw res.error; return res; })
+      );
       if (insertError) {
         console.error("Bypass order insert failed:", insertError);
         return NextResponse.json(
-          { error: "Failed to create bypass order — check SUPABASE_SERVICE_ROLE_KEY is set" },
-          { status: 500 }
+          { error: "Payment system is temporarily unavailable. Please try again shortly." },
+          { status: 503 }
         );
       }
       return NextResponse.json({
@@ -85,17 +91,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
+    const session = await withRetry(() => stripe.checkout.sessions.create(sessionParams));
 
-    const supabase = getSupabaseClient();
-    const { error: orderError } = await supabase.from("orders").insert({
-      email,
-      stripe_session_id: session.id,
-      amount_cents: plan.amount,
-      status: "pending",
-      discount_code: discountCode ?? null,
-      plan_type: planKey,
-    });
+    const { error: orderError } = await withRetry(() =>
+      supabase.from("orders").insert({
+        email,
+        stripe_session_id: session.id,
+        amount_cents: plan.amount,
+        status: "pending",
+        discount_code: discountCode ?? null,
+        plan_type: planKey,
+      }).then((res) => { if (res.error) throw res.error; return res; })
+    );
     if (orderError) {
       console.error("Order insert failed (Stripe session created):", orderError);
     }
@@ -103,7 +110,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("Checkout session creation failed:", err);
-    const message = err instanceof Error ? err.message : "Checkout failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong creating your checkout session. Please try again." },
+      { status: 500 }
+    );
   }
 }

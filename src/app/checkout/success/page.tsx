@@ -19,12 +19,20 @@ function CheckoutSuccessInner() {
       return;
     }
 
-    fetch(`/api/checkout/verify?session_id=${sessionId}`)
-      .then((res) => res.json())
-      .then(async (data) => {
+    let cancelled = false;
+    const maxAttempts = 3;
+    const delayMs = 2000;
+
+    async function verify(attempt: number) {
+      try {
+        const res = await fetch(`/api/checkout/verify?session_id=${sessionId}`);
+        const data = await res.json();
+
+        if (cancelled) return;
+
         if (data.paid) {
-          trackPaymentVerified({ session_id: sessionId });
-          sessionStorage.setItem("payment_session_id", sessionId);
+          trackPaymentVerified({ session_id: sessionId! });
+          sessionStorage.setItem("payment_session_id", sessionId!);
           sessionStorage.setItem("payment_email", data.email);
 
           const supabase = getSupabaseBrowserClient();
@@ -34,15 +42,27 @@ function CheckoutSuccessInner() {
           }
 
           setStatus("success");
+        } else if (attempt < maxAttempts) {
+          await new Promise((r) => setTimeout(r, delayMs * attempt));
+          if (!cancelled) verify(attempt + 1);
         } else {
-          trackPaymentVerificationFailed({ session_id: sessionId });
+          trackPaymentVerificationFailed({ session_id: sessionId! });
           setStatus("error");
         }
-      })
-      .catch(() => {
-        trackPaymentVerificationFailed({ session_id: sessionId });
-        setStatus("error");
-      });
+      } catch {
+        if (cancelled) return;
+        if (attempt < maxAttempts) {
+          await new Promise((r) => setTimeout(r, delayMs * attempt));
+          if (!cancelled) verify(attempt + 1);
+        } else {
+          trackPaymentVerificationFailed({ session_id: sessionId! });
+          setStatus("error");
+        }
+      }
+    }
+
+    verify(1);
+    return () => { cancelled = true; };
   }, [sessionId, router]);
 
   if (status === "verifying") {
@@ -63,14 +83,22 @@ function CheckoutSuccessInner() {
           <div className="text-5xl mb-6">⚠️</div>
           <h1 className="text-2xl font-bold mb-3">Payment Not Confirmed</h1>
           <p className="text-slate-400 mb-6">
-            We couldn&apos;t verify your payment. If you were charged, please contact us — we&apos;ll sort it out.
+            We couldn&apos;t verify your payment. If you were charged, please contact us at support@aicareerpivot.com — we&apos;ll sort it out immediately.
           </p>
-          <Link
-            href="/pricing"
-            className="inline-block px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors"
-          >
-            Back to Pricing
-          </Link>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => { setStatus("verifying"); window.location.reload(); }}
+              className="px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors"
+            >
+              Try Again
+            </button>
+            <Link
+              href="/pricing"
+              className="inline-block px-8 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 font-bold transition-colors"
+            >
+              Back to Pricing
+            </Link>
+          </div>
         </div>
       </div>
     );
