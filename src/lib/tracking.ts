@@ -119,6 +119,23 @@ export function trackPreviewCtaClicked(props: { cta_location: string; destinatio
   capture("preview_cta_clicked", props);
 }
 
+// LinkedIn import
+export function trackLinkedinImportStarted(props: { method: "url" | "data-export" }) {
+  capture("linkedin_import_started", props);
+}
+
+export function trackLinkedinImportCompleted(props: { method: "url" | "data-export"; skills_count: number; experience_count: number }) {
+  capture("linkedin_import_completed", props);
+}
+
+export function trackLinkedinImportError(props: { method: "url" | "data-export"; error: string }) {
+  capture("linkedin_import_error", props);
+}
+
+export function trackQuickPivotGenerated(props: { paths_count: number; top_match_score: number }) {
+  capture("quick_pivot_generated", props);
+}
+
 // Referral
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");

@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StepIndicator } from "@/components/StepIndicator";
 import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
-import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
+import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion, trackLinkedinImportStarted, trackLinkedinImportCompleted, trackLinkedinImportError, trackQuickPivotGenerated } from "@/lib/tracking";
+import type { QuickPivotResult } from "@/app/api/intake/quick-pivot/route";
 
 type PageStep = "form" | "processing" | "error" | "no_payment" | "generating";
 
@@ -157,6 +158,16 @@ export default function OnboardingPage() {
   const [celebration, setCelebration] = useState<string | null>(null);
   const [generatingProfile, setGeneratingProfile] = useState<UserProfile | null>(null);
 
+  type LinkedInTab = "url" | "export";
+  const [linkedinTab, setLinkedinTab] = useState<LinkedInTab>("url");
+  const [linkedinExportFile, setLinkedinExportFile] = useState<File | null>(null);
+  const [linkedinExportError, setLinkedinExportError] = useState("");
+  const [linkedinImporting, setLinkedinImporting] = useState(false);
+  const [linkedinImportedProfile, setLinkedinImportedProfile] = useState<UserProfile | null>(null);
+  const [quickPivotResult, setQuickPivotResult] = useState<QuickPivotResult | null>(null);
+  const [quickPivotLoading, setQuickPivotLoading] = useState(false);
+  const linkedinExportRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (linkedinUrlStatus(linkedinUrl) === "valid") {
       const username = extractLinkedinUsername(linkedinUrl);
@@ -181,6 +192,98 @@ export default function OnboardingPage() {
     } finally {
       setLinkedinPasting(false);
     }
+  }
+
+  async function fetchQuickPivot(profile: UserProfile) {
+    setQuickPivotLoading(true);
+    try {
+      const res = await fetch("/api/intake/quick-pivot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile }),
+      });
+      if (res.ok) {
+        const data: QuickPivotResult = await res.json();
+        setQuickPivotResult(data);
+        trackQuickPivotGenerated({
+          paths_count: data.pivotPaths.length,
+          top_match_score: data.pivotPaths[0]?.matchScore ?? 0,
+        });
+      }
+    } catch {
+      // Non-fatal — preview is a bonus
+    } finally {
+      setQuickPivotLoading(false);
+    }
+  }
+
+  async function handleLinkedinImport() {
+    if (linkedinTab === "url") {
+      if (linkedinUrlStatus(linkedinUrl) !== "valid") return;
+      setLinkedinImporting(true);
+      trackLinkedinImportStarted({ method: "url" });
+      try {
+        const res = await fetch("/api/intake/linkedin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ linkedinUrl, email }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? "LinkedIn import failed");
+        }
+        const data = await res.json();
+        const profile: UserProfile = { ...data.profile, email, linkedinUrl };
+        setLinkedinImportedProfile(profile);
+        trackLinkedinImportCompleted({
+          method: "url",
+          skills_count: profile.skills?.length ?? 0,
+          experience_count: profile.experience?.length ?? 0,
+        });
+        fetchQuickPivot(profile);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "LinkedIn import failed";
+        setLinkedinExportError(message);
+        trackLinkedinImportError({ method: "url", error: message });
+      } finally {
+        setLinkedinImporting(false);
+      }
+    } else {
+      if (!linkedinExportFile) return;
+      setLinkedinImporting(true);
+      trackLinkedinImportStarted({ method: "data-export" });
+      try {
+        const fd = new FormData();
+        fd.append("linkedinExport", linkedinExportFile);
+        fd.append("email", email);
+        const res = await fetch("/api/intake/linkedin-export", { method: "POST", body: fd });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? "LinkedIn export import failed");
+        }
+        const data = await res.json();
+        const profile: UserProfile = { ...data.profile, email };
+        setLinkedinImportedProfile(profile);
+        trackLinkedinImportCompleted({
+          method: "data-export",
+          skills_count: profile.skills?.length ?? 0,
+          experience_count: profile.experience?.length ?? 0,
+        });
+        fetchQuickPivot(profile);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "LinkedIn export import failed";
+        setLinkedinExportError(message);
+        trackLinkedinImportError({ method: "data-export", error: message });
+      } finally {
+        setLinkedinImporting(false);
+      }
+    }
+  }
+
+  function clearLinkedinImport() {
+    setLinkedinImportedProfile(null);
+    setQuickPivotResult(null);
+    setLinkedinExportError("");
   }
 
   useEffect(() => {
@@ -254,7 +357,7 @@ export default function OnboardingPage() {
   }
 
   function canAdvanceStep1(): boolean {
-    return !!email && (!!linkedinUrl || !!resumeFile);
+    return !!email && (!!linkedinUrl || !!resumeFile || !!linkedinImportedProfile || !!linkedinExportFile);
   }
 
   function handleStep1Next() {
@@ -265,12 +368,12 @@ export default function OnboardingPage() {
       return;
     }
     if (!canAdvanceStep1()) {
-      setError("Please provide your email and at least one source (LinkedIn URL or resume).");
+      setError("Please provide your email and at least one source (LinkedIn profile or resume).");
       return;
     }
     setError("");
     setEmailError("");
-    celebrateThenAdvance("Background info saved");
+    celebrateThenAdvance(linkedinImportedProfile ? "LinkedIn profile imported" : "Background info saved");
   }
 
   function handleStep2Next() {
@@ -390,7 +493,7 @@ export default function OnboardingPage() {
     setError("");
 
     try {
-      let profile: UserProfile | null = null;
+      let profile: UserProfile | null = linkedinImportedProfile ? { ...linkedinImportedProfile } : null;
 
       if (resumeFile) {
         setProcessingMsg("Analyzing your resume...");
@@ -400,11 +503,28 @@ export default function OnboardingPage() {
         const res = await fetch("/api/intake/resume", { method: "POST", body: fd });
         if (!res.ok) throw new Error((await res.json()).error ?? "Resume parsing failed");
         const data = await res.json();
-        profile = { ...data.profile, email };
+        if (profile) {
+          profile = {
+            ...profile,
+            currentTitle: profile.currentTitle ?? data.profile.currentTitle,
+            currentIndustry: profile.currentIndustry ?? data.profile.currentIndustry,
+            skills: [...new Set([...profile.skills, ...(data.profile.skills ?? [])])],
+            transferableSkills: [...new Set([...profile.transferableSkills, ...(data.profile.transferableSkills ?? [])])],
+            experience: [...profile.experience, ...(data.profile.experience ?? [])].filter(
+              (e, i, arr) => arr.findIndex(x => x.title === e.title && x.company === e.company) === i
+            ),
+            education: [...profile.education, ...(data.profile.education ?? [])].filter(
+              (e, i, arr) => arr.findIndex(x => x.institution === e.institution && x.degree === e.degree) === i
+            ),
+            certifications: [...new Set([...profile.certifications, ...(data.profile.certifications ?? [])])],
+          };
+        } else {
+          profile = { ...data.profile, email };
+        }
         setActiveStep(1);
       }
 
-      if (linkedinUrl) {
+      if (linkedinUrl && !linkedinImportedProfile) {
         setProcessingMsg("Fetching LinkedIn profile...");
         setActiveStep(2);
         const res = await fetch("/api/intake/linkedin", {
@@ -431,6 +551,30 @@ export default function OnboardingPage() {
           throw new Error(
             errData.error ?? "LinkedIn fetch failed. Make sure your profile is public, or upload your resume instead."
           );
+        }
+      } else if (linkedinExportFile && !linkedinImportedProfile) {
+        setProcessingMsg("Processing LinkedIn data export...");
+        setActiveStep(2);
+        const fd = new FormData();
+        fd.append("linkedinExport", linkedinExportFile);
+        fd.append("email", email);
+        const res = await fetch("/api/intake/linkedin-export", { method: "POST", body: fd });
+        if (res.ok) {
+          const data = await res.json();
+          if (profile) {
+            profile = {
+              ...profile,
+              currentTitle: profile.currentTitle ?? data.profile.currentTitle,
+              currentIndustry: profile.currentIndustry ?? data.profile.currentIndustry,
+              skills: [...new Set([...profile.skills, ...(data.profile.skills ?? [])])],
+              transferableSkills: [...new Set([...profile.transferableSkills, ...(data.profile.transferableSkills ?? [])])],
+            };
+          } else {
+            profile = { ...data.profile, email };
+          }
+        } else if (!profile) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error ?? "LinkedIn export processing failed.");
         }
       }
 
@@ -789,10 +933,267 @@ export default function OnboardingPage() {
                   )}
                 </div>
 
+                {/* LinkedIn Import — Primary fast path */}
+                <div className="rounded-xl bg-slate-800/60 border border-slate-700/60 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-5 h-5 text-[#0A66C2]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    <span className="text-sm font-semibold text-slate-200">Import from LinkedIn</span>
+                    <span className="ml-auto text-xs text-teal-400 font-medium">Fastest</span>
+                  </div>
+
+                  {linkedinImportedProfile ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-teal-950/40 border border-teal-800/40">
+                        <div className="flex items-center gap-2">
+                          <span className="text-teal-400">&#10003;</span>
+                          <div>
+                            <p className="text-sm font-medium text-teal-300">
+                              {linkedinImportedProfile.name ?? linkedinPreview?.username ?? "Profile"} imported
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {linkedinImportedProfile.skills.length} skills &middot; {linkedinImportedProfile.experience.length} roles &middot; {linkedinImportedProfile.education.length} education
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={clearLinkedinImport}
+                          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                        >
+                          Clear
+                        </button>
+                      </div>
+
+                      {/* Quick Pivot Preview */}
+                      {quickPivotLoading && (
+                        <div className="px-3 py-3 rounded-lg bg-slate-800/80 border border-slate-700/40">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 animate-spin text-teal-400" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                            </svg>
+                            <span className="text-xs text-slate-400">Generating pivot suggestions...</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {quickPivotResult && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Instant pivot preview</p>
+
+                          {/* Skill snapshot */}
+                          <div className="flex gap-2 flex-wrap">
+                            {quickPivotResult.skillGapPreview.strongSkills.slice(0, 4).map((skill) => (
+                              <span key={skill} className="px-2 py-1 rounded-full bg-teal-950/50 border border-teal-800/30 text-xs text-teal-300">
+                                {skill}
+                              </span>
+                            ))}
+                            {quickPivotResult.skillGapPreview.strongSkills.length > 4 && (
+                              <span className="px-2 py-1 text-xs text-slate-500">
+                                +{quickPivotResult.skillGapPreview.strongSkills.length - 4} more
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Top pivot suggestions */}
+                          {quickPivotResult.pivotPaths.slice(0, 3).map((path, i) => (
+                            <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/30">
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-teal-600/20 to-slate-700/40 flex items-center justify-center">
+                                <span className="text-sm font-bold text-teal-400">{path.matchScore}%</span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-slate-200 truncate">{path.targetRole}</p>
+                                <p className="text-xs text-slate-500 truncate">{path.targetIndustry} &middot; {path.timeToTransition}</p>
+                              </div>
+                            </div>
+                          ))}
+
+                          {quickPivotResult.skillGapPreview.growthAreas.length > 0 && (
+                            <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-950/20 border border-amber-800/20">
+                              <span className="text-amber-400 text-xs mt-0.5">&#9650;</span>
+                              <p className="text-xs text-amber-300/80">
+                                Growth areas: {quickPivotResult.skillGapPreview.growthAreas.slice(0, 3).join(", ")}
+                                {quickPivotResult.skillGapPreview.growthAreas.length > 3 && ` +${quickPivotResult.skillGapPreview.growthAreas.length - 3} more`}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {/* Tab selector */}
+                      <div className="flex gap-1 mb-3 p-0.5 rounded-lg bg-slate-900/60">
+                        <button
+                          type="button"
+                          onClick={() => { setLinkedinTab("url"); setLinkedinExportError(""); }}
+                          className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                            linkedinTab === "url"
+                              ? "bg-slate-700 text-white"
+                              : "text-slate-400 hover:text-slate-300"
+                          }`}
+                        >
+                          Paste URL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setLinkedinTab("export"); setLinkedinExportError(""); }}
+                          className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                            linkedinTab === "export"
+                              ? "bg-slate-700 text-white"
+                              : "text-slate-400 hover:text-slate-300"
+                          }`}
+                        >
+                          Upload Data Export
+                        </button>
+                      </div>
+
+                      {linkedinTab === "url" ? (
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <input
+                                type="text"
+                                value={linkedinUrl}
+                                onChange={(e) => setLinkedinUrl(e.target.value)}
+                                onBlur={() => {
+                                  const normalized = normalizeLinkedinUrl(linkedinUrl);
+                                  if (normalized !== linkedinUrl) setLinkedinUrl(normalized);
+                                }}
+                                onPaste={(e) => {
+                                  const pasted = e.clipboardData.getData("text");
+                                  const normalized = normalizeLinkedinUrl(pasted);
+                                  if (normalized !== pasted) {
+                                    e.preventDefault();
+                                    setLinkedinUrl(normalized);
+                                  }
+                                }}
+                                placeholder="linkedin.com/in/yourname"
+                                className={`w-full px-4 py-2.5 pr-10 rounded-lg bg-slate-800 border focus:outline-none text-white placeholder-slate-500 text-sm transition-colors ${
+                                  linkedinUrlStatus(linkedinUrl) === "valid"
+                                    ? "border-teal-500/70 focus:border-teal-400"
+                                    : linkedinUrlStatus(linkedinUrl) === "invalid"
+                                    ? "border-amber-500/60 focus:border-amber-400"
+                                    : "border-slate-600 focus:border-teal-500"
+                                }`}
+                              />
+                              {linkedinUrlStatus(linkedinUrl) === "valid" && (
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">&#10003;</span>
+                              )}
+                            </div>
+                            {!linkedinUrl && (
+                              <button
+                                type="button"
+                                onClick={pasteLinkedinFromClipboard}
+                                disabled={linkedinPasting}
+                                className="px-3 py-2.5 rounded-lg bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm disabled:opacity-50"
+                                title="Paste from clipboard"
+                              >
+                                {linkedinPasting ? (
+                                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                                  </svg>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          {linkedinUrlStatus(linkedinUrl) === "invalid" && (
+                            <p className="text-xs text-amber-400/80">
+                              Should look like linkedin.com/in/yourname
+                            </p>
+                          )}
+                          {linkedinPreview && linkedinUrlStatus(linkedinUrl) === "valid" && (
+                            <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-teal-950/30 border border-teal-800/30">
+                              <div className="w-6 h-6 rounded-full bg-teal-600/30 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                              </div>
+                              <span className="text-sm text-teal-300/90 capitalize truncate">{linkedinPreview.username}</span>
+                            </div>
+                          )}
+                          {linkedinUrlStatus(linkedinUrl) === "valid" && email && !linkedinImporting && (
+                            <button
+                              type="button"
+                              onClick={handleLinkedinImport}
+                              className="w-full px-4 py-2.5 rounded-lg bg-[#0A66C2] hover:bg-[#0952a0] text-white text-sm font-medium transition-colors"
+                            >
+                              Import LinkedIn Profile
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <label
+                            className={`block w-full px-4 py-3 rounded-lg bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
+                              linkedinExportFile
+                                ? "border-teal-600"
+                                : "border-slate-600 hover:border-teal-500"
+                            }`}
+                          >
+                            {linkedinExportFile ? (
+                              <span className="text-teal-400 font-medium text-sm">{linkedinExportFile.name}</span>
+                            ) : (
+                              <span className="text-slate-400 text-sm">Click to upload LinkedIn data export (.zip)</span>
+                            )}
+                            <input
+                              ref={linkedinExportRef}
+                              type="file"
+                              accept=".zip"
+                              className="sr-only"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] ?? null;
+                                if (file && file.size > 50 * 1024 * 1024) {
+                                  setLinkedinExportError("File must be under 50MB");
+                                  return;
+                                }
+                                setLinkedinExportError("");
+                                setLinkedinExportFile(file);
+                              }}
+                            />
+                          </label>
+                          <p className="text-xs text-slate-500">
+                            Get your data: LinkedIn Settings &rarr; Data Privacy &rarr; Get a copy of your data
+                          </p>
+                          {linkedinExportFile && email && !linkedinImporting && (
+                            <button
+                              type="button"
+                              onClick={handleLinkedinImport}
+                              className="w-full px-4 py-2.5 rounded-lg bg-[#0A66C2] hover:bg-[#0952a0] text-white text-sm font-medium transition-colors"
+                            >
+                              Import Data Export
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {linkedinImporting && (
+                        <div className="flex items-center gap-2 mt-2 px-3 py-2 rounded-lg bg-slate-800/60">
+                          <svg className="w-4 h-4 animate-spin text-teal-400" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                          </svg>
+                          <span className="text-sm text-slate-400">Importing your profile...</span>
+                        </div>
+                      )}
+
+                      {linkedinExportError && (
+                        <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{linkedinExportError}</p>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Resume upload — secondary option */}
                 <div>
                   <span className="block text-sm font-medium text-slate-300 mb-2">
-                    Resume upload <span className="text-teal-400">*</span>
-                    <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
+                    Resume upload
+                    <span className="text-slate-500 font-normal ml-2">{linkedinImportedProfile ? "(optional — enriches your profile)" : "(PDF or DOCX)"}</span>
                   </span>
                   <label
                     className={`block w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
@@ -841,83 +1242,6 @@ export default function OnboardingPage() {
                   </label>
                   {resumeError && (
                     <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{resumeError}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    LinkedIn URL
-                    <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        value={linkedinUrl}
-                        onChange={(e) => setLinkedinUrl(e.target.value)}
-                        onBlur={() => {
-                          const normalized = normalizeLinkedinUrl(linkedinUrl);
-                          if (normalized !== linkedinUrl) setLinkedinUrl(normalized);
-                        }}
-                        onPaste={(e) => {
-                          const pasted = e.clipboardData.getData("text");
-                          const normalized = normalizeLinkedinUrl(pasted);
-                          if (normalized !== pasted) {
-                            e.preventDefault();
-                            setLinkedinUrl(normalized);
-                          }
-                        }}
-                        placeholder="linkedin.com/in/yourname"
-                        className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
-                          linkedinUrlStatus(linkedinUrl) === "valid"
-                            ? "border-teal-500/70 focus:border-teal-400"
-                            : linkedinUrlStatus(linkedinUrl) === "invalid"
-                            ? "border-amber-500/60 focus:border-amber-400"
-                            : "border-slate-600 focus:border-teal-500"
-                        }`}
-                      />
-                      {linkedinUrlStatus(linkedinUrl) === "valid" && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">&#10003;</span>
-                      )}
-                      {linkedinUrlStatus(linkedinUrl) === "invalid" && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs pointer-events-none">?</span>
-                      )}
-                    </div>
-                    {!linkedinUrl && (
-                      <button
-                        type="button"
-                        onClick={pasteLinkedinFromClipboard}
-                        disabled={linkedinPasting}
-                        className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
-                        title="Paste LinkedIn URL from clipboard"
-                      >
-                        {linkedinPasting ? (
-                          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
-                          </svg>
-                        ) : (
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                          </svg>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                  {linkedinUrlStatus(linkedinUrl) === "invalid" && (
-                    <p className="mt-1.5 text-xs text-amber-400/80">
-                      Should look like linkedin.com/in/yourname &#8212; paste your full profile URL from the browser address bar.
-                    </p>
-                  )}
-                  {linkedinPreview && linkedinUrlStatus(linkedinUrl) === "valid" && (
-                    <div className="mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-teal-950/30 border border-teal-800/30">
-                      <div className="w-7 h-7 rounded-full bg-teal-600/30 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm text-teal-300/90 capitalize truncate">{linkedinPreview.username}</span>
-                    </div>
                   )}
                 </div>
 
