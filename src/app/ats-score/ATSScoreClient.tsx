@@ -665,6 +665,16 @@ export default function ATSScoreClient() {
         <p className="text-slate-500 text-xs text-center">
           AI-powered analysis takes ~15 seconds
         </p>
+
+        <div className="text-center">
+          <Link
+            href="/ats-score/live"
+            className="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            Try live scoring — type your resume and see scores update in real time
+          </Link>
+        </div>
       </div>
     </main>
   );
