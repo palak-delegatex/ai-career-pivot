@@ -146,6 +146,11 @@ html {
   animation: check-draw 300ms ease-out forwards;
 }
 
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(13,148,136,0.15), 0 0 20px rgba(13,148,136,0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(13,148,136,0.08), 0 0 30px rgba(13,148,136,0.15); }
+}
+
 @keyframes banner-slide-in {
   0% { transform: translateY(-8px); opacity: 0; }
   20% { transform: translateY(0); opacity: 1; }
@@ -170,6 +175,10 @@ html {
   }
   .phase-complete-banner {
     animation: none;
+  }
+  [style*="animation"], [class*="animate-"] {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 

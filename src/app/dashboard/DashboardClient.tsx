@@ -16,6 +16,7 @@ import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
+import CareerTransitionJourney from "@/components/CareerTransitionJourney";
 import DocumentsCard from "@/components/DocumentsCard";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
@@ -635,6 +636,15 @@ export default function DashboardClient() {
                 streakDays={streakDays}
                 daysElapsed={daysElapsed}
                 currentPhaseLabel={currentPhaseLabel}
+              />
+
+              <CareerTransitionJourney
+                currentRole={activeReport!.profile.currentTitle || "Current Role"}
+                targetRole={activePlan.targetRole}
+                phases={phases}
+                statuses={milestoneStatuses}
+                plan={activePlan}
+                reportCreatedAt={activeReport!.created_at}
               />
 
               {progressLoaded && (
