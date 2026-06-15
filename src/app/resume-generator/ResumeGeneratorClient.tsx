@@ -15,6 +15,7 @@ import {
   Save,
 } from "lucide-react";
 import Link from "next/link";
+import { downloadPdf } from "@/lib/pdf-download";
 
 type Mode = "resume" | "cover-letter";
 type Phase = "setup" | "generating" | "done";
@@ -220,26 +221,22 @@ export default function ResumeGeneratorClient() {
     const content = editing ? editContent : output;
     if (!content) return;
     const role = targetRole === "custom" ? customRole.trim() : targetRole;
+    const prefix = mode === "resume" ? "Resume" : "CoverLetter";
     try {
-      const res = await fetch("/api/resume/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-          targetRole: role,
-          name: (profile as Record<string, unknown>)?.name as string,
-          type: mode,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const prefix = mode === "resume" ? "Resume" : "CoverLetter";
-      a.download = `${prefix}_${role.replace(/\s+/g, "_")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadPdf(
+        "/api/resume/pdf",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content,
+            targetRole: role,
+            name: (profile as Record<string, unknown>)?.name as string,
+            type: mode,
+          }),
+        },
+        `${prefix}_${role.replace(/\s+/g, "_")}.pdf`,
+      );
     } catch {
       copyToClipboard();
     }

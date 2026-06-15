@@ -26,6 +26,7 @@ import {
 import { ScoreRing } from "@/components/ScoreRing";
 import { Badge } from "@/components/ui/badge";
 import { saveDocument } from "@/lib/document-store";
+import { downloadPdf } from "@/lib/pdf-download";
 
 type Phase = "setup" | "generating" | "done";
 type Tone = "professional" | "conversational" | "bold";
@@ -337,24 +338,20 @@ export default function CoverLetterClient() {
       (profile?.skills as string[]) || []
     );
     try {
-      const res = await fetch("/api/resume/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-          targetRole: preview?.role || "Target Role",
-          name: profile?.name as string,
-          type: "cover-letter",
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `CoverLetter_${(preview?.company || "Draft").replace(/\s+/g, "_")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadPdf(
+        "/api/resume/pdf",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content,
+            targetRole: preview?.role || "Target Role",
+            name: profile?.name as string,
+            type: "cover-letter",
+          }),
+        },
+        `CoverLetter_${(preview?.company || "Draft").replace(/\s+/g, "_")}.pdf`,
+      );
     } catch {
       copyToClipboard();
     }

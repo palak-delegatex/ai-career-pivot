@@ -32,6 +32,7 @@ import {
 import { ScoreRing } from "@/components/ScoreRing";
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
+import { downloadPdf } from "@/lib/pdf-download";
 import type { TailorResponse } from "@/app/api/resume/tailor/route";
 
 type Phase = "input" | "processing" | "results";
@@ -379,19 +380,15 @@ export default function ResumeTailorSheet({
   async function handleDownload() {
     if (!result) return;
     try {
-      const res = await fetch("/api/resume/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markdown: result.tailoredContent }),
-      });
-      if (!res.ok) throw new Error("PDF generation failed");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "tailored-resume.pdf";
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadPdf(
+        "/api/resume/pdf",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: result.tailoredContent, targetRole: "Tailored Resume" }),
+        },
+        "tailored-resume.pdf",
+      );
     } catch {
       navigator.clipboard.writeText(result.tailoredContent);
       setCopied(true);

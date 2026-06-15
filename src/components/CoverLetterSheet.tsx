@@ -15,6 +15,7 @@ import { FileSignature, Download, Copy, RefreshCw, CheckCircle2, Save, Pencil } 
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import { saveDocument } from "@/lib/document-store";
+import { downloadPdf } from "@/lib/pdf-download";
 
 type Tone = "professional" | "conversational" | "bold";
 
@@ -188,24 +189,20 @@ export default function CoverLetterSheet({
     const content = editing ? editContent : result;
     if (!content) return;
     try {
-      const res = await fetch("/api/resume/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-          targetRole: job.title,
-          name: profile.name,
-          type: "cover-letter",
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `CoverLetter_${job.company_name.replace(/\s+/g, "_")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadPdf(
+        "/api/resume/pdf",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content,
+            targetRole: job.title,
+            name: profile.name,
+            type: "cover-letter",
+          }),
+        },
+        `CoverLetter_${job.company_name.replace(/\s+/g, "_")}.pdf`,
+      );
     } catch {
       handleCopy();
     }

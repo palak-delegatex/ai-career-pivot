@@ -22,6 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, Download, Copy, RefreshCw, CheckCircle2, GripVertical } from "lucide-react";
 import type { PivotPlan, UserProfile, SkillGap } from "@/lib/intake";
 import { saveDocument, updateDocumentStatus } from "@/lib/document-store";
+import { downloadPdf } from "@/lib/pdf-download";
 
 type Template = "professional" | "modern" | "minimal";
 
@@ -159,25 +160,20 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
   async function handleDownloadPdf() {
     if (!result) return;
     try {
-      const res = await fetch("/api/resume/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: result,
-          targetRole: plan.targetRole,
-          name: profile.name,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Resume_${plan.targetRole.replace(/\s+/g, "_")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await downloadPdf(
+        "/api/resume/pdf",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: result,
+            targetRole: plan.targetRole,
+            name: profile.name,
+          }),
+        },
+        `Resume_${plan.targetRole.replace(/\s+/g, "_")}.pdf`,
+      );
     } catch {
-      // fallback: copy text
       handleCopy();
     }
   }

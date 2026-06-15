@@ -6,6 +6,7 @@ import type { PivotPlan, UserProfile } from "@/lib/intake";
 import Link from "next/link";
 import { Download, Loader2, AlertCircle } from "lucide-react";
 import { trackPlanSelected, trackPdfDownloadStarted, trackPdfDownloadCompleted, trackPdfDownloadError, trackCtaClicked, trackExperimentConversion } from "@/lib/tracking";
+import { downloadPdf } from "@/lib/pdf-download";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
@@ -47,42 +48,24 @@ export default function PivotPlanPage() {
     trackPdfDownloadStarted({ source: "onboarding", target_role: targetRole });
     setDownloadingPdf(true);
     setPdfError(null);
-
-    const MAX_RETRIES = 2;
-    let lastErr = "";
-
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30_000);
-        const res = await fetch("/api/plan/pdf", {
+    try {
+      await downloadPdf(
+        "/api/plan/pdf",
+        {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ profile, plan: plans[selected] }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-        if (!res.ok) throw new Error(`Server error (${res.status})`);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-        trackPdfDownloadCompleted({ source: "onboarding", target_role: targetRole });
-        setDownloadingPdf(false);
-        return;
-      } catch (err) {
-        lastErr = err instanceof Error
-          ? (err.name === "AbortError" ? "Request timed out" : err.message)
-          : "Unknown error";
-      }
+        },
+        `career-pivot-${targetRole.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.pdf`,
+      );
+      trackPdfDownloadCompleted({ source: "onboarding", target_role: targetRole });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      trackPdfDownloadError({ source: "onboarding", error: msg });
+      setPdfError("PDF download failed. Please try again.");
+    } finally {
+      setDownloadingPdf(false);
     }
-
-    trackPdfDownloadError({ source: "onboarding", error: lastErr });
-    setPdfError("PDF download failed. Please try again.");
-    setDownloadingPdf(false);
   }
 
   if (plans.length === 0) {
