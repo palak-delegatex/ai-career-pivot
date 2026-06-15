@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
@@ -59,12 +59,16 @@ function LoginForm() {
   const errorParam = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
   const errorCode = searchParams.get("error_code");
+  const autoRetry = searchParams.get("auto_retry") === "1";
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState(
-    getAuthErrorMessage(errorParam, errorDescription, errorCode)
+    autoRetry ? "" : getAuthErrorMessage(errorParam, errorDescription, errorCode)
   );
+  const autoRetryFired = useRef(false);
+
+  const isOAuthError = errorParam === "server_error" || errorParam === "exchange_failed";
 
   async function signInWithGoogle() {
     setLoading(true);
@@ -83,6 +87,13 @@ function LoginForm() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (autoRetry && !autoRetryFired.current) {
+      autoRetryFired.current = true;
+      signInWithGoogle();
+    }
+  }, [autoRetry]);
 
   async function signInWithMagicLink(e: React.FormEvent) {
     e.preventDefault();
@@ -177,7 +188,17 @@ function LoginForm() {
         </form>
 
         {error && (
-          <p className="text-red-400 text-sm text-center mt-4">{error}</p>
+          <div className="mt-4 text-center">
+            <p className="text-red-400 text-sm">{error}</p>
+            {isOAuthError && !loading && (
+              <button
+                onClick={signInWithGoogle}
+                className="mt-3 text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors"
+              >
+                Try again with Google
+              </button>
+            )}
+          </div>
         )}
 
         <p className="text-slate-500 text-xs text-center mt-8 leading-relaxed">
