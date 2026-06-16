@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Loader2,
   Copy,
@@ -18,9 +18,42 @@ import {
   Database,
   ArrowRight,
   Target,
+  PartyPopper,
 } from "lucide-react";
 import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { LinkedInOptimizeResult } from "@/app/api/linkedin/optimize/route";
+
+interface ChecklistState {
+  sections: Record<string, boolean>;
+  quickWins: Record<number, boolean>;
+  keywords: Record<string, boolean>;
+  timestamp: number;
+}
+
+function getStorageKey(targetRole: string, timestamp: number) {
+  return `linkedin-optimizer:${targetRole}:${timestamp}`;
+}
+
+function loadChecklist(targetRole: string): ChecklistState | null {
+  try {
+    const prefix = `linkedin-optimizer:${targetRole}:`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(prefix)) {
+        const raw = localStorage.getItem(key);
+        if (raw) return JSON.parse(raw);
+      }
+    }
+  } catch {}
+  return null;
+}
+
+function saveChecklist(targetRole: string, state: ChecklistState) {
+  try {
+    localStorage.setItem(getStorageKey(targetRole, state.timestamp), JSON.stringify(state));
+  } catch {}
+}
 
 type Phase = "input" | "loading" | "results";
 type InputTab = "url" | "paste" | "onboarding";
@@ -165,6 +198,12 @@ export default function LinkedInOptimizerClient() {
   const [targetIndustry, setTargetIndustry] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<LinkedInOptimizeResult | null>(null);
+  const [checklist, setChecklist] = useState<ChecklistState>({
+    sections: {},
+    quickWins: {},
+    keywords: {},
+    timestamp: Date.now(),
+  });
 
   // Paste sections
   const [pasteHeadline, setPasteHeadline] = useState("");
@@ -218,6 +257,56 @@ export default function LinkedInOptimizerClient() {
       }
     } catch {}
   }, []);
+
+  useEffect(() => {
+    if (phase === "results" && result && targetRole) {
+      const saved = loadChecklist(targetRole);
+      if (saved) {
+        setChecklist(saved);
+      } else {
+        setChecklist({ sections: {}, quickWins: {}, keywords: {}, timestamp: Date.now() });
+      }
+    }
+  }, [phase, result, targetRole]);
+
+  const toggleSection = useCallback((section: string) => {
+    setChecklist((prev) => {
+      const next = { ...prev, sections: { ...prev.sections, [section]: !prev.sections[section] } };
+      if (targetRole) saveChecklist(targetRole, next);
+      return next;
+    });
+  }, [targetRole]);
+
+  const toggleQuickWin = useCallback((index: number) => {
+    setChecklist((prev) => {
+      const next = { ...prev, quickWins: { ...prev.quickWins, [index]: !prev.quickWins[index] } };
+      if (targetRole) saveChecklist(targetRole, next);
+      return next;
+    });
+  }, [targetRole]);
+
+  const toggleKeyword = useCallback((keyword: string) => {
+    setChecklist((prev) => {
+      const next = { ...prev, keywords: { ...prev.keywords, [keyword]: !prev.keywords[keyword] } };
+      if (targetRole) saveChecklist(targetRole, next);
+      return next;
+    });
+  }, [targetRole]);
+
+  const progress = useMemo(() => {
+    if (!result) return { checked: 0, total: 0 };
+    const sectionCount = result.sectionScores.length;
+    const quickWinCount = result.quickWins.length;
+    const keywordCount = result.missingKeywords.length;
+    const total = sectionCount + quickWinCount + keywordCount;
+    const checkedSections = Object.values(checklist.sections).filter(Boolean).length;
+    const checkedQuickWins = Object.values(checklist.quickWins).filter(Boolean).length;
+    const checkedKeywords = Object.values(checklist.keywords).filter(Boolean).length;
+    const checked = checkedSections + checkedQuickWins + checkedKeywords;
+    return { checked, total };
+  }, [result, checklist]);
+
+  const allDone = progress.total > 0 && progress.checked === progress.total;
 
   function buildProfileData(): ProfileData | undefined {
     if (inputTab === "paste") {
@@ -348,8 +437,27 @@ export default function LinkedInOptimizerClient() {
         "Your profile currently reads for your old career. A full rewrite will transform your visibility.",
     };
 
+    const checkedKeywordCount = Object.values(checklist.keywords).filter(Boolean).length;
+    const progressPct = progress.total > 0 ? (progress.checked / progress.total) * 100 : 0;
+
     return (
       <main className="max-w-4xl mx-auto px-6 py-12">
+        {/* All-done celebration banner */}
+        {allDone && (
+          <div className="relative mb-8 bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-6 text-center overflow-hidden">
+            <div className="phase-confetti absolute inset-0 rounded-2xl" />
+            <div className="relative z-10">
+              <PartyPopper className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
+              <h2 className="text-2xl font-extrabold text-emerald-300 mb-1">
+                Profile Optimized!
+              </h2>
+              <p className="text-sm text-slate-300">
+                You&apos;ve applied all {progress.total} improvements. Your LinkedIn is pivot-ready.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight mb-1">
@@ -380,10 +488,10 @@ export default function LinkedInOptimizerClient() {
           </button>
         </div>
 
-        {/* Score Banner */}
+        {/* Score Hero with Progress */}
         <div className="flex items-center gap-8 bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 mb-8">
-          <ScoreRing score={result.overallScore} size={100} />
-          <div className="flex-1">
+          <ScoreRing score={result.overallScore} size={120} />
+          <div className="flex-1 min-w-0">
             <div
               className={`text-2xl font-bold mb-1 ${scoreColor(result.overallScore)}`}
             >
@@ -396,16 +504,29 @@ export default function LinkedInOptimizerClient() {
               {result.sectionScores.map((s) => (
                 <div key={s.section} className="flex items-center gap-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${scoreBg(s.score)}`}
+                    className={`w-2 h-2 rounded-full ${checklist.sections[s.section] ? "bg-emerald-400" : scoreBg(s.score)}`}
                   />
-                  <span className="text-xs text-slate-300">{s.section}</span>
+                  <span className={`text-xs ${checklist.sections[s.section] ? "text-emerald-300 line-through" : "text-slate-300"}`}>{s.section}</span>
                   <span
-                    className={`text-xs font-semibold ${scoreColor(s.score)}`}
+                    className={`text-xs font-semibold ${checklist.sections[s.section] ? "text-emerald-400" : scoreColor(s.score)}`}
                   >
                     {s.score}
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+          {/* Progress indicator */}
+          <div className="shrink-0 text-right min-w-[140px]">
+            <div className="text-sm font-semibold text-slate-200 mb-1">
+              {progress.checked}/{progress.total} applied
+            </div>
+            <div className="text-xs text-slate-400 mb-2">improvements</div>
+            <div className="w-full h-1 bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-teal-500 rounded-full transition-all duration-300"
+                style={{ width: `${progressPct}%` }}
+              />
             </div>
           </div>
         </div>
@@ -416,130 +537,173 @@ export default function LinkedInOptimizerClient() {
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-400" />
               Quick Wins
+              <span className="text-xs text-slate-400 font-normal ml-1">
+                {Object.values(checklist.quickWins).filter(Boolean).length}/{result.quickWins.length} done
+              </span>
             </h2>
             <div className="grid gap-3 sm:grid-cols-3">
-              {result.quickWins.slice(0, 3).map((win, i) => (
-                <div
-                  key={i}
-                  className="bg-amber-950/20 border border-amber-900/30 rounded-xl p-4"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-6 h-6 rounded-full bg-amber-600/30 text-amber-400 text-xs font-bold flex items-center justify-center">
-                      {i + 1}
-                    </span>
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> ~5 min
-                    </span>
+              {result.quickWins.slice(0, 3).map((win, i) => {
+                const isChecked = !!checklist.quickWins[i];
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-xl p-4 transition-all duration-200 ${
+                      isChecked
+                        ? "bg-emerald-950/10 border border-emerald-500/20"
+                        : "bg-amber-950/20 border border-amber-900/30"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={() => toggleQuickWin(i)}
+                        className={isChecked ? "border-emerald-500 bg-emerald-600 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-600" : ""}
+                      />
+                      <span className="text-xs text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> ~5 min
+                      </span>
+                    </div>
+                    <p className={`text-sm ${isChecked ? "text-slate-400 line-through" : "text-slate-200"}`}>{win}</p>
                   </div>
-                  <p className="text-sm text-slate-200">{win}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
 
-        {/* Section Cards */}
+        {/* Section Cards with Checkboxes */}
         <section className="mb-8 space-y-4">
           <h2 className="text-lg font-bold">Section-by-Section Optimization</h2>
           {result.sectionScores.map((section) => {
             const Icon = SECTION_ICONS[section.section] || Sparkles;
+            const isChecked = !!checklist.sections[section.section];
             return (
               <div
                 key={section.section}
-                className="bg-slate-800/40 border border-slate-700/40 rounded-2xl overflow-hidden"
+                className={`rounded-2xl overflow-hidden transition-all duration-200 ${
+                  isChecked
+                    ? "bg-emerald-950/10 border border-emerald-500/20"
+                    : "bg-slate-800/40 border border-slate-700/40"
+                }`}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700/40">
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 text-teal-400" />
-                    <span className="font-semibold text-sm">
+                {/* Header with Checkbox */}
+                <button
+                  type="button"
+                  onClick={() => toggleSection(section.section)}
+                  className={`w-full flex items-center justify-between px-5 py-3 ${isChecked ? "" : "border-b border-slate-700/40"}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={isChecked}
+                      onCheckedChange={() => toggleSection(section.section)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={isChecked ? "border-emerald-500 bg-emerald-600 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-600" : ""}
+                    />
+                    <Icon className={`w-4 h-4 ${isChecked ? "text-emerald-400" : "text-teal-400"}`} />
+                    <span className={`font-semibold text-sm ${isChecked ? "line-through text-slate-400" : ""}`}>
                       {section.section}
                     </span>
                   </div>
                   <span
                     className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
-                      section.score >= 80
+                      isChecked
                         ? "bg-emerald-900/40 text-emerald-400"
-                        : section.score >= 60
-                          ? "bg-teal-900/40 text-teal-400"
-                          : section.score >= 40
-                            ? "bg-amber-900/40 text-amber-400"
-                            : "bg-red-900/40 text-red-400"
+                        : section.score >= 80
+                          ? "bg-emerald-900/40 text-emerald-400"
+                          : section.score >= 60
+                            ? "bg-teal-900/40 text-teal-400"
+                            : section.score >= 40
+                              ? "bg-amber-900/40 text-amber-400"
+                              : "bg-red-900/40 text-red-400"
                     }`}
                   >
-                    {section.score} — {section.scoreLabel}
+                    {section.score} — {isChecked ? "Applied" : section.scoreLabel}
                   </span>
-                </div>
+                </button>
 
-                {/* Before / After */}
-                <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-700/40">
-                  <div className="p-5">
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                      Current
-                    </div>
-                    <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
-                      {section.current || (
-                        <span className="italic text-slate-500">
-                          No content — this section is empty
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="p-5 bg-teal-950/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-xs font-semibold text-teal-400 uppercase tracking-wider">
-                        Suggested
+                {/* Collapsible content */}
+                {!isChecked && (
+                  <>
+                    <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-700/40">
+                      <div className="p-5">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                          Current
+                        </div>
+                        <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                          {section.current || (
+                            <span className="italic text-slate-500">
+                              No content — this section is empty
+                            </span>
+                          )}
+                        </p>
                       </div>
-                      <CopyButton text={section.suggested} />
+                      <div className="p-5 bg-teal-950/10">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-xs font-semibold text-teal-400 uppercase tracking-wider">
+                            Suggested
+                          </div>
+                          <CopyButton text={section.suggested} />
+                        </div>
+                        <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">
+                          {highlightChanges(section.current, section.suggested)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">
-                      {highlightChanges(section.current, section.suggested)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Reasoning */}
-                <div className="px-5 py-3 border-t border-slate-700/40 bg-slate-800/20">
-                  <p className="text-xs text-slate-400">
-                    <span className="font-semibold text-slate-300">Why: </span>
-                    {section.reasoning}
-                  </p>
-                </div>
+                    <div className="px-5 py-3 border-t border-slate-700/40 bg-slate-800/20">
+                      <p className="text-xs text-slate-400">
+                        <span className="font-semibold text-slate-300">Why: </span>
+                        {section.reasoning}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
         </section>
 
-        {/* Keyword Panel */}
+        {/* Keyword Panel with Toggleable Tags */}
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <Search className="w-5 h-5 text-teal-400" />
             Keyword Intelligence
+            <span className="text-xs text-slate-400 font-normal ml-1">
+              {checkedKeywordCount}/{result.missingKeywords.length} added
+            </span>
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
-            {/* Missing Keywords */}
+            {/* Missing Keywords — toggleable */}
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
               <h3 className="text-sm font-semibold text-amber-400 mb-3">
                 Missing Keywords
               </h3>
               <div className="flex flex-wrap gap-2">
-                {result.missingKeywords.map((kw, i) => (
-                  <div
-                    key={i}
-                    className={`group relative px-3 py-1.5 rounded-lg text-xs font-medium border ${
-                      kw.relevance === "critical"
-                        ? "bg-red-950/30 border-red-800/40 text-red-300"
-                        : kw.relevance === "important"
-                          ? "bg-amber-950/30 border-amber-800/40 text-amber-300"
-                          : "bg-slate-700/40 border-slate-600/40 text-slate-300"
-                    }`}
-                  >
-                    {kw.keyword}
-                    <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg bg-slate-700 text-slate-200 text-xs whitespace-nowrap z-10 shadow-lg">
-                      Add to: {kw.whereToAdd}
-                    </div>
-                  </div>
-                ))}
+                {result.missingKeywords.map((kw, i) => {
+                  const isToggled = !!checklist.keywords[kw.keyword];
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => toggleKeyword(kw.keyword)}
+                      className={`group relative px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200 flex items-center gap-1.5 ${
+                        isToggled
+                          ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+                          : kw.relevance === "critical"
+                            ? "bg-red-950/30 border-red-800/40 text-red-300"
+                            : kw.relevance === "important"
+                              ? "bg-amber-950/30 border-amber-800/40 text-amber-300"
+                              : "bg-slate-700/40 border-slate-600/40 text-slate-300"
+                      }`}
+                    >
+                      {isToggled && <Check className="w-3 h-3" />}
+                      {kw.keyword}
+                      {!isToggled && (
+                        <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg bg-slate-700 text-slate-200 text-xs whitespace-nowrap z-10 shadow-lg">
+                          Add to: {kw.whereToAdd}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
