@@ -3,10 +3,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
 import Link from "next/link";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type InterviewType = "behavioral" | "technical" | "situational";
 type Phase = "setup" | "interview" | "done";
-type VoiceState = "idle" | "listening" | "speaking";
+type VoiceState = "idle" | "listening" | "speaking" | "sending";
 
 interface Message {
   role: "user" | "assistant";
@@ -144,10 +145,15 @@ function renderMarkdown(text: string): React.ReactNode {
     } else if (line.trim() === "") {
       if (nodes.length > 0) nodes.push(<div key={key++} className="h-1" />);
     } else {
-      const formatted = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      const parts = line.split(/(\*\*.*?\*\*)/g);
       nodes.push(
-        <p key={key++} className="leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: formatted }} />
+        <p key={key++} className="leading-relaxed">
+          {parts.map((part, j) =>
+            part.startsWith("**") && part.endsWith("**")
+              ? <strong key={j}>{part.slice(2, -2)}</strong>
+              : part
+          )}
+        </p>
       );
     }
   }
@@ -172,14 +178,18 @@ export default function MockInterviewClient() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const pendingSendRef = useRef(false);
+  const [sendingTransition, setSendingTransition] = useState(false);
 
   const handleVoiceResult = useCallback((transcript: string) => {
     setInput(transcript);
   }, []);
 
   const handleVoiceEnd = useCallback(() => {
-    setVoiceState("idle");
-    pendingSendRef.current = true;
+    setSendingTransition(true);
+    setTimeout(() => {
+      setSendingTransition(false);
+      pendingSendRef.current = true;
+    }, 300);
   }, []);
 
   const speechRec = useSpeechRecognition(handleVoiceResult, handleVoiceEnd);
@@ -219,8 +229,9 @@ export default function MockInterviewClient() {
   useEffect(() => {
     if (speechRec.listening) setVoiceState("listening");
     else if (speechSyn.speaking) setVoiceState("speaking");
+    else if (sendingTransition) setVoiceState("sending");
     else setVoiceState("idle");
-  }, [speechRec.listening, speechSyn.speaking]);
+  }, [speechRec.listening, speechSyn.speaking, sendingTransition]);
 
   // Load target role from user's plan if available
   useEffect(() => {
@@ -390,6 +401,20 @@ export default function MockInterviewClient() {
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
 
+  const headerAvatarClass = (() => {
+    if (!voiceMode) return "bg-purple-500/20 border border-purple-500/40";
+    switch (voiceState) {
+      case "listening": return "bg-red-500/20 border-2 border-red-500 ring-2 ring-red-500/30 ring-offset-1 ring-offset-slate-900";
+      case "speaking": return "bg-purple-500/30 border-2 border-purple-500 ring-2 ring-purple-500/30 ring-offset-1 ring-offset-slate-900";
+      case "sending": return "bg-amber-500/20 border border-amber-500/40";
+      default: return "bg-purple-500/20 border border-purple-500/40";
+    }
+  })();
+
+  const voiceAnnouncement = voiceMode
+    ? ({ idle: "Ready for input", listening: "Listening…", speaking: "AI is speaking…", sending: "Sending…" } as const)[voiceState]
+    : "";
+
   // Setup screen
   if (phase === "setup") {
     return (
@@ -504,7 +529,9 @@ export default function MockInterviewClient() {
             <div>
               <button
                 onClick={() => setVoiceMode(!voiceMode)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+                role="switch"
+                aria-checked={voiceMode}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
                   voiceMode
                     ? "bg-purple-600/20 border-purple-500 text-white"
                     : "bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-600"
@@ -545,6 +572,7 @@ export default function MockInterviewClient() {
     <main className="flex flex-col h-[calc(100vh-72px)] max-h-[calc(100vh-72px)]">
       {/* Header */}
       <header className="shrink-0 border-b border-slate-700/60 bg-slate-900/80 backdrop-blur-sm px-4 py-3">
+        <div aria-live="polite" className="sr-only">{voiceAnnouncement}</div>
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -554,7 +582,7 @@ export default function MockInterviewClient() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="w-7 h-7 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center">
+            <div className={`w-7 h-7 rounded-full ${headerAvatarClass} flex items-center justify-center transition-all`}>
               <Mic2 className="w-3.5 h-3.5 text-purple-400" />
             </div>
             <div>
@@ -567,27 +595,43 @@ export default function MockInterviewClient() {
           </div>
           <div className="flex items-center gap-3">
             {voiceMode && (
-              <>
-                <button
-                  onClick={() => { setAutoSpeak(!autoSpeak); if (speechSyn.speaking) speechSyn.cancel(); }}
-                  className={`p-1.5 rounded-lg transition-colors ${autoSpeak ? "text-purple-400 hover:bg-purple-500/20" : "text-slate-500 hover:bg-slate-800"}`}
-                  title={autoSpeak ? "Mute AI voice" : "Unmute AI voice"}
-                >
-                  {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                </button>
+              <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-800/60 border border-slate-700/60">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => { setAutoSpeak(!autoSpeak); if (speechSyn.speaking) speechSyn.cancel(); }}
+                      className={`p-1.5 rounded-lg transition-colors ${autoSpeak ? "text-purple-400 hover:bg-purple-500/20" : "text-slate-500 hover:bg-slate-800"}`}
+                      aria-label={autoSpeak ? "Mute AI voice" : "Unmute AI voice"}
+                    >
+                      {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>{autoSpeak ? "Mute AI voice" : "Unmute AI voice"}</TooltipContent>
+                </Tooltip>
                 {voiceState === "listening" && (
                   <span className="flex items-center gap-1.5 text-xs text-red-400">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-red-500 ring-2 ring-red-500/50" />
                     Listening…
                   </span>
                 )}
                 {voiceState === "speaking" && (
                   <span className="flex items-center gap-1.5 text-xs text-purple-400">
-                    <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                    <span className="flex items-end gap-0.5 h-3">
+                      <span className="w-0.5 bg-purple-500 rounded-full animate-bounce" style={{ height: "40%", animationDuration: "0.6s" }} />
+                      <span className="w-0.5 bg-purple-500 rounded-full animate-bounce" style={{ height: "70%", animationDuration: "0.4s", animationDelay: "0.1s" }} />
+                      <span className="w-0.5 bg-purple-500 rounded-full animate-bounce" style={{ height: "100%", animationDuration: "0.5s", animationDelay: "0.2s" }} />
+                      <span className="w-0.5 bg-purple-500 rounded-full animate-bounce" style={{ height: "60%", animationDuration: "0.45s", animationDelay: "0.15s" }} />
+                    </span>
                     Speaking…
                   </span>
                 )}
-              </>
+                {voiceState === "sending" && (
+                  <span className="flex items-center gap-1.5 text-xs text-amber-400">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    Sending…
+                  </span>
+                )}
+              </div>
             )}
             {phase === "interview" && (
               <span className="text-xs text-slate-500">Q{questionCount}/5</span>
@@ -694,9 +738,7 @@ export default function MockInterviewClient() {
                 placeholder={voiceMode && speechRec.listening ? "Listening — speak your answer…" : "Type your answer..."}
                 rows={1}
                 style={{ minHeight: "44px", maxHeight: "120px" }}
-                className={`flex-1 bg-slate-800/60 border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors ${
-                  speechRec.listening ? "border-red-500/60" : "border-slate-600"
-                }`}
+                className="flex-1 bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
               />
               {voiceMode && speechRec.supported && (
                 <button
@@ -704,7 +746,7 @@ export default function MockInterviewClient() {
                   disabled={streaming}
                   className={`p-2.5 rounded-xl transition-all shrink-0 ${
                     speechRec.listening
-                      ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+                      ? "bg-red-600 hover:bg-red-500 text-white ring-2 ring-red-500/50 ring-offset-2 ring-offset-slate-900"
                       : "bg-slate-700 hover:bg-slate-600 text-slate-300"
                   } disabled:opacity-40`}
                   aria-label={speechRec.listening ? "Stop listening" : "Start voice input"}
@@ -721,7 +763,7 @@ export default function MockInterviewClient() {
                 <Send className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-[10px] text-slate-600 text-center">
+            <p className="text-xs text-slate-600 text-center">
               {voiceMode ? "Tap mic to speak · Enter to send · Shift+Enter for new line" : "Enter to send · Shift+Enter for new line"}
             </p>
           </div>
