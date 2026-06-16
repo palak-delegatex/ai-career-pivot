@@ -87,12 +87,29 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "id and email required" }, { status: 400 });
   }
 
+  const supabase = getSupabaseClient();
+
   const allowed: Record<string, unknown> = {};
   if (updates.stage && VALID_STAGES.includes(updates.stage)) {
+    const now = new Date().toISOString();
+    // Fetch current job to record stage history
+    const { data: current } = await supabase
+      .from("tracked_jobs")
+      .select("stage, stage_history")
+      .eq("id", id)
+      .eq("user_email", email)
+      .single();
+
+    if (current && current.stage !== updates.stage) {
+      const history = Array.isArray(current.stage_history) ? current.stage_history : [];
+      history.push({ from: current.stage, to: updates.stage, at: now });
+      allowed.stage_history = history;
+    }
+
     allowed.stage = updates.stage;
-    allowed.stage_changed_at = new Date().toISOString();
+    allowed.stage_changed_at = now;
     if (updates.stage === "applied" && !updates.applied_at) {
-      allowed.applied_at = new Date().toISOString();
+      allowed.applied_at = now;
     }
   }
   if (typeof updates.role === "string") allowed.role = updates.role;
@@ -102,12 +119,13 @@ export async function PATCH(req: NextRequest) {
   if (typeof updates.next_action === "string") allowed.next_action = updates.next_action;
   if (typeof updates.match_score === "number") allowed.match_score = updates.match_score;
   if (updates.source && VALID_SOURCES.includes(updates.source)) allowed.source = updates.source;
+  if (typeof updates.salary_range === "string") allowed.salary_range = updates.salary_range;
+  if (typeof updates.location === "string") allowed.location = updates.location;
 
   if (Object.keys(allowed).length === 0) {
     return NextResponse.json({ error: "no valid fields to update" }, { status: 400 });
   }
 
-  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("tracked_jobs")
     .update(allowed)

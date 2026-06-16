@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
 import { STAGES, pickCompanyColor, detectSource } from "@/lib/job-tracker";
+import JobDetailDrawer from "@/components/JobDetailDrawer";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -98,17 +99,20 @@ function JobCard({
   job,
   onDragStart,
   onDelete,
+  onClick,
   isRejected,
 }: {
   job: TrackedJob;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDelete: (id: string) => void;
+  onClick: (job: TrackedJob) => void;
   isRejected?: boolean;
 }) {
   return (
     <div
       draggable
       onDragStart={(e) => onDragStart(e, job.id)}
+      onClick={() => onClick(job)}
       className={`group relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-teal-500/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 ${isRejected ? "opacity-60" : ""}`}
     >
       <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-40 md:opacity-0 md:group-hover:opacity-40 transition-opacity min-w-[44px] min-h-[44px] flex items-center justify-center">
@@ -122,7 +126,7 @@ function JobCard({
       )}
 
       <button
-        onClick={() => onDelete(job.id)}
+        onClick={(e) => { e.stopPropagation(); onDelete(job.id); }}
         className="absolute top-2.5 right-2.5 text-slate-700 hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
       >
         <Trash2 className="h-3 w-3" />
@@ -175,6 +179,7 @@ function KanbanColumn({
   onDragStart,
   onDrop,
   onDelete,
+  onCardClick,
 }: {
   stageKey: JobStage;
   label: string;
@@ -183,6 +188,7 @@ function KanbanColumn({
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDrop: (stage: JobStage) => void;
   onDelete: (id: string) => void;
+  onCardClick: (job: TrackedJob) => void;
 }) {
   const [dragOver, setDragOver] = useState(false);
 
@@ -229,6 +235,7 @@ function KanbanColumn({
             job={job}
             onDragStart={onDragStart}
             onDelete={onDelete}
+            onClick={onCardClick}
             isRejected={stageKey === "rejected"}
           />
         ))}
@@ -244,11 +251,13 @@ function MobileAccordion({
   onDragStart,
   onDrop,
   onDelete,
+  onCardClick,
 }: {
   jobs: TrackedJob[];
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDrop: (stage: JobStage) => void;
   onDelete: (id: string) => void;
+  onCardClick: (job: TrackedJob) => void;
 }) {
   const [open, setOpen] = useState<JobStage | null>(null);
   const grouped = useMemo(() => {
@@ -303,6 +312,7 @@ function MobileAccordion({
                     job={job}
                     onDragStart={onDragStart}
                     onDelete={onDelete}
+                    onClick={onCardClick}
                     isRejected={s.key === "rejected"}
                   />
                 ))}
@@ -766,6 +776,8 @@ export default function JobTrackerKanban({
   const [jobs, setJobs] = useState(initialJobs);
   const [view, setView] = useState<"board" | "analytics">("board");
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<TrackedJob | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const dragIdRef = useRef<string | null>(null);
 
   const updateJobs = useCallback(
@@ -854,6 +866,20 @@ export default function JobTrackerKanban({
     [jobs, email, updateJobs]
   );
 
+  const handleCardClick = useCallback((job: TrackedJob) => {
+    setSelectedJob(job);
+    setDrawerOpen(true);
+  }, []);
+
+  const handleJobUpdate = useCallback(
+    (updated: TrackedJob) => {
+      const next = jobs.map((j) => (j.id === updated.id ? updated : j));
+      updateJobs(next);
+      setSelectedJob(updated);
+    },
+    [jobs, updateJobs]
+  );
+
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
@@ -916,6 +942,7 @@ export default function JobTrackerKanban({
                 onDragStart={handleDragStart}
                 onDrop={handleDrop}
                 onDelete={handleDelete}
+                onCardClick={handleCardClick}
               />
             ))}
           </div>
@@ -925,6 +952,7 @@ export default function JobTrackerKanban({
             onDragStart={handleDragStart}
             onDrop={handleDrop}
             onDelete={handleDelete}
+            onCardClick={handleCardClick}
           />
         </>
       )}
@@ -937,6 +965,15 @@ export default function JobTrackerKanban({
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onAdd={handleAdd}
+      />
+
+      {/* Job Detail Drawer */}
+      <JobDetailDrawer
+        job={selectedJob}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        email={email}
+        onJobUpdate={handleJobUpdate}
       />
     </div>
   );

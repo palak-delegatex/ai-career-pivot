@@ -13,6 +13,12 @@ export type JobSource =
   | "direct"
   | "other";
 
+export interface StageHistoryEntry {
+  from: JobStage;
+  to: JobStage;
+  at: string;
+}
+
 export interface TrackedJob {
   id: string;
   user_email: string;
@@ -25,6 +31,9 @@ export interface TrackedJob {
   match_score: number;
   next_action?: string;
   notes?: string;
+  salary_range?: string;
+  location?: string;
+  stage_history?: StageHistoryEntry[];
   applied_at?: string;
   stage_changed_at: string;
   created_at: string;
