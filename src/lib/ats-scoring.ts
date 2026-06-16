@@ -91,58 +91,199 @@ const SECTION_KEYWORD_WEIGHT: Record<string, number> = {
 
 const MATCH_TYPE_WEIGHT: Record<string, number> = {
   exact: 1.0,
-  variant: 0.8,
-  semantic: 0.5,
+  variant: 0.85,
+  semantic: 0.7,
 };
 
 const SKILL_VARIANTS: Record<string, string[]> = {
-  javascript: ["js", "javascript", "ecmascript", "es6", "es2015"],
+  // Languages
+  javascript: ["js", "javascript", "ecmascript", "es6", "es2015", "es2020", "es2021", "es2022"],
   typescript: ["ts", "typescript"],
-  python: ["python", "py"],
-  "react": ["react", "reactjs", "react.js"],
-  "node.js": ["node", "nodejs", "node.js"],
-  "vue.js": ["vue", "vuejs", "vue.js"],
-  angular: ["angular", "angularjs"],
+  python: ["python", "py", "python3"],
+  ruby: ["ruby", "rb"],
+  php: ["php"],
+  "c++": ["c++", "cpp", "cplusplus"],
+  "c#": ["c#", "csharp", "c sharp"],
+  "objective-c": ["objective-c", "objc", "objective c"],
+  java: ["java", "jvm", "j2ee", "jee"],
+  go: ["go", "golang"],
+  rust: ["rust", "rustlang"],
+  swift: ["swift", "ios development", "swiftui"],
+  kotlin: ["kotlin", "android development", "jetpack compose"],
+  scala: ["scala"],
+  perl: ["perl"],
+  r: ["r language", "r programming", "rstats", "r-lang"],
+  dart: ["dart", "dartlang"],
+  lua: ["lua"],
+  elixir: ["elixir"],
+  haskell: ["haskell"],
+  clojure: ["clojure", "clojurescript"],
+  shell: ["shell", "bash", "zsh", "shell scripting", "bash scripting"],
+  html: ["html", "html5"],
+  css: ["css", "css3", "cascading style sheets"],
+  sass: ["sass", "scss", "less"],
+  // Frontend frameworks
+  "react": ["react", "reactjs", "react.js", "react js"],
+  "next.js": ["next", "nextjs", "next.js", "next js"],
+  "vue.js": ["vue", "vuejs", "vue.js", "vue js", "vue 3", "nuxt", "nuxtjs"],
+  angular: ["angular", "angularjs", "angular.js", "angular js"],
+  svelte: ["svelte", "sveltekit"],
+  ember: ["ember", "emberjs", "ember.js"],
+  "tailwind css": ["tailwind", "tailwindcss", "tailwind css"],
+  bootstrap: ["bootstrap"],
+  "material ui": ["material ui", "mui", "material-ui", "material design"],
+  webpack: ["webpack"],
+  vite: ["vite", "vitejs"],
+  // Backend frameworks
+  "node.js": ["node", "nodejs", "node.js", "node js"],
+  express: ["express", "expressjs", "express.js"],
+  nestjs: ["nestjs", "nest.js", "nest"],
+  django: ["django"],
+  flask: ["flask"],
+  fastapi: ["fastapi", "fast api"],
+  "spring boot": ["spring", "spring boot", "springboot", "spring framework"],
+  "ruby on rails": ["rails", "ruby on rails", "ror"],
+  laravel: ["laravel"],
+  ".net": [".net", "dotnet", "asp.net", "asp.net core", ".net core"],
+  // Databases
+  sql: ["sql", "mysql", "postgresql", "postgres", "mssql", "sql server", "mariadb", "sqlite"],
+  nosql: ["nosql", "no-sql"],
+  mongodb: ["mongodb", "mongo", "mongoose"],
+  redis: ["redis"],
+  elasticsearch: ["elasticsearch", "elastic search", "elk", "opensearch"],
+  dynamodb: ["dynamodb", "dynamo"],
+  cassandra: ["cassandra"],
+  neo4j: ["neo4j", "graph database"],
+  // Data & Analytics
+  "apache spark": ["spark", "apache spark", "pyspark"],
+  hadoop: ["hadoop", "hdfs", "mapreduce", "map reduce"],
+  kafka: ["kafka", "apache kafka", "event streaming"],
+  airflow: ["airflow", "apache airflow"],
+  dbt: ["dbt", "data build tool"],
+  snowflake: ["snowflake"],
+  redshift: ["redshift", "amazon redshift"],
+  bigquery: ["bigquery", "big query", "google bigquery"],
+  databricks: ["databricks"],
+  etl: ["etl", "elt", "data pipeline", "data pipelines"],
+  "data warehouse": ["data warehouse", "data warehousing", "dwh"],
+  "data modeling": ["data modeling", "data modelling", "dimensional modeling"],
+  tableau: ["tableau"],
+  "power bi": ["power bi", "powerbi", "power-bi"],
+  looker: ["looker"],
+  metabase: ["metabase"],
+  // Cloud & Infrastructure
+  aws: ["aws", "amazon web services", "amazon cloud"],
+  gcp: ["gcp", "google cloud", "google cloud platform"],
+  azure: ["azure", "microsoft azure", "ms azure"],
+  docker: ["docker", "containerization", "containers", "dockerfile"],
+  kubernetes: ["kubernetes", "k8s", "kube"],
+  terraform: ["terraform", "iac", "infrastructure as code", "hcl"],
+  ansible: ["ansible"],
+  "cloud formation": ["cloudformation", "cloud formation", "aws cloudformation", "cdk", "aws cdk"],
+  lambda: ["lambda", "aws lambda", "serverless functions"],
+  "api gateway": ["api gateway", "aws api gateway"],
+  s3: ["s3", "aws s3", "object storage"],
+  ec2: ["ec2", "aws ec2"],
+  ecs: ["ecs", "aws ecs", "fargate"],
+  eks: ["eks", "aws eks"],
+  gke: ["gke", "google kubernetes engine"],
+  aks: ["aks", "azure kubernetes service"],
+  heroku: ["heroku"],
+  vercel: ["vercel"],
+  netlify: ["netlify"],
+  "ci/cd": ["ci/cd", "cicd", "ci cd", "continuous integration", "continuous deployment", "continuous delivery"],
+  devops: ["devops", "dev ops", "site reliability", "sre"],
+  jenkins: ["jenkins"],
+  "github actions": ["github actions", "gh actions"],
+  gitlab: ["gitlab", "gitlab ci", "gitlab-ci"],
+  circleci: ["circleci", "circle ci"],
+  // AI & ML
   "machine learning": ["ml", "machine learning"],
   "artificial intelligence": ["ai", "artificial intelligence"],
-  "natural language processing": ["nlp", "natural language processing"],
-  "deep learning": ["dl", "deep learning"],
+  "natural language processing": ["nlp", "natural language processing", "text mining"],
+  "deep learning": ["dl", "deep learning", "neural networks", "neural network"],
+  "computer vision": ["cv", "computer vision", "image recognition", "object detection"],
+  tensorflow: ["tensorflow", "tf"],
+  pytorch: ["pytorch", "torch"],
+  "scikit-learn": ["scikit-learn", "sklearn", "scikit learn"],
+  pandas: ["pandas"],
+  numpy: ["numpy"],
+  "large language model": ["llm", "large language model", "gpt", "chatgpt", "generative ai", "gen ai"],
   "data science": ["data science", "data scientist"],
-  "data analysis": ["data analysis", "analytics", "data analytics"],
-  "project management": ["pm", "project management", "pmp"],
-  "product management": ["product management", "product manager"],
-  "user experience": ["ux", "user experience", "ux design"],
-  "user interface": ["ui", "user interface", "ui design"],
-  "ci/cd": ["ci/cd", "cicd", "continuous integration", "continuous deployment"],
-  devops: ["devops", "dev ops"],
-  kubernetes: ["kubernetes", "k8s"],
-  docker: ["docker", "containerization"],
-  aws: ["aws", "amazon web services"],
-  gcp: ["gcp", "google cloud", "google cloud platform"],
-  azure: ["azure", "microsoft azure"],
-  sql: ["sql", "mysql", "postgresql", "postgres", "mssql"],
-  nosql: ["nosql", "mongodb", "dynamodb", "cassandra", "redis"],
-  agile: ["agile", "scrum", "kanban"],
-  "rest api": ["rest", "restful", "rest api", "restful api"],
-  graphql: ["graphql", "gql"],
-  terraform: ["terraform", "iac", "infrastructure as code"],
-  "c++": ["c++", "cpp"],
-  "c#": ["c#", "csharp", "c sharp"],
-  ".net": [".net", "dotnet", "asp.net"],
-  java: ["java", "jvm"],
-  go: ["go", "golang"],
-  rust: ["rust"],
-  swift: ["swift", "ios development"],
-  kotlin: ["kotlin", "android development"],
+  "data analysis": ["data analysis", "analytics", "data analytics", "statistical analysis"],
+  "data engineering": ["data engineering", "data engineer"],
+  // Testing
+  jest: ["jest"],
+  mocha: ["mocha"],
+  cypress: ["cypress"],
+  selenium: ["selenium", "webdriver"],
+  playwright: ["playwright"],
+  pytest: ["pytest"],
+  junit: ["junit"],
+  "unit testing": ["unit testing", "unit tests", "unit test"],
+  "integration testing": ["integration testing", "integration tests", "integration test"],
+  "end-to-end testing": ["e2e", "end-to-end", "end to end", "e2e testing"],
+  tdd: ["tdd", "test driven development", "test-driven development"],
+  bdd: ["bdd", "behavior driven development", "behaviour driven development"],
+  qa: ["qa", "quality assurance", "quality engineering"],
+  // Version Control & Collaboration
+  git: ["git", "github", "gitlab", "bitbucket", "version control"],
+  jira: ["jira", "atlassian"],
+  confluence: ["confluence"],
+  asana: ["asana"],
+  trello: ["trello"],
+  slack: ["slack"],
+  // Design
   figma: ["figma"],
   sketch: ["sketch"],
-  jira: ["jira"],
-  confluence: ["confluence"],
-  tableau: ["tableau"],
-  "power bi": ["power bi", "powerbi"],
-  excel: ["excel", "spreadsheet", "ms excel"],
-  salesforce: ["salesforce", "sfdc"],
-  sap: ["sap"],
+  "adobe xd": ["adobe xd", "xd"],
+  invision: ["invision"],
+  // Security
+  oauth: ["oauth", "oauth2", "oauth 2.0", "openid connect", "oidc"],
+  owasp: ["owasp"],
+  sso: ["sso", "single sign-on", "single sign on"],
+  saml: ["saml"],
+  "penetration testing": ["penetration testing", "pen testing", "pentest", "pentesting"],
+  soc2: ["soc2", "soc 2", "soc2 compliance"],
+  // Methodologies & Soft Skills
+  agile: ["agile", "scrum", "kanban", "lean", "safe", "scaled agile"],
+  "project management": ["pm", "project management", "pmp", "prince2"],
+  "product management": ["product management", "product manager", "product owner"],
+  "user experience": ["ux", "user experience", "ux design", "ux research"],
+  "user interface": ["ui", "user interface", "ui design", "ui/ux", "ux/ui"],
+  "stakeholder management": ["stakeholder management", "stakeholder engagement", "stakeholder communication"],
+  "cross-functional": ["cross-functional", "cross functional", "cross-team", "cross team"],
+  leadership: ["leadership", "team leadership", "people management", "team management"],
+  communication: ["communication", "communications", "written communication", "verbal communication"],
+  "problem solving": ["problem solving", "problem-solving", "analytical thinking", "critical thinking"],
+  mentoring: ["mentoring", "coaching", "mentorship"],
+  // APIs & Protocols
+  "rest api": ["rest", "restful", "rest api", "restful api", "rest apis"],
+  graphql: ["graphql", "gql"],
+  grpc: ["grpc", "protobuf", "protocol buffers"],
+  websocket: ["websocket", "websockets", "ws", "socket.io"],
+  microservices: ["microservices", "microservice", "micro-services", "service-oriented", "soa"],
+  // Business Tools
+  excel: ["excel", "spreadsheet", "ms excel", "microsoft excel"],
+  salesforce: ["salesforce", "sfdc", "salesforce crm"],
+  sap: ["sap", "sap erp"],
+  hubspot: ["hubspot"],
+  "google analytics": ["google analytics", "ga4", "ga"],
+  seo: ["seo", "search engine optimization"],
+  sem: ["sem", "search engine marketing", "ppc", "pay per click"],
+  crm: ["crm", "customer relationship management"],
+  erp: ["erp", "enterprise resource planning"],
+  // Mobile
+  "react native": ["react native", "rn"],
+  flutter: ["flutter"],
+  "ios": ["ios", "iphone", "ipad"],
+  android: ["android"],
+  "mobile development": ["mobile development", "mobile app", "mobile apps", "mobile application"],
+  // Architecture
+  "system design": ["system design", "systems design", "architecture", "software architecture"],
+  "design patterns": ["design patterns", "solid principles", "solid", "gang of four"],
+  "event-driven": ["event-driven", "event driven", "event sourcing", "cqrs"],
+  "domain-driven design": ["ddd", "domain-driven design", "domain driven design"],
 };
 
 const ATS_UNFRIENDLY_FONTS = [
@@ -351,7 +492,74 @@ export function detectFormattingIssues(text: string, fileType?: string): Formatt
 // ── Keyword Matching ─────────────────────────────────────────────────────────
 
 function normalizeForMatch(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9+#./\s-]/g, " ").replace(/\s+/g, " ").trim();
+  return text
+    .toLowerCase()
+    .replace(/[-_]/g, " ")
+    .replace(/[^a-z0-9+#./\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const STEM_SUFFIXES = [
+  { suffix: "ization", base: "" },
+  { suffix: "isation", base: "" },
+  { suffix: "ifying", base: "ify" },
+  { suffix: "ating", base: "ate" },
+  { suffix: "ities", base: "ity" },
+  { suffix: "ment", base: "" },
+  { suffix: "tion", base: "" },
+  { suffix: "sion", base: "" },
+  { suffix: "ness", base: "" },
+  { suffix: "able", base: "" },
+  { suffix: "ible", base: "" },
+  { suffix: "ment", base: "" },
+  { suffix: "ying", base: "y" },
+  { suffix: "ling", base: "le" },
+  { suffix: "ting", base: "t" },
+  { suffix: "ning", base: "n" },
+  { suffix: "ring", base: "r" },
+  { suffix: "ging", base: "g" },
+  { suffix: "ping", base: "p" },
+  { suffix: "ing", base: "" },
+  { suffix: "ies", base: "y" },
+  { suffix: "ive", base: "" },
+  { suffix: "ous", base: "" },
+  { suffix: "ful", base: "" },
+  { suffix: "ity", base: "" },
+  { suffix: "ify", base: "" },
+  { suffix: "ate", base: "" },
+  { suffix: "ize", base: "" },
+  { suffix: "ise", base: "" },
+  { suffix: "ted", base: "t" },
+  { suffix: "ned", base: "n" },
+  { suffix: "red", base: "r" },
+  { suffix: "ged", base: "g" },
+  { suffix: "ped", base: "p" },
+  { suffix: "ed", base: "" },
+  { suffix: "er", base: "" },
+  { suffix: "or", base: "" },
+  { suffix: "al", base: "" },
+  { suffix: "ly", base: "" },
+  { suffix: "es", base: "" },
+  { suffix: "s", base: "" },
+];
+
+function stemWord(word: string): string[] {
+  if (word.length < 4) return [word];
+  const stems = new Set<string>([word]);
+  for (const { suffix, base } of STEM_SUFFIXES) {
+    if (word.endsWith(suffix) && word.length - suffix.length + base.length >= 3) {
+      stems.add(word.slice(0, -suffix.length) + base);
+    }
+  }
+  return [...stems];
+}
+
+function splitCompoundKeyword(keyword: string): string[] {
+  return keyword
+    .split(/[\/&,;]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 1);
 }
 
 function getVariants(keyword: string): string[] {
@@ -374,6 +582,16 @@ function getVariants(keyword: string): string[] {
   if (noSpaces !== normalized) variants.add(noSpaces);
   const noDots = normalized.replace(/\./g, "");
   if (noDots !== normalized) variants.add(noDots);
+  const noHyphens = normalized.replace(/ /g, "-");
+  if (noHyphens !== normalized) variants.add(noHyphens);
+
+  const stems = stemWord(normalized.replace(/\s+/g, ""));
+  for (const s of stems) variants.add(s);
+  if (normalized.includes(" ")) {
+    for (const word of normalized.split(" ")) {
+      for (const s of stemWord(word)) variants.add(s);
+    }
+  }
 
   return [...variants];
 }
@@ -386,9 +604,19 @@ function findKeywordInText(keyword: string, text: string): { found: boolean; mat
     return { found: true, matchType: "exact" };
   }
 
-  const wordBoundary = new RegExp(`\\b${normalizedKw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+  const escaped = normalizedKw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const wordBoundary = new RegExp(`\\b${escaped}\\b`);
   if (wordBoundary.test(normalizedText)) {
     return { found: true, matchType: "exact" };
+  }
+
+  const compounds = splitCompoundKeyword(keyword);
+  if (compounds.length > 1) {
+    const allFound = compounds.every(part => {
+      const np = normalizeForMatch(part);
+      return normalizedText.includes(np);
+    });
+    if (allFound) return { found: true, matchType: "exact" };
   }
 
   const variants = getVariants(keyword);
@@ -397,9 +625,22 @@ function findKeywordInText(keyword: string, text: string): { found: boolean; mat
     if (normalizedText.includes(variant)) {
       return { found: true, matchType: "variant" };
     }
-    const variantBoundary = new RegExp(`\\b${variant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+    const variantEscaped = variant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const variantBoundary = new RegExp(`\\b${variantEscaped}\\b`);
     if (variantBoundary.test(normalizedText)) {
       return { found: true, matchType: "variant" };
+    }
+  }
+
+  if (normalizedKw.includes(" ")) {
+    const kwWords = normalizedKw.split(" ").filter(w => w.length > 2);
+    if (kwWords.length >= 2) {
+      const matchedWords = kwWords.filter(w =>
+        normalizedText.includes(w) || stemWord(w).some(s => normalizedText.includes(s))
+      );
+      if (matchedWords.length >= Math.ceil(kwWords.length * 0.7)) {
+        return { found: true, matchType: "variant" };
+      }
     }
   }
 

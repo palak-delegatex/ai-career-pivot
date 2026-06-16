@@ -1,16 +1,122 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
 import Link from "next/link";
 
 type InterviewType = "behavioral" | "technical" | "situational";
 type Phase = "setup" | "interview" | "done";
+type VoiceState = "idle" | "listening" | "speaking";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: number;
+}
+
+function useSpeechRecognition(onResult: (transcript: string) => void, onEnd: () => void) {
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [listening, setListening] = useState(false);
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setSupported(!!SpeechRec);
+  }, []);
+
+  const start = useCallback(() => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return;
+
+    const recognition = new SpeechRec();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    let finalTranscript = "";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interim = transcript;
+        }
+      }
+      onResult(finalTranscript + interim);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+      if (finalTranscript.trim()) {
+        onResult(finalTranscript.trim());
+      }
+      onEnd();
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error !== "aborted") {
+        setListening(false);
+        onEnd();
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }, [onResult, onEnd]);
+
+  const stop = useCallback(() => {
+    recognitionRef.current?.stop();
+    setListening(false);
+  }, []);
+
+  return { listening, supported, start, stop };
+}
+
+function useSpeechSynthesis() {
+  const [speaking, setSpeaking] = useState(false);
+  const [supported, setSupported] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  useEffect(() => {
+    setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+  }, []);
+
+  const speak = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+
+    const cleaned = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/^[-*] /gm, "")
+      .replace(/#{1,3}\s/g, "");
+
+    const utterance = new SpeechSynthesisUtterance(cleaned);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v =>
+      v.lang.startsWith("en") && (v.name.includes("Samantha") || v.name.includes("Google") || v.name.includes("Natural"))
+    ) || voices.find(v => v.lang.startsWith("en"));
+    if (preferred) utterance.voice = preferred;
+
+    utteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  const cancel = useCallback(() => {
+    window.speechSynthesis?.cancel();
+    setSpeaking(false);
+  }, []);
+
+  return { speaking, supported, speak, cancel };
 }
 
 const INTERVIEW_TYPES: { value: InterviewType; label: string; desc: string }[] = [
@@ -60,8 +166,24 @@ export default function MockInterviewClient() {
   const [streaming, setStreaming] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
   const [showEndOption, setShowEndOption] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const pendingSendRef = useRef(false);
+
+  const handleVoiceResult = useCallback((transcript: string) => {
+    setInput(transcript);
+  }, []);
+
+  const handleVoiceEnd = useCallback(() => {
+    setVoiceState("idle");
+    pendingSendRef.current = true;
+  }, []);
+
+  const speechRec = useSpeechRecognition(handleVoiceResult, handleVoiceEnd);
+  const speechSyn = useSpeechSynthesis();
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -72,6 +194,33 @@ export default function MockInterviewClient() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+
+  // Auto-send after voice recognition ends
+  useEffect(() => {
+    if (pendingSendRef.current && input.trim() && !streaming) {
+      pendingSendRef.current = false;
+      handleSend(input);
+    }
+  });
+
+  // Auto-speak assistant messages when voice mode is active
+  const lastMsgRef = useRef<number>(0);
+  useEffect(() => {
+    if (!voiceMode || !autoSpeak || streaming) return;
+    const last = messages[messages.length - 1];
+    if (last?.role === "assistant" && last.timestamp !== lastMsgRef.current && last.content) {
+      lastMsgRef.current = last.timestamp;
+      setVoiceState("speaking");
+      speechSyn.speak(last.content);
+    }
+  }, [messages, streaming, voiceMode, autoSpeak, speechSyn]);
+
+  // Update voiceState from speech hooks
+  useEffect(() => {
+    if (speechRec.listening) setVoiceState("listening");
+    else if (speechSyn.speaking) setVoiceState("speaking");
+    else setVoiceState("idle");
+  }, [speechRec.listening, speechSyn.speaking]);
 
   // Load target role from user's plan if available
   useEffect(() => {
@@ -216,6 +365,16 @@ export default function MockInterviewClient() {
     }
   }
 
+  function toggleMic() {
+    if (speechRec.listening) {
+      speechRec.stop();
+    } else {
+      speechSyn.cancel();
+      setInput("");
+      speechRec.start();
+    }
+  }
+
   function resetInterview() {
     setPhase("setup");
     setMessages([]);
@@ -224,6 +383,9 @@ export default function MockInterviewClient() {
     setInput("");
     setJobDescription("");
     setShowJdInput(false);
+    speechSyn.cancel();
+    speechRec.stop();
+    setVoiceState("idle");
   }
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
@@ -337,6 +499,31 @@ export default function MockInterviewClient() {
             )}
           </div>
 
+          {/* Voice mode toggle */}
+          {(speechRec.supported || speechSyn.supported) && (
+            <div>
+              <button
+                onClick={() => setVoiceMode(!voiceMode)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+                  voiceMode
+                    ? "bg-purple-600/20 border-purple-500 text-white"
+                    : "bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-600"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Mic className={`w-4 h-4 ${voiceMode ? "text-purple-400" : ""}`} />
+                  <div className="text-left">
+                    <div className="text-sm font-semibold">Voice Mode</div>
+                    <div className="text-xs text-slate-500">Speak your answers, hear AI questions read aloud</div>
+                  </div>
+                </div>
+                <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${voiceMode ? "bg-purple-600 justify-end" : "bg-slate-700 justify-start"}`}>
+                  <div className="w-4 h-4 rounded-full bg-white mx-1" />
+                </div>
+              </button>
+            </div>
+          )}
+
           <button
             onClick={startInterview}
             disabled={!targetRole || (targetRole === "custom" && !customRole.trim())}
@@ -346,7 +533,7 @@ export default function MockInterviewClient() {
           </button>
 
           <p className="text-slate-500 text-xs text-center">
-            5 questions · ~10 minutes · {jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
+            5 questions · ~10 minutes · {voiceMode ? "Voice-enabled · " : ""}{jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
           </p>
         </div>
       </main>
@@ -379,6 +566,29 @@ export default function MockInterviewClient() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {voiceMode && (
+              <>
+                <button
+                  onClick={() => { setAutoSpeak(!autoSpeak); if (speechSyn.speaking) speechSyn.cancel(); }}
+                  className={`p-1.5 rounded-lg transition-colors ${autoSpeak ? "text-purple-400 hover:bg-purple-500/20" : "text-slate-500 hover:bg-slate-800"}`}
+                  title={autoSpeak ? "Mute AI voice" : "Unmute AI voice"}
+                >
+                  {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+                {voiceState === "listening" && (
+                  <span className="flex items-center gap-1.5 text-xs text-red-400">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    Listening…
+                  </span>
+                )}
+                {voiceState === "speaking" && (
+                  <span className="flex items-center gap-1.5 text-xs text-purple-400">
+                    <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                    Speaking…
+                  </span>
+                )}
+              </>
+            )}
             {phase === "interview" && (
               <span className="text-xs text-slate-500">Q{questionCount}/5</span>
             )}
@@ -481,11 +691,27 @@ export default function MockInterviewClient() {
                   e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 120) + "px";
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your answer..."
+                placeholder={voiceMode && speechRec.listening ? "Listening — speak your answer…" : "Type your answer..."}
                 rows={1}
                 style={{ minHeight: "44px", maxHeight: "120px" }}
-                className="flex-1 bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
+                className={`flex-1 bg-slate-800/60 border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors ${
+                  speechRec.listening ? "border-red-500/60" : "border-slate-600"
+                }`}
               />
+              {voiceMode && speechRec.supported && (
+                <button
+                  onClick={toggleMic}
+                  disabled={streaming}
+                  className={`p-2.5 rounded-xl transition-all shrink-0 ${
+                    speechRec.listening
+                      ? "bg-red-600 hover:bg-red-500 text-white animate-pulse"
+                      : "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                  } disabled:opacity-40`}
+                  aria-label={speechRec.listening ? "Stop listening" : "Start voice input"}
+                >
+                  {speechRec.listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </button>
+              )}
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || streaming}
@@ -495,7 +721,9 @@ export default function MockInterviewClient() {
                 <Send className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-[10px] text-slate-600 text-center">Enter to send · Shift+Enter for new line</p>
+            <p className="text-[10px] text-slate-600 text-center">
+              {voiceMode ? "Tap mic to speak · Enter to send · Shift+Enter for new line" : "Enter to send · Shift+Enter for new line"}
+            </p>
           </div>
         </div>
       )}
