@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
-import DashboardHero from "@/components/DashboardHero";
 import MilestoneChecklist from "@/components/MilestoneChecklist";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
+import CommandCenterHeader from "@/components/CommandCenterHeader";
+import MiniPipeline from "@/components/MiniPipeline";
 import NextActionsWidget from "@/components/NextActionsWidget";
 import JobBoard from "@/components/JobBoard";
 import MomentumCard from "@/components/MomentumCard";
@@ -14,7 +15,6 @@ import StreakCalendar from "@/components/StreakCalendar";
 import PhaseProgressCards from "@/components/PhaseProgressCards";
 import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
-import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import CareerTransitionJourney from "@/components/CareerTransitionJourney";
 import DocumentsCard from "@/components/DocumentsCard";
@@ -626,18 +626,18 @@ export default function DashboardClient() {
 
           <TabsContent value="overview">
             <div className="space-y-6">
-              <DashboardHero
-                completionPercent={completionPercent}
-                status={scheduleStatus}
-                totalMilestones={totalMilestones}
-                completedMilestones={completedMilestones}
-                remainingMilestones={totalMilestones - completedMilestones}
-                targetRole={activePlan.targetRole}
-                streakDays={streakDays}
-                daysElapsed={daysElapsed}
-                currentPhaseLabel={currentPhaseLabel}
-              />
+              {/* 1. Command Center Header — 3-card stat row */}
+              <CommandCenterHeader email={activeReport!.email} />
 
+              {/* 2. Mini Pipeline — stage funnel + recent jobs */}
+              <MiniPipeline email={activeReport!.email} />
+
+              {/* 3. Next Actions */}
+              {progressLoaded && (
+                <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
+              )}
+
+              {/* 4. Career Transition Journey */}
               <CareerTransitionJourney
                 currentRole={activeReport!.profile.currentTitle || "Current Role"}
                 targetRole={activePlan.targetRole}
@@ -649,14 +649,13 @@ export default function DashboardClient() {
 
               {progressLoaded && (
                 <>
-                  {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* 5. Momentum + Streak Calendar side by side */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <MomentumCard
                       weeklyActivity={weeklyActivity}
                       monthlyCompleted={thisMonthCount}
                       previousMonthCompleted={lastMonthCount}
                     />
-                    <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
                     <StreakCalendar
                       activeDays={activeDays}
                       phaseForDay={phaseForDay}
@@ -664,30 +663,25 @@ export default function DashboardClient() {
                     />
                   </div>
 
-                  {/* Phase Progress Cards */}
+                  {/* 6. Job Board */}
+                  <JobBoard
+                    targetRole={activePlan.targetRole}
+                    location={[activeReport!.profile.location?.city, activeReport!.profile.location?.country].filter(Boolean).join(", ") || undefined}
+                    userSkills={[...activeReport!.profile.skills.slice(0, 10), ...activeReport!.profile.transferableSkills.slice(0, 5)]}
+                    profile={activeReport!.profile}
+                    plan={activePlan}
+                  />
+
+                  {/* 7. Phase Progress Cards */}
                   <PhaseProgressCards
                     phases={phases}
                     statuses={milestoneStatuses}
                     reportId={activeReport!.id}
                   />
 
-                  {/* My Documents */}
+                  {/* 8. Documents + Completion Badges */}
                   <DocumentsCard email={activeReport!.email} />
-
-                  {/* Completion Badges */}
                   <CompletionBadges earnedBadges={earnedBadges} />
-
-                  {/* Shareable Progress Card */}
-                  <ShareableProgressCard
-                    currentRole={activeReport!.profile.currentTitle || "Current Role"}
-                    targetRole={activePlan.targetRole}
-                    completionPercent={completionPercent}
-                    completedMilestones={completedMilestones}
-                    totalMilestones={totalMilestones}
-                    streakDays={streakDays}
-                    earnedBadgeCount={earnedBadges.size}
-                    reportId={activeReport!.id}
-                  />
 
                   <MilestoneChecklist
                     phases={phases}
@@ -697,14 +691,6 @@ export default function DashboardClient() {
                   />
                 </>
               )}
-
-              <JobBoard
-                targetRole={activePlan.targetRole}
-                location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
-                userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
-                profile={activeReport.profile}
-                plan={activePlan}
-              />
 
               <div className="pt-4 border-t border-slate-700/50 space-y-3">
                 <Link
