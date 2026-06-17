@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
 import { STAGES, pickCompanyColor, detectSource } from "@/lib/job-tracker";
-import JobDetailDrawer from "@/components/JobDetailDrawer";
+import JobDetailView from "@/components/JobDetailView";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -776,9 +776,13 @@ export default function JobTrackerKanban({
   const [jobs, setJobs] = useState(initialJobs);
   const [view, setView] = useState<"board" | "analytics">("board");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<TrackedJob | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const dragIdRef = useRef<string | null>(null);
+
+  const selectedJob = useMemo(
+    () => (selectedJobId ? jobs.find((j) => j.id === selectedJobId) ?? null : null),
+    [selectedJobId, jobs]
+  );
 
   const updateJobs = useCallback(
     (next: TrackedJob[]) => {
@@ -867,18 +871,27 @@ export default function JobTrackerKanban({
   );
 
   const handleCardClick = useCallback((job: TrackedJob) => {
-    setSelectedJob(job);
-    setDrawerOpen(true);
+    setSelectedJobId(job.id);
   }, []);
 
   const handleJobUpdate = useCallback(
     (updated: TrackedJob) => {
       const next = jobs.map((j) => (j.id === updated.id ? updated : j));
       updateJobs(next);
-      setSelectedJob(updated);
     },
     [jobs, updateJobs]
   );
+
+  if (selectedJob) {
+    return (
+      <JobDetailView
+        job={selectedJob}
+        email={email}
+        onJobUpdate={handleJobUpdate}
+        onBack={() => setSelectedJobId(null)}
+      />
+    );
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
@@ -965,15 +978,6 @@ export default function JobTrackerKanban({
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onAdd={handleAdd}
-      />
-
-      {/* Job Detail Drawer */}
-      <JobDetailDrawer
-        job={selectedJob}
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        email={email}
-        onJobUpdate={handleJobUpdate}
       />
     </div>
   );
