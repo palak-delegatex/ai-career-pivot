@@ -69,6 +69,7 @@ import {
   daysInStage,
   daysInStageUrgency,
 } from "@/lib/job-tracker";
+import JobDetailView from "@/components/JobDetailView";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -233,11 +234,13 @@ function SortableJobCard({
   job,
   onDelete,
   onMoveToStage,
+  onSelect,
   isPassed,
 }: {
   job: TrackedJob;
   onDelete: (id: string) => void;
   onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelect?: (id: string) => void;
   isPassed?: boolean;
 }) {
   const {
@@ -282,7 +285,13 @@ function SortableJobCard({
       </div>
 
       {/* Company avatar + Role + Company·Source */}
-      <div className="flex items-start gap-2.5 mb-2.5">
+      <div
+        className="flex items-start gap-2.5 mb-2.5 cursor-pointer"
+        onClick={() => onSelect?.(job.id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter") onSelect?.(job.id); }}
+      >
         <div
           className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
         >
@@ -362,6 +371,7 @@ function KanbanColumn({
   isOver,
   onDelete,
   onMoveToStage,
+  onSelectJob,
 }: {
   stageKey: JobStage;
   label: string;
@@ -371,6 +381,7 @@ function KanbanColumn({
   isOver: boolean;
   onDelete: (id: string) => void;
   onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelectJob?: (id: string) => void;
 }) {
   return (
     <div className="min-w-[200px]">
@@ -408,6 +419,7 @@ function KanbanColumn({
               job={job}
               onDelete={onDelete}
               onMoveToStage={onMoveToStage}
+              onSelect={onSelectJob}
               isPassed={stageKey === "passed"}
             />
           ))}
@@ -450,10 +462,12 @@ function MobileAccordion({
   jobs,
   onDelete,
   onMoveToStage,
+  onSelectJob,
 }: {
   jobs: TrackedJob[];
   onDelete: (id: string) => void;
   onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelectJob?: (id: string) => void;
 }) {
   const [open, setOpen] = useState<JobStage | null>(null);
   const grouped = useMemo(() => {
@@ -503,6 +517,7 @@ function MobileAccordion({
                     job={job}
                     onDelete={onDelete}
                     onMoveToStage={onMoveToStage}
+                    onSelect={onSelectJob}
                   />
                 ))}
               </div>
@@ -520,10 +535,12 @@ function MobileJobCard({
   job,
   onDelete,
   onMoveToStage,
+  onSelect,
 }: {
   job: TrackedJob;
   onDelete: (id: string) => void;
   onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelect?: (id: string) => void;
 }) {
   return (
     <div className={`relative bg-card border border-border rounded-xl p-3.5 ${job.stage === "passed" ? "opacity-60" : ""}`}>
@@ -533,7 +550,13 @@ function MobileJobCard({
       </div>
 
       {/* Company avatar + Role + Company·Source */}
-      <div className="flex items-start gap-2.5 mb-2.5 pr-8">
+      <div
+        className="flex items-start gap-2.5 mb-2.5 pr-8 cursor-pointer"
+        onClick={() => onSelect?.(job.id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter") onSelect?.(job.id); }}
+      >
         <div
           className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
         >
@@ -1048,6 +1071,7 @@ export default function JobTrackerKanban({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<JobStage | null>(null);
   const [passedExpanded, setPassedExpanded] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -1194,6 +1218,28 @@ export default function JobTrackerKanban({
   const activeStages = STAGES.filter((s) => s.key !== "passed");
   const passedJobs = grouped.get("passed") ?? [];
 
+  const selectedJob = selectedJobId
+    ? jobs.find((j) => j.id === selectedJobId) ?? null
+    : null;
+
+  const handleJobUpdateFromDetail = useCallback(
+    (updated: TrackedJob) => {
+      updateJobs(jobs.map((j) => (j.id === updated.id ? updated : j)));
+    },
+    [jobs, updateJobs]
+  );
+
+  if (selectedJob) {
+    return (
+      <JobDetailView
+        job={selectedJob}
+        email={email}
+        onBack={() => setSelectedJobId(null)}
+        onJobUpdate={handleJobUpdateFromDetail}
+      />
+    );
+  }
+
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
@@ -1269,6 +1315,7 @@ export default function JobTrackerKanban({
                     isOver={overStage === s.key}
                     onDelete={handleDelete}
                     onMoveToStage={handleMoveToStage}
+                    onSelectJob={setSelectedJobId}
                   />
                 </div>
               ))}
@@ -1285,6 +1332,7 @@ export default function JobTrackerKanban({
                     isOver={overStage === "passed"}
                     onDelete={handleDelete}
                     onMoveToStage={handleMoveToStage}
+                    onSelectJob={setSelectedJobId}
                   />
                 </div>
               ) : (
@@ -1308,6 +1356,7 @@ export default function JobTrackerKanban({
             jobs={jobs}
             onDelete={handleDelete}
             onMoveToStage={handleMoveToStage}
+            onSelectJob={setSelectedJobId}
           />
         </>
       )}
