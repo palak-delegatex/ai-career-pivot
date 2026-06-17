@@ -14,6 +14,11 @@ import {
   Target,
   Search,
   Zap,
+  Shield,
+  Sparkles,
+  Info,
+  ExternalLink,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -68,11 +73,38 @@ interface MatchSummary {
   preferredTotal: number;
 }
 
+interface PlatformFormattingTip {
+  tip: string;
+  severity: "critical" | "warning" | "info";
+  reason: string;
+}
+
+interface PlatformInfo {
+  detected: string;
+  displayName: string;
+  confidence: "high" | "medium" | "low";
+  description: string;
+  signals: string[];
+  formattingTips: PlatformFormattingTip[];
+  bestPractices: string[];
+  avoidList: string[];
+  scoreAdjustmentNotes: string[];
+}
+
+interface OptimizeResult {
+  originalScore: number;
+  optimizedScore: number;
+  scoreImprovement: number;
+  optimizedContent: string;
+  changes: { section: string; changeType: string; before: string; after: string; reason: string }[];
+}
+
 interface ATSResult {
   overallScore: number;
   scoreLabel: string;
   formattingScore: number;
   keywordScore: number;
+  platform: PlatformInfo | null;
   formatIssues: FormatIssue[];
   keywordAnalysis: {
     foundKeywords: FoundKeyword[];
@@ -118,6 +150,18 @@ const MATCH_TYPE_LABEL = {
   exact: "Exact",
   variant: "Variant",
   semantic: "Semantic",
+};
+
+const CONFIDENCE_STYLE = {
+  high: "bg-emerald-900/30 border-emerald-700/40 text-emerald-300",
+  medium: "bg-amber-900/30 border-amber-700/40 text-amber-300",
+  low: "bg-slate-700/30 border-slate-600/40 text-slate-300",
+};
+
+const PLATFORM_TIP_STYLE = {
+  critical: "text-red-400 bg-red-900/20 border-red-700/30",
+  warning: "text-amber-400 bg-amber-900/20 border-amber-700/30",
+  info: "text-blue-400 bg-blue-900/20 border-blue-700/30",
 };
 
 // ── Components ───────────────────────────────────────────────────────────────
@@ -183,10 +227,15 @@ export default function ATSScoreClient() {
   const [phase, setPhase] = useState<Phase>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [jobUrl, setJobUrl] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [showJd, setShowJd] = useState(false);
   const [result, setResult] = useState<ATSResult | null>(null);
+  const [optimizeResult, setOptimizeResult] = useState<OptimizeResult | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState("");
   const [dragActive, setDragActive] = useState(false);
+  const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleFile(f: File) {
@@ -212,11 +261,18 @@ export default function ATSScoreClient() {
     if (!file) return;
     setPhase("loading");
     setError("");
+    setOptimizeResult(null);
 
     const formData = new FormData();
     formData.append("resume", file);
     if (jobDescription.trim()) {
       formData.append("jobDescription", jobDescription.trim());
+    }
+    if (jobUrl.trim()) {
+      formData.append("jobUrl", jobUrl.trim());
+    }
+    if (companyName.trim()) {
+      formData.append("companyName", companyName.trim());
     }
 
     try {
@@ -235,6 +291,41 @@ export default function ATSScoreClient() {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setPhase("upload");
     }
+  }
+
+  async function optimize() {
+    if (!file || !jobDescription.trim()) return;
+    setOptimizing(true);
+
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("jobDescription", jobDescription.trim());
+    if (jobUrl.trim()) formData.append("jobUrl", jobUrl.trim());
+    if (companyName.trim()) formData.append("companyName", companyName.trim());
+
+    try {
+      const res = await fetch("/api/ats-score/optimize", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Optimization failed");
+      }
+      const data: OptimizeResult = await res.json();
+      setOptimizeResult(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Optimization failed");
+    } finally {
+      setOptimizing(false);
+    }
+  }
+
+  function copyOptimized() {
+    if (!optimizeResult) return;
+    navigator.clipboard.writeText(optimizeResult.optimizedContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   if (phase === "loading") {
@@ -299,6 +390,76 @@ export default function ATSScoreClient() {
             </ol>
           </div>
         </div>
+
+        {/* Platform Detection */}
+        {result.platform && (
+          <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              <Shield className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-lg font-bold">ATS Platform Detected</h2>
+              <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${CONFIDENCE_STYLE[result.platform.confidence]}`}>
+                {result.platform.confidence} confidence
+              </span>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <div className="text-xl font-bold text-cyan-400 mb-1">{result.platform.displayName}</div>
+                <p className="text-sm text-slate-400 mb-3">{result.platform.description}</p>
+                {result.platform.scoreAdjustmentNotes.length > 0 && (
+                  <div className="space-y-1">
+                    {result.platform.scoreAdjustmentNotes.map((note, i) => (
+                      <div key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                        <Info className="w-3 h-3 text-cyan-400 mt-0.5 shrink-0" />
+                        {note}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Platform-specific formatting tips */}
+            {result.platform.formattingTips.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-slate-700/40">
+                <div className="text-sm font-semibold text-white mb-2">Platform-Specific Tips</div>
+                <div className="space-y-2">
+                  {result.platform.formattingTips.map((tip, i) => (
+                    <div key={i} className={`rounded-lg p-3 border ${PLATFORM_TIP_STYLE[tip.severity]}`}>
+                      <div className="text-sm font-medium">{tip.tip}</div>
+                      <div className="text-xs mt-1 opacity-75">{tip.reason}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Best practices and avoid list */}
+            <div className="mt-4 pt-4 border-t border-slate-700/40 grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs font-semibold text-emerald-400 mb-2">Best Practices</div>
+                <ul className="space-y-1">
+                  {result.platform.bestPractices.map((p, i) => (
+                    <li key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400 mt-0.5 shrink-0" />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-red-400 mb-2">Avoid</div>
+                <ul className="space-y-1">
+                  {result.platform.avoidList.map((a, i) => (
+                    <li key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
+                      <XCircle className="w-3 h-3 text-red-400 mt-0.5 shrink-0" />
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Sub-scores row */}
         <div className="grid grid-cols-4 gap-4 mb-8">
@@ -546,6 +707,114 @@ export default function ATSScoreClient() {
           </div>
         </section>
 
+        {/* One-Click Optimize */}
+        {jobDescription.trim() && (
+          <section className="mb-12">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+              One-Click Optimize
+              {result.platform && (
+                <span className="text-xs text-slate-400 font-normal">
+                  Optimized for {result.platform.displayName}
+                </span>
+              )}
+            </h2>
+            {!optimizeResult ? (
+              <div className="bg-gradient-to-r from-cyan-950/30 to-blue-950/30 border border-cyan-700/30 rounded-xl p-6 text-center">
+                <p className="text-sm text-slate-300 mb-4">
+                  AI will rewrite your resume to maximize the ATS match score
+                  {result.platform ? ` for ${result.platform.displayName}` : ""}, naturally
+                  incorporating missing keywords while preserving your experience.
+                </p>
+                <button
+                  onClick={optimize}
+                  disabled={optimizing}
+                  className="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-bold text-sm transition-colors shadow-lg shadow-cyan-900/30 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                >
+                  {optimizing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Optimizing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Optimize My Resume
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Score comparison */}
+                <div className="flex items-center gap-4 bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
+                  <div className="text-center flex-1">
+                    <div className="text-xs text-slate-400 mb-1">Original</div>
+                    <div className="text-2xl font-bold text-slate-300">{optimizeResult.originalScore}</div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-cyan-400" />
+                  <div className="text-center flex-1">
+                    <div className="text-xs text-slate-400 mb-1">Optimized</div>
+                    <div className="text-2xl font-bold text-cyan-400">{optimizeResult.optimizedScore}</div>
+                  </div>
+                  <div className="text-center flex-1 bg-emerald-900/20 border border-emerald-700/30 rounded-lg p-2">
+                    <div className="text-xs text-emerald-400 mb-1">Improvement</div>
+                    <div className="text-2xl font-bold text-emerald-400">+{optimizeResult.scoreImprovement}</div>
+                  </div>
+                </div>
+
+                {/* Changes made */}
+                {optimizeResult.changes.length > 0 && (
+                  <div>
+                    <div className="text-sm font-semibold text-white mb-2">Changes Made</div>
+                    <div className="space-y-3">
+                      {optimizeResult.changes.map((change, i) => (
+                        <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-semibold text-slate-300">{change.section}</span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-cyan-900/30 text-cyan-300 border border-cyan-700/30">
+                              {change.changeType.replace("_", " ")}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="flex-1 bg-red-950/20 border border-red-900/30 rounded-lg p-2.5">
+                              <div className="text-[10px] text-red-400 font-semibold mb-1">BEFORE</div>
+                              <p className="text-xs text-slate-300">{change.before}</p>
+                            </div>
+                            <ArrowRight className="w-3.5 h-3.5 text-slate-500 mt-3 shrink-0" />
+                            <div className="flex-1 bg-emerald-950/20 border border-emerald-900/30 rounded-lg p-2.5">
+                              <div className="text-[10px] text-emerald-400 font-semibold mb-1">AFTER</div>
+                              <p className="text-xs text-slate-300">{change.after}</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-2">{change.reason}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Copy optimized resume */}
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-white">Optimized Resume</span>
+                    <button
+                      onClick={copyOptimized}
+                      className="text-xs px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-medium transition-colors inline-flex items-center gap-1.5"
+                    >
+                      {copied ? <CheckCircle2 className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      {copied ? "Copied!" : "Copy to Clipboard"}
+                    </button>
+                  </div>
+                  <pre className="text-xs text-slate-300 bg-slate-900/50 rounded-lg p-4 max-h-64 overflow-y-auto whitespace-pre-wrap font-mono">
+                    {optimizeResult.optimizedContent}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
         <div className="flex gap-3 justify-center">
           <Link
             href="/resume-generator"
@@ -643,13 +912,35 @@ export default function ATSScoreClient() {
           {showJd ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
         {showJd && (
-          <textarea
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste the job posting here for keyword-specific scoring..."
-            rows={5}
-            className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-          />
+          <div className="space-y-3">
+            <textarea
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Paste the job posting here for keyword-specific scoring..."
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                value={jobUrl}
+                onChange={(e) => setJobUrl(e.target.value)}
+                placeholder="Job posting URL (helps detect ATS platform)"
+                className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Company name (e.g., Google, Amazon)"
+                className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <Shield className="w-3 h-3" />
+              Adding the URL or company name helps detect the ATS platform for more accurate scoring
+            </div>
+          </div>
         )}
 
         {error && <p className="text-red-400 text-sm">{error}</p>}

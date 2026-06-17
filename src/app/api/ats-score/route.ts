@@ -8,6 +8,14 @@ import {
   parseResumeIntoSections,
   type MatchRateBreakdown,
 } from "@/lib/ats-scoring";
+import { detectATSPlatform, type ATSDetectionResult } from "@/lib/ats-platform-detection";
+import {
+  getPlatformProfile,
+  getPlatformFormattingIssues,
+  adjustScoreForPlatform,
+  type PlatformProfile,
+  type PlatformFormattingTip,
+} from "@/lib/ats-platform-rules";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -57,6 +65,17 @@ export interface ATSScoreResult {
   scoreLabel: "Excellent" | "Good" | "Needs Work" | "Poor";
   formattingScore: number;
   keywordScore: number;
+  platform: {
+    detected: string;
+    displayName: string;
+    confidence: "high" | "medium" | "low";
+    description: string;
+    signals: string[];
+    formattingTips: PlatformFormattingTip[];
+    bestPractices: string[];
+    avoidList: string[];
+    scoreAdjustmentNotes: string[];
+  } | null;
   formatIssues: {
     issue: string;
     severity: "critical" | "warning" | "minor";
@@ -130,6 +149,8 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("resume") as File | null;
   const jobDescription = formData.get("jobDescription") as string | null;
+  const jobUrl = formData.get("jobUrl") as string | null;
+  const companyName = formData.get("companyName") as string | null;
 
   if (!file) {
     return NextResponse.json(
@@ -162,11 +183,17 @@ export async function POST(req: NextRequest) {
   const bytes = await file.arrayBuffer();
   const base64 = Buffer.from(bytes).toString("base64");
 
+  const platformDetection = detectATSPlatform({
+    jobUrl: jobUrl || undefined,
+    jobDescription: jobDescription || undefined,
+    companyName: companyName || undefined,
+  });
+
   try {
     if (jobDescription?.trim()) {
-      return await scoreWithJD(file, base64, bytes, jobDescription);
+      return await scoreWithJD(file, base64, bytes, jobDescription, platformDetection);
     } else {
-      return await scoreStandalone(file, base64, bytes);
+      return await scoreStandalone(file, base64, bytes, platformDetection);
     }
   } catch (err) {
     console.error("ATS scoring error:", err);
@@ -181,7 +208,8 @@ async function scoreWithJD(
   file: File,
   base64: string,
   bytes: ArrayBuffer,
-  jobDescription: string
+  jobDescription: string,
+  platformDetection: ATSDetectionResult
 ): Promise<NextResponse> {
   const JDKeywordsSchema = z.object({
     required: z.array(z.string()),
@@ -255,17 +283,59 @@ Provide:
   const jdKeywords = jdResult.output;
   const semanticMatches = semanticResult.output?.semanticKeywordMatches || [];
 
+  const profile = getPlatformProfile(platformDetection.platform);
   const breakdown = computeATSMatchBreakdown(resumeText, jdKeywords, {
     fileType: file.type,
     semanticMatches,
+    platformSectionWeights: profile.keywordStrategy.sectionWeightOverrides,
+    platformMatchTypeWeights: profile.keywordStrategy.matchTypeWeightOverrides,
   });
 
+  const platformFormatIssues = getPlatformFormattingIssues(
+    platformDetection.platform, breakdown.formattingIssues, file.type
+  );
+  const allFormatIssues = [...breakdown.formattingIssues, ...platformFormatIssues];
+
+  const sections = parseResumeIntoSections(resumeText);
+  const sectionNames = sections.map(s => s.normalizedName);
+  const adjusted = adjustScoreForPlatform(
+    platformDetection.platform,
+    breakdown.formattingScore,
+    breakdown.keywordScore,
+    sectionNames
+  );
+
+  const finalOverall = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedOverall
+    : breakdown.overallScore;
+  const finalFormatting = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedFormatting
+    : breakdown.formattingScore;
+  const finalKeyword = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedKeyword
+    : breakdown.keywordScore;
+
+  const platformInfo = platformDetection.platform !== "unknown"
+    ? {
+        detected: platformDetection.platform,
+        displayName: profile.displayName,
+        confidence: platformDetection.confidence,
+        description: profile.description,
+        signals: platformDetection.signals,
+        formattingTips: profile.formattingTips,
+        bestPractices: profile.bestPractices,
+        avoidList: profile.avoidList,
+        scoreAdjustmentNotes: adjusted.adjustmentNotes,
+      }
+    : null;
+
   const result: ATSScoreResult = {
-    overallScore: breakdown.overallScore,
-    scoreLabel: scoreLabel(breakdown.overallScore),
-    formattingScore: breakdown.formattingScore,
-    keywordScore: breakdown.keywordScore,
-    formatIssues: breakdown.formattingIssues.map(i => ({
+    overallScore: finalOverall,
+    scoreLabel: scoreLabel(finalOverall),
+    formattingScore: finalFormatting,
+    keywordScore: finalKeyword,
+    platform: platformInfo,
+    formatIssues: allFormatIssues.map(i => ({
       issue: i.issue,
       severity: i.severity,
       fix: i.fix,
@@ -320,7 +390,8 @@ Provide:
 async function scoreStandalone(
   file: File,
   base64: string,
-  bytes: ArrayBuffer
+  bytes: ArrayBuffer,
+  platformDetection: ATSDetectionResult
 ): Promise<NextResponse> {
   const resumeText = file.type === "application/pdf"
     ? await extractTextForAnalysis(file.type, base64, bytes)
@@ -381,18 +452,54 @@ Provide:
   };
 
   const sections = parseResumeIntoSections(resumeText);
+  const profile = getPlatformProfile(platformDetection.platform);
   const breakdown = computeATSMatchBreakdown(resumeText, jdKeywords, {
     fileType: file.type,
+    platformSectionWeights: profile.keywordStrategy.sectionWeightOverrides,
+    platformMatchTypeWeights: profile.keywordStrategy.matchTypeWeightOverrides,
   });
 
-  const overallScore = Math.round(formattingScore * 0.35 + breakdown.keywordScore * 0.65);
+  const platformFormatIssues = getPlatformFormattingIssues(
+    platformDetection.platform, formattingIssues, file.type
+  );
+  const allFormatIssues = [...formattingIssues, ...platformFormatIssues];
+
+  const sectionNames = sections.map(s => s.normalizedName);
+  const adjusted = adjustScoreForPlatform(
+    platformDetection.platform, formattingScore, breakdown.keywordScore, sectionNames
+  );
+
+  const overallScore = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedOverall
+    : Math.round(formattingScore * 0.35 + breakdown.keywordScore * 0.65);
+  const finalFormatting = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedFormatting
+    : formattingScore;
+  const finalKeyword = platformDetection.platform !== "unknown"
+    ? adjusted.adjustedKeyword
+    : breakdown.keywordScore;
+
+  const platformInfo = platformDetection.platform !== "unknown"
+    ? {
+        detected: platformDetection.platform,
+        displayName: profile.displayName,
+        confidence: platformDetection.confidence,
+        description: profile.description,
+        signals: platformDetection.signals,
+        formattingTips: profile.formattingTips,
+        bestPractices: profile.bestPractices,
+        avoidList: profile.avoidList,
+        scoreAdjustmentNotes: adjusted.adjustmentNotes,
+      }
+    : null;
 
   const result: ATSScoreResult = {
     overallScore,
     scoreLabel: scoreLabel(overallScore),
-    formattingScore,
-    keywordScore: breakdown.keywordScore,
-    formatIssues: formattingIssues.map(i => ({
+    formattingScore: finalFormatting,
+    keywordScore: finalKeyword,
+    platform: platformInfo,
+    formatIssues: allFormatIssues.map(i => ({
       issue: i.issue,
       severity: i.severity,
       fix: i.fix,

@@ -656,10 +656,14 @@ const BEST_SECTION_FOR_KEYWORD: Record<string, string> = {
 export function matchKeywordsAgainstResume(
   jdKeywords: JDKeywords,
   sections: ParsedSection[],
-  semanticMatches?: string[]
+  semanticMatches?: string[],
+  sectionWeights?: Record<string, number>,
+  matchTypeWeights?: Record<string, number>
 ): KeywordMatch[] {
   const results: KeywordMatch[] = [];
   const semanticSet = new Set((semanticMatches || []).map(s => normalizeForMatch(s)));
+  const secWeights = sectionWeights ?? SECTION_KEYWORD_WEIGHT;
+  const mtWeights = matchTypeWeights ?? MATCH_TYPE_WEIGHT;
 
   function processKeyword(keyword: string, category: "required" | "preferred" | "keyword") {
     const foundIn: string[] = [];
@@ -670,8 +674,8 @@ export function matchKeywordsAgainstResume(
       const { found, matchType } = findKeywordInText(keyword, section.content);
       if (found && matchType) {
         foundIn.push(section.name);
-        const sectionWeight = SECTION_KEYWORD_WEIGHT[section.normalizedName] ?? SECTION_KEYWORD_WEIGHT.unknown;
-        const typeWeight = MATCH_TYPE_WEIGHT[matchType];
+        const sectionWeight = secWeights[section.normalizedName] ?? secWeights.unknown ?? 0.4;
+        const typeWeight = mtWeights[matchType] ?? 1.0;
         const combinedWeight = sectionWeight * typeWeight;
         if (combinedWeight > bestWeight) {
           bestWeight = combinedWeight;
@@ -682,7 +686,7 @@ export function matchKeywordsAgainstResume(
 
     if (!bestMatchType && semanticSet.has(normalizeForMatch(keyword))) {
       bestMatchType = "semantic";
-      bestWeight = MATCH_TYPE_WEIGHT.semantic;
+      bestWeight = mtWeights.semantic ?? MATCH_TYPE_WEIGHT.semantic;
     }
 
     results.push({
@@ -788,11 +792,30 @@ export function computeATSMatchBreakdown(
   options?: {
     fileType?: string;
     semanticMatches?: string[];
+    platformSectionWeights?: Partial<Record<string, number>>;
+    platformMatchTypeWeights?: Partial<Record<string, number>>;
   }
 ): MatchRateBreakdown {
   const sections = parseResumeIntoSections(resumeText);
   const formattingIssues = detectFormattingIssues(resumeText, options?.fileType);
-  const keywordMatches = matchKeywordsAgainstResume(jdKeywords, sections, options?.semanticMatches);
+
+  const effectiveSectionWeights = { ...SECTION_KEYWORD_WEIGHT };
+  if (options?.platformSectionWeights) {
+    for (const [k, v] of Object.entries(options.platformSectionWeights)) {
+      if (v !== undefined) effectiveSectionWeights[k] = v;
+    }
+  }
+  const effectiveMatchWeights = { ...MATCH_TYPE_WEIGHT };
+  if (options?.platformMatchTypeWeights) {
+    for (const [k, v] of Object.entries(options.platformMatchTypeWeights)) {
+      if (v !== undefined) effectiveMatchWeights[k] = v;
+    }
+  }
+
+  const keywordMatches = matchKeywordsAgainstResume(
+    jdKeywords, sections, options?.semanticMatches,
+    effectiveSectionWeights, effectiveMatchWeights
+  );
   const sectionScores = computeSectionScores(sections, keywordMatches);
 
   const formattingScore = computeFormattingScore(formattingIssues);
