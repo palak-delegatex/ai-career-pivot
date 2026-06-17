@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
       strength_tier: computeTier(strengthScore),
       tags: Array.isArray(fields.tags) ? fields.tags : [],
       notes: fields.notes ?? "",
+      how_connected: fields.how_connected ?? null,
     })
     .select()
     .single();
@@ -119,6 +120,8 @@ export async function PATCH(req: NextRequest) {
   if (typeof updates.location === "string") allowed.location = updates.location;
   if (typeof updates.notes === "string") allowed.notes = updates.notes;
   if (Array.isArray(updates.tags)) allowed.tags = updates.tags;
+  if (typeof updates.how_connected === "string")
+    allowed.how_connected = updates.how_connected;
   if (typeof updates.strength_score === "number") {
     allowed.strength_score = Math.max(0, Math.min(100, updates.strength_score));
     allowed.strength_tier = computeTier(updates.strength_score);

@@ -23,6 +23,12 @@ import {
   Building2,
   Briefcase,
   X,
+  Link2,
+  UserPlus,
+  Activity,
+  BarChart3,
+  ArrowRight,
+  Trash2,
 } from "lucide-react";
 import {
   Sheet,
@@ -49,6 +55,7 @@ interface Contact {
   strength_tier: string;
   tags: string[];
   notes: string;
+  how_connected: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -78,6 +85,25 @@ interface Interaction {
   occurred_at: string;
 }
 
+interface JobLink {
+  id: string;
+  contact_id: string;
+  job_id: string;
+  role: string;
+  referral_status: string;
+  notes: string;
+  created_at: string;
+  contacts: { id: string; name: string; company: string | null; role: string | null; strength_tier: string } | null;
+  jobs: { id: string; role: string; company: string; stage: string } | null;
+}
+
+interface TrackedJob {
+  id: string;
+  role: string;
+  company: string;
+  stage: string;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
@@ -105,6 +131,42 @@ const INTERACTION_ICONS: Record<string, React.ReactNode> = {
   event: <Calendar className="w-3.5 h-3.5" />,
   note: <StickyNote className="w-3.5 h-3.5" />,
 };
+
+const ROLE_LABELS: Record<string, string> = {
+  referrer: "Referrer",
+  hiring_manager: "Hiring Manager",
+  recruiter: "Recruiter",
+  interviewer: "Interviewer",
+  insider: "Insider",
+};
+
+const REFERRAL_STATUS_STYLES: Record<string, { bg: string; text: string }> = {
+  none: { bg: "bg-slate-700/40", text: "text-slate-400" },
+  requested: { bg: "bg-amber-900/30", text: "text-amber-300" },
+  submitted: { bg: "bg-blue-900/30", text: "text-blue-300" },
+  accepted: { bg: "bg-emerald-900/30", text: "text-emerald-300" },
+  declined: { bg: "bg-red-900/30", text: "text-red-300" },
+};
+
+const HOW_CONNECTED_OPTIONS = [
+  "Former colleague",
+  "Met at conference",
+  "LinkedIn connection",
+  "Mutual friend intro",
+  "Cold outreach",
+  "Alumni network",
+  "Online community",
+  "Recruiter contact",
+  "Referral",
+  "Other",
+];
+
+const CADENCE_OPTIONS = [
+  { label: "7 days", days: 7 },
+  { label: "14 days", days: 14 },
+  { label: "30 days", days: 30 },
+  { label: "Custom", days: 0 },
+];
 
 function tierLabel(tier: string) {
   return tier.charAt(0).toUpperCase() + tier.slice(1);
@@ -149,6 +211,14 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -163,6 +233,8 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [jobLinks, setJobLinks] = useState<JobLink[]>([]);
+  const [activeTab, setActiveTab] = useState<"contacts" | "dashboard">("contacts");
 
   const fetchContacts = useCallback(async () => {
     const params = new URLSearchParams({ email: userEmail });
@@ -202,9 +274,20 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
     }
   };
 
+  const fetchJobLinks = async (contactId: string) => {
+    const res = await fetch(
+      `/api/contacts/job-links?email=${encodeURIComponent(userEmail)}&contactId=${contactId}`
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setJobLinks(data.links);
+    }
+  };
+
   const openContact = (c: Contact) => {
     setSelectedContact(c);
     fetchInteractions(c.id);
+    fetchJobLinks(c.id);
   };
 
   const handleReminderAction = async (
@@ -245,6 +328,25 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
         )
       : 0;
 
+  /* Tier distribution for dashboard */
+  const tierCounts = {
+    strong: contacts.filter((c) => c.strength_tier === "strong").length,
+    warm: contacts.filter((c) => c.strength_tier === "warm").length,
+    new: contacts.filter((c) => c.strength_tier === "new").length,
+    cold: contacts.filter((c) => c.strength_tier === "cold").length,
+  };
+
+  /* Recent activity for dashboard */
+  const recentContacts = contacts
+    .filter((c) => {
+      const daysSince = (Date.now() - new Date(c.updated_at).getTime()) / 86400000;
+      return daysSince <= 7;
+    }).length;
+
+  const overdueReminders = reminders.filter(
+    (r) => r.status === "pending" && dueStatus(r.due_date) === "overdue"
+  ).length;
+
   const FILTERS = [
     { label: "All", value: null },
     { label: "Strong", value: "strong" },
@@ -263,142 +365,187 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={<Users className="w-5 h-5 text-teal-400" />}
-          label="Total Contacts"
-          value={totalContacts}
-        />
-        <StatCard
-          icon={<Bell className="w-5 h-5 text-amber-400" />}
-          label="Follow-ups Due"
-          value={followUpsDue}
-        />
-        <StatCard
-          icon={<Handshake className="w-5 h-5 text-emerald-400" />}
-          label="Strong Connections"
-          value={strongConnections}
-        />
-        <StatCard
-          icon={<TrendingUp className="w-5 h-5 text-cyan-400" />}
-          label="Avg. Strength"
-          value={`${avgScore}%`}
-        />
+      {/* Tab Navigation */}
+      <div className="flex gap-1 p-1 bg-slate-800/60 border border-slate-700 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("contacts")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === "contacts"
+              ? "bg-teal-600 text-white"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <Users className="w-4 h-4" /> Contacts
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveTab("dashboard")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === "dashboard"
+              ? "bg-teal-600 text-white"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" /> Dashboard
+          </span>
+        </button>
       </div>
 
-      {/* Follow-up Reminders */}
-      {reminders.length > 0 && (
-        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-amber-400" />
-            Follow-up Reminders
-          </h3>
-          <div className="divide-y divide-slate-700/40">
-            {reminders.slice(0, 5).map((r) => {
-              const status = dueStatus(r.due_date);
-              return (
-                <div
-                  key={r.id}
-                  className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full shrink-0 ${DUE_DOT[status]}`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-200 truncate">
-                      {r.contacts?.name ?? "Unknown"}
-                    </p>
-                    <p className="text-xs text-slate-400 truncate">
-                      {r.description || "Follow up"}
-                    </p>
-                  </div>
-                  <span className={`text-xs shrink-0 ${DUE_STYLES[status]}`}>
-                    {relativeDate(r.due_date)}
-                  </span>
-                  <div className="flex gap-1.5 shrink-0">
-                    <button
-                      onClick={() => handleReminderAction(r.id, "done")}
-                      className="px-2.5 py-1 text-xs rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors"
-                    >
-                      Done
-                    </button>
-                    <button
-                      onClick={() => handleReminderAction(r.id, "snooze")}
-                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
-                    >
-                      Snooze
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Search + Filters + Actions */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search contacts..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
-          />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {FILTERS.map((f) => (
-            <button
-              key={f.label}
-              onClick={() => setActiveTier(f.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                activeTier === f.value
-                  ? "bg-teal-600 border-teal-500 text-white"
-                  : "bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-sm font-medium text-white transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Add
-          </button>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-medium text-slate-200 transition-colors"
-          >
-            <Upload className="w-4 h-4" /> Import
-          </button>
-        </div>
-      </div>
-
-      {/* Contact Cards Grid */}
-      {contacts.length === 0 ? (
-        <div className="text-center py-16">
-          <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">No contacts yet</p>
-          <p className="text-slate-500 text-xs mt-1">
-            Add a contact or import from LinkedIn to get started
-          </p>
-        </div>
+      {activeTab === "dashboard" ? (
+        <NetworkingDashboard
+          totalContacts={totalContacts}
+          tierCounts={tierCounts}
+          followUpsDue={followUpsDue}
+          overdueReminders={overdueReminders}
+          strongConnections={strongConnections}
+          avgScore={avgScore}
+          recentContacts={recentContacts}
+          reminders={reminders}
+          contacts={contacts}
+          onReminderAction={handleReminderAction}
+        />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {contacts.map((c) => (
-            <ContactCard
-              key={c.id}
-              contact={c}
-              onClick={() => openContact(c)}
+        <>
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              icon={<Users className="w-5 h-5 text-teal-400" />}
+              label="Total Contacts"
+              value={totalContacts}
             />
-          ))}
-        </div>
+            <StatCard
+              icon={<Bell className="w-5 h-5 text-amber-400" />}
+              label="Follow-ups Due"
+              value={followUpsDue}
+            />
+            <StatCard
+              icon={<Handshake className="w-5 h-5 text-emerald-400" />}
+              label="Strong Connections"
+              value={strongConnections}
+            />
+            <StatCard
+              icon={<TrendingUp className="w-5 h-5 text-cyan-400" />}
+              label="Avg. Strength"
+              value={`${avgScore}%`}
+            />
+          </div>
+
+          {/* Follow-up Reminders */}
+          {reminders.length > 0 && (
+            <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+              <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+                <Bell className="w-4 h-4 text-amber-400" />
+                Follow-up Reminders
+              </h3>
+              <div className="divide-y divide-slate-700/40">
+                {reminders.slice(0, 5).map((r) => {
+                  const status = dueStatus(r.due_date);
+                  return (
+                    <div
+                      key={r.id}
+                      className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 ${DUE_DOT[status]}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-slate-200 truncate">
+                          {r.contacts?.name ?? "Unknown"}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {r.description || "Follow up"}
+                        </p>
+                      </div>
+                      <span className={`text-xs shrink-0 ${DUE_STYLES[status]}`}>
+                        {relativeDate(r.due_date)}
+                      </span>
+                      <div className="flex gap-1.5 shrink-0">
+                        <button
+                          onClick={() => handleReminderAction(r.id, "done")}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => handleReminderAction(r.id, "snooze")}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                        >
+                          Snooze
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Search + Filters + Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search contacts..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.label}
+                  onClick={() => setActiveTier(f.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    activeTier === f.value
+                      ? "bg-teal-600 border-teal-500 text-white"
+                      : "bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-sm font-medium text-white transition-colors"
+              >
+                <Plus className="w-4 h-4" /> Add
+              </button>
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-medium text-slate-200 transition-colors"
+              >
+                <Upload className="w-4 h-4" /> Import
+              </button>
+            </div>
+          </div>
+
+          {/* Contact Cards Grid */}
+          {contacts.length === 0 ? (
+            <div className="text-center py-16">
+              <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">No contacts yet</p>
+              <p className="text-slate-500 text-xs mt-1">
+                Add a contact or import from LinkedIn to get started
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {contacts.map((c) => (
+                <ContactCard
+                  key={c.id}
+                  contact={c}
+                  onClick={() => openContact(c)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Add Contact Modal */}
@@ -432,18 +579,232 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
           if (!open) setSelectedContact(null);
         }}
       >
-        <SheetContent side="right" className="sm:max-w-md overflow-y-auto">
+        <SheetContent side="right" className="sm:max-w-lg overflow-y-auto">
           {selectedContact && (
             <ContactDetail
               contact={selectedContact}
               interactions={interactions}
+              jobLinks={jobLinks}
               onDelete={() => handleDeleteContact(selectedContact.id)}
               userEmail={userEmail}
               onInteractionAdded={() => fetchInteractions(selectedContact.id)}
+              onReminderAdded={fetchReminders}
+              onJobLinkChanged={() => fetchJobLinks(selectedContact.id)}
             />
           )}
         </SheetContent>
       </Sheet>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Networking Dashboard                                               */
+/* ------------------------------------------------------------------ */
+
+function NetworkingDashboard({
+  totalContacts,
+  tierCounts,
+  followUpsDue,
+  overdueReminders,
+  strongConnections,
+  avgScore,
+  recentContacts,
+  reminders,
+  contacts,
+  onReminderAction,
+}: {
+  totalContacts: number;
+  tierCounts: Record<string, number>;
+  followUpsDue: number;
+  overdueReminders: number;
+  strongConnections: number;
+  avgScore: number;
+  recentContacts: number;
+  reminders: Reminder[];
+  contacts: Contact[];
+  onReminderAction: (id: string, action: "done" | "snooze") => void;
+}) {
+  const maxTier = Math.max(...Object.values(tierCounts), 1);
+
+  const companyCounts: Record<string, number> = {};
+  contacts.forEach((c) => {
+    if (c.company) {
+      companyCounts[c.company] = (companyCounts[c.company] || 0) + 1;
+    }
+  });
+  const topCompanies = Object.entries(companyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  return (
+    <div className="space-y-6">
+      {/* Overview Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={<Users className="w-5 h-5 text-teal-400" />}
+          label="Total Contacts"
+          value={totalContacts}
+        />
+        <StatCard
+          icon={<Activity className="w-5 h-5 text-cyan-400" />}
+          label="Active This Week"
+          value={recentContacts}
+        />
+        <StatCard
+          icon={<AlertCircle className="w-5 h-5 text-red-400" />}
+          label="Overdue Follow-ups"
+          value={overdueReminders}
+        />
+        <StatCard
+          icon={<TrendingUp className="w-5 h-5 text-emerald-400" />}
+          label="Avg. Strength"
+          value={`${avgScore}%`}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pipeline Health — Tier Distribution */}
+        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-teal-400" />
+            Relationship Pipeline
+          </h3>
+          <div className="space-y-3">
+            {(["strong", "warm", "new", "cold"] as const).map((tier) => {
+              const tc = TIER_COLORS[tier];
+              const count = tierCounts[tier];
+              const pct = totalContacts > 0 ? Math.round((count / totalContacts) * 100) : 0;
+              return (
+                <div key={tier}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`text-xs font-medium ${tc.text}`}>
+                      {tierLabel(tier)}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {count} ({pct}%)
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-700">
+                    <div
+                      className={`h-full rounded-full ${tc.fill} transition-all`}
+                      style={{ width: `${(count / maxTier) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 pt-3 border-t border-slate-700/50">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-400">Strong connections</span>
+              <span className="text-sm font-semibold text-emerald-300">{strongConnections}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Companies */}
+        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-teal-400" />
+            Top Companies in Network
+          </h3>
+          {topCompanies.length === 0 ? (
+            <p className="text-xs text-slate-500">No company data yet</p>
+          ) : (
+            <div className="space-y-2.5">
+              {topCompanies.map(([company, count]) => (
+                <div key={company} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-slate-900/60 flex items-center justify-center text-[10px] font-semibold text-slate-300 shrink-0">
+                      {company.slice(0, 2).toUpperCase()}
+                    </div>
+                    <span className="text-sm text-slate-200 truncate">{company}</span>
+                  </div>
+                  <span className="text-xs text-slate-400 shrink-0">{count} contact{count !== 1 ? "s" : ""}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Upcoming Follow-ups Full List */}
+      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+          <Bell className="w-4 h-4 text-amber-400" />
+          All Pending Follow-ups ({followUpsDue} due soon)
+        </h3>
+        {reminders.length === 0 ? (
+          <p className="text-xs text-slate-500">No pending reminders</p>
+        ) : (
+          <div className="divide-y divide-slate-700/40">
+            {reminders.map((r) => {
+              const status = dueStatus(r.due_date);
+              return (
+                <div
+                  key={r.id}
+                  className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <div className={`w-2 h-2 rounded-full shrink-0 ${DUE_DOT[status]}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-200 truncate">
+                      {r.contacts?.name ?? "Unknown"}
+                      {r.contacts?.company && (
+                        <span className="text-slate-500"> at {r.contacts.company}</span>
+                      )}
+                    </p>
+                    <p className="text-xs text-slate-400 truncate">
+                      {r.description || "Follow up"} &middot; Due {formatDate(r.due_date)}
+                    </p>
+                  </div>
+                  <span className={`text-xs shrink-0 ${DUE_STYLES[status]}`}>
+                    {relativeDate(r.due_date)}
+                  </span>
+                  <div className="flex gap-1.5 shrink-0">
+                    <button
+                      onClick={() => onReminderAction(r.id, "done")}
+                      className="px-2.5 py-1 text-xs rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors"
+                    >
+                      Done
+                    </button>
+                    <button
+                      onClick={() => onReminderAction(r.id, "snooze")}
+                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                    >
+                      Snooze
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Networking Activity Summary */}
+      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-cyan-400" />
+          Networking Health
+        </h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-slate-100">{recentContacts}</p>
+            <p className="text-xs text-slate-400">Active this week</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-slate-100">{followUpsDue}</p>
+            <p className="text-xs text-slate-400">Follow-ups due</p>
+          </div>
+          <div className="text-center">
+            <p className={`text-2xl font-bold ${avgScore >= 50 ? "text-emerald-300" : avgScore >= 25 ? "text-amber-300" : "text-red-300"}`}>
+              {avgScore >= 50 ? "Healthy" : avgScore >= 25 ? "Growing" : "Needs Work"}
+            </p>
+            <p className="text-xs text-slate-400">Network status</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -509,6 +870,14 @@ function ContactCard({
         )}
       </div>
 
+      {/* How Connected */}
+      {contact.how_connected && (
+        <p className="text-xs text-slate-500 mb-2 flex items-center gap-1">
+          <UserPlus className="w-3 h-3" />
+          {contact.how_connected}
+        </p>
+      )}
+
       {/* Strength Bar */}
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
@@ -555,22 +924,34 @@ function ContactCard({
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Contact Detail (Enhanced)                                          */
+/* ------------------------------------------------------------------ */
+
 function ContactDetail({
   contact,
   interactions,
+  jobLinks,
   onDelete,
   userEmail,
   onInteractionAdded,
+  onReminderAdded,
+  onJobLinkChanged,
 }: {
   contact: Contact;
   interactions: Interaction[];
+  jobLinks: JobLink[];
   onDelete: () => void;
   userEmail: string;
   onInteractionAdded: () => void;
+  onReminderAdded: () => void;
+  onJobLinkChanged: () => void;
 }) {
   const [addingInteraction, setAddingInteraction] = useState(false);
   const [interType, setInterType] = useState("note");
   const [interDesc, setInterDesc] = useState("");
+  const [showReminderForm, setShowReminderForm] = useState(false);
+  const [showLinkJobForm, setShowLinkJobForm] = useState(false);
 
   const tier = TIER_COLORS[contact.strength_tier] ?? TIER_COLORS.new;
 
@@ -589,6 +970,24 @@ function ContactDetail({
     setInterDesc("");
     setAddingInteraction(false);
     onInteractionAdded();
+  };
+
+  const handleDeleteJobLink = async (linkId: string) => {
+    await fetch("/api/contacts/job-links", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: linkId, email: userEmail }),
+    });
+    onJobLinkChanged();
+  };
+
+  const handleUpdateReferralStatus = async (linkId: string, status: string) => {
+    await fetch("/api/contacts/job-links", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: linkId, email: userEmail, referral_status: status }),
+    });
+    onJobLinkChanged();
   };
 
   return (
@@ -624,6 +1023,9 @@ function ContactDetail({
           {contact.email && <InfoRow icon={<Mail />} value={contact.email} />}
           {contact.linkedin_url && (
             <InfoRow icon={<ExternalLink />} value="LinkedIn Profile" href={contact.linkedin_url} />
+          )}
+          {contact.how_connected && (
+            <InfoRow icon={<UserPlus />} value={contact.how_connected} />
           )}
         </div>
 
@@ -672,6 +1074,113 @@ function ContactDetail({
             </p>
           </div>
         )}
+
+        {/* Follow-up Reminder Section */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-slate-400 flex items-center gap-1">
+              <Bell className="w-3 h-3" /> Follow-up Reminders
+            </p>
+            <button
+              onClick={() => setShowReminderForm(!showReminderForm)}
+              className="text-xs text-teal-400 hover:text-teal-300"
+            >
+              {showReminderForm ? "Cancel" : "+ Schedule"}
+            </button>
+          </div>
+
+          {showReminderForm && (
+            <AddReminderForm
+              userEmail={userEmail}
+              contactId={contact.id}
+              onAdded={() => {
+                setShowReminderForm(false);
+                onReminderAdded();
+              }}
+            />
+          )}
+        </div>
+
+        {/* Linked Jobs Section */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-slate-400 flex items-center gap-1">
+              <Link2 className="w-3 h-3" /> Linked Applications
+            </p>
+            <button
+              onClick={() => setShowLinkJobForm(!showLinkJobForm)}
+              className="text-xs text-teal-400 hover:text-teal-300"
+            >
+              {showLinkJobForm ? "Cancel" : "+ Link Job"}
+            </button>
+          </div>
+
+          {showLinkJobForm && (
+            <LinkJobForm
+              userEmail={userEmail}
+              contactId={contact.id}
+              onLinked={() => {
+                setShowLinkJobForm(false);
+                onJobLinkChanged();
+              }}
+            />
+          )}
+
+          {jobLinks.length > 0 && (
+            <div className="space-y-2">
+              {jobLinks.map((link) => (
+                <div
+                  key={link.id}
+                  className="bg-slate-900/60 border border-slate-700 rounded-xl p-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm text-slate-200 truncate">
+                        {link.jobs?.role ?? "Unknown Role"}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate">
+                        {link.jobs?.company ?? "Unknown Company"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteJobLink(link.id)}
+                      className="text-slate-500 hover:text-red-400 shrink-0"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="px-2 py-0.5 rounded-full bg-slate-700/60 text-slate-300 text-xs">
+                      {ROLE_LABELS[link.role] ?? link.role}
+                    </span>
+                    <select
+                      value={link.referral_status}
+                      onChange={(e) => handleUpdateReferralStatus(link.id, e.target.value)}
+                      className={`px-2 py-0.5 rounded-full text-xs border-0 cursor-pointer ${
+                        REFERRAL_STATUS_STYLES[link.referral_status]?.bg ?? "bg-slate-700/40"
+                      } ${REFERRAL_STATUS_STYLES[link.referral_status]?.text ?? "text-slate-400"}`}
+                    >
+                      <option value="none">No Referral</option>
+                      <option value="requested">Requested</option>
+                      <option value="submitted">Submitted</option>
+                      <option value="accepted">Accepted</option>
+                      <option value="declined">Declined</option>
+                    </select>
+                  </div>
+                  {link.jobs?.stage && (
+                    <p className="text-xs text-slate-500 mt-1.5">
+                      Application: {link.jobs.stage.replace("_", " ")}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {jobLinks.length === 0 && !showLinkJobForm && (
+            <p className="text-xs text-slate-500">No linked applications</p>
+          )}
+        </div>
 
         {/* Activity Timeline */}
         <div>
@@ -756,6 +1265,201 @@ function ContactDetail({
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Add Reminder Form (with cadence presets)                           */
+/* ------------------------------------------------------------------ */
+
+function AddReminderForm({
+  userEmail,
+  contactId,
+  onAdded,
+}: {
+  userEmail: string;
+  contactId: string;
+  onAdded: () => void;
+}) {
+  const [description, setDescription] = useState("");
+  const [cadence, setCadence] = useState(7);
+  const [customDays, setCustomDays] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    const days = cadence === 0 ? parseInt(customDays) || 7 : cadence;
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + days);
+
+    setSaving(true);
+    await fetch("/api/contacts/reminders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: userEmail,
+        contactId,
+        description: description || `Follow up in ${days} days`,
+        due_date: dueDate.toISOString(),
+      }),
+    });
+    setSaving(false);
+    onAdded();
+  };
+
+  return (
+    <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 mb-3 space-y-3">
+      <div>
+        <label className="block text-xs text-slate-400 mb-1.5">Follow-up Cadence</label>
+        <div className="flex gap-1.5 flex-wrap">
+          {CADENCE_OPTIONS.map((opt) => (
+            <button
+              key={opt.days}
+              onClick={() => setCadence(opt.days)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                cadence === opt.days
+                  ? "bg-teal-600 text-white"
+                  : "bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {cadence === 0 && (
+        <input
+          type="number"
+          placeholder="Days..."
+          value={customDays}
+          onChange={(e) => setCustomDays(e.target.value)}
+          min="1"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500"
+        />
+      )}
+
+      <input
+        type="text"
+        placeholder="Reminder note (optional)..."
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500"
+      />
+
+      <button
+        onClick={handleSubmit}
+        disabled={saving}
+        className="w-full py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-xs text-white font-medium transition-colors"
+      >
+        {saving ? "Scheduling..." : `Schedule Follow-up`}
+      </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Link Job Form                                                      */
+/* ------------------------------------------------------------------ */
+
+function LinkJobForm({
+  userEmail,
+  contactId,
+  onLinked,
+}: {
+  userEmail: string;
+  contactId: string;
+  onLinked: () => void;
+}) {
+  const [jobs, setJobs] = useState<TrackedJob[]>([]);
+  const [selectedJob, setSelectedJob] = useState("");
+  const [role, setRole] = useState("referrer");
+  const [saving, setSaving] = useState(false);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const res = await fetch(`/api/jobs?email=${encodeURIComponent(userEmail)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setJobs(data.jobs ?? []);
+      }
+      setLoadingJobs(false);
+    };
+    fetchJobs();
+  }, [userEmail]);
+
+  const handleSubmit = async () => {
+    if (!selectedJob) return;
+    setSaving(true);
+    await fetch("/api/contacts/job-links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: userEmail,
+        contactId,
+        jobId: selectedJob,
+        role,
+      }),
+    });
+    setSaving(false);
+    onLinked();
+  };
+
+  if (loadingJobs) {
+    return (
+      <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 mb-3">
+        <p className="text-xs text-slate-500">Loading jobs...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 mb-3 space-y-2">
+      {jobs.length === 0 ? (
+        <p className="text-xs text-slate-500">
+          No tracked jobs found. Add jobs in the Job Tracker first.
+        </p>
+      ) : (
+        <>
+          <select
+            value={selectedJob}
+            onChange={(e) => setSelectedJob(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200"
+          >
+            <option value="">Select a job...</option>
+            {jobs.map((j) => (
+              <option key={j.id} value={j.id}>
+                {j.role} at {j.company} ({j.stage.replace("_", " ")})
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200"
+          >
+            <option value="referrer">Referrer</option>
+            <option value="hiring_manager">Hiring Manager</option>
+            <option value="recruiter">Recruiter</option>
+            <option value="interviewer">Interviewer</option>
+            <option value="insider">Insider</option>
+          </select>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!selectedJob || saving}
+            className="w-full py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-xs text-white font-medium transition-colors"
+          >
+            {saving ? "Linking..." : "Link to Application"}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Shared UI                                                          */
+/* ------------------------------------------------------------------ */
+
 function InfoRow({
   icon,
   value,
@@ -801,6 +1505,7 @@ function AddContactModal({
     role: "",
     linkedin_url: "",
     location: "",
+    how_connected: "",
     tags: "",
     notes: "",
   });
@@ -821,6 +1526,7 @@ function AddContactModal({
         role: form.role || undefined,
         linkedin_url: form.linkedin_url || undefined,
         location: form.location || undefined,
+        how_connected: form.how_connected || undefined,
         tags: form.tags
           ? form.tags.split(",").map((t) => t.trim()).filter(Boolean)
           : [],
@@ -875,6 +1581,22 @@ function AddContactModal({
             value={form.location}
             onChange={(v) => setForm((f) => ({ ...f, location: v }))}
           />
+
+          {/* How Connected */}
+          <div>
+            <label className="block text-xs text-slate-400 mb-1">How Connected</label>
+            <select
+              value={form.how_connected}
+              onChange={(e) => setForm((f) => ({ ...f, how_connected: e.target.value }))}
+              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-teal-500"
+            >
+              <option value="">Select...</option>
+              {HOW_CONNECTED_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+
           <ModalInput
             label="Tags (comma-separated)"
             value={form.tags}
@@ -993,7 +1715,7 @@ function ImportModal({
             <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-2">
               <p className="text-xs text-slate-400">How to export:</p>
               <ol className="text-xs text-slate-300 space-y-1 list-decimal list-inside">
-                <li>Go to LinkedIn Settings & Privacy</li>
+                <li>Go to LinkedIn Settings &amp; Privacy</li>
                 <li>Select &quot;Get a copy of your data&quot;</li>
                 <li>Choose &quot;Connections&quot; and request archive</li>
                 <li>Download and upload the Connections.csv file</li>
