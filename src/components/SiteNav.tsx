@@ -28,6 +28,7 @@ const NAV_LINKS = [
   { href: "/pricing", label: "Pricing" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/dashboard", label: "My Roadmaps" },
+  { href: "/career-path", label: "Career Paths" },
   { href: "/job-tracker", label: "Job Tracker" },
   { href: "/auto-apply", label: "Auto-Apply" },
   { href: "/networking", label: "Networking" },
