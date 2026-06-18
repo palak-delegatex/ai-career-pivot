@@ -2,8 +2,6 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { getAllPosts } from "@/lib/blog";
-import { comparisons } from "@/content/comparisons";
-import { getAllResearchSlugs } from "@/content/research";
 
 const BASE_URL = "https://ai-career-pivot.com";
 
@@ -90,24 +88,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     ...toolPages,
-    {
-      url: `${BASE_URL}/tools`,
-      lastModified: pageLastModified("tools"),
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    ...comparisons.map((c) => ({
-      url: `${BASE_URL}/compare/${c.slug}`,
-      lastModified: new Date(c.lastModified),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    })),
-    ...getAllResearchSlugs().map((slug) => ({
-      url: `${BASE_URL}/research/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    })),
     {
       url: `${BASE_URL}/free`,
       lastModified: pageLastModified("free"),
