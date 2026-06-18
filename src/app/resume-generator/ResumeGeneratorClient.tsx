@@ -13,9 +13,11 @@ import {
   Download,
   Pencil,
   Save,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
 import { downloadPdf } from "@/lib/pdf-download";
+import RealtimeATSPanel from "@/components/RealtimeATSPanel";
 
 type Mode = "resume" | "cover-letter";
 type Phase = "setup" | "generating" | "done";
@@ -102,6 +104,7 @@ export default function ResumeGeneratorClient() {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showAtsPanel, setShowAtsPanel] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -253,12 +256,15 @@ export default function ResumeGeneratorClient() {
   }
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
+  const liveResumeText = editing ? editContent : output;
+  const hasJd = jobDescription.trim().length >= 20;
+  const showAtsSidebar = mode === "resume" && hasJd && showAtsPanel;
 
   if (phase === "generating" || phase === "done") {
     return (
       <main className="flex flex-col h-[calc(100vh-72px)]">
         <header className="shrink-0 border-b border-slate-700/60 bg-slate-900/80 backdrop-blur-sm px-4 py-3">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               {mode === "resume" ? (
                 <FileText className="w-5 h-5 text-teal-400" />
@@ -271,7 +277,7 @@ export default function ResumeGeneratorClient() {
                 </h1>
                 <p className="text-xs text-slate-400">
                   {displayRole}
-                  {jobDescription.trim() && " · JD-tailored"}
+                  {hasJd && " · JD-tailored"}
                   {mode === "cover-letter" && ` · ${tone}`}
                   {saving && " · Saving..."}
                 </p>
@@ -280,6 +286,19 @@ export default function ResumeGeneratorClient() {
             <div className="flex items-center gap-2">
               {phase === "done" && (
                 <>
+                  {mode === "resume" && hasJd && (
+                    <button
+                      onClick={() => setShowAtsPanel(!showAtsPanel)}
+                      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                        showAtsPanel
+                          ? "text-purple-400 bg-purple-900/20 hover:bg-purple-900/30"
+                          : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      <Target className="w-3.5 h-3.5" />
+                      ATS Score
+                    </button>
+                  )}
                   {!editing && (
                     <button
                       onClick={startEditing}
@@ -333,59 +352,76 @@ export default function ResumeGeneratorClient() {
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-6 py-8">
-            <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
-              {editing ? (
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
-                />
-              ) : output ? (
-                renderMarkdownBasic(output)
-              ) : (
-                <div className="flex items-center justify-center h-48">
-                  <Loader2 className="w-6 h-6 text-teal-400 animate-spin" />
+          <div className={`mx-auto px-4 py-8 ${showAtsSidebar ? "max-w-7xl" : "max-w-4xl"}`}>
+            <div className={showAtsSidebar ? "grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6" : ""}>
+              {/* Editor column */}
+              <div>
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
+                  {editing ? (
+                    <textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
+                    />
+                  ) : output ? (
+                    renderMarkdownBasic(output)
+                  ) : (
+                    <div className="flex items-center justify-center h-48">
+                      <Loader2 className="w-6 h-6 text-teal-400 animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {phase === "done" && !editing && (
+                  <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                    <button
+                      onClick={switchMode}
+                      className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                        mode === "resume"
+                          ? "bg-purple-600 hover:bg-purple-500"
+                          : "bg-teal-600 hover:bg-teal-500"
+                      }`}
+                    >
+                      {mode === "resume"
+                        ? "Now Generate Cover Letter →"
+                        : "Now Generate Resume →"}
+                    </button>
+                    {mode === "resume" && (
+                      <Link
+                        href="/cover-letter"
+                        className="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-600 font-semibold text-sm transition-colors"
+                      >
+                        Create Cover Letter
+                      </Link>
+                    )}
+                    <Link
+                      href="/ats-score"
+                      className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"
+                    >
+                      Check ATS Score
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* ATS Scoring sidebar */}
+              {showAtsSidebar && (
+                <div className="hidden lg:block">
+                  <div className="sticky top-4">
+                    <RealtimeATSPanel
+                      resumeText={liveResumeText}
+                      jobDescription={jobDescription}
+                    />
+                  </div>
                 </div>
               )}
             </div>
-
-            {phase === "done" && !editing && (
-              <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={switchMode}
-                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                    mode === "resume"
-                      ? "bg-purple-600 hover:bg-purple-500"
-                      : "bg-teal-600 hover:bg-teal-500"
-                  }`}
-                >
-                  {mode === "resume"
-                    ? "Now Generate Cover Letter →"
-                    : "Now Generate Resume →"}
-                </button>
-                {mode === "resume" && (
-                  <Link
-                    href="/cover-letter"
-                    className="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-600 font-semibold text-sm transition-colors"
-                  >
-                    Create Cover Letter
-                  </Link>
-                )}
-                <Link
-                  href="/ats-score"
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"
-                >
-                  Check ATS Score
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
-                >
-                  Dashboard
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </main>
