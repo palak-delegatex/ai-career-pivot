@@ -29,8 +29,10 @@ const NAV_LINKS = [
   { href: "/how-it-works", label: "How It Works" },
   { href: "/dashboard", label: "My Roadmaps" },
   { href: "/job-tracker", label: "Job Tracker" },
+  { href: "/auto-apply", label: "Auto-Apply" },
   { href: "/networking", label: "Networking" },
   { href: "/cover-letter", label: "Cover Letter" },
+  { href: "/linkedin-import", label: "LinkedIn Import" },
   { href: "/linkedin-optimizer", label: "LinkedIn" },
   { href: "/salary-negotiation", label: "Salary Coach" },
 ] as const;
