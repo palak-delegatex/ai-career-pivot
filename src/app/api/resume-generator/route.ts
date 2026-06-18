@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { getTemplateConfig } from "@/lib/resume-templates";
 
 export async function POST(req: NextRequest) {
   const {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     mode: "resume" | "cover-letter";
     targetRole: string;
     jobDescription?: string;
-    template?: "professional" | "modern" | "minimal";
+    template?: string;
     tone?: "professional" | "conversational" | "bold";
     keyPoints?: string[];
     profile: {
@@ -90,14 +91,10 @@ function buildResumePrompt(
   targetRole: string,
   profile: string,
   jdSection: string,
-  template?: "professional" | "modern" | "minimal"
+  template?: string
 ): string {
-  const templateInstructions = {
-    professional: "Use a traditional, corporate-friendly format with clear section dividers. Formal language, conservative structure.",
-    modern: "Use a contemporary layout with subtle stylistic touches. Slightly more personality in language while staying professional.",
-    minimal: "Use an ultra-clean, streamlined format. Short bullet points, no filler, maximum information density.",
-  };
-  const styleGuide = templateInstructions[template ?? "professional"];
+  const config = getTemplateConfig(template ?? "modern");
+  const styleGuide = config.aiPrompt;
 
   return `You are a professional resume writer who specializes in career pivots and ATS optimization. Generate a complete, ATS-optimized resume for this candidate targeting a ${targetRole} position.
 

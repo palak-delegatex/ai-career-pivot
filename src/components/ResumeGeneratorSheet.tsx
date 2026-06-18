@@ -23,8 +23,8 @@ import { FileText, Download, Copy, RefreshCw, CheckCircle2, GripVertical } from 
 import type { PivotPlan, UserProfile, SkillGap } from "@/lib/intake";
 import { saveDocument, updateDocumentStatus } from "@/lib/document-store";
 import { downloadPdf } from "@/lib/pdf-download";
-
-type Template = "professional" | "modern" | "minimal";
+import TemplateGallery from "./TemplateGallery";
+import { type TemplateKey } from "@/lib/resume-templates";
 
 interface ResumeGeneratorSheetProps {
   plan: PivotPlan;
@@ -48,12 +48,6 @@ const TRANSFER_STYLES = {
   new: { label: "New Skill", className: "bg-red-900/30 border-red-600/30 text-red-300" },
 };
 
-const TEMPLATES: { key: Template; name: string; desc: string }[] = [
-  { key: "professional", name: "Professional", desc: "Clean ATS-friendly layout" },
-  { key: "modern", name: "Modern", desc: "Contemporary with subtle design" },
-  { key: "minimal", name: "Minimal", desc: "Streamlined and concise" },
-];
-
 export default function ResumeGeneratorSheet({ plan, profile, children }: ResumeGeneratorSheetProps) {
   const allSkills = [
     ...profile.transferableSkills.map((s) => ({ skill: s, category: "direct" as const })),
@@ -70,7 +64,7 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
   const [includedExperience, setIncludedExperience] = useState<Set<number>>(
     () => new Set(profile.experience.map((_, i) => i))
   );
-  const [template, setTemplate] = useState<Template>("professional");
+  const [template, setTemplate] = useState<TemplateKey>("modern");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -169,6 +163,7 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
             content: result,
             targetRole: plan.targetRole,
             name: profile.name,
+            template,
           }),
         },
         `Resume_${plan.targetRole.replace(/\s+/g, "_")}.pdf`,
@@ -293,27 +288,11 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
                 <AccordionItem value="style">
                   <AccordionTrigger>Style &amp; Format</AccordionTrigger>
                   <AccordionContent>
-                    <div className="grid grid-cols-3 gap-3">
-                      {TEMPLATES.map((t) => (
-                        <button
-                          key={t.key}
-                          onClick={() => setTemplate(t.key)}
-                          className={`p-3 rounded-lg border text-left transition-all ${
-                            template === t.key
-                              ? "border-teal-500 bg-teal-900/20"
-                              : "border-slate-700 bg-slate-800/40 hover:border-slate-600"
-                          }`}
-                        >
-                          <div className="w-full aspect-[3/4] rounded bg-slate-700/50 mb-2 flex items-center justify-center">
-                            <FileText className={`h-6 w-6 ${template === t.key ? "text-teal-400" : "text-slate-500"}`} />
-                          </div>
-                          <p className={`text-xs font-medium ${template === t.key ? "text-teal-300" : "text-slate-400"}`}>
-                            {t.name}
-                          </p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">{t.desc}</p>
-                        </button>
-                      ))}
-                    </div>
+                    <TemplateGallery
+                      selected={template}
+                      onSelect={setTemplate}
+                      compact
+                    />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

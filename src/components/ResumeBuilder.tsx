@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import type { PivotPlan, UserProfile, SkillGap } from "@/lib/intake";
 import type { ResumeVersion } from "./ResumeVersionList";
-
-type Template = "professional" | "modern" | "minimal";
+import TemplateGallery from "./TemplateGallery";
+import { type TemplateKey } from "@/lib/resume-templates";
 
 function skillTransferCategory(gap: SkillGap): "direct" | "partial" | "new" {
   if (gap.transferCategory === "direct-transfer") return "direct";
@@ -50,12 +50,6 @@ const TRANSFER_STYLES = {
   },
 };
 
-const TEMPLATES: { key: Template; name: string; desc: string }[] = [
-  { key: "professional", name: "Professional", desc: "Clean ATS-friendly layout" },
-  { key: "modern", name: "Modern", desc: "Contemporary with subtle design" },
-  { key: "minimal", name: "Minimal", desc: "Streamlined and concise" },
-];
-
 interface ResumeBuilderProps {
   profile: UserProfile;
   plan: PivotPlan;
@@ -64,7 +58,7 @@ interface ResumeBuilderProps {
     name: string;
     target_role: string;
     target_company: string;
-    template: Template;
+    template: string;
     enabled_skills: string[];
     enabled_experience_indices: number[];
     sections: Record<string, boolean>;
@@ -80,7 +74,7 @@ function renderPreview(
   selectedSkills: Set<string>,
   includedExperience: Set<number>,
   sections: Record<string, boolean>,
-  template: Template,
+  template: string,
   versionName: string
 ): string {
   const lines: string[] = [];
@@ -176,8 +170,8 @@ export default function ResumeBuilder({
   const [targetCompany, setTargetCompany] = useState(
     version?.target_company || ""
   );
-  const [template, setTemplate] = useState<Template>(
-    (version?.template as Template) || "professional"
+  const [template, setTemplate] = useState<TemplateKey>(
+    (version?.template as TemplateKey) || "modern"
   );
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
     () =>
@@ -309,24 +303,11 @@ export default function ResumeBuilder({
               <label className="text-xs text-slate-400 mb-2 block">
                 Template
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {TEMPLATES.map((t) => (
-                  <button
-                    key={t.key}
-                    onClick={() => setTemplate(t.key)}
-                    className={`p-3 rounded-lg border text-left transition-all ${
-                      template === t.key
-                        ? "bg-teal-900/30 border-teal-600/50 ring-1 ring-teal-500/30"
-                        : "bg-slate-800/40 border-slate-700/50 hover:border-slate-600"
-                    }`}
-                  >
-                    <span className="text-xs font-medium text-slate-200 block">
-                      {t.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500">{t.desc}</span>
-                  </button>
-                ))}
-              </div>
+              <TemplateGallery
+                selected={template}
+                onSelect={setTemplate}
+                compact
+              />
             </div>
 
             {/* Section toggles */}
