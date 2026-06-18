@@ -285,7 +285,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
             <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
             <Link
-              href="/pricing"
+              href="/get-started"
               className="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
               Get Started
@@ -376,12 +376,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           >
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/pricing"
-                onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero", destination: "/pricing" })}
+                href="/get-started"
+                onClick={() => trackCtaClicked({ cta_text: "See My Career Paths — Free", cta_location: "hero", destination: "/get-started" })}
                 onMouseEnter={handleHeroCtaHover}
                 className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
               >
-                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $19 →</span>
+                <span className="relative z-10">See My Career Paths — Free →</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
@@ -394,14 +394,14 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <Link
-                href="/free"
-                onClick={() => trackCtaClicked({ cta_text: "Try Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free" })}
-                className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
+                href="/pricing"
+                onClick={() => trackCtaClicked({ cta_text: "Or get the full report — $19", cta_location: "hero", destination: "/pricing" })}
+                className="text-sm text-slate-400 hover:text-slate-300 underline underline-offset-2 transition-colors"
               >
-                Or try the free skill-gap snapshot — no payment required →
+                Or skip ahead and get the full report — $19
               </Link>
               <p className="text-slate-500 text-sm">
-                Takes 3 minutes · No subscription · Full roadmap yours to keep
+                Takes under 60 seconds · No subscription · Full roadmap yours to keep
               </p>
               <p className="text-amber-400/80 text-xs font-medium">
                 🔥 83 people viewed this page today

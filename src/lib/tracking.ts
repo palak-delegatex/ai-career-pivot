@@ -136,6 +136,23 @@ export function trackQuickPivotGenerated(props: { paths_count: number; top_match
   capture("quick_pivot_generated", props);
 }
 
+// Free snapshot funnel
+export function trackFreeSnapshotStarted(props: { source: "linkedin" | "resume" | "both" }) {
+  capture("free_snapshot_started", props);
+}
+
+export function trackFreeSnapshotCompleted(props: { paths_count: number; top_match_score: number; source: "linkedin" | "resume" | "both" }) {
+  capture("free_snapshot_completed", props);
+}
+
+export function trackFreeSnapshotEmailCaptured(props: { has_snapshot: boolean }) {
+  capture("free_snapshot_email_captured", props);
+}
+
+export function trackFreeSnapshotUpgradeClicked(props: { cta_location: string; top_match_score?: number }) {
+  capture("free_snapshot_upgrade_clicked", props);
+}
+
 // Referral
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");

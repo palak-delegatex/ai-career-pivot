@@ -5,11 +5,18 @@ import { motion } from "framer-motion";
 interface StepIndicatorProps {
   steps: string[];
   currentStep: number;
+  estimatedTime?: string;
 }
 
-export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+export function StepIndicator({ steps, currentStep, estimatedTime }: StepIndicatorProps) {
   return (
-    <div className="flex items-center justify-center gap-0 w-full max-w-md mx-auto mb-10">
+    <div className="w-full max-w-md mx-auto mb-10">
+      {estimatedTime && (
+        <p className="text-center text-xs text-slate-500 mb-3">
+          Estimated time: {estimatedTime}
+        </p>
+      )}
+      <div className="flex items-center justify-center gap-0 w-full">
       {steps.map((label, i) => {
         const completed = i < currentStep;
         const active = i === currentStep;
@@ -87,6 +94,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
           </div>
         );
       })}
+    </div>
     </div>
   );
 }

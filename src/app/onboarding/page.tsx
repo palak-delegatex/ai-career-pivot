@@ -39,7 +39,7 @@ function extractLinkedinUsername(url: string): string | null {
   return match ? decodeURIComponent(match[1]).replace(/-/g, " ") : null;
 }
 
-const WIZARD_STEPS = ["Your Background", "Additional Sources", "Life Circumstances"];
+const WIZARD_STEPS = ["Verify Profile", "Preferences"];
 
 const ANALYSIS_STEPS = [
   "Parsing document structure",
@@ -286,14 +286,32 @@ export default function OnboardingPage() {
     setLinkedinExportError("");
   }
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   useEffect(() => {
     const paymentEmail = sessionStorage.getItem("payment_email");
     const paymentSessionId = sessionStorage.getItem("payment_session_id");
-    if (!paymentSessionId) {
+    const freeProfile = sessionStorage.getItem("free_profile");
+    const getStartedEmail = sessionStorage.getItem("get_started_email");
+
+    if (!paymentSessionId && !freeProfile) {
       setPageStep("no_payment");
       return;
     }
+
     if (paymentEmail) setEmail(paymentEmail);
+    else if (getStartedEmail) setEmail(getStartedEmail);
+
+    if (freeProfile) {
+      try {
+        const profile = JSON.parse(freeProfile);
+        if (profile.linkedinUrl) setLinkedinUrl(profile.linkedinUrl);
+        if (profile.email && !paymentEmail) setEmail(profile.email);
+        setLinkedinImportedProfile(profile);
+      } catch {
+        // Non-fatal
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -633,16 +651,24 @@ export default function OnboardingPage() {
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
         <div className="max-w-md text-center">
           <div className="text-5xl mb-6">&#x1f512;</div>
-          <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
+          <h1 className="text-2xl font-bold mb-3">Get Started First</h1>
           <p className="text-slate-400 mb-8 leading-relaxed">
-            Get your personalized career pivot roadmap for $19. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
+            Start with a free career pivot analysis, then upgrade to the full roadmap when you&apos;re ready.
           </p>
-          <Link
-            href="/pricing"
-            className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
-          >
-            Get Started — $29 &rarr;
-          </Link>
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/get-started"
+              className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+            >
+              Get Free Analysis &rarr;
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-sm text-slate-400 hover:text-slate-300 underline transition-colors"
+            >
+              Or purchase the full report directly — $19
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -876,7 +902,7 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        <StepIndicator steps={WIZARD_STEPS} currentStep={wizardStep} />
+        <StepIndicator steps={WIZARD_STEPS} currentStep={wizardStep} estimatedTime="~2 minutes" />
 
         <AnimatePresence>
           {celebration && (
@@ -1272,145 +1298,13 @@ export default function OnboardingPage() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.25, ease: "easeInOut" }}
-                className="flex flex-col gap-5"
-              >
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Portfolio or personal site
-                    <span className="text-slate-500 font-normal ml-2">(optional)</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    placeholder="https://yoursite.com"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Your location
-                    <span className="text-slate-500 font-normal ml-2">(improves job market accuracy)</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={locationText}
-                      onChange={(e) => handleLocationManualChange(e.target.value)}
-                      placeholder="City, State, Country"
-                      className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={detectLocation}
-                      disabled={detectingLocation}
-                      className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
-                    >
-                      {detectingLocation ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
-                          </svg>
-                          Detecting
-                        </span>
-                      ) : gpsResolved ? (
-                        <motion.span
-                          initial={{ scale: 0.8 }}
-                          animate={{ scale: [0.8, 1.2, 1] }}
-                          transition={{ duration: 0.4 }}
-                          className="text-teal-400"
-                        >
-                          &#10003; Found
-                        </motion.span>
-                      ) : (
-                        "Use GPS"
-                      )}
-                    </button>
-                  </div>
-                  {location?.source === "gps" && !gpsResolved && (
-                    <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
-                  )}
-                </div>
-
-                <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={goBack}
-                      className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
-                    >
-                      &larr; Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleStep2Next}
-                      className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
-                    >
-                      Next &rarr;
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
-                  >
-                    Skip this step
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {wizardStep === 2 && (
-              <motion.div
-                key="step-2"
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="flex flex-col gap-4"
               >
                 <p className="text-slate-400 text-sm mb-1">
                   Fine-tune your plan with real-life constraints. Smart defaults are pre-selected.
                 </p>
 
-                {/* Financial cluster */}
-                <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Financial</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
-                      <select
-                        value={circumstances.salaryFloor ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                      >
-                        {SALARY_RANGES.map((r) => (
-                          <option key={r.value} value={r.value}>{r.label}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
-                      <select
-                        value={circumstances.dependents ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
-                      >
-                        <option value="">Prefer not to say</option>
-                        <option value="none">No dependents</option>
-                        <option value="partner">Partner</option>
-                        <option value="children">Children</option>
-                        <option value="caretaker">Caretaker for family</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Preferences cluster */}
+                {/* Core preferences */}
                 <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Preferences</h3>
                   <div className="space-y-3">
@@ -1456,8 +1350,122 @@ export default function OnboardingPage() {
                         <option value="remote-preferred">Remote work preferred</option>
                       </select>
                     </div>
+
+                    {/* Portfolio URL (moved from old step 2) */}
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">
+                        Portfolio or personal site
+                        <span className="text-slate-500 font-normal ml-1">(optional)</span>
+                      </label>
+                      <input
+                        type="url"
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        placeholder="https://yoursite.com"
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                      />
+                    </div>
                   </div>
                 </div>
+
+                {/* Collapsed Advanced section */}
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
+                >
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${showAdvanced ? "rotate-90" : ""}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                  Advanced options (location, salary, dependents)
+                </button>
+
+                <AnimatePresence>
+                  {showAdvanced && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4 space-y-3">
+                        <div>
+                          <label className="block text-sm text-slate-400 mb-1.5">Your location</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={locationText}
+                              onChange={(e) => handleLocationManualChange(e.target.value)}
+                              placeholder="City, State, Country"
+                              className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={detectLocation}
+                              disabled={detectingLocation}
+                              className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+                            >
+                              {detectingLocation ? (
+                                <span className="inline-flex items-center gap-1.5">
+                                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                                  </svg>
+                                  Detecting
+                                </span>
+                              ) : gpsResolved ? (
+                                <motion.span
+                                  initial={{ scale: 0.8 }}
+                                  animate={{ scale: [0.8, 1.2, 1] }}
+                                  transition={{ duration: 0.4 }}
+                                  className="text-teal-400"
+                                >
+                                  &#10003; Found
+                                </motion.span>
+                              ) : (
+                                "Use GPS"
+                              )}
+                            </button>
+                          </div>
+                          {location?.source === "gps" && !gpsResolved && (
+                            <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
+                          <select
+                            value={circumstances.salaryFloor ?? ""}
+                            onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
+                            className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                          >
+                            {SALARY_RANGES.map((r) => (
+                              <option key={r.value} value={r.value}>{r.label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
+                          <select
+                            value={circumstances.dependents ?? ""}
+                            onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
+                            className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                          >
+                            <option value="">Prefer not to say</option>
+                            <option value="none">No dependents</option>
+                            <option value="partner">Partner</option>
+                            <option value="children">Children</option>
+                            <option value="caretaker">Caretaker for family</option>
+                          </select>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
                   <div className="flex gap-3">
