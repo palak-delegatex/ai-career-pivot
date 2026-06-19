@@ -13,10 +13,27 @@ export type TemplateKey =
   | "swiss"
   | "soft"
   | "metric"
-  | "noir";
+  | "noir"
+  | "terminal"
+  | "data"
+  | "pivot"
+  | "storyteller"
+  | "healthcare-pro"
+  | "clinical"
+  | "educator"
+  | "academic-cv"
+  | "banker"
+  | "analyst"
+  | "fresh-start"
+  | "intern"
+  | "consulting"
+  | "startup-lean"
+  | "federal"
+  | "sales-pro"
+  | "ux-craft";
 
-export type StyleCategory = "traditional" | "modern" | "creative" | "technical";
-export type IndustryTag = "corporate" | "startup" | "academic";
+export type StyleCategory = "traditional" | "modern" | "creative" | "technical" | "career-pivot";
+export type IndustryTag = "corporate" | "startup" | "academic" | "healthcare" | "education" | "finance" | "entry-level";
 
 export interface TemplatePdfConfig {
   fontFamily: "sans" | "serif" | "mono";
@@ -64,6 +81,23 @@ export const TEMPLATE_KEYS: TemplateKey[] = [
   "soft",
   "metric",
   "noir",
+  "terminal",
+  "data",
+  "pivot",
+  "storyteller",
+  "healthcare-pro",
+  "clinical",
+  "educator",
+  "academic-cv",
+  "banker",
+  "analyst",
+  "fresh-start",
+  "intern",
+  "consulting",
+  "startup-lean",
+  "federal",
+  "sales-pro",
+  "ux-craft",
 ];
 
 export const TEMPLATE_CONFIGS: Record<TemplateKey, TemplateConfig> = {
@@ -576,6 +610,584 @@ export const TEMPLATE_CONFIGS: Record<TemplateKey, TemplateConfig> = {
     aiPrompt:
       "Use a bold, dramatic format. Confident, assertive language. Strong action verbs throughout. This resume will render on a dark background.",
   },
+
+  terminal: {
+    key: "terminal",
+    name: "Terminal",
+    description: "Green-on-dark terminal aesthetic. Built for CLI-native engineers.",
+    category: "technical",
+    industries: ["startup"],
+    atsScore: 91,
+    features: [
+      "Terminal window header",
+      "Green monospace typography",
+      "Command-line section prefixes",
+      "Dark background theme",
+    ],
+    pdfConfig: {
+      fontFamily: "mono",
+      primaryColor: "#22c55e",
+      secondaryColor: "#16a34a",
+      textColor: "#e2e8f0",
+      mutedColor: "#64748b",
+      bgColor: "#0c0c0c",
+      headingSize: 12,
+      subheadingSize: 10,
+      bodySize: 9,
+      headingStyle: "normal",
+      headingWeight: "bold",
+      sectionDivider: "dashed",
+      skillPillStyle: "outlined",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a terminal/CLI-inspired format. Section prefixes use $ (e.g., $ Summary). Technical jargon welcome. Emphasize command-line tools, scripts, and infrastructure.",
+  },
+
+  data: {
+    key: "data",
+    name: "Data",
+    description: "Indigo metric boxes with data-driven layout. For analysts and scientists.",
+    category: "technical",
+    industries: ["corporate", "startup"],
+    atsScore: 94,
+    features: [
+      "Indigo metric highlight boxes",
+      "Data-driven layout",
+      "Analytical presentation",
+      "Numbers-first approach",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#4f46e5",
+      secondaryColor: "#312e81",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a data-driven format with indigo accents. Start with 3-4 key metrics (data points processed, models built, accuracy improvements). Every bullet must include a quantifiable result.",
+  },
+
+  pivot: {
+    key: "pivot",
+    name: "Career Pivot",
+    description: "Skills-first layout with transferable skills badge. For career changers.",
+    category: "career-pivot",
+    industries: ["corporate", "startup"],
+    atsScore: 95,
+    features: [
+      "Transferable skills badge",
+      "Skills-first ordering",
+      "Career narrative section",
+      "Cross-industry friendly",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#7c3aed",
+      secondaryColor: "#a78bfa",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a career-pivot format emphasizing transferable skills. Lead with a strong career narrative explaining the transition. Group skills by transferability. Reframe past experience in terms of the target role.",
+  },
+
+  storyteller: {
+    key: "storyteller",
+    name: "Storyteller",
+    description: "Narrative-driven layout for career transitions. Your journey, told well.",
+    category: "career-pivot",
+    industries: ["startup", "corporate"],
+    atsScore: 92,
+    features: [
+      "Narrative career summary",
+      "Journey-focused structure",
+      "Warm, engaging tone",
+      "Transition-friendly format",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#7c3aed",
+      secondaryColor: "#6d28d9",
+      textColor: "#1e1b4b",
+      mutedColor: "#6b7280",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "outlined",
+      layout: "standard",
+      nameAlign: "center",
+    },
+    aiPrompt:
+      "Use a narrative, story-driven format. Open with a compelling career summary that tells the transition story. Use warm, engaging language. Connect past roles to future aspirations naturally.",
+  },
+
+  "healthcare-pro": {
+    key: "healthcare-pro",
+    name: "Healthcare Pro",
+    description: "Clean blue layout for healthcare professionals. HIPAA-aware structure.",
+    category: "traditional",
+    industries: ["healthcare"],
+    atsScore: 97,
+    features: [
+      "Healthcare-focused structure",
+      "Certifications prominence",
+      "Clean blue color scheme",
+      "Compliance-friendly layout",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#0369a1",
+      secondaryColor: "#0284c7",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a healthcare-professional format. Emphasize certifications, licenses, and clinical experience. Include patient care metrics. Use terminology appropriate for healthcare hiring managers.",
+  },
+
+  clinical: {
+    key: "clinical",
+    name: "Clinical",
+    description: "Structured clinical format for nursing and allied health roles.",
+    category: "traditional",
+    industries: ["healthcare"],
+    atsScore: 96,
+    features: [
+      "Clinical experience focus",
+      "License & certification section",
+      "Structured patient metrics",
+      "Professional blue-gray palette",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#1e40af",
+      secondaryColor: "#1e3a5f",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "double",
+      skillPillStyle: "outlined",
+      layout: "standard",
+      nameAlign: "center",
+    },
+    aiPrompt:
+      "Use a clinical resume format. Prioritize licenses, certifications, and clinical rotations. Include patient population details and care metrics. Formal medical terminology is expected.",
+  },
+
+  educator: {
+    key: "educator",
+    name: "Educator",
+    description: "Warm layout for teachers and educators. Highlights methodology and impact.",
+    category: "traditional",
+    industries: ["education"],
+    atsScore: 97,
+    features: [
+      "Teaching philosophy section",
+      "Warm green color scheme",
+      "Curriculum & methodology focus",
+      "Student outcome metrics",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#15803d",
+      secondaryColor: "#166534",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "outlined",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use an education-focused format. Include teaching philosophy, curriculum development, and student outcomes. Highlight pedagogical methods and classroom management achievements.",
+  },
+
+  "academic-cv": {
+    key: "academic-cv",
+    name: "Academic CV",
+    description: "Multi-page academic format for research and publications.",
+    category: "traditional",
+    industries: ["academic", "education"],
+    atsScore: 98,
+    features: [
+      "Publications & grants section",
+      "Research focus areas",
+      "Traditional academic format",
+      "Citation-friendly structure",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#334155",
+      secondaryColor: "#0f172a",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "text",
+      layout: "standard",
+      nameAlign: "center",
+    },
+    aiPrompt:
+      "Use a traditional academic CV format. Include research interests, publications, grants, and teaching experience. Formal academic language. List presentations and conference talks.",
+  },
+
+  banker: {
+    key: "banker",
+    name: "Banker",
+    description: "Navy pinstripe-inspired layout for finance and banking professionals.",
+    category: "traditional",
+    industries: ["finance", "corporate"],
+    atsScore: 98,
+    features: [
+      "Navy professional palette",
+      "Deal & portfolio metrics",
+      "Conservative formatting",
+      "Financial terminology focus",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#1e3a5f",
+      secondaryColor: "#0c2340",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "bold",
+      sectionDivider: "double",
+      skillPillStyle: "text",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a conservative finance format. Emphasize deal sizes, portfolio values, and financial metrics prominently. Formal, precise language. Include regulatory and compliance experience.",
+  },
+
+  analyst: {
+    key: "analyst",
+    name: "Analyst",
+    description: "Chart-inspired layout for financial and business analysts.",
+    category: "technical",
+    industries: ["finance", "corporate"],
+    atsScore: 95,
+    features: [
+      "Metric highlight boxes",
+      "Analytical structure",
+      "Financial modeling focus",
+      "Data visualization emphasis",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#0369a1",
+      secondaryColor: "#0c4a6e",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "bold",
+      sectionDivider: "thick",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use an analyst-focused format. Lead with key analytical achievements and metrics. Emphasize tools (Excel, SQL, Python, Tableau). Include financial modeling and data analysis experience.",
+  },
+
+  "fresh-start": {
+    key: "fresh-start",
+    name: "Fresh Start",
+    description: "Bright, optimistic layout for new graduates and career starters.",
+    category: "modern",
+    industries: ["entry-level"],
+    atsScore: 96,
+    features: [
+      "Education-first layout",
+      "Project showcase section",
+      "Bright, optimistic palette",
+      "Skills-forward design",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#0d9488",
+      secondaryColor: "#14b8a6",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a fresh graduate format. Lead with education, then projects and internships. Highlight academic achievements, relevant coursework, and extracurriculars. Enthusiastic but professional tone.",
+  },
+
+  intern: {
+    key: "intern",
+    name: "Intern",
+    description: "Concise single-page format optimized for internship applications.",
+    category: "modern",
+    industries: ["entry-level", "startup"],
+    atsScore: 95,
+    features: [
+      "Single-page optimized",
+      "Project & coursework focus",
+      "Clean, simple structure",
+      "Extracurricular highlights",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#6366f1",
+      secondaryColor: "#818cf8",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 12,
+      subheadingSize: 10,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "filled",
+      layout: "compact",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use an internship-optimized format. Focus on relevant coursework, academic projects, and skills. Keep it to one page. Highlight leadership in student organizations and relevant extracurriculars.",
+  },
+
+  consulting: {
+    key: "consulting",
+    name: "Consulting",
+    description: "Structured case-style layout for management consulting roles.",
+    category: "traditional",
+    industries: ["corporate", "finance"],
+    atsScore: 97,
+    features: [
+      "Case-study structure",
+      "Impact-first bullets",
+      "Clean professional layout",
+      "Firm-ready formatting",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#0f172a",
+      secondaryColor: "#1e293b",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "extrabold",
+      sectionDivider: "thick",
+      skillPillStyle: "dark",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a consulting-style format. Lead every bullet with measurable impact (revenue, efficiency, cost savings). Structure achievements as situation-action-result. Precise, concise language.",
+  },
+
+  "startup-lean": {
+    key: "startup-lean",
+    name: "Startup Lean",
+    description: "Zero-fluff layout for fast-moving startup environments.",
+    category: "modern",
+    industries: ["startup"],
+    atsScore: 93,
+    features: [
+      "Zero-fluff structure",
+      "Rapid-scan layout",
+      "Startup-speak friendly",
+      "High density, low waste",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#ea580c",
+      secondaryColor: "#f97316",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 12,
+      subheadingSize: 10,
+      bodySize: 9,
+      headingStyle: "uppercase",
+      headingWeight: "extrabold",
+      sectionDivider: "none",
+      skillPillStyle: "filled",
+      layout: "compact",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a lean startup format. No fluff — every word earns its place. Emphasize velocity, ownership, and 0-to-1 experience. Use startup terminology naturally. Dense and scannable.",
+  },
+
+  federal: {
+    key: "federal",
+    name: "Federal",
+    description: "USAJobs-compatible format for government and public sector roles.",
+    category: "traditional",
+    industries: ["corporate"],
+    atsScore: 99,
+    features: [
+      "Government-compliant format",
+      "GS-level compatible",
+      "Maximum ATS score",
+      "Detailed experience blocks",
+    ],
+    pdfConfig: {
+      fontFamily: "serif",
+      primaryColor: "#1e3a5f",
+      secondaryColor: "#0f172a",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "bold",
+      sectionDivider: "solid",
+      skillPillStyle: "text",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a federal resume format compatible with USAJobs. Include hours per week, supervisor info placeholders, and detailed duty descriptions. Formal government language. Maximum compliance.",
+  },
+
+  "sales-pro": {
+    key: "sales-pro",
+    name: "Sales Pro",
+    description: "Results-driven layout with quota attainment highlights.",
+    category: "modern",
+    industries: ["corporate"],
+    atsScore: 95,
+    features: [
+      "Quota attainment highlights",
+      "Revenue metrics up front",
+      "Dynamic, energetic palette",
+      "Achievement-first structure",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#dc2626",
+      secondaryColor: "#b91c1c",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "uppercase",
+      headingWeight: "extrabold",
+      sectionDivider: "thick",
+      skillPillStyle: "filled",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a sales-focused format. Lead with quota attainment percentages and revenue numbers. Emphasize pipeline generation, deal sizes, and client acquisition. Energetic, results-driven language.",
+  },
+
+  "ux-craft": {
+    key: "ux-craft",
+    name: "UX Craft",
+    description: "Design-forward layout for UX researchers and product designers.",
+    category: "creative",
+    industries: ["startup"],
+    atsScore: 87,
+    features: [
+      "Portfolio-ready structure",
+      "Design process emphasis",
+      "Clean typographic hierarchy",
+      "Research & metrics focus",
+    ],
+    pdfConfig: {
+      fontFamily: "sans",
+      primaryColor: "#9333ea",
+      secondaryColor: "#a855f7",
+      textColor: "#0f172a",
+      mutedColor: "#64748b",
+      bgColor: "#ffffff",
+      headingSize: 13,
+      subheadingSize: 11,
+      bodySize: 10,
+      headingStyle: "capitalize",
+      headingWeight: "bold",
+      sectionDivider: "none",
+      skillPillStyle: "gradient",
+      layout: "standard",
+      nameAlign: "left",
+    },
+    aiPrompt:
+      "Use a UX/design-focused format. Emphasize design process (research, wireframing, testing, iteration). Include usability metrics and user research findings. Reference portfolio pieces.",
+  },
 };
 
 export const STYLE_CATEGORIES: { key: StyleCategory; label: string }[] = [
@@ -583,12 +1195,17 @@ export const STYLE_CATEGORIES: { key: StyleCategory; label: string }[] = [
   { key: "modern", label: "Modern" },
   { key: "creative", label: "Creative" },
   { key: "technical", label: "Technical" },
+  { key: "career-pivot", label: "Career Pivot" },
 ];
 
 export const INDUSTRY_TAGS: { key: IndustryTag; label: string }[] = [
   { key: "corporate", label: "Corporate" },
   { key: "startup", label: "Startup" },
   { key: "academic", label: "Academic" },
+  { key: "healthcare", label: "Healthcare" },
+  { key: "education", label: "Education" },
+  { key: "finance", label: "Finance" },
+  { key: "entry-level", label: "Entry Level" },
 ];
 
 export function getTemplateConfig(key: string): TemplateConfig {

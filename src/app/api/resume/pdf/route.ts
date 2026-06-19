@@ -150,7 +150,8 @@ export async function POST(req: NextRequest) {
         doc.moveDown(0.3);
       } else if (trimmed.startsWith("## ")) {
         doc.moveDown(0.3);
-        const sectionText = pdf.headingStyle === "uppercase" ? trimmed.slice(3).toUpperCase() : trimmed.slice(3);
+        let sectionText = pdf.headingStyle === "uppercase" ? trimmed.slice(3).toUpperCase() : trimmed.slice(3);
+        if (templateKey === "terminal") sectionText = `$ ${sectionText}`;
         doc.font(boldFont).fontSize(pdf.headingSize).fillColor(pdf.primaryColor);
         doc.text(sectionText, margin, doc.y, { width: contentW, align: pdf.nameAlign === "center" ? "center" : "left" });
 

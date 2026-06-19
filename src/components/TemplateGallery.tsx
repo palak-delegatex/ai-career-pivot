@@ -52,13 +52,53 @@ function MiniResumePreview({ templateKey }: { templateKey: TemplateKey }) {
   const isCreative = templateKey === "creative";
   const isSwiss = templateKey === "swiss";
   const isImpact = templateKey === "impact";
-  const isMetric = templateKey === "metric";
+  const isMetric = templateKey === "metric" || templateKey === "data";
+  const isTerminal = templateKey === "terminal";
+  const isPivot = templateKey === "pivot" || templateKey === "storyteller";
   const isElegant = templateKey === "elegant";
   const isCompact = templateKey === "compact";
   const isCentered = pdfConfig.nameAlign === "center";
   const textAlign = isCentered ? "text-center" : "text-left";
 
   const bgStyle = isNoir ? { background: "#0f172a" } : pdfConfig.bgColor !== "#ffffff" ? { background: pdfConfig.bgColor } : {};
+
+  if (isTerminal) {
+    return (
+      <div
+        className={`w-full h-full ${fontClass} relative overflow-hidden`}
+        style={{ fontSize: "5.5px", lineHeight: 1.5, background: "#0c0c0c" }}
+      >
+        <div className="flex items-center gap-1 px-2.5 py-1.5" style={{ background: "#1a1a1a", borderBottom: "0.5px solid #333" }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#ff5f57" }} />
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#febc2e" }} />
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#28c840" }} />
+          <span className="ml-1 text-[3.5px]" style={{ color: "#64748b" }}>resume.sh</span>
+        </div>
+        <div className="p-3">
+          <div className="text-[8px] font-bold" style={{ color: "#22c55e" }}>ALEX CHEN</div>
+          <div className="text-[4.5px]" style={{ color: "#16a34a" }}>Senior Product Manager</div>
+          <div className="text-[3.5px]" style={{ color: "#64748b" }}>alex@email.com | SF, CA</div>
+
+          <div className="mt-1.5 mb-0.5 font-bold text-[4.5px]" style={{ color: "#22c55e", borderBottom: "1px dashed #333", paddingBottom: "1px" }}>$ Summary</div>
+          <div className="rounded mb-0.5" style={{ background: "#1a1a1a", height: "3px", width: "100%" }} />
+          <div className="rounded mb-1" style={{ background: "#1a1a1a", height: "3px", width: "85%" }} />
+
+          <div className="mt-1 mb-0.5 font-bold text-[4.5px]" style={{ color: "#22c55e", borderBottom: "1px dashed #333", paddingBottom: "1px" }}>$ Skills</div>
+          <div className="flex flex-wrap gap-0.5 mt-0.5">
+            {["Python", "Bash", "Docker", "K8s"].map((s) => (
+              <span key={s} className="px-1 py-px rounded text-[3.5px]" style={{ color: "#22c55e", border: "0.5px solid #22c55e40" }}>{s}</span>
+            ))}
+          </div>
+
+          <div className="mt-1.5 mb-0.5 font-bold text-[4.5px]" style={{ color: "#22c55e", borderBottom: "1px dashed #333", paddingBottom: "1px" }}>$ Experience</div>
+          <div className="font-semibold text-[4.5px]" style={{ color: "#e2e8f0" }}>Product Manager — TechCorp</div>
+          <div className="text-[3.5px] mb-0.5" style={{ color: "#64748b" }}>2020 – Present</div>
+          <div className="rounded mb-0.5" style={{ background: "#1a1a1a", height: "3px", width: "90%" }} />
+          <div className="rounded" style={{ background: "#1a1a1a", height: "3px", width: "75%" }} />
+        </div>
+      </div>
+    );
+  }
 
   if (isTwoColumn) {
     return (
@@ -153,11 +193,25 @@ function MiniResumePreview({ templateKey }: { templateKey: TemplateKey }) {
             { num: "12", label: "Projects" },
             { num: "$2M", label: "Revenue" },
           ].map((m) => (
-            <div key={m.label} className="flex-1 text-center rounded py-0.5" style={{ background: "#f0fdfa", border: "0.5px solid #99f6e4" }}>
-              <div className="text-[7px] font-extrabold" style={{ color: "#0d9488" }}>{m.num}</div>
+            <div key={m.label} className="flex-1 text-center rounded py-0.5" style={{
+              background: templateKey === "data" ? "#eef2ff" : "#f0fdfa",
+              border: templateKey === "data" ? "0.5px solid #a5b4fc" : "0.5px solid #99f6e4",
+            }}>
+              <div className="text-[7px] font-extrabold" style={{ color: templateKey === "data" ? "#4f46e5" : "#0d9488" }}>{m.num}</div>
               <div className="text-[3px]" style={{ color: "#64748b" }}>{m.label}</div>
             </div>
           ))}
+        </div>
+      )}
+
+      {isPivot && (
+        <div className="flex items-center gap-1 my-1.5" style={{ marginLeft: isCreative ? "12px" : undefined }}>
+          <span className="px-1.5 py-0.5 rounded-full text-[4px] font-semibold" style={{ background: "#7c3aed20", color: "#7c3aed", border: "0.5px solid #7c3aed40" }}>Career Pivot</span>
+          <div className="flex gap-0.5">
+            {["Leadership", "Strategy", "Analytics"].map((s) => (
+              <span key={s} className="px-1 py-px rounded text-[3px]" style={{ background: "#7c3aed15", color: "#7c3aed" }}>{s}</span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -409,7 +463,7 @@ export default function TemplateGallery({ selected, onSelect, compact }: Templat
                 : "bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-slate-300"
             }`}
           >
-            All <span className="text-[10px] opacity-60 ml-0.5">15</span>
+            All <span className="text-[10px] opacity-60 ml-0.5">{TEMPLATE_KEYS.length}</span>
           </button>
 
           <button
@@ -432,7 +486,9 @@ export default function TemplateGallery({ selected, onSelect, compact }: Templat
               onClick={() => setStyleFilter(styleFilter === cat.key ? null : cat.key)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                 styleFilter === cat.key
-                  ? "bg-teal-900/40 border border-teal-600/40 text-teal-300"
+                  ? cat.key === "career-pivot"
+                    ? "bg-violet-900/40 border border-violet-600/40 text-violet-300"
+                    : "bg-teal-900/40 border border-teal-600/40 text-teal-300"
                   : "bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-slate-300"
               }`}
             >
