@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Kanban, Sparkles } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import JobTrackerKanban from "@/components/JobTrackerKanban";
+import DiscoverJobs from "@/components/DiscoverJobs";
 import type { TrackedJob } from "@/lib/job-tracker";
+
+type Tab = "pipeline" | "discover";
 
 export default function JobTrackerClient() {
   const [email, setEmail] = useState<string | null>(null);
   const [jobs, setJobs] = useState<TrackedJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tab, setTab] = useState<Tab>("pipeline");
 
   useEffect(() => {
     async function load() {
@@ -67,10 +72,41 @@ export default function JobTrackerClient() {
   if (!email) return null;
 
   return (
-    <JobTrackerKanban
-      jobs={jobs}
-      email={email}
-      onJobsChange={handleJobsChange}
-    />
+    <div>
+      <div className="flex justify-center gap-1 pt-4 pb-2">
+        <button
+          onClick={() => setTab("pipeline")}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
+            tab === "pipeline"
+              ? "bg-teal-600/20 text-teal-300 border border-teal-500/30"
+              : "text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/50"
+          }`}
+        >
+          <Kanban className="h-4 w-4" />
+          Pipeline
+        </button>
+        <button
+          onClick={() => setTab("discover")}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
+            tab === "discover"
+              ? "bg-teal-600/20 text-teal-300 border border-teal-500/30"
+              : "text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/50"
+          }`}
+        >
+          <Sparkles className="h-4 w-4" />
+          Discover Jobs
+        </button>
+      </div>
+
+      {tab === "pipeline" ? (
+        <JobTrackerKanban
+          jobs={jobs}
+          email={email}
+          onJobsChange={handleJobsChange}
+        />
+      ) : (
+        <DiscoverJobs email={email} />
+      )}
+    </div>
   );
 }
