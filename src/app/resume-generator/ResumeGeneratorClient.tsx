@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   FileText,
   Mail,
@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { downloadPdf } from "@/lib/pdf-download";
-import RealtimeATSPanel from "@/components/RealtimeATSPanel";
+import RealtimeATSPanel, { type ATSScoreData } from "@/components/RealtimeATSPanel";
+import type { KeywordMatch } from "@/lib/ats-scoring";
 
 type Mode = "resume" | "cover-letter";
 type Phase = "setup" | "generating" | "done";
@@ -40,10 +41,43 @@ const TONES: { key: Tone; label: string }[] = [
   { key: "bold", label: "Bold" },
 ];
 
-function renderMarkdownBasic(text: string): React.ReactNode {
+function highlightKeywords(
+  html: string,
+  matched: KeywordMatch[],
+  missing: KeywordMatch[],
+): string {
+  if (!matched.length && !missing.length) return html;
+
+  const matchedSet = matched
+    .map(m => m.keyword)
+    .filter(k => k.length >= 2)
+    .sort((a, b) => b.length - a.length);
+
+  if (!matchedSet.length) return html;
+
+  const escaped = matchedSet.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const pattern = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
+
+  return html.replace(pattern, (match) => {
+    return `<mark class="bg-emerald-900/40 text-emerald-300 px-0.5 rounded-sm border-b border-emerald-500/40">${match}</mark>`;
+  });
+}
+
+function renderMarkdownBasic(
+  text: string,
+  matchedKws: KeywordMatch[] = [],
+  missingKws: KeywordMatch[] = [],
+): React.ReactNode {
   const lines = text.split("\n");
   const nodes: React.ReactNode[] = [];
   let key = 0;
+  const hasHighlighting = matchedKws.length > 0 || missingKws.length > 0;
+
+  function fmt(raw: string): string {
+    let html = raw.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    if (hasHighlighting) html = highlightKeywords(html, matchedKws, missingKws);
+    return html;
+  }
 
   for (const line of lines) {
     if (line.startsWith("# ")) {
@@ -60,28 +94,26 @@ function renderMarkdownBasic(text: string): React.ReactNode {
       );
     } else if (line.startsWith("### ")) {
       nodes.push(
-        <h3 key={key++} className="text-sm font-bold mt-3 mb-1 text-slate-200">
-          {line.slice(4)}
-        </h3>
+        <h3 key={key++} className="text-sm font-bold mt-3 mb-1 text-slate-200"
+          dangerouslySetInnerHTML={{ __html: fmt(line.slice(4)) }}
+        />
       );
     } else if (line.match(/^[-*] /)) {
-      const formatted = line.slice(2).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       nodes.push(
         <li
           key={key++}
           className="ml-4 text-sm leading-relaxed list-disc text-slate-300"
-          dangerouslySetInnerHTML={{ __html: formatted }}
+          dangerouslySetInnerHTML={{ __html: fmt(line.slice(2)) }}
         />
       );
     } else if (line.trim() === "") {
       nodes.push(<div key={key++} className="h-2" />);
     } else {
-      const formatted = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       nodes.push(
         <p
           key={key++}
           className="text-sm leading-relaxed text-slate-300"
-          dangerouslySetInnerHTML={{ __html: formatted }}
+          dangerouslySetInnerHTML={{ __html: fmt(line) }}
         />
       );
     }
@@ -105,7 +137,61 @@ export default function ResumeGeneratorClient() {
   const [editContent, setEditContent] = useState("");
   const [saving, setSaving] = useState(false);
   const [showAtsPanel, setShowAtsPanel] = useState(true);
+  const [atsData, setAtsData] = useState<ATSScoreData | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScoreUpdate = useCallback((data: ATSScoreData) => {
+    setAtsData(data);
+  }, []);
+
+  const handleInsertKeyword = useCallback((keyword: string, section: string | null) => {
+    const content = editing ? editContent : output;
+    if (!content) return;
+
+    const target = section?.toLowerCase() ?? "skills";
+    const lines = content.split("\n");
+    let insertIdx = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const lower = lines[i].toLowerCase().replace(/^#+\s*/, "");
+      if (lower.includes(target)) {
+        for (let j = i + 1; j < lines.length; j++) {
+          if (lines[j].match(/^[-*] /)) {
+            insertIdx = j;
+          } else if (lines[j].match(/^#{1,3}\s/) || (lines[j].trim() === "" && insertIdx >= 0)) {
+            break;
+          }
+        }
+        if (insertIdx < 0) insertIdx = i + 1;
+        break;
+      }
+    }
+
+    if (insertIdx < 0) {
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].toLowerCase().replace(/^#+\s*/, "").includes("skills")) {
+          insertIdx = i + 1;
+          break;
+        }
+      }
+    }
+
+    if (insertIdx < 0) insertIdx = lines.length;
+
+    const prev = lines[insertIdx - 1] ?? "";
+    if (prev.match(/^[-*] /) && prev.includes(",")) {
+      lines[insertIdx - 1] = prev.replace(/\s*$/, "") + ", " + keyword;
+    } else {
+      lines.splice(insertIdx, 0, `- ${keyword}`);
+    }
+
+    const updated = lines.join("\n");
+    if (editing) {
+      setEditContent(updated);
+    } else {
+      setOutput(updated);
+    }
+  }, [editing, editContent, output]);
 
   useEffect(() => {
     try {
@@ -364,7 +450,11 @@ export default function ResumeGeneratorClient() {
                       className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
                     />
                   ) : output ? (
-                    renderMarkdownBasic(output)
+                    renderMarkdownBasic(
+                      output,
+                      showAtsSidebar ? (atsData?.matchedKeywords ?? []) : [],
+                      showAtsSidebar ? (atsData?.missingKeywords ?? []) : [],
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-48">
                       <Loader2 className="w-6 h-6 text-teal-400 animate-spin" />
@@ -417,6 +507,8 @@ export default function ResumeGeneratorClient() {
                     <RealtimeATSPanel
                       resumeText={liveResumeText}
                       jobDescription={jobDescription}
+                      onScoreUpdate={handleScoreUpdate}
+                      onInsertKeyword={handleInsertKeyword}
                     />
                   </div>
                 </div>

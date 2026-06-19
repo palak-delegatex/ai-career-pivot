@@ -19,14 +19,25 @@ import {
   type MatchRateBreakdown,
   type JDKeywords,
   type FormattingIssue,
+  type KeywordMatch,
 } from "@/lib/ats-scoring";
 
 // ── Types ────────────────────────────────────────────────────────────────────
+
+export interface ATSScoreData {
+  breakdown: MatchRateBreakdown | null;
+  jdKeywords: JDKeywords | null;
+  formattingIssues: FormattingIssue[];
+  matchedKeywords: KeywordMatch[];
+  missingKeywords: KeywordMatch[];
+}
 
 interface RealtimeATSPanelProps {
   resumeText: string;
   jobDescription?: string;
   debounceMs?: number;
+  onScoreUpdate?: (data: ATSScoreData) => void;
+  onInsertKeyword?: (keyword: string, section: string | null) => void;
 }
 
 // ── Style constants ─────────────────────────────────────────────────────────
@@ -133,7 +144,7 @@ function KeywordPill({ keyword, matched, matchType, category }: {
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
-export default function RealtimeATSPanel({ resumeText, jobDescription, debounceMs = 300 }: RealtimeATSPanelProps) {
+export default function RealtimeATSPanel({ resumeText, jobDescription, debounceMs = 300, onScoreUpdate, onInsertKeyword }: RealtimeATSPanelProps) {
   const [jdKeywords, setJdKeywords] = useState<JDKeywords | null>(null);
   const [breakdown, setBreakdown] = useState<MatchRateBreakdown | null>(null);
   const [formattingIssues, setFormattingIssues] = useState<FormattingIssue[]>([]);
@@ -144,6 +155,7 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
   const [showKeywords, setShowKeywords] = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const lastJdRef = useRef<string>("");
+  const lastHashRef = useRef<string>("");
 
   const recompute = useCallback((text: string, keywords: JDKeywords) => {
     if (!text.trim()) {
@@ -151,11 +163,24 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
       setFormattingIssues([]);
       return;
     }
+    const normalized = text.replace(/\s+/g, " ").trim();
+    const hash = normalized.length + ":" + normalized.slice(0, 100) + normalized.slice(-100);
+    if (hash === lastHashRef.current) return;
+    lastHashRef.current = hash;
+
     const issues = detectFormattingIssues(text);
     setFormattingIssues(issues);
     const result = computeATSMatchBreakdown(text, keywords);
     setBreakdown(result);
-  }, []);
+
+    onScoreUpdate?.({
+      breakdown: result,
+      jdKeywords: keywords,
+      formattingIssues: issues,
+      matchedKeywords: result.keywordMatches.filter(m => m.matched),
+      missingKeywords: result.keywordMatches.filter(m => !m.matched),
+    });
+  }, [onScoreUpdate]);
 
   useEffect(() => {
     if (!jobDescription || jobDescription.trim().length < 20) {
@@ -309,6 +334,42 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
           </div>
         )}
       </div>
+
+      {/* Top Missing Keywords — Quick Insert */}
+      {onInsertKeyword && missingKws.length > 0 && (
+        <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3">
+          <div className="text-[10px] font-semibold text-amber-400 uppercase mb-2 flex items-center gap-1">
+            <Zap className="w-2.5 h-2.5" />
+            Quick Add — Top Missing Keywords
+          </div>
+          <div className="space-y-1.5">
+            {missingKws
+              .sort((a, b) => {
+                const pri = { required: 0, preferred: 1, keyword: 2 } as const;
+                return pri[a.category] - pri[b.category];
+              })
+              .slice(0, 5)
+              .map((m, i) => (
+                <button
+                  key={i}
+                  onClick={() => onInsertKeyword(m.keyword, m.suggestedSection)}
+                  className="w-full flex items-center gap-2 text-left px-2 py-1.5 rounded-lg bg-slate-900/40 hover:bg-teal-900/30 border border-slate-700/40 hover:border-teal-600/40 transition-colors group"
+                >
+                  <span className="text-[10px] text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">+ Add</span>
+                  <span className="text-[10px] text-slate-200 font-medium flex-1 truncate">{m.keyword}</span>
+                  <span className={`text-[8px] shrink-0 ${
+                    m.category === "required" ? "text-red-400" : m.category === "preferred" ? "text-amber-400" : "text-slate-500"
+                  }`}>
+                    {m.category === "required" ? "REQ" : m.category === "preferred" ? "PREF" : ""}
+                  </span>
+                  {m.suggestedSection && (
+                    <span className="text-[8px] text-slate-500 shrink-0">→ {m.suggestedSection}</span>
+                  )}
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* Formatting Issues */}
       {formattingIssues.length > 0 && (
