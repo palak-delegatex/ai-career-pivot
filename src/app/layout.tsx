@@ -4,6 +4,7 @@ import "./globals.css";
 import { PostHogProvider } from "./PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
+import { HelpProvider } from "@/components/HelpProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -95,6 +96,7 @@ export default function RootLayout({
           <PostHogProvider>
             <div className="flex-1">{children}</div>
             <Footer />
+            <HelpProvider />
           </PostHogProvider>
           <Analytics />
         </body>

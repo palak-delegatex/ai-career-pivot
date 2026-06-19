@@ -162,6 +162,43 @@ html {
   animation: banner-slide-in 2s ease-out forwards;
 }
 
+@keyframes fab-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(13, 148, 136, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+}
+
+.help-fab-pulse {
+  animation: fab-pulse 1.5s ease-out 3;
+}
+
+@keyframes spotlight-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tour-overlay {
+  animation: spotlight-fade-in 200ms ease-out;
+}
+
+@keyframes welcome-slide-in {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-banner {
+  animation: welcome-slide-in 300ms ease-out;
+}
+
+@keyframes nudge-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nudge-card {
+  animation: nudge-enter 200ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phase-confetti::after {
     animation: none;
@@ -174,6 +211,12 @@ html {
     animation: none;
   }
   .phase-complete-banner {
+    animation: none;
+  }
+  .help-fab-pulse,
+  .tour-overlay,
+  .welcome-banner,
+  .nudge-card {
     animation: none;
   }
   [style*="animation"], [class*="animate-"] {
