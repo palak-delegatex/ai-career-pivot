@@ -11,13 +11,19 @@
     <!-- Header -->
     <header id="header">
       <div class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
         <span>AICareerPivot</span>
       </div>
       <div class="header-actions">
+        <button class="ext-notif" id="notifBtn" title="Notifications" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
         <div class="user-menu" id="userMenu" hidden>
           <button id="userBtn" class="user-avatar-btn" title="Account">
             <img id="userAvatarImg" class="avatar-img" hidden alt="">
@@ -64,119 +70,159 @@
       </div>
     </div>
 
-    <!-- Default state: pipeline + recent saves -->
-    <div id="defaultView" class="view" hidden>
-      <div id="pipeline" class="pipeline">
-        <div class="pipeline-stage" data-stage="saved">
-          <span class="pipeline-dot bg-slate"></span>
-          <span class="pipeline-count" id="countSaved">0</span>
-          <span class="pipeline-label">Saved</span>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-stage" data-stage="applied">
-          <span class="pipeline-dot bg-teal"></span>
-          <span class="pipeline-count" id="countApplied">0</span>
-          <span class="pipeline-label">Applied</span>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-stage" data-stage="interview">
-          <span class="pipeline-dot bg-amber"></span>
-          <span class="pipeline-count" id="countInterview">0</span>
-          <span class="pipeline-label">Interview</span>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-stage" data-stage="offer">
-          <span class="pipeline-dot bg-emerald"></span>
-          <span class="pipeline-count" id="countOffer">0</span>
-          <span class="pipeline-label">Offer</span>
-        </div>
+    <!-- Context bar (visible when job detected) -->
+    <div id="contextBar" class="ext-context-bar" hidden>
+      <div class="ext-context-icon" id="contextIcon"></div>
+      <div class="ext-context-info">
+        <div class="ext-context-title" id="contextTitle"></div>
+        <div class="ext-context-company" id="contextCompany"></div>
       </div>
-
-      <div class="section-title">Recent Saves</div>
-      <div id="recentSaves" class="recent-saves"></div>
-
-      <div class="actions">
-        <button id="pasteUrlBtn" class="btn-primary">Paste Job URL</button>
-        <button id="openDashboardBtn" class="btn-link">Open Dashboard &rarr;</button>
-      </div>
+      <span class="ext-context-badge" id="contextBadge"></span>
     </div>
 
-    <!-- Job detected state -->
-    <div id="jobView" class="view" hidden>
-      <div id="jobCard" class="job-card">
-        <div class="job-card-header">
-          <div class="company-icon" id="companyIcon"></div>
-          <div class="job-card-info">
-            <div class="job-title" id="jobTitle"></div>
-            <div class="job-company" id="jobCompany"></div>
-            <div class="job-meta">
-              <span id="jobLocation"></span>
-              <span id="jobSalary"></span>
-              <span class="source-badge" id="jobSource"></span>
-            </div>
+    <!-- Tab bar -->
+    <div id="tabBar" class="ext-tabs" hidden>
+      <button class="ext-tab active" data-tab="jobs">Jobs</button>
+      <button class="ext-tab" data-tab="score" id="scoreTab" hidden>Score <span class="tab-badge" id="scoreTabBadge"></span></button>
+      <button class="ext-tab" data-tab="profile">Profile</button>
+    </div>
+
+    <!-- Main content area (tab panels) -->
+    <div id="mainContent" hidden>
+      <!-- Jobs Tab Panel -->
+      <div id="panelJobs" class="tab-panel">
+        <!-- Pipeline Strip -->
+        <div id="pipeline" class="ext-pipeline">
+          <div class="ext-pipeline-stage" data-stage="saved">
+            <div class="ext-pipeline-circle bg-slate" id="circleSaved">0</div>
+            <span class="ext-pipeline-label">Saved</span>
+          </div>
+          <div class="ext-pipeline-stage" data-stage="applied">
+            <div class="ext-pipeline-circle bg-teal" id="circleApplied">0</div>
+            <span class="ext-pipeline-label">Applied</span>
+          </div>
+          <div class="ext-pipeline-stage" data-stage="interview">
+            <div class="ext-pipeline-circle bg-amber" id="circleInterview">0</div>
+            <span class="ext-pipeline-label">Interview</span>
+          </div>
+          <div class="ext-pipeline-stage" data-stage="offer">
+            <div class="ext-pipeline-circle bg-emerald" id="circleOffer">0</div>
+            <span class="ext-pipeline-label">Offer</span>
           </div>
         </div>
+
+        <!-- Quick Actions -->
+        <div class="ext-quick-actions">
+          <button id="saveCurrentBtn" class="ext-action-btn primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            Save Current Page
+          </button>
+          <button id="openDashboardBtn" class="ext-action-btn ghost">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </button>
+        </div>
+
+        <!-- Recent Saves -->
+        <div class="ext-section-title">Recent Saves</div>
+        <div id="recentSaves" class="ext-recent-list"></div>
       </div>
 
-      <div id="scoreSection" class="score-section" hidden>
-        <div id="resumeBar" class="resume-bar" hidden>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+      <!-- Score Tab Panel -->
+      <div id="panelScore" class="tab-panel" hidden>
+        <!-- Score Header -->
+        <div class="ext-score-header">
+          <div class="ext-score-ring" id="scoreRing"></div>
+          <div class="ext-score-meta">
+            <div class="ext-score-label" id="scoreLabel"></div>
+            <div class="ext-score-detail" id="scoreDetail"></div>
+          </div>
+        </div>
+
+        <!-- Metric pills -->
+        <div class="ext-metric-row" id="metricRow">
+          <span class="ext-metric-pill exact" id="pillExact">Exact 0</span>
+          <span class="ext-metric-pill variant" id="pillVariant">Variant 0</span>
+          <span class="ext-metric-pill semantic" id="pillSemantic">Semantic 0</span>
+          <span class="ext-metric-pill missing" id="pillMissing">Missing 0</span>
+        </div>
+
+        <!-- Resume inline -->
+        <div id="resumeInline" class="ext-resume-inline" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
           </svg>
-          <span class="resume-bar-name" id="resumeName">Default Profile</span>
-          <button class="btn-link resume-switch-btn" id="resumeSwitchBtn">Switch</button>
-        </div>
-        <div class="score-ring" id="scoreRing"></div>
-        <div class="score-metrics">
-          <div class="metric">
-            <span class="metric-val" id="exactCount">0</span>
-            <span class="metric-label">Exact</span>
-          </div>
-          <div class="metric">
-            <span class="metric-val" id="variantCount">0</span>
-            <span class="metric-label">Variant</span>
-          </div>
-          <div class="metric">
-            <span class="metric-val" id="semanticCount">0</span>
-            <span class="metric-label">Semantic</span>
-          </div>
-          <div class="metric">
-            <span class="metric-val" id="missingCount">0</span>
-            <span class="metric-label">Missing</span>
-          </div>
+          <span class="ext-resume-name" id="resumeName">Default Profile</span>
+          <button class="ext-resume-switch" id="resumeSwitchBtn">Switch</button>
         </div>
 
-        <details class="keyword-details">
-          <summary>Keyword Breakdown</summary>
-          <div id="keywordBreakdown" class="keyword-list"></div>
-        </details>
+        <!-- Resume picker -->
+        <div id="resumePicker" class="resume-picker" hidden>
+          <div class="resume-picker-header">
+            <span class="resume-picker-title">Select Resume</span>
+            <button class="resume-picker-close" id="resumePickerClose">&times;</button>
+          </div>
+          <div id="resumePickerList" class="resume-picker-list"></div>
+        </div>
+
+        <!-- Keywords -->
+        <div id="kwSection" class="ext-kw-section" hidden>
+          <div class="ext-kw-header" id="kwToggle">
+            <span class="ext-kw-header-label">Keyword Breakdown</span>
+            <span class="ext-kw-chevron" id="kwChevron">&#9662;</span>
+          </div>
+          <div id="kwTags" class="ext-kw-tags" hidden></div>
+        </div>
+
+        <!-- Save CTA (unsaved state) -->
+        <div id="saveCTA">
+          <button id="saveBtn" class="ext-save-full">Save &amp; Track</button>
+        </div>
+
+        <!-- Saved bar (saved state) -->
+        <div id="savedBar" hidden>
+          <div class="ext-saved-bar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>Tracked</span>
+            <span class="ext-saved-stage" id="currentStage">Saved</span>
+          </div>
+          <div class="saved-actions">
+            <button id="viewInTrackerBtn" class="ext-resume-switch">View in Tracker</button>
+            <button id="rescoreBtn" class="ext-resume-switch">Re-score</button>
+          </div>
+        </div>
       </div>
 
-      <div id="resumePicker" class="resume-picker" hidden>
-        <div class="resume-picker-header">
-          <span class="resume-picker-title">Select Resume</span>
-          <button class="resume-picker-close" id="resumePickerClose">&times;</button>
+      <!-- Profile Tab Panel -->
+      <div id="panelProfile" class="tab-panel" hidden>
+        <div class="profile-summary" id="profileSummary">
+          <div class="profile-avatar-large" id="profileAvatar"></div>
+          <div class="profile-name" id="profileName"></div>
+          <div class="profile-email" id="profileEmail"></div>
         </div>
-        <div id="resumePickerList" class="resume-picker-list"></div>
-      </div>
-
-      <div id="saveCTA" class="save-cta">
-        <button id="saveBtn" class="btn-primary btn-full">Save & Track</button>
-      </div>
-
-      <div id="savedCTA" class="save-cta" hidden>
-        <div class="saved-indicator">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          <span>Saved</span>
-          <span class="stage-badge" id="currentStage"></span>
-        </div>
-        <div class="saved-actions">
-          <button id="viewInTrackerBtn" class="btn-link">View in Tracker</button>
-          <button id="rescoreBtn" class="btn-link">Re-score</button>
+        <div class="profile-actions">
+          <button id="profileSettingsBtn" class="ext-action-btn ghost" style="flex:1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09"/>
+            </svg>
+            Settings
+          </button>
+          <button id="profileSignOutBtn" class="ext-action-btn ghost" style="flex:1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
@@ -202,10 +248,10 @@
       </div>
     </div>
 
-    <!-- Manual save modal (for error state) -->
+    <!-- Manual save modal -->
     <div id="manualSaveView" class="view" hidden>
       <div class="manual-save-form">
-        <p class="section-title">Save Job Manually</p>
+        <p class="ext-section-title">Save Job Manually</p>
         <input id="manualRole" class="form-input" type="text" placeholder="Job title">
         <input id="manualCompany" class="form-input" type="text" placeholder="Company">
         <input id="manualUrl" class="form-input" type="url" placeholder="Job URL">
@@ -231,7 +277,9 @@
     <footer id="footer">
       <span class="sync-dot" id="syncDot"></span>
       <span id="syncText">Checking...</span>
-      <button id="syncRetryBtn" class="sync-retry-btn" hidden>Retry</button>
+      <div class="ext-shortcut-hint">
+        <span class="ext-kbd">&#8984;&#8679;S</span> save
+      </div>
     </footer>
   </div>
 

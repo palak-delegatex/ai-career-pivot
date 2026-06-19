@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const $ = (sel) => document.querySelector(sel);
-  const show = (id) => {
-    document.querySelectorAll(".view").forEach((v) => (v.hidden = true));
-    $(id).hidden = false;
-  };
+  const $$ = (sel) => document.querySelectorAll(sel);
 
   function msg(type, payload) {
     return new Promise((resolve) => {
@@ -23,8 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const offset = circ * (1 - score / 100);
     const color = scoreColor(score);
     return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#334155" stroke-width="3"/>
-      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#334155" stroke-width="${size > 40 ? 4 : 2.5}"/>
+      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${size > 40 ? 4 : 2.5}"
         stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
         stroke-linecap="round" transform="rotate(-90 ${size / 2} ${size / 2})"/>
       <text x="${size / 2}" y="${size / 2 + 1}" text-anchor="middle" dominant-baseline="central"
@@ -57,13 +54,80 @@ document.addEventListener("DOMContentLoaded", async () => {
     return div.innerHTML;
   }
 
+  // --- Tab Navigation ---
+
+  function switchTab(tabName) {
+    $$(".ext-tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tabName));
+    $$("#mainContent .tab-panel").forEach((p) => (p.hidden = p.id !== `panel${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`));
+  }
+
+  $("#tabBar").addEventListener("click", (e) => {
+    const tab = e.target.closest(".ext-tab");
+    if (tab && tab.dataset.tab) switchTab(tab.dataset.tab);
+  });
+
+  // --- Sync status ---
+
+  function setSyncStatus(color, text) {
+    $("#syncDot").className = `sync-dot ${color}`;
+    $("#syncText").textContent = text;
+  }
+
+  async function syncCheck() {
+    if (!navigator.onLine) {
+      setSyncStatus("red", "Offline");
+      return;
+    }
+    try {
+      await msg("GET_JOBS");
+      setSyncStatus("green", "Synced");
+    } catch {
+      setSyncStatus("amber", "Sync error");
+    }
+  }
+
+  window.addEventListener("online", () => syncCheck());
+  window.addEventListener("offline", () => setSyncStatus("red", "Offline"));
+
+  // --- Show views helper ---
+
+  function showSignedInUI() {
+    $("#signInView").hidden = true;
+    $("#tabBar").hidden = false;
+    $("#mainContent").hidden = false;
+  }
+
+  function showSignInView() {
+    $("#signInView").hidden = false;
+    $("#tabBar").hidden = true;
+    $("#mainContent").hidden = true;
+    $("#contextBar").hidden = true;
+  }
+
+  function showErrorView() {
+    $("#signInView").hidden = true;
+    $("#tabBar").hidden = true;
+    $("#mainContent").hidden = true;
+    $("#errorView").hidden = false;
+  }
+
+  function showLoadingView() {
+    $("#loadingView").hidden = false;
+    $("#mainContent").hidden = true;
+    $("#tabBar").hidden = true;
+  }
+
+  function hideLoadingView() {
+    $("#loadingView").hidden = true;
+  }
+
   // --- Auth check ---
 
   const sessionResult = await msg("GET_SESSION");
   const session = sessionResult.ok ? sessionResult.data : null;
 
   if (!session) {
-    show("#signInView");
+    showSignInView();
     setSyncStatus("red", "Not signed in");
 
     const signInBtn = $("#googleSignInBtn");
@@ -85,25 +149,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    // Settings still accessible
     $("#settingsBtn").addEventListener("click", () => {
       chrome.runtime.openOptionsPage();
     });
     return;
   }
 
-  // --- Signed in: show user menu ---
+  // --- Signed in: setup user UI ---
 
   const user = session.user;
   const userName = user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
   const userEmail = user.email || "";
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || "";
 
+  // Header user menu
   const userMenu = $("#userMenu");
   const userInitial = $("#userInitial");
   const userAvatarImg = $("#userAvatarImg");
 
   userMenu.hidden = false;
+  $("#notifBtn").hidden = false;
+  $("#settingsBtn").hidden = true;
 
   if (avatarUrl) {
     userAvatarImg.src = avatarUrl;
@@ -135,24 +201,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.stopPropagation();
   });
 
-  // Sign out
   $("#signOutBtn").addEventListener("click", async () => {
     await msg("SIGN_OUT");
     window.location.reload();
   });
 
-  // Dropdown settings
   $("#dropdownSettings").addEventListener("click", () => {
     chrome.runtime.openOptionsPage();
   });
 
-  // --- Load config and proceed ---
+  // Profile tab
+  if (avatarUrl) {
+    $("#profileAvatar").innerHTML = `<img src="${escapeHtml(avatarUrl)}" alt="">`;
+  } else {
+    $("#profileAvatar").textContent = userName.charAt(0).toUpperCase();
+  }
+  $("#profileName").textContent = userName;
+  $("#profileEmail").textContent = userEmail;
+
+  $("#profileSettingsBtn").addEventListener("click", () => {
+    chrome.runtime.openOptionsPage();
+  });
+
+  $("#profileSignOutBtn").addEventListener("click", async () => {
+    await msg("SIGN_OUT");
+    window.location.reload();
+  });
+
+  // --- Load config and detect job ---
 
   const configResult = await msg("GET_CONFIG");
   const config = configResult.ok ? configResult.data : { apiUrl: "https://ai-career-pivot.vercel.app" };
 
-  // Check active tab for job data
-  show("#loadingView");
+  showLoadingView();
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   let jobOnPage = null;
@@ -183,210 +264,171 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  if (jobOnPage) {
-    await showJobView(jobOnPage, config);
-  } else if (extractionFailed) {
-    showErrorView(tab, config);
+  hideLoadingView();
+
+  if (extractionFailed) {
+    showErrorViewHandler(tab, config);
+    return;
+  }
+
+  showSignedInUI();
+
+  // Load jobs data for pipeline and recent saves
+  const jobsResult = await msg("GET_JOBS");
+  const jobs = jobsResult.ok ? (jobsResult.data.jobs || []) : [];
+
+  // Pipeline counts
+  const counts = { saved: 0, applied: 0, interview: 0, offer: 0 };
+  for (const j of jobs) {
+    if (j.stage === "saved") counts.saved++;
+    else if (j.stage === "applied") counts.applied++;
+    else if (j.stage === "phone_screen" || j.stage === "interview") counts.interview++;
+    else if (j.stage === "offer") counts.offer++;
+  }
+
+  $("#circleSaved").textContent = counts.saved;
+  $("#circleApplied").textContent = counts.applied;
+  $("#circleInterview").textContent = counts.interview;
+  $("#circleOffer").textContent = counts.offer;
+
+  // Recent saves
+  const recent = jobs.slice(0, 5);
+  const recentContainer = $("#recentSaves");
+  recentContainer.innerHTML = "";
+
+  if (recent.length === 0) {
+    recentContainer.innerHTML = '<div class="empty-recent">No saved jobs yet. Visit a job listing to get started!</div>';
   } else {
-    await showDefaultView(config);
-  }
-
-  // Sync status
-  await syncCheck();
-
-  // --- Views ---
-
-  async function showDefaultView(config) {
-    show("#defaultView");
-
-    const result = await msg("GET_JOBS");
-    if (!result.ok) {
-      setSyncStatus("red", result.error);
-      return;
-    }
-
-    const jobs = result.data.jobs || [];
-
-    // Pipeline counts
-    const counts = { saved: 0, applied: 0, interview: 0, offer: 0 };
-    for (const j of jobs) {
-      if (j.stage === "saved") counts.saved++;
-      else if (j.stage === "applied") counts.applied++;
-      else if (j.stage === "phone_screen" || j.stage === "interview") counts.interview++;
-      else if (j.stage === "offer") counts.offer++;
-    }
-
-    $("#countSaved").textContent = counts.saved;
-    $("#countApplied").textContent = counts.applied;
-    $("#countInterview").textContent = counts.interview;
-    $("#countOffer").textContent = counts.offer;
-
-    // Recent saves
-    const recent = jobs.slice(0, 3);
-    const container = $("#recentSaves");
-    container.innerHTML = "";
-
-    if (recent.length === 0) {
-      container.innerHTML = '<div class="empty-recent">No saved jobs yet. Visit a job listing to get started!</div>';
-    } else {
-      for (const job of recent) {
-        const item = document.createElement("div");
-        item.className = "recent-job";
-        item.innerHTML = `
-          <div class="recent-job-icon" style="background:${companyBg(job.company)}">
-            ${job.company.charAt(0).toUpperCase()}
-          </div>
-          <div class="recent-job-info">
-            <div class="recent-job-title">${escapeHtml(job.role)}</div>
-            <div class="recent-job-company">${escapeHtml(job.company)} · ${timeAgo(job.created_at)}</div>
-          </div>
-          ${job.match_score > 0 ? `<div class="recent-job-score">${scoreRingSvg(job.match_score, 32)}</div>` : ""}
-        `;
-        container.appendChild(item);
-      }
-    }
-
-    // Paste URL
-    let pasteMode = false;
-    $("#pasteUrlBtn").addEventListener("click", () => {
-      if (pasteMode) return;
-      pasteMode = true;
-      const row = document.createElement("div");
-      row.className = "paste-url-row";
-      row.innerHTML = `
-        <input class="paste-url-input" type="url" placeholder="Paste job URL...">
-        <button class="paste-url-go">Go</button>
+    for (const job of recent) {
+      const item = document.createElement("div");
+      item.className = "ext-recent-item";
+      item.innerHTML = `
+        <div class="ext-recent-icon" style="background:${companyBg(job.company)}">
+          ${job.company.charAt(0).toUpperCase()}
+        </div>
+        <div class="ext-recent-info">
+          <div class="ext-recent-title">${escapeHtml(job.role)}</div>
+          <div class="ext-recent-meta">${escapeHtml(job.company)} · ${timeAgo(job.created_at)}</div>
+        </div>
+        ${job.match_score > 0 ? `<div class="ext-recent-score">${scoreRingSvg(job.match_score, 28)}</div>` : ""}
       `;
-      $("#pasteUrlBtn").replaceWith(row);
-
-      const input = row.querySelector("input");
-      input.focus();
-
-      row.querySelector("button").addEventListener("click", () => {
-        const url = input.value.trim();
-        if (url) chrome.tabs.create({ url });
-      });
-    });
-
-    // Dashboard
-    $("#openDashboardBtn").addEventListener("click", () => {
-      chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
-    });
+      recentContainer.appendChild(item);
+    }
   }
 
-  async function showJobView(jobData, config) {
-    show("#jobView");
+  // Quick actions
+  $("#saveCurrentBtn").addEventListener("click", () => {
+    if (tab?.id) {
+      chrome.tabs.sendMessage(tab.id, { type: "TRIGGER_SAVE" });
+      window.close();
+    }
+  });
 
-    // Job card
-    $("#companyIcon").style.background = companyBg(jobData.company);
-    $("#companyIcon").textContent = jobData.company.charAt(0).toUpperCase();
-    $("#jobTitle").textContent = jobData.role;
-    $("#jobCompany").textContent = jobData.company;
-    $("#jobLocation").textContent = jobData.location || "";
-    $("#jobSalary").textContent = jobData.salary || "";
-    $("#jobSource").textContent = jobData.source;
+  $("#openDashboardBtn").addEventListener("click", () => {
+    chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
+  });
+
+  // --- Job detected: setup Score tab ---
+
+  if (jobOnPage) {
+    setupJobContext(jobOnPage, config, jobs);
+  }
+
+  async function setupJobContext(jobData, config, existingJobs) {
+    // Show context bar
+    $("#contextBar").hidden = false;
+    $("#contextIcon").style.background = companyBg(jobData.company);
+    $("#contextIcon").textContent = jobData.company.charAt(0).toUpperCase();
+    $("#contextTitle").textContent = jobData.role;
+    $("#contextCompany").textContent = `${jobData.company}${jobData.location ? ' · ' + jobData.location : ''}`;
 
     // Check if already saved
     const savedResult = await msg("CHECK_SAVED", { url: jobData.url });
     const savedJob = savedResult.ok ? savedResult.data : null;
 
-    // Quick score
+    if (savedJob) {
+      $("#contextBadge").textContent = "Saved ✓";
+      $("#contextBadge").className = "ext-context-badge saved";
+    } else {
+      $("#contextBadge").textContent = "New";
+      $("#contextBadge").className = "ext-context-badge unsaved";
+    }
+
+    // Score
     let scoreData = null;
     if (jobData.description) {
       const scoreResult = await msg("QUICK_SCORE", { jobDescription: jobData.description });
       if (scoreResult.ok) scoreData = scoreResult.data;
     }
 
-    // --- Resume state ---
-    let resumeVersions = [];
-    let activeResumeId = null;
-    let activeResumeName = null;
-
-    function importanceBadgeClass(imp) {
-      if (imp === "critical") return "kw-imp-critical";
-      if (imp === "important") return "kw-imp-important";
-      return "kw-imp-helpful";
+    // Show Score tab
+    const scoreTab = $("#scoreTab");
+    scoreTab.hidden = false;
+    if (scoreData && scoreData.score > 0) {
+      $("#scoreTabBadge").textContent = scoreData.score;
     }
 
-    function renderScore(data) {
-      if (!data || data.total <= 0) {
-        $("#scoreSection").hidden = true;
-        return;
-      }
-      scoreData = data;
-      $("#scoreSection").hidden = false;
-      $("#scoreRing").innerHTML = scoreRingSvg(data.score, 96);
+    // Switch to Score tab automatically when job detected
+    switchTab("score");
 
+    // Resume state
+    let resumeVersions = [];
+    let activeResumeId = null;
+
+    function renderScore(data) {
+      if (!data || data.total <= 0) return;
+      scoreData = data;
+
+      // Score ring
+      $("#scoreRing").innerHTML = scoreRingSvg(data.score, 72);
+
+      // Score label
+      const label = data.score >= 80 ? "Strong Match" : data.score >= 60 ? "Good Match" : "Needs Work";
+      $("#scoreLabel").textContent = label;
+      $("#scoreLabel").style.color = scoreColor(data.score);
+      $("#scoreDetail").textContent = `${data.matched.length} of ${data.total} skills matched`;
+
+      // Tab badge
+      $("#scoreTabBadge").textContent = data.score;
+
+      // Metric pills
       const exact = data.matched.filter((m) => m.matchType === "exact");
       const variant = data.matched.filter((m) => m.matchType === "variant");
       const semantic = data.matched.filter((m) => m.matchType === "semantic");
       const gaps = data.gaps || [];
+      const missingCount = gaps.length || data.missing.length;
 
-      $("#exactCount").textContent = exact.length;
-      $("#variantCount").textContent = variant.length;
-      $("#semanticCount").textContent = semantic.length;
-      $("#missingCount").textContent = gaps.length || data.missing.length;
+      $("#pillExact").textContent = `Exact ${exact.length}`;
+      $("#pillVariant").textContent = `Variant ${variant.length}`;
+      $("#pillSemantic").textContent = `Semantic ${semantic.length}`;
+      $("#pillMissing").textContent = `Missing ${missingCount}`;
 
-      const kwContainer = $("#keywordBreakdown");
+      // Keywords
+      const kwContainer = $("#kwTags");
       kwContainer.innerHTML = "";
-      const typeClass = { exact: "kw-exact", variant: "kw-variant", semantic: "kw-semantic" };
-      const typeLabel = { exact: "Exact", variant: "Variant", semantic: "Semantic" };
-      for (const m of data.matched) {
-        kwContainer.innerHTML += `<span class="kw-tag ${typeClass[m.matchType]}">${escapeHtml(m.skill)} <span class="kw-badge">${typeLabel[m.matchType]}</span></span>`;
+      const typeClass = { exact: "exact", variant: "variant", semantic: "exact" };
+      for (const m of data.matched.slice(0, 8)) {
+        kwContainer.innerHTML += `<span class="ext-kw-tag ${typeClass[m.matchType]}">${escapeHtml(m.skill)}</span>`;
       }
-
-      if (gaps.length > 0) {
-        const grouped = { critical: [], important: [], helpful: [] };
-        for (const g of gaps) grouped[g.importance]?.push(g);
-
-        const sections = [
-          { key: "critical", label: "Critical", icon: "!!" },
-          { key: "important", label: "Important", icon: "!" },
-          { key: "helpful", label: "Helpful", icon: "+" },
-        ];
-
-        for (const sec of sections) {
-          const items = grouped[sec.key];
-          if (!items.length) continue;
-
-          kwContainer.innerHTML += `<div class="kw-gap-group">
-            <div class="kw-gap-header ${importanceBadgeClass(sec.key)}">
-              <span class="kw-gap-icon">${sec.icon}</span> ${sec.label} <span class="kw-gap-count">${items.length}</span>
-            </div>
-            ${items.map((g) => `<div class="kw-gap-item">
-              <span class="kw-tag kw-miss"><span class="kw-imp-dot ${importanceBadgeClass(sec.key)}"></span>${escapeHtml(g.keyword)}</span>
-              <div class="kw-suggestion">${escapeHtml(g.suggestion)}</div>
-            </div>`).join("")}
-          </div>`;
-        }
-      } else {
-        for (const kw of data.missing.slice(0, 8)) {
-          kwContainer.innerHTML += `<span class="kw-tag kw-miss">${escapeHtml(kw)}</span>`;
-        }
+      for (const kw of data.missing.slice(0, 5)) {
+        kwContainer.innerHTML += `<span class="ext-kw-tag miss">${escapeHtml(kw)}</span>`;
+      }
+      if (kwContainer.children.length > 0) {
+        $("#kwSection").hidden = false;
       }
     }
 
-    async function rescoreWithResume(resumeId) {
-      if (!jobData.description) return;
-      const resume = resumeVersions.find((v) => v.id === resumeId);
-      const skills = resume?.enabled_skills;
-      if (!skills?.length) return;
-
-      const payload = { jobDescription: jobData.description, skills };
-      const result = await msg("QUICK_SCORE", payload);
-      if (result.ok) {
-        renderScore(result.data);
-        await msg("SET_ACTIVE_RESUME", { resumeId });
-        activeResumeId = resumeId;
-        activeResumeName = resume.name;
-        $("#resumeName").textContent = resume.name;
-      }
-    }
-
-    // Show initial score
     renderScore(scoreData);
 
-    // Load resume versions and show resume bar
+    // Keyword toggle
+    $("#kwToggle").addEventListener("click", () => {
+      const tags = $("#kwTags");
+      const chevron = $("#kwChevron");
+      tags.hidden = !tags.hidden;
+      chevron.classList.toggle("open", !tags.hidden);
+    });
+
+    // Load resume versions
     if (scoreData && scoreData.total > 0) {
       const [versionsResult, activeResult] = await Promise.all([
         msg("GET_RESUME_VERSIONS"),
@@ -406,9 +448,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const active = activeResumeId
           ? resumeVersions.find((v) => v.id === activeResumeId)
           : null;
-        activeResumeName = active?.name || "Default Profile";
-        $("#resumeName").textContent = activeResumeName;
-        $("#resumeBar").hidden = false;
+        $("#resumeName").textContent = active?.name || "Default Profile";
+        $("#resumeInline").hidden = false;
       }
 
       // Resume picker
@@ -451,23 +492,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // Re-score handler for saved state
-    async function handleRescore() {
+    async function rescoreWithResume(resumeId) {
       if (!jobData.description) return;
-      if (activeResumeId) {
-        await rescoreWithResume(activeResumeId);
-      } else {
-        const result = await msg("QUICK_SCORE", { jobDescription: jobData.description });
-        if (result.ok) renderScore(result.data);
+      const resume = resumeVersions.find((v) => v.id === resumeId);
+      const skills = resume?.enabled_skills;
+      if (!skills?.length) return;
+
+      const result = await msg("QUICK_SCORE", { jobDescription: jobData.description, skills });
+      if (result.ok) {
+        renderScore(result.data);
+        await msg("SET_ACTIVE_RESUME", { resumeId });
+        activeResumeId = resumeId;
+        $("#resumeName").textContent = resume.name;
       }
     }
 
     // Save / saved state
     if (savedJob) {
-      showSavedState(savedJob, config, handleRescore);
+      showSavedState(savedJob);
     } else {
       $("#saveCTA").hidden = false;
-      $("#savedCTA").hidden = true;
+      $("#savedBar").hidden = true;
 
       $("#saveBtn").addEventListener("click", async () => {
         const btn = $("#saveBtn");
@@ -484,7 +529,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (result.ok) {
-          showSavedState(result.data.job, config, handleRescore);
+          showSavedState(result.data.job);
+          // Update context badge
+          $("#contextBadge").textContent = "Saved ✓";
+          $("#contextBadge").className = "ext-context-badge saved";
+          // Update pipeline count
+          const current = parseInt($("#circleSaved").textContent) || 0;
+          $("#circleSaved").textContent = current + 1;
         } else {
           btn.disabled = false;
           btn.textContent = result.error || "Error — try again";
@@ -492,53 +543,35 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
     }
-  }
 
-  function showSavedState(job, config, onRescore) {
-    $("#saveCTA").hidden = true;
-    $("#savedCTA").hidden = false;
-    $("#currentStage").textContent = job.stage?.replace("_", " ") || "saved";
+    function showSavedState(job) {
+      $("#saveCTA").hidden = true;
+      $("#savedBar").hidden = false;
+      $("#currentStage").textContent = job.stage?.replace("_", " ") || "saved";
 
-    $("#viewInTrackerBtn").addEventListener("click", () => {
-      chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
-    });
+      $("#viewInTrackerBtn").addEventListener("click", () => {
+        chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
+      });
 
-    if (onRescore) {
-      $("#rescoreBtn").addEventListener("click", () => onRescore());
+      $("#rescoreBtn").addEventListener("click", async () => {
+        if (!jobData.description) return;
+        if (activeResumeId) {
+          await rescoreWithResume(activeResumeId);
+        } else {
+          const result = await msg("QUICK_SCORE", { jobDescription: jobData.description });
+          if (result.ok) renderScore(result.data);
+        }
+      });
     }
   }
 
-  function setSyncStatus(color, text, showRetry = false) {
-    $("#syncDot").className = `sync-dot ${color}`;
-    $("#syncText").textContent = text;
-    $("#syncRetryBtn").hidden = !showRetry;
-  }
-
-  async function syncCheck() {
-    if (!navigator.onLine) {
-      setSyncStatus("red", "Offline", true);
-      return;
-    }
-    try {
-      await msg("GET_JOBS");
-      setSyncStatus("green", "Synced");
-    } catch {
-      setSyncStatus("amber", "Sync error", true);
-    }
-  }
-
-  $("#syncRetryBtn").addEventListener("click", async () => {
-    setSyncStatus("amber", "Retrying...");
-    await syncCheck();
-  });
-
-  window.addEventListener("online", () => syncCheck());
-  window.addEventListener("offline", () => setSyncStatus("red", "Offline", true));
+  // Sync check
+  await syncCheck();
 
   // --- Error view ---
 
-  function showErrorView(tab, config) {
-    show("#errorView");
+  function showErrorViewHandler(tab, config) {
+    showErrorView();
 
     if (tab?.url) {
       $("#errorPasteInput").value = tab.url;
@@ -554,16 +587,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     $("#errorManualSave").addEventListener("click", () => {
-      showManualSaveView(tab, config);
+      showManualSaveViewHandler(tab, config);
     });
   }
 
-  function showManualSaveView(tab, config) {
-    show("#manualSaveView");
+  function showManualSaveViewHandler(tab, config) {
+    $("#errorView").hidden = true;
+    $("#manualSaveView").hidden = false;
     if (tab?.url) $("#manualUrl").value = tab.url;
 
     $("#manualCancelBtn").addEventListener("click", () => {
-      showErrorView(tab, config);
+      $("#manualSaveView").hidden = true;
+      showErrorViewHandler(tab, config);
     });
 
     $("#manualSaveBtn").addEventListener("click", async () => {
@@ -593,7 +628,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (result.ok) {
         btn.textContent = "Saved!";
-        setTimeout(() => showDefaultView(config), 800);
+        setTimeout(() => window.location.reload(), 800);
       } else {
         btn.disabled = false;
         btn.textContent = "Save";
@@ -603,8 +638,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Settings
-  $("#settingsBtn").addEventListener("click", () => {
-    chrome.runtime.openOptionsPage();
-  });
 });
