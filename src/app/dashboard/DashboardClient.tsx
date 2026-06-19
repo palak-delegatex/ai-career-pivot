@@ -21,6 +21,7 @@ import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ContextualHint } from "@/components/ui/contextual-hint";
 
 interface Report {
   id: string;
@@ -489,6 +490,9 @@ export default function DashboardClient() {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
+        <ContextualHint id="hint-dashboard-empty" className="mb-4 text-left">
+          Your saved reports will appear here. Generate your first pivot plan to get started.
+        </ContextualHint>
         <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
         <Link
           href="/pricing"
@@ -592,9 +596,13 @@ export default function DashboardClient() {
       <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
-      <p className="text-slate-400 text-center text-sm italic mb-6 sm:mb-8">
+      <p className="text-slate-400 text-center text-sm italic mb-4 sm:mb-6">
         &ldquo;{dailyQuote}&rdquo;
       </p>
+
+      <ContextualHint id="hint-dashboard" className="mb-6">
+        Click any report to see your full roadmap. Reports are saved permanently — come back anytime.
+      </ContextualHint>
 
       {activeReport && activeReport.plans.length > 1 && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
