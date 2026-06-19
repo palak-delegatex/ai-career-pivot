@@ -39,7 +39,7 @@
     const circ = 2 * Math.PI * r;
     const offset = circ * (1 - score / 100);
     const color = scoreColor(score);
-    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="LinkedIn optimization score: ${score} percent">
       <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#334155" stroke-width="3"/>
       <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="3"
         stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
@@ -111,193 +111,99 @@
     return { headline, summary, experience, skills };
   }
 
-  function createPanel() {
-    const existing = document.querySelector(".acp-li-optimizer-panel");
-    if (existing) existing.remove();
+  // --- Score badge (injected next to profile name) ---
 
-    const panel = el("div", { className: "acp-li-optimizer-panel" });
+  function injectScoreBadge(score) {
+    if (document.querySelector(".acp-li-score-badge")) return;
 
-    Object.assign(panel.style, {
-      position: "fixed",
-      top: "80px",
-      right: "16px",
-      width: "360px",
-      maxHeight: "calc(100vh - 100px)",
-      overflowY: "auto",
-      backgroundColor: "#1e293b",
-      border: "1px solid #334155",
-      borderRadius: "16px",
-      padding: "20px",
-      zIndex: "9999",
-      fontFamily: "system-ui, -apple-system, sans-serif",
-      color: "#e2e8f0",
-      boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-      fontSize: "13px",
-      lineHeight: "1.5",
+    const headlineEl = document.querySelector(
+      ".text-body-medium.break-words, .pv-text-details__about-this-profile-entrypoint"
+    );
+    if (!headlineEl) return;
+
+    const badge = el("span", {
+      className: "acp-li-score-badge",
+      innerHTML: scoreRingSvg(score, 32),
+      onClick: () => {
+        if (!panelVisible) {
+          panelVisible = true;
+          document.body.appendChild(createPanel());
+        }
+      },
     });
+    badge.title = `LinkedIn score: ${score}/100 — click to see details`;
 
-    const closeBtn = el("button", {
-      textContent: "×",
-      onClick: () => { panel.remove(); panelVisible = false; },
-    });
-    Object.assign(closeBtn.style, {
-      position: "absolute", top: "12px", right: "12px",
-      background: "none", border: "none", color: "#94a3b8",
-      fontSize: "20px", cursor: "pointer", padding: "4px",
-    });
-    panel.appendChild(closeBtn);
-
-    if (!optimizeData) {
-      panel.appendChild(el("div", {
-        innerHTML: `
-          <div style="text-align:center;padding:24px 0">
-            <div style="color:#2dd4bf;font-weight:700;font-size:15px;margin-bottom:8px">LinkedIn Optimizer</div>
-            <div style="color:#94a3b8;font-size:12px;margin-bottom:16px">Analyzing your profile...</div>
-            <div style="width:32px;height:32px;border:3px solid #334155;border-top-color:#2dd4bf;border-radius:50%;animation:acp-spin 1s linear infinite;margin:0 auto"></div>
-          </div>
-          <style>@keyframes acp-spin{to{transform:rotate(360deg)}}</style>
-        `,
-      }));
-      return panel;
-    }
-
-    const data = optimizeData;
-
-    // Score header
-    const header = el("div", { className: "acp-opt-header" });
-    Object.assign(header.style, {
-      display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px",
-    });
-    header.appendChild(el("div", { innerHTML: scoreRingSvg(data.overallScore, 56) }));
-    const meta = el("div", {});
-    meta.appendChild(el("div", {
-      textContent: data.overallLabel,
-      className: "acp-opt-label",
-    }));
-    Object.assign(meta.lastChild.style, {
-      fontWeight: "700", fontSize: "15px", color: scoreColor(data.overallScore),
-    });
-    meta.appendChild(el("div", {
-      textContent: data.bridgeStorySummary.slice(0, 80) + (data.bridgeStorySummary.length > 80 ? "..." : ""),
-    }));
-    Object.assign(meta.lastChild.style, { fontSize: "11px", color: "#94a3b8", marginTop: "2px" });
-    header.appendChild(meta);
-    panel.appendChild(header);
-
-    // Section scores
-    const sectionList = el("div", {});
-    Object.assign(sectionList.style, { marginBottom: "16px" });
-    for (const s of data.sectionScores) {
-      const row = el("div", {});
-      Object.assign(row.style, {
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "6px 0", borderBottom: "1px solid #1e293b",
-      });
-      const left = el("div", {});
-      Object.assign(left.style, { display: "flex", alignItems: "center", gap: "8px" });
-      const dot = el("span", {});
-      Object.assign(dot.style, {
-        width: "8px", height: "8px", borderRadius: "50%",
-        backgroundColor: scoreColor(s.score), flexShrink: "0",
-      });
-      left.appendChild(dot);
-      left.appendChild(el("span", { textContent: s.section }));
-      Object.assign(left.lastChild.style, { fontSize: "12px" });
-      row.appendChild(left);
-      row.appendChild(el("span", {
-        textContent: `${s.score}`,
-      }));
-      Object.assign(row.lastChild.style, {
-        fontSize: "12px", fontWeight: "600", color: scoreColor(s.score),
-      });
-      sectionList.appendChild(row);
-    }
-    panel.appendChild(sectionList);
-
-    // Quick wins
-    if (data.quickWins?.length > 0) {
-      const qwTitle = el("div", { textContent: "Quick Wins" });
-      Object.assign(qwTitle.style, {
-        fontWeight: "700", fontSize: "12px", color: "#fbbf24",
-        marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em",
-      });
-      panel.appendChild(qwTitle);
-
-      for (const win of data.quickWins.slice(0, 3)) {
-        const item = el("div", { textContent: win });
-        Object.assign(item.style, {
-          fontSize: "11px", color: "#cbd5e1", padding: "6px 8px",
-          backgroundColor: "#1a1f2e", borderRadius: "8px", marginBottom: "4px",
-          borderLeft: "2px solid #fbbf24",
-        });
-        panel.appendChild(item);
-      }
-    }
-
-    // Full Analysis CTA
-    const cta = el("a", {
-      textContent: "Full Analysis →",
-      href: `${DEFAULT_API_URL}/linkedin-optimizer`,
-    });
-    Object.assign(cta.style, {
-      display: "block", textAlign: "center", marginTop: "16px",
-      padding: "10px", borderRadius: "10px", fontWeight: "700",
-      fontSize: "13px", color: "#fff", textDecoration: "none",
-      background: "linear-gradient(135deg, #0d9488, #059669)",
-    });
-    cta.target = "_blank";
-    panel.appendChild(cta);
-
-    return panel;
+    headlineEl.parentNode.insertBefore(badge, headlineEl.nextSibling);
   }
 
-  function createTooltip(section) {
+  // --- Section score dots ---
+
+  const SECTION_SELECTORS = {
+    Headline: 'div.text-body-medium.break-words, .pv-text-details__about-this-profile-entrypoint',
+    Summary: '#about, section.pv-about-section',
+    Experience: '#experience, section#experience-section',
+    Skills: '#skills, section.pv-skill-categories-section',
+    Education: '#education, section#education-section',
+  };
+
+  function injectSectionDots() {
+    if (!optimizeData) return;
+
+    for (const section of optimizeData.sectionScores) {
+      const selectors = SECTION_SELECTORS[section.section];
+      if (!selectors) continue;
+
+      const target = document.querySelector(selectors);
+      if (!target || target.querySelector(".acp-li-section-dot")) continue;
+
+      const headerEl = target.querySelector("h2, .pvs-header__title span, .pv-profile-card-anchor") || target;
+
+      const dot = el("span", {
+        className: "acp-li-section-dot",
+        onClick: (e) => {
+          e.stopPropagation();
+          showInlineSuggestion(target, section);
+        },
+      });
+      dot.style.backgroundColor = scoreColor(section.score);
+      dot.title = `${section.section}: ${section.score}/100 — click for suggestion`;
+
+      if (headerEl.parentNode) {
+        headerEl.parentNode.insertBefore(dot, headerEl.nextSibling);
+      }
+    }
+  }
+
+  function showInlineSuggestion(target, section) {
     const existing = document.querySelector(".acp-li-suggestion-tooltip");
     if (existing) existing.remove();
 
     const tip = el("div", { className: "acp-li-suggestion-tooltip" });
-    Object.assign(tip.style, {
-      position: "absolute",
-      zIndex: "10000",
-      width: "320px",
-      backgroundColor: "#1e293b",
-      border: "1px solid #334155",
-      borderRadius: "12px",
-      padding: "14px",
-      boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
-      fontFamily: "system-ui, -apple-system, sans-serif",
-      color: "#e2e8f0",
-      fontSize: "12px",
-      lineHeight: "1.5",
-    });
 
-    const titleRow = el("div", {});
-    Object.assign(titleRow.style, {
-      display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px",
-    });
-    titleRow.appendChild(el("span", {
+    const titleRow = el("div", { className: "acp-li-tooltip-title-row" });
+    const titleSpan = el("span", {
+      className: "acp-li-tooltip-title",
       textContent: `${section.section} — ${section.scoreLabel}`,
-    }));
-    Object.assign(titleRow.firstChild.style, { fontWeight: "700", color: scoreColor(section.score) });
+    });
+    titleSpan.style.color = scoreColor(section.score);
+    titleRow.appendChild(titleSpan);
 
     const dismissBtn = el("button", {
+      className: "acp-li-tooltip-dismiss",
       textContent: "×",
       onClick: () => tip.remove(),
-    });
-    Object.assign(dismissBtn.style, {
-      background: "none", border: "none", color: "#94a3b8",
-      fontSize: "16px", cursor: "pointer", padding: "2px",
     });
     titleRow.appendChild(dismissBtn);
     tip.appendChild(titleRow);
 
-    tip.appendChild(el("div", { textContent: section.suggested.slice(0, 200) + (section.suggested.length > 200 ? "..." : "") }));
-    Object.assign(tip.lastChild.style, {
-      color: "#94d8b8", fontSize: "11px", marginBottom: "10px",
-      backgroundColor: "#0f2922", padding: "8px", borderRadius: "8px",
-    });
+    const suggestionText = section.suggested.slice(0, 200) + (section.suggested.length > 200 ? "..." : "");
+    tip.appendChild(el("div", {
+      className: "acp-li-tooltip-suggestion",
+      textContent: suggestionText,
+    }));
 
     const copyBtn = el("button", {
+      className: "acp-li-tooltip-copy",
       textContent: "Copy Suggestion",
       onClick: () => {
         navigator.clipboard.writeText(section.suggested);
@@ -305,96 +211,103 @@
         copyBtn.style.color = "#10b981";
         setTimeout(() => {
           copyBtn.textContent = "Copy Suggestion";
-          copyBtn.style.color = "#2dd4bf";
+          copyBtn.style.color = "";
         }, 2000);
       },
     });
-    Object.assign(copyBtn.style, {
-      background: "none", border: "1px solid #2dd4bf", color: "#2dd4bf",
-      padding: "5px 12px", borderRadius: "6px", cursor: "pointer",
-      fontSize: "11px", fontWeight: "600",
-    });
     tip.appendChild(copyBtn);
 
-    return tip;
+    target.style.position = target.style.position || "relative";
+    target.appendChild(tip);
+    tip.style.top = "0";
+    tip.style.right = "-340px";
   }
 
-  function attachSectionTooltips() {
-    if (!optimizeData) return;
+  // --- Optimizer panel ---
 
-    const sectionMap = {
-      Headline: 'div.text-body-medium.break-words, .pv-text-details__about-this-profile-entrypoint',
-      Summary: '#about, section.pv-about-section',
-      Experience: '#experience, section#experience-section',
-      Skills: '#skills, section.pv-skill-categories-section',
-      Education: '#education, section#education-section',
-    };
+  function createPanel() {
+    const existing = document.querySelector(".acp-li-optimizer-panel");
+    if (existing) existing.remove();
 
-    for (const section of optimizeData.sectionScores) {
-      const selectors = sectionMap[section.section];
-      if (!selectors) continue;
+    const panel = el("div", { className: "acp-li-optimizer-panel" });
 
-      const target = document.querySelector(selectors);
-      if (!target) continue;
-      if (target.dataset.acpOptimizer) continue;
-      target.dataset.acpOptimizer = "true";
+    const closeBtn = el("button", {
+      className: "acp-li-panel-close",
+      textContent: "×",
+      onClick: () => { panel.remove(); panelVisible = false; },
+    });
+    panel.appendChild(closeBtn);
 
-      Object.assign(target.style, { position: "relative" });
-
-      target.addEventListener("mouseenter", () => {
-        const tip = createTooltip(section);
-        target.appendChild(tip);
-        tip.style.top = "0";
-        tip.style.right = "-340px";
-      });
-
-      target.addEventListener("mouseleave", (e) => {
-        const tip = target.querySelector(".acp-li-suggestion-tooltip");
-        if (tip && !tip.contains(e.relatedTarget)) {
-          setTimeout(() => {
-            if (!tip.matches(":hover")) tip.remove();
-          }, 200);
-        }
-      });
+    if (!optimizeData) {
+      const loading = el("div", { className: "acp-li-panel-loading" });
+      loading.appendChild(el("div", { className: "acp-li-panel-loading-title", textContent: "LinkedIn Optimizer" }));
+      loading.appendChild(el("div", { className: "acp-li-panel-loading-subtitle", textContent: "Analyzing your profile..." }));
+      loading.appendChild(el("div", { className: "acp-li-panel-spinner" }));
+      panel.appendChild(loading);
+      return panel;
     }
+
+    const data = optimizeData;
+
+    const header = el("div", { className: "acp-li-opt-header" });
+    header.appendChild(el("div", { innerHTML: scoreRingSvg(data.overallScore, 56) }));
+    const meta = el("div");
+    const label = el("div", {
+      className: "acp-li-opt-label",
+      textContent: data.overallLabel,
+    });
+    label.style.color = scoreColor(data.overallScore);
+    meta.appendChild(label);
+    const summaryText = data.bridgeStorySummary.slice(0, 80) + (data.bridgeStorySummary.length > 80 ? "..." : "");
+    meta.appendChild(el("div", { className: "acp-li-opt-summary", textContent: summaryText }));
+    header.appendChild(meta);
+    panel.appendChild(header);
+
+    const sectionList = el("div", { className: "acp-li-section-list" });
+    for (const s of data.sectionScores) {
+      const row = el("div", { className: "acp-li-section-row" });
+
+      const left = el("div", { className: "acp-li-section-left" });
+      const dot = el("span", { className: "acp-li-section-dot-panel" });
+      dot.style.backgroundColor = scoreColor(s.score);
+      left.appendChild(dot);
+      left.appendChild(el("span", { className: "acp-li-section-name", textContent: s.section }));
+      row.appendChild(left);
+
+      const scoreEl = el("span", { className: "acp-li-section-score", textContent: `${s.score}` });
+      scoreEl.style.color = scoreColor(s.score);
+      row.appendChild(scoreEl);
+
+      sectionList.appendChild(row);
+    }
+    panel.appendChild(sectionList);
+
+    if (data.quickWins?.length > 0) {
+      panel.appendChild(el("div", { className: "acp-li-qw-title", textContent: "Quick Wins" }));
+      for (const win of data.quickWins.slice(0, 3)) {
+        panel.appendChild(el("div", { className: "acp-li-qw-item", textContent: win }));
+      }
+    }
+
+    const cta = el("a", {
+      className: "acp-li-cta",
+      textContent: "Full Analysis →",
+      href: `${DEFAULT_API_URL}/linkedin-optimizer`,
+    });
+    cta.target = "_blank";
+    panel.appendChild(cta);
+
+    return panel;
   }
+
+  // --- Trigger button ---
 
   function injectTriggerButton() {
-    if (document.querySelector(".acp-li-optimize-trigger")) return;
+    if (document.querySelector(".acp-li-trigger-btn")) return;
 
     const btn = el("button", {
-      className: "acp-li-optimize-trigger",
+      className: "acp-li-trigger-btn",
       innerHTML: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> <span>Optimize Profile</span>`,
-    });
-
-    Object.assign(btn.style, {
-      position: "fixed",
-      bottom: "24px",
-      right: "24px",
-      zIndex: "9998",
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      padding: "10px 18px",
-      borderRadius: "12px",
-      border: "none",
-      background: "linear-gradient(135deg, #0d9488, #059669)",
-      color: "#fff",
-      fontSize: "13px",
-      fontWeight: "700",
-      fontFamily: "system-ui, -apple-system, sans-serif",
-      cursor: "pointer",
-      boxShadow: "0 8px 24px rgba(13,148,136,0.4)",
-      transition: "transform 0.15s, box-shadow 0.15s",
-    });
-
-    btn.addEventListener("mouseenter", () => {
-      btn.style.transform = "translateY(-2px)";
-      btn.style.boxShadow = "0 12px 32px rgba(13,148,136,0.5)";
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.transform = "translateY(0)";
-      btn.style.boxShadow = "0 8px 24px rgba(13,148,136,0.4)";
     });
 
     btn.addEventListener("click", async () => {
@@ -408,11 +321,10 @@
 
       if (!optimizeData) {
         const profileData = extractProfileData();
-        const targetRole = ""; // user sets in the full analysis page
 
         const result = await msg("LINKEDIN_OPTIMIZE", {
           profileData,
-          targetRole: targetRole || profileData.headline || "Professional",
+          targetRole: profileData.headline || "Professional",
         });
 
         if (result.ok && result.data) {
@@ -422,20 +334,33 @@
             panel.remove();
             document.body.appendChild(createPanel());
           }
-          attachSectionTooltips();
+          injectScoreBadge(optimizeData.overallScore);
+          injectSectionDots();
         } else {
           const panel = document.querySelector(".acp-li-optimizer-panel");
           if (panel) {
-            panel.innerHTML = `
-              <div style="text-align:center;padding:24px;color:#f87171">
-                <div style="font-weight:700;margin-bottom:8px">Optimization Failed</div>
-                <div style="font-size:11px;color:#94a3b8">${result.error || "Please try again or use the full analysis page."}</div>
-                <a href="${DEFAULT_API_URL}/linkedin-optimizer" target="_blank"
-                   style="display:inline-block;margin-top:12px;color:#2dd4bf;font-size:12px;font-weight:600;text-decoration:none">
-                  Open Full Analysis →
-                </a>
-              </div>
-            `;
+            panel.innerHTML = "";
+            const closeBtn = el("button", {
+              className: "acp-li-panel-close",
+              textContent: "×",
+              onClick: () => { panel.remove(); panelVisible = false; },
+            });
+            panel.appendChild(closeBtn);
+
+            const errorDiv = el("div", { className: "acp-li-panel-error" });
+            errorDiv.appendChild(el("div", { className: "acp-li-panel-error-title", textContent: "Optimization Failed" }));
+            errorDiv.appendChild(el("div", {
+              className: "acp-li-panel-error-msg",
+              textContent: result.error || "Please try again or use the full analysis page.",
+            }));
+            const link = el("a", {
+              className: "acp-li-panel-error-link",
+              textContent: "Open Full Analysis →",
+              href: `${DEFAULT_API_URL}/linkedin-optimizer`,
+            });
+            link.target = "_blank";
+            errorDiv.appendChild(link);
+            panel.appendChild(errorDiv);
           }
         }
       }
@@ -444,15 +369,35 @@
     document.body.appendChild(btn);
   }
 
+  // --- Background preload for score badge ---
+
+  async function preloadOptimizeData() {
+    const profileData = extractProfileData();
+
+    const result = await msg("LINKEDIN_OPTIMIZE", {
+      profileData,
+      targetRole: profileData.headline || "Professional",
+    });
+
+    if (result.ok && result.data) {
+      optimizeData = result.data;
+      injectScoreBadge(optimizeData.overallScore);
+      injectSectionDots();
+    }
+  }
+
+  // --- Init ---
+
   async function init() {
     const configResult = await msg("GET_CONFIG");
     if (!configResult.ok || !configResult.data.userEmail) return;
 
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 500));
 
     if (!isOwnProfile()) return;
 
     injectTriggerButton();
+    preloadOptimizeData();
   }
 
   if (document.readyState === "complete") {
