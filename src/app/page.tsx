@@ -50,7 +50,7 @@ const websiteSchema = {
 };
 
 export default function Page() {
-  const recentPosts = getAllPosts().slice(0, 3);
+  const recentPosts = getAllPosts().slice(0, 4);
   return (
     <>
       <script

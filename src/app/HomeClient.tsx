@@ -909,8 +909,37 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 All articles →
               </Link>
             </div>
+
+            {/* Featured / pinned latest post */}
+            {recentPosts.length > 0 && (
+              <Link
+                href={`/blog/${recentPosts[0].slug}`}
+                className="group block bg-gradient-to-br from-teal-950/40 to-slate-900/80 border border-teal-800/40 hover:border-teal-600/60 rounded-2xl p-8 mb-6 transition-all duration-200 hover:shadow-lg hover:shadow-teal-900/20"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-950/80 border border-teal-800/40 text-teal-400 text-xs font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                    Latest
+                  </span>
+                  <span className="text-slate-500 text-xs">{recentPosts[0].readingTime}</span>
+                </div>
+                <h3 className="text-white font-extrabold text-xl sm:text-2xl leading-snug mb-3 group-hover:text-teal-300 transition-colors">
+                  {recentPosts[0].title}
+                </h3>
+                <p className="text-slate-400 text-sm sm:text-base leading-relaxed line-clamp-3 max-w-2xl">
+                  {recentPosts[0].description}
+                </p>
+                <span className="inline-flex items-center gap-1 mt-4 text-teal-400 text-sm font-semibold group-hover:gap-2 transition-all">
+                  Read article
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </Link>
+            )}
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentPosts.map((post) => (
+              {recentPosts.slice(1).map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
