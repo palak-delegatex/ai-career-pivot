@@ -9,6 +9,24 @@ import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAss
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion, trackLinkedinImportStarted, trackLinkedinImportCompleted, trackLinkedinImportError, trackQuickPivotGenerated } from "@/lib/tracking";
 import type { QuickPivotResult } from "@/app/api/intake/quick-pivot/route";
+import { computeATSMatchBreakdown, type MatchRateBreakdown, type JDKeywords } from "@/lib/ats-scoring";
+import { ScoreRing } from "@/components/ScoreRing";
+
+const GENERIC_JD_KEYWORDS: JDKeywords = {
+  required: [
+    "communication", "teamwork", "problem solving", "leadership",
+    "project management", "analytical", "collaboration",
+  ],
+  preferred: [
+    "strategic thinking", "data analysis", "stakeholder management",
+    "agile", "cross-functional", "presentation", "mentoring",
+  ],
+  keywords: [
+    "results-driven", "detail-oriented", "initiative", "innovation",
+    "deadline", "budget", "planning", "reporting", "process improvement",
+    "customer", "metrics", "KPI", "growth", "optimization",
+  ],
+};
 
 type PageStep = "form" | "processing" | "error" | "no_payment" | "generating";
 
@@ -167,6 +185,30 @@ export default function OnboardingPage() {
   const [quickPivotResult, setQuickPivotResult] = useState<QuickPivotResult | null>(null);
   const [quickPivotLoading, setQuickPivotLoading] = useState(false);
   const linkedinExportRef = useRef<HTMLInputElement>(null);
+
+  const [resumePreviewScore, setResumePreviewScore] = useState<MatchRateBreakdown | null>(null);
+  const [resumePreviewAnimated, setResumePreviewAnimated] = useState(false);
+
+  useEffect(() => {
+    if (!resumeFile) {
+      setResumePreviewScore(null);
+      setResumePreviewAnimated(false);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === "string"
+        ? reader.result.replace(/[^\x20-\x7E\n\r\t]/g, " ")
+        : "";
+      if (text.trim().length < 20) return;
+      const result = computeATSMatchBreakdown(text, GENERIC_JD_KEYWORDS, {
+        fileType: resumeFile.name.split(".").pop()?.toLowerCase(),
+      });
+      setResumePreviewScore(result);
+      requestAnimationFrame(() => setResumePreviewAnimated(true));
+    };
+    reader.readAsText(resumeFile);
+  }, [resumeFile]);
 
   useEffect(() => {
     if (linkedinUrlStatus(linkedinUrl) === "valid") {
@@ -1271,6 +1313,39 @@ export default function OnboardingPage() {
                   )}
                 </div>
 
+                {resumePreviewScore && (
+                  <div className="rounded-xl bg-gradient-to-br from-teal-950/40 to-slate-800/60 border border-teal-800/30 p-4 flex items-center gap-4">
+                    <ScoreRing
+                      score={resumePreviewScore.overallScore}
+                      animated={resumePreviewAnimated}
+                      label="Resume Strength"
+                      size={80}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-200 mb-1.5">Quick Resume Check</p>
+                      <ul className="space-y-1">
+                        <li className="text-xs text-slate-400">
+                          <span className={resumePreviewScore.formattingScore >= 70 ? "text-emerald-400" : "text-amber-400"}>
+                            {resumePreviewScore.formattingScore >= 70 ? "✓" : "⚠"}
+                          </span>{" "}
+                          Formatting: {resumePreviewScore.formattingScore}% ATS-friendly
+                        </li>
+                        <li className="text-xs text-slate-400">
+                          <span className={resumePreviewScore.summary.matchedKeywords > 5 ? "text-emerald-400" : "text-amber-400"}>
+                            {resumePreviewScore.summary.matchedKeywords > 5 ? "✓" : "⚠"}
+                          </span>{" "}
+                          {resumePreviewScore.summary.matchedKeywords} of {resumePreviewScore.summary.totalKeywords} key skills detected
+                        </li>
+                        {resumePreviewScore.formattingIssues.filter(i => i.severity === "critical").length > 0 && (
+                          <li className="text-xs text-red-400">
+                            {"✘"} {resumePreviewScore.formattingIssues.filter(i => i.severity === "critical").length} critical formatting issue{resumePreviewScore.formattingIssues.filter(i => i.severity === "critical").length > 1 ? "s" : ""}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
                 {error && (
                   <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
                     {error}
@@ -1497,6 +1572,12 @@ export default function OnboardingPage() {
                   >
                     Skip &mdash; I&apos;ll let the AI decide
                   </button>
+                  <Link
+                    href="/dashboard"
+                    className="block w-full text-center text-xs text-slate-500 hover:text-slate-300 transition-colors mt-2 py-1"
+                  >
+                    Skip for now &rarr;
+                  </Link>
                 </div>
               </motion.div>
             )}

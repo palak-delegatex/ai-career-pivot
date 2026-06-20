@@ -25,6 +25,7 @@ import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import GettingStartedChecklist from "@/components/GettingStartedChecklist";
 
 interface Report {
   id: string;
@@ -629,6 +630,12 @@ export default function DashboardClient() {
 
           <TabsContent value="overview">
             <div className="space-y-6">
+              {/* 0. Getting Started Checklist — for new users */}
+              <GettingStartedChecklist
+                email={activeReport!.email}
+                hasCompletedMilestone={completedMilestones > 0}
+              />
+
               {/* 1. Command Center Header — 3-card stat row */}
               <CommandCenterHeader email={activeReport!.email} />
 
