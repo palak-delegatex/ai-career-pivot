@@ -7,7 +7,7 @@ export interface FormattingIssue {
   issue: string;
   severity: "critical" | "warning" | "minor";
   fix: string;
-  category: "tables" | "images" | "fonts" | "headers" | "columns" | "characters" | "length" | "file_format";
+  category: "tables" | "images" | "fonts" | "headers" | "columns" | "characters" | "length" | "file_format" | "dates" | "sections" | "contact" | "links" | "bullets" | "spacing";
 }
 
 export interface KeywordMatch {
@@ -483,6 +483,142 @@ export function detectFormattingIssues(text: string, fileType?: string): Formatt
       severity: "warning",
       fix: "Use PDF or DOCX format. These are the most widely supported by ATS systems.",
       category: "file_format",
+    });
+  }
+
+  // ── Date format consistency ───────────────────────────────────────────
+  const dateFormats = {
+    slashNumeric: /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g,
+    dashNumeric: /\b\d{1,2}-\d{1,2}-\d{2,4}\b/g,
+    monthYear: /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}\b/gi,
+    yearOnly: /\b(?:19|20)\d{2}\b/g,
+  };
+  const foundFormats = Object.entries(dateFormats)
+    .filter(([, pat]) => pat.test(text))
+    .map(([name]) => name);
+  if (foundFormats.includes("slashNumeric") || foundFormats.includes("dashNumeric")) {
+    if (foundFormats.includes("monthYear")) {
+      issues.push({
+        issue: "Inconsistent date formats (mixing numeric and month-name styles)",
+        severity: "warning",
+        fix: "Use a consistent date format throughout. 'Month YYYY' (e.g., 'January 2024') is the most ATS-compatible format.",
+        category: "dates",
+      });
+    }
+  }
+  if (foundFormats.includes("slashNumeric") && foundFormats.includes("dashNumeric")) {
+    issues.push({
+      issue: "Mixed date separators (slashes and dashes)",
+      severity: "minor",
+      fix: "Pick one date format and use it consistently. 'Month YYYY' is safest for ATS parsing.",
+      category: "dates",
+    });
+  }
+
+  // ── Section ordering recommendations ──────────────────────────────────
+  const sections = parseResumeIntoSections(text);
+  const sectionOrder = sections.map(s => s.normalizedName);
+  const experienceIdx = sectionOrder.indexOf("experience");
+  const summaryIdx = sectionOrder.indexOf("summary");
+  const educationIdx = sectionOrder.indexOf("education");
+  const skillsIdx = sectionOrder.indexOf("skills");
+
+  if (experienceIdx >= 0 && summaryIdx >= 0 && summaryIdx > experienceIdx) {
+    issues.push({
+      issue: "Summary/objective section appears after Experience",
+      severity: "warning",
+      fix: "Move your Summary or Objective section above Experience. ATS systems and recruiters expect to see it near the top.",
+      category: "sections",
+    });
+  }
+  if (experienceIdx >= 0 && skillsIdx >= 0 && skillsIdx < experienceIdx && educationIdx >= 0 && educationIdx < experienceIdx) {
+    issues.push({
+      issue: "Experience section is buried below Skills and Education",
+      severity: "minor",
+      fix: "For most roles, place Experience before Education. Lead with your strongest section for the role you're targeting.",
+      category: "sections",
+    });
+  }
+
+  const essentialSections = ["experience", "education", "skills"];
+  const missingSections = essentialSections.filter(s => !sectionOrder.includes(s));
+  if (missingSections.length > 0) {
+    issues.push({
+      issue: `Missing essential section${missingSections.length > 1 ? "s" : ""}: ${missingSections.join(", ")}`,
+      severity: missingSections.includes("experience") ? "critical" : "warning",
+      fix: `Add a ${missingSections.join(", ")} section. ATS systems expect these standard sections and may score lower without them.`,
+      category: "sections",
+    });
+  }
+
+  // ── Contact info completeness ─────────────────────────────────────────
+  const contactSection = sections.find(s => s.normalizedName === "contact");
+  const fullText = text.slice(0, 800);
+  const contactText = contactSection ? contactSection.content + "\n" + fullText : fullText;
+
+  const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(contactText);
+  const hasPhone = /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(contactText);
+  const hasLinkedIn = /linkedin\.com\/in\//i.test(contactText);
+
+  const missingContact: string[] = [];
+  if (!hasEmail) missingContact.push("email");
+  if (!hasPhone) missingContact.push("phone number");
+  if (!hasLinkedIn) missingContact.push("LinkedIn URL");
+
+  if (missingContact.length > 0) {
+    issues.push({
+      issue: `Missing contact information: ${missingContact.join(", ")}`,
+      severity: missingContact.includes("email") ? "critical" : "warning",
+      fix: `Add your ${missingContact.join(", ")} to the top of your resume. ATS systems extract contact details for recruiter follow-up.`,
+      category: "contact",
+    });
+  }
+
+  // ── Hyperlink detection ───────────────────────────────────────────────
+  const urlCount = (text.match(/https?:\/\/[^\s)]+/g) || []).length;
+  if (urlCount > 5) {
+    issues.push({
+      issue: `${urlCount} hyperlinks detected`,
+      severity: "minor",
+      fix: "Limit hyperlinks to essential ones (LinkedIn, portfolio). Some ATS systems strip or break URLs, and excessive links clutter parsed output.",
+      category: "links",
+    });
+  }
+
+  // ── Bullet point consistency ──────────────────────────────────────────
+  const bulletTypes = new Set<string>();
+  const bulletPatterns: [RegExp, string][] = [
+    [/^\s*[-–—]\s/, "dash"],
+    [/^\s*[•●◦▪]\s?/, "round-bullet"],
+    [/^\s*\*\s/, "asterisk"],
+    [/^\s*[►▸▹→]\s?/, "arrow"],
+    [/^\s*\d+[.)]\s/, "numbered"],
+  ];
+  for (const line of lines) {
+    for (const [pat, name] of bulletPatterns) {
+      if (pat.test(line)) {
+        bulletTypes.add(name);
+        break;
+      }
+    }
+  }
+  if (bulletTypes.size > 2) {
+    issues.push({
+      issue: `${bulletTypes.size} different bullet styles detected (${[...bulletTypes].join(", ")})`,
+      severity: "warning",
+      fix: "Use one consistent bullet style throughout your resume. Mixing styles can confuse ATS parsers and looks unprofessional.",
+      category: "bullets",
+    });
+  }
+
+  // ── Excessive whitespace / spacing ────────────────────────────────────
+  const emptyLineRuns = text.match(/\n\s*\n\s*\n/g);
+  if (emptyLineRuns && emptyLineRuns.length > 3) {
+    issues.push({
+      issue: "Excessive blank lines detected (large gaps between sections)",
+      severity: "minor",
+      fix: "Use single blank lines between sections. Excessive whitespace wastes space and some ATS systems collapse it unpredictably.",
+      category: "spacing",
     });
   }
 
