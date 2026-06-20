@@ -26,7 +26,10 @@ import {
   type MatchRateBreakdown,
   type JDKeywords,
   type FormattingIssue,
+  type KeywordMatch,
 } from "@/lib/ats-scoring";
+import KeywordHeatmap from "@/components/KeywordHeatmap";
+import SuggestionCards from "@/components/SuggestionCards";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -108,6 +111,46 @@ function LiveScoreRing({ score, size = 120 }: { score: number; size?: number }) 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={`text-2xl font-extrabold ${scoreColor(score)}`}>{score}</span>
         <span className="text-[10px] text-slate-400">/ 100</span>
+      </div>
+    </div>
+  );
+}
+
+function DeltaBadge({ delta }: { delta: number }) {
+  if (delta === 0) return null;
+  const positive = delta > 0;
+
+  return (
+    <span
+      className={`inline-flex items-center text-sm font-bold px-2 py-0.5 rounded-full animate-[scalePulse_200ms_ease-out] ${
+        positive
+          ? "text-emerald-400 bg-emerald-900/30 border border-emerald-700/40"
+          : "text-red-400 bg-red-900/30 border border-red-700/40"
+      }`}
+    >
+      {positive ? "+" : ""}{delta} pts
+    </span>
+  );
+}
+
+function MiniScoreRing({ score, size = 32 }: { score: number; size?: number }) {
+  const radius = (size / 2) - 3;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg className="w-full h-full -rotate-90" viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#334155" strokeWidth="2.5" />
+        <circle
+          cx={size / 2} cy={size / 2} r={radius} fill="none"
+          stroke={scoreStroke(score)} strokeWidth="2.5"
+          strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
+          className="transition-all duration-300 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className={`text-[8px] font-bold ${scoreColor(score)}`}>{score}</span>
       </div>
     </div>
   );
@@ -262,7 +305,9 @@ export default function LiveATSScoreClient() {
   const [extracting, setExtracting] = useState(false);
   const [showFormatPanel, setShowFormatPanel] = useState(false);
   const [showSectionPanel, setShowSectionPanel] = useState(false);
+  const [scoreDelta, setScoreDelta] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const prevScoreRef = useRef<number | null>(null);
 
   const recompute = useCallback((text: string, keywords: JDKeywords) => {
     if (!text.trim()) {
@@ -274,6 +319,11 @@ export default function LiveATSScoreClient() {
     setFormattingIssues(issues);
     const result = computeATSMatchBreakdown(text, keywords);
     setBreakdown(result);
+
+    if (prevScoreRef.current !== null) {
+      setScoreDelta(result.overallScore - prevScoreRef.current);
+    }
+    prevScoreRef.current = result.overallScore;
   }, []);
 
   useEffect(() => {
@@ -445,6 +495,21 @@ export default function LiveATSScoreClient() {
             </button>
           )}
 
+          {/* Keyword Heatmap on JD */}
+          {breakdown && (
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4">
+              <div className="text-xs font-semibold text-slate-300 mb-2 flex items-center gap-2">
+                <Target className="w-3.5 h-3.5 text-blue-400" />
+                Job Description — Keyword Heatmap
+              </div>
+              <KeywordHeatmap
+                text={jobDescription}
+                keywordMatches={breakdown.keywordMatches}
+                className="max-h-64 overflow-y-auto"
+              />
+            </div>
+          )}
+
           {/* Resume textarea */}
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
@@ -511,28 +576,38 @@ export default function LiveATSScoreClient() {
                 <div className="grid gap-2 sm:grid-cols-2">
                   {sectionScores.map((s, i) => (
                     <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="font-semibold text-xs">{s.section}</span>
-                        <span className={`text-[10px] font-medium ${s.present ? (s.coverage >= 75 ? "text-emerald-400" : s.coverage >= 40 ? "text-amber-400" : "text-red-400") : "text-red-400"}`}>
-                          {s.present ? `${s.coverage}%` : "Missing"}
-                        </span>
+                      <div className="flex items-center gap-2.5">
+                        {s.present ? (
+                          <MiniScoreRing score={s.coverage} />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full border-2 border-red-700/40 flex items-center justify-center shrink-0">
+                            <XCircle className="w-3 h-3 text-red-400" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-xs">{s.section}</span>
+                            <span className={`text-[10px] font-medium ${s.present ? (s.coverage >= 75 ? "text-emerald-400" : s.coverage >= 40 ? "text-amber-400" : "text-red-400") : "text-red-400"}`}>
+                              {s.present ? `${s.coverage}%` : "Missing"}
+                            </span>
+                          </div>
+                          {s.keywordsFound.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-0.5">
+                              {s.keywordsFound.slice(0, 3).map((kw, j) => (
+                                <span key={j} className="text-[9px] px-1 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
+                              ))}
+                              {s.keywordsFound.length > 3 && <span className="text-[9px] text-slate-500">+{s.keywordsFound.length - 3}</span>}
+                            </div>
+                          )}
+                          {s.keywordsMissing.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-0.5">
+                              {s.keywordsMissing.slice(0, 2).map((kw, j) => (
+                                <span key={j} className="text-[9px] px-1 py-0.5 rounded bg-red-900/20 text-red-300">+{kw}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      {s.present && <MiniBar value={s.coverage} color={s.coverage >= 75 ? "bg-emerald-500" : s.coverage >= 40 ? "bg-amber-500" : "bg-red-500"} />}
-                      {s.keywordsFound.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {s.keywordsFound.slice(0, 3).map((kw, j) => (
-                            <span key={j} className="text-[9px] px-1 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
-                          ))}
-                          {s.keywordsFound.length > 3 && <span className="text-[9px] text-slate-500">+{s.keywordsFound.length - 3}</span>}
-                        </div>
-                      )}
-                      {s.keywordsMissing.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {s.keywordsMissing.slice(0, 2).map((kw, j) => (
-                            <span key={j} className="text-[9px] px-1 py-0.5 rounded bg-red-900/20 text-red-300">+{kw}</span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -547,7 +622,10 @@ export default function LiveATSScoreClient() {
           <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 text-center sticky top-4">
             {breakdown ? (
               <>
-                <LiveScoreRing score={breakdown.overallScore} />
+                <div className="flex items-center justify-center gap-3">
+                  <LiveScoreRing score={breakdown.overallScore} />
+                  {scoreDelta !== 0 && <DeltaBadge delta={scoreDelta} />}
+                </div>
                 <div className={`text-lg font-bold mt-2 ${scoreColor(breakdown.overallScore)}`}>
                   {scoreLabel(breakdown.overallScore)}
                 </div>
@@ -672,6 +750,30 @@ export default function LiveATSScoreClient() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Suggestion Cards */}
+          {missingKws.length > 0 && (
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4">
+              <SuggestionCards
+                missingKeywords={missingKws}
+                onInsertKeyword={(keyword, section) => {
+                  const sectionLabel = section ? `\n\n${section.toUpperCase()}\n` : "\n";
+                  setResumeText(prev => {
+                    if (section) {
+                      const sectionRegex = new RegExp(`(${section})`, "i");
+                      const match = prev.match(sectionRegex);
+                      if (match && match.index !== undefined) {
+                        const lineEnd = prev.indexOf("\n", match.index + match[0].length);
+                        const insertAt = lineEnd !== -1 ? lineEnd : prev.length;
+                        return prev.slice(0, insertAt) + "\n" + keyword + prev.slice(insertAt);
+                      }
+                    }
+                    return prev + (prev.endsWith("\n") ? "" : "\n") + keyword;
+                  });
+                }}
+              />
             </div>
           )}
 

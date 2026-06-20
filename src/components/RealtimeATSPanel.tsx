@@ -21,6 +21,7 @@ import {
   type FormattingIssue,
   type KeywordMatch,
 } from "@/lib/ats-scoring";
+import SuggestionCards from "@/components/SuggestionCards";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -112,6 +113,46 @@ function MiniBar({ value, max = 100, color = "bg-blue-500" }: { value: number; m
   );
 }
 
+function MiniScoreRing({ score, size = 32 }: { score: number; size?: number }) {
+  const radius = (size / 2) - 3;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg className="w-full h-full -rotate-90" viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#334155" strokeWidth="2.5" />
+        <circle
+          cx={size / 2} cy={size / 2} r={radius} fill="none"
+          stroke={scoreStroke(score)} strokeWidth="2.5"
+          strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
+          className="transition-all duration-300 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className={`text-[8px] font-bold ${scoreColor(score)}`}>{score}</span>
+      </div>
+    </div>
+  );
+}
+
+function DeltaBadge({ delta }: { delta: number }) {
+  if (delta === 0) return null;
+  const positive = delta > 0;
+
+  return (
+    <span
+      className={`inline-flex items-center text-xs font-bold px-1.5 py-0.5 rounded-full animate-[scalePulse_200ms_ease-out] ${
+        positive
+          ? "text-emerald-400 bg-emerald-900/30 border border-emerald-700/40"
+          : "text-red-400 bg-red-900/30 border border-red-700/40"
+      }`}
+    >
+      {positive ? "+" : ""}{delta} pts
+    </span>
+  );
+}
+
 function KeywordPill({ keyword, matched, matchType, category }: {
   keyword: string;
   matched: boolean;
@@ -153,9 +194,11 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
   const [showFormatPanel, setShowFormatPanel] = useState(false);
   const [showSectionPanel, setShowSectionPanel] = useState(false);
   const [showKeywords, setShowKeywords] = useState(true);
+  const [scoreDelta, setScoreDelta] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const lastJdRef = useRef<string>("");
   const lastHashRef = useRef<string>("");
+  const prevScoreRef = useRef<number | null>(null);
 
   const recompute = useCallback((text: string, keywords: JDKeywords) => {
     if (!text.trim()) {
@@ -172,6 +215,11 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
     setFormattingIssues(issues);
     const result = computeATSMatchBreakdown(text, keywords);
     setBreakdown(result);
+
+    if (prevScoreRef.current !== null) {
+      setScoreDelta(result.overallScore - prevScoreRef.current);
+    }
+    prevScoreRef.current = result.overallScore;
 
     onScoreUpdate?.({
       breakdown: result,
@@ -280,7 +328,10 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
       <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 text-center">
         {breakdown ? (
           <>
-            <LiveScoreRing score={breakdown.overallScore} />
+            <div className="flex items-center justify-center gap-2">
+              <LiveScoreRing score={breakdown.overallScore} />
+              {scoreDelta !== 0 && <DeltaBadge delta={scoreDelta} />}
+            </div>
             <div className={`text-sm font-bold mt-1 ${scoreColor(breakdown.overallScore)}`}>
               {scoreLabel(breakdown.overallScore)}
             </div>
@@ -335,39 +386,10 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
         )}
       </div>
 
-      {/* Top Missing Keywords — Quick Insert */}
+      {/* Suggestion Cards — Missing Keywords with Insert */}
       {onInsertKeyword && missingKws.length > 0 && (
         <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3">
-          <div className="text-[10px] font-semibold text-amber-400 uppercase mb-2 flex items-center gap-1">
-            <Zap className="w-2.5 h-2.5" />
-            Quick Add — Top Missing Keywords
-          </div>
-          <div className="space-y-1.5">
-            {missingKws
-              .sort((a, b) => {
-                const pri = { required: 0, preferred: 1, keyword: 2 } as const;
-                return pri[a.category] - pri[b.category];
-              })
-              .slice(0, 5)
-              .map((m, i) => (
-                <button
-                  key={i}
-                  onClick={() => onInsertKeyword(m.keyword, m.suggestedSection)}
-                  className="w-full flex items-center gap-2 text-left px-2 py-1.5 rounded-lg bg-slate-900/40 hover:bg-teal-900/30 border border-slate-700/40 hover:border-teal-600/40 transition-colors group"
-                >
-                  <span className="text-[10px] text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">+ Add</span>
-                  <span className="text-[10px] text-slate-200 font-medium flex-1 truncate">{m.keyword}</span>
-                  <span className={`text-[8px] shrink-0 ${
-                    m.category === "required" ? "text-red-400" : m.category === "preferred" ? "text-amber-400" : "text-slate-500"
-                  }`}>
-                    {m.category === "required" ? "REQ" : m.category === "preferred" ? "PREF" : ""}
-                  </span>
-                  {m.suggestedSection && (
-                    <span className="text-[8px] text-slate-500 shrink-0">→ {m.suggestedSection}</span>
-                  )}
-                </button>
-              ))}
-          </div>
+          <SuggestionCards missingKeywords={missingKws} onInsertKeyword={onInsertKeyword} />
         </div>
       )}
 
@@ -497,21 +519,31 @@ export default function RealtimeATSPanel({ resumeText, jobDescription, debounceM
             <div className="grid gap-1.5 mt-2">
               {sectionScores.map((s, i) => (
                 <div key={i} className="bg-slate-900/40 rounded-lg p-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-[10px]">{s.section}</span>
-                    <span className={`text-[9px] font-medium ${s.present ? (s.coverage >= 75 ? "text-emerald-400" : s.coverage >= 40 ? "text-amber-400" : "text-red-400") : "text-red-400"}`}>
-                      {s.present ? `${s.coverage}%` : "Missing"}
-                    </span>
-                  </div>
-                  {s.present && <MiniBar value={s.coverage} color={s.coverage >= 75 ? "bg-emerald-500" : s.coverage >= 40 ? "bg-amber-500" : "bg-red-500"} />}
-                  {s.keywordsFound.length > 0 && (
-                    <div className="flex flex-wrap gap-0.5 mt-1">
-                      {s.keywordsFound.slice(0, 3).map((kw, j) => (
-                        <span key={j} className="text-[8px] px-1 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
-                      ))}
-                      {s.keywordsFound.length > 3 && <span className="text-[8px] text-slate-500">+{s.keywordsFound.length - 3}</span>}
+                  <div className="flex items-center gap-2">
+                    {s.present ? (
+                      <MiniScoreRing score={s.coverage} />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full border-2 border-red-700/40 flex items-center justify-center shrink-0">
+                        <XCircle className="w-3 h-3 text-red-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-[10px]">{s.section}</span>
+                        <span className={`text-[9px] font-medium ${s.present ? (s.coverage >= 75 ? "text-emerald-400" : s.coverage >= 40 ? "text-amber-400" : "text-red-400") : "text-red-400"}`}>
+                          {s.present ? `${s.coverage}%` : "Missing"}
+                        </span>
+                      </div>
+                      {s.keywordsFound.length > 0 && (
+                        <div className="flex flex-wrap gap-0.5 mt-0.5">
+                          {s.keywordsFound.slice(0, 3).map((kw, j) => (
+                            <span key={j} className="text-[8px] px-1 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
+                          ))}
+                          {s.keywordsFound.length > 3 && <span className="text-[8px] text-slate-500">+{s.keywordsFound.length - 3}</span>}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

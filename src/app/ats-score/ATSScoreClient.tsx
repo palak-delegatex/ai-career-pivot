@@ -21,6 +21,7 @@ import {
   Copy,
 } from "lucide-react";
 import Link from "next/link";
+import KeywordHeatmap from "@/components/KeywordHeatmap";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -530,6 +531,42 @@ export default function ATSScoreClient() {
                 <div className="text-xs text-slate-400 mb-2">Match types</div>
                 <MatchBreakdownBadges summary={summary} />
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* Keyword Heatmap on JD */}
+        {jobDescription.trim() && (result.keywordAnalysis.foundKeywords.length > 0 || result.keywordAnalysis.missingKeywords.length > 0) && (
+          <section className="mb-8">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Search className="w-5 h-5 text-purple-400" />
+              Keyword Heatmap
+            </h2>
+            <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
+              <KeywordHeatmap
+                text={jobDescription}
+                keywordMatches={[
+                  ...result.keywordAnalysis.foundKeywords.map(kw => ({
+                    keyword: kw.keyword,
+                    matched: true,
+                    matchType: kw.matchType,
+                    foundIn: kw.foundIn,
+                    weight: 1,
+                    category: "keyword" as const,
+                    suggestedSection: null,
+                  })),
+                  ...result.keywordAnalysis.missingKeywords.map(kw => ({
+                    keyword: kw.keyword,
+                    matched: false,
+                    matchType: null,
+                    foundIn: [] as string[],
+                    weight: kw.importance === "critical" ? 3 : kw.importance === "important" ? 2 : 1,
+                    category: (kw.importance === "critical" ? "required" : kw.importance === "important" ? "preferred" : "keyword") as "required" | "preferred" | "keyword",
+                    suggestedSection: kw.suggestedSection,
+                  })),
+                ]}
+                className="max-h-80 overflow-y-auto"
+              />
             </div>
           </section>
         )}

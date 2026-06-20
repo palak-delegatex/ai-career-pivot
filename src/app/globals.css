@@ -199,6 +199,12 @@ html {
   animation: nudge-enter 200ms ease-out;
 }
 
+@keyframes scalePulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phase-confetti::after {
     animation: none;
