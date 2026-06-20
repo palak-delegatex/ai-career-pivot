@@ -102,6 +102,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#tabBar").hidden = true;
     $("#mainContent").hidden = true;
     $("#contextBar").hidden = true;
+    $("#saveCTAHero").hidden = true;
+    $("#savedCTAHero").hidden = true;
   }
 
   function showErrorView() {
@@ -316,14 +318,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Quick actions
-  $("#saveCurrentBtn").addEventListener("click", () => {
-    if (tab?.id) {
-      chrome.tabs.sendMessage(tab.id, { type: "TRIGGER_SAVE" });
-      window.close();
-    }
+  // Note character counter
+  const heroNote = $("#heroNote");
+  const heroNoteCount = $("#heroNoteCount");
+  heroNote.addEventListener("input", () => {
+    const len = heroNote.value.length;
+    heroNoteCount.textContent = len > 0 ? `${len}/140` : "";
   });
 
+  // Quick actions
   $("#openDashboardBtn").addEventListener("click", () => {
     chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
   });
@@ -507,53 +510,82 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
-    // Save / saved state
+    // Save / saved state — uses hero CTA above fold
     if (savedJob) {
-      showSavedState(savedJob);
+      showHeroSavedState(savedJob);
     } else {
-      $("#saveCTA").hidden = false;
-      $("#savedBar").hidden = true;
+      showHeroSaveCTA(jobData);
+    }
 
-      $("#saveBtn").addEventListener("click", async () => {
-        const btn = $("#saveBtn");
-        btn.disabled = true;
-        btn.textContent = "Saving...";
+    function showHeroSaveCTA(jobData) {
+      const heroSection = $("#saveCTAHero");
+      heroSection.hidden = false;
+      $("#savedCTAHero").hidden = true;
+
+      // Populate button text and meta
+      const titleShort = jobData.role.length > 28 ? jobData.role.slice(0, 28) + "…" : jobData.role;
+      $("#heroSaveBtnText").textContent = `Save & Score — ${titleShort}`;
+      const metaParts = [jobData.company, jobData.location].filter(Boolean);
+      $("#heroMeta").textContent = metaParts.join(" · ");
+
+      const heroBtn = $("#heroSaveBtn");
+      heroBtn.addEventListener("click", async () => {
+        heroBtn.disabled = true;
+        $("#heroSaveBtnText").textContent = "Saving...";
+
+        const selectedStage = $("#heroStagePicker").value;
+        const notes = $("#heroNote").value.trim() || undefined;
 
         const result = await msg("SAVE_JOB", {
           role: jobData.role,
           company: jobData.company,
           url: jobData.url,
           source: jobData.source,
-          stage: "saved",
+          stage: selectedStage,
           match_score: scoreData?.score || 0,
+          notes,
         });
 
         if (result.ok) {
-          showSavedState(result.data.job);
+          // Micro-animation: pop + color shift
+          heroBtn.classList.add("save-hero-success");
+          $("#heroSaveBtnText").textContent = "✓ Saved";
+          heroBtn.addEventListener("animationend", () => {
+            showHeroSavedState(result.data.job);
+          }, { once: true });
+
           // Update context badge
           $("#contextBadge").textContent = "Saved ✓";
           $("#contextBadge").className = "ext-context-badge saved";
-          // Update pipeline count
-          const current = parseInt($("#circleSaved").textContent) || 0;
-          $("#circleSaved").textContent = current + 1;
+
+          // Update pipeline count for the selected stage
+          const stageCountMap = { saved: "circleSaved", applied: "circleApplied", phone_screen: "circleInterview", interview: "circleInterview", offer: "circleOffer" };
+          const countId = stageCountMap[selectedStage];
+          if (countId) {
+            const el = $(`#${countId}`);
+            el.textContent = (parseInt(el.textContent) || 0) + 1;
+          }
         } else {
-          btn.disabled = false;
-          btn.textContent = result.error || "Error — try again";
-          setTimeout(() => { btn.textContent = "Save & Track"; }, 2000);
+          heroBtn.disabled = false;
+          $("#heroSaveBtnText").textContent = result.error || "Error — try again";
+          setTimeout(() => {
+            $("#heroSaveBtnText").textContent = `Save & Score — ${titleShort}`;
+          }, 2000);
         }
       });
     }
 
-    function showSavedState(job) {
-      $("#saveCTA").hidden = true;
-      $("#savedBar").hidden = false;
-      $("#currentStage").textContent = job.stage?.replace("_", " ") || "saved";
+    function showHeroSavedState(job) {
+      $("#saveCTAHero").hidden = true;
+      const savedSection = $("#savedCTAHero");
+      savedSection.hidden = false;
+      $("#heroSavedStage").textContent = (job.stage || "saved").replace("_", " ");
 
-      $("#viewInTrackerBtn").addEventListener("click", () => {
+      $("#heroViewTracker").addEventListener("click", () => {
         chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
       });
 
-      $("#rescoreBtn").addEventListener("click", async () => {
+      $("#heroRescore").addEventListener("click", async () => {
         if (!jobData.description) return;
         if (activeResumeId) {
           await rescoreWithResume(activeResumeId);

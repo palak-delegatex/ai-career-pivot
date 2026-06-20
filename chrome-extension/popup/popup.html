@@ -47,6 +47,45 @@
       </div>
     </header>
 
+    <!-- Save CTA (above fold, shown when job detected & not yet saved) -->
+    <div id="saveCTAHero" hidden>
+      <div class="save-hero-row">
+        <button id="heroSaveBtn" class="save-hero-btn">
+          <svg class="save-hero-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span id="heroSaveBtnText">Save &amp; Score</span>
+        </button>
+        <select id="heroStagePicker" class="save-hero-stage">
+          <option value="saved">Saved</option>
+          <option value="applied">Applied</option>
+          <option value="phone_screen">Phone Screen</option>
+          <option value="interview">Interview</option>
+        </select>
+      </div>
+      <div class="save-hero-meta" id="heroMeta"></div>
+      <div class="save-hero-note-wrap">
+        <input id="heroNote" class="save-hero-note" type="text" placeholder="Add a note..." maxlength="140">
+        <span class="save-hero-note-count" id="heroNoteCount"></span>
+      </div>
+    </div>
+
+    <!-- Saved confirmation (replaces save CTA after save) -->
+    <div id="savedCTAHero" hidden>
+      <div class="saved-hero-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span class="saved-hero-text">Saved to Pipeline</span>
+        <span class="saved-hero-stage" id="heroSavedStage">Saved</span>
+      </div>
+      <div class="saved-hero-actions">
+        <button id="heroViewTracker" class="saved-hero-link">View in Tracker</button>
+        <button id="heroRescore" class="saved-hero-link">Re-score</button>
+      </div>
+    </div>
+
     <!-- Not signed in -->
     <div id="signInView" class="view" hidden>
       <div class="empty-state">
@@ -113,17 +152,11 @@
 
         <!-- Quick Actions -->
         <div class="ext-quick-actions">
-          <button id="saveCurrentBtn" class="ext-action-btn primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-            </svg>
-            Save Current Page
-          </button>
-          <button id="openDashboardBtn" class="ext-action-btn ghost">
+          <button id="openDashboardBtn" class="ext-action-btn ghost" style="flex:1">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
             </svg>
-            Dashboard
+            Open Dashboard
           </button>
         </div>
 
@@ -179,26 +212,7 @@
           <div id="kwTags" class="ext-kw-tags" hidden></div>
         </div>
 
-        <!-- Save CTA (unsaved state) -->
-        <div id="saveCTA">
-          <button id="saveBtn" class="ext-save-full">Save &amp; Track</button>
-        </div>
-
-        <!-- Saved bar (saved state) -->
-        <div id="savedBar" hidden>
-          <div class="ext-saved-bar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981" stroke-width="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>Tracked</span>
-            <span class="ext-saved-stage" id="currentStage">Saved</span>
-          </div>
-          <div class="saved-actions">
-            <button id="viewInTrackerBtn" class="ext-resume-switch">View in Tracker</button>
-            <button id="rescoreBtn" class="ext-resume-switch">Re-score</button>
-          </div>
-        </div>
+        <!-- (Save CTA moved to hero section above fold) -->
       </div>
 
       <!-- Profile Tab Panel -->

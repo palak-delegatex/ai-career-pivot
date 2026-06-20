@@ -236,6 +236,162 @@ body {
   margin-top: 4px;
 }
 
+/* ---- Save CTA Hero (above fold) ---- */
+#saveCTAHero, #savedCTAHero {
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid #1e293b;
+  flex-shrink: 0;
+}
+
+#saveCTAHero[hidden], #savedCTAHero[hidden] { display: none !important; }
+
+.save-hero-row {
+  display: flex;
+  gap: 6px;
+}
+
+.save-hero-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 14px;
+  background: #2dd4bf;
+  color: #0f172a;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.2s;
+}
+
+.save-hero-btn:hover { background: #5eead4; }
+.save-hero-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.save-hero-btn .save-hero-icon { flex-shrink: 0; }
+
+.save-hero-stage {
+  width: 110px;
+  padding: 8px 8px;
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+
+.save-hero-stage:focus { border-color: #2dd4bf; }
+
+.save-hero-meta {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.save-hero-meta:empty { display: none; }
+
+/* Quick note */
+.save-hero-note-wrap {
+  position: relative;
+  margin-top: 6px;
+}
+
+.save-hero-note {
+  width: 100%;
+  padding: 6px 40px 6px 10px;
+  background: #1e293b;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  height: 30px;
+}
+
+.save-hero-note::placeholder { color: #475569; }
+.save-hero-note:focus { border-color: #334155; }
+
+.save-hero-note-count {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: #475569;
+  pointer-events: none;
+}
+
+.save-hero-note-count:empty { display: none; }
+
+/* Save success animation */
+@keyframes save-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.save-hero-success {
+  animation: save-pop 300ms ease-out;
+  background: #10b981 !important;
+}
+
+/* Saved confirmation hero */
+.saved-hero-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #064e3b;
+  border-radius: 10px;
+  color: #6ee7b7;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.saved-hero-bar svg { flex-shrink: 0; }
+
+.saved-hero-text { flex: 1; }
+
+.saved-hero-stage {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  text-transform: capitalize;
+}
+
+.saved-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.saved-hero-link {
+  font-size: 11px;
+  color: #2dd4bf;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.saved-hero-link:hover { text-decoration: underline; }
+
 /* ---- Context Bar (job detected) ---- */
 .ext-context-bar {
   display: flex;
