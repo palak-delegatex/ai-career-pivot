@@ -18,6 +18,9 @@ import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import CareerTransitionJourney from "@/components/CareerTransitionJourney";
 import DocumentsCard from "@/components/DocumentsCard";
+import ActivityFeed from "@/components/ActivityFeed";
+import WeeklyGoal from "@/components/WeeklyGoal";
+import ApplicationVelocitySparkline from "@/components/ApplicationVelocitySparkline";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
@@ -629,6 +632,15 @@ export default function DashboardClient() {
               {/* 1. Command Center Header — 3-card stat row */}
               <CommandCenterHeader email={activeReport!.email} />
 
+              {/* Weekly Goal ring + Application velocity sparkline */}
+              <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
+                <WeeklyGoal email={activeReport!.email} />
+                <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col justify-center gap-3">
+                  <h3 className="text-sm font-semibold text-slate-300">Application Velocity</h3>
+                  <ApplicationVelocitySparkline email={activeReport!.email} />
+                </div>
+              </div>
+
               {/* 2. Mini Pipeline — stage funnel + recent jobs */}
               <MiniPipeline email={activeReport!.email} />
 
@@ -682,6 +694,9 @@ export default function DashboardClient() {
                   {/* 8. Documents + Completion Badges */}
                   <DocumentsCard email={activeReport!.email} />
                   <CompletionBadges earnedBadges={earnedBadges} />
+
+                  {/* Activity Feed */}
+                  <ActivityFeed email={activeReport!.email} />
 
                   <MilestoneChecklist
                     phases={phases}
