@@ -150,6 +150,15 @@ export default function ResumeVersionsTab({
       <ResumeComparison
         versionA={view.a}
         versionB={view.b}
+        versions={versions.filter((v) => v.generated_text)}
+        onVersionChange={(side, version) => {
+          setView((prev) => {
+            if (prev.kind !== "comparison") return prev;
+            return side === "a"
+              ? { kind: "comparison", a: version, b: prev.b }
+              : { kind: "comparison", a: prev.a, b: version };
+          });
+        }}
         onBack={() => setView({ kind: "list" })}
       />
     );
