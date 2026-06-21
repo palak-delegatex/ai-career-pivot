@@ -98,7 +98,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: userEmail,
-          job: { ...jobData, matchScore },
+          job: { ...jobData, matchScore, description: jobData.description },
         }),
       });
 

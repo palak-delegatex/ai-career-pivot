@@ -19,6 +19,17 @@ export interface StageHistoryEntry {
   at: string;
 }
 
+export type JobPriority = "hot" | "warm" | "cool";
+
+export interface ExtractedKeywords {
+  required: string[];
+  preferred: string[];
+  keywords: string[];
+  responsibilities?: string[];
+  experience_years?: string;
+  tech_stack?: string[];
+}
+
 export interface TrackedJob {
   id: string;
   user_email: string;
@@ -33,7 +44,11 @@ export interface TrackedJob {
   notes?: string;
   salary_range?: string;
   location?: string;
+  next_action_date?: string | null;
+  priority?: JobPriority | null;
   stage_history?: StageHistoryEntry[];
+  job_description?: string;
+  extracted_keywords?: ExtractedKeywords | null;
   applied_at?: string;
   stage_changed_at: string;
   created_at: string;

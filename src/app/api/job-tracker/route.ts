@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
-import type { JobStage, JobSource } from "@/lib/job-tracker";
+import type { JobStage, JobSource, JobPriority } from "@/lib/job-tracker";
 
 const VALID_STAGES: JobStage[] = [
   "saved",
@@ -18,6 +18,8 @@ const VALID_SOURCES: JobSource[] = [
   "direct",
   "other",
 ];
+
+const VALID_PRIORITIES: JobPriority[] = ["hot", "warm", "cool"];
 
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get("email");
@@ -121,6 +123,14 @@ export async function PATCH(req: NextRequest) {
   if (updates.source && VALID_SOURCES.includes(updates.source)) allowed.source = updates.source;
   if (typeof updates.salary_range === "string") allowed.salary_range = updates.salary_range;
   if (typeof updates.location === "string") allowed.location = updates.location;
+  if (updates.next_action_date === null || typeof updates.next_action_date === "string") {
+    allowed.next_action_date = updates.next_action_date;
+  }
+  if (updates.priority === null || (typeof updates.priority === "string" && VALID_PRIORITIES.includes(updates.priority as JobPriority))) {
+    allowed.priority = updates.priority;
+  }
+  if (typeof updates.job_description === "string") allowed.job_description = updates.job_description;
+  if (updates.extracted_keywords !== undefined) allowed.extracted_keywords = updates.extracted_keywords;
 
   if (Object.keys(allowed).length === 0) {
     return NextResponse.json({ error: "no valid fields to update" }, { status: 400 });

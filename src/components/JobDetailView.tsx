@@ -21,6 +21,13 @@ import {
   Copy,
   RefreshCw,
   CheckCircle2,
+  Flame,
+  Search,
+  TrendingUp,
+  Sparkles,
+  AlertCircle,
+  Check,
+  X,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -34,7 +41,9 @@ import { ScoreRing } from "@/components/ScoreRing";
 import type {
   TrackedJob,
   JobStage,
+  JobPriority,
   StageHistoryEntry,
+  ExtractedKeywords,
 } from "@/lib/job-tracker";
 import { STAGES } from "@/lib/job-tracker";
 
@@ -730,6 +739,290 @@ function InterviewPrepPanel({ job }: { job: TrackedJob }) {
   );
 }
 
+// ─── KeywordsTabContent ───
+
+interface KeywordTrend {
+  keyword: string;
+  count: number;
+  category: "required" | "preferred" | "tech_stack" | "keyword";
+  jobCount: number;
+}
+
+function KeywordBadge({
+  text,
+  variant,
+}: {
+  text: string;
+  variant: "required" | "preferred" | "tech" | "other" | "missing" | "match";
+}) {
+  const styles = {
+    required: "bg-red-500/10 border-red-500/25 text-red-300",
+    preferred: "bg-amber-500/10 border-amber-500/25 text-amber-300",
+    tech: "bg-cyan-500/10 border-cyan-500/25 text-cyan-300",
+    other: "bg-slate-500/10 border-slate-500/25 text-slate-300",
+    missing: "bg-red-500/10 border-red-500/30 text-red-300",
+    match: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-1 text-[11px] font-medium rounded-full border ${styles[variant]}`}
+    >
+      {variant === "match" && <Check className="h-2.5 w-2.5 mr-1" />}
+      {variant === "missing" && <X className="h-2.5 w-2.5 mr-1" />}
+      {text}
+    </span>
+  );
+}
+
+function KeywordsTabContent({
+  job,
+  email,
+  onJobUpdate,
+}: {
+  job: TrackedJob;
+  email: string;
+  onJobUpdate: (updated: TrackedJob) => void;
+}) {
+  const [extracting, setExtracting] = useState(false);
+  const [trends, setTrends] = useState<KeywordTrend[] | null>(null);
+  const [trendsLoading, setTrendsLoading] = useState(false);
+  const kw = job.extracted_keywords as ExtractedKeywords | null;
+
+  const handleExtract = useCallback(async () => {
+    const description = job.job_description;
+    if (!description || description.length < 20) return;
+
+    setExtracting(true);
+    try {
+      const res = await fetch("/api/jobs/extract-keywords", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: job.id,
+          email,
+          jobDescription: description,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        onJobUpdate({ ...job, extracted_keywords: data.extracted_keywords });
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setExtracting(false);
+    }
+  }, [job, email, onJobUpdate]);
+
+  useEffect(() => {
+    if (!kw) return;
+    setTrendsLoading(true);
+    fetch(`/api/jobs/keyword-trends?email=${encodeURIComponent(email)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.trends) setTrends(data.trends);
+      })
+      .catch(() => {})
+      .finally(() => setTrendsLoading(false));
+  }, [email, kw]);
+
+  if (!kw && !job.job_description) {
+    return (
+      <div className="text-center py-10">
+        <Search className="h-10 w-10 text-slate-700 mx-auto mb-3" />
+        <p className="text-sm text-slate-300 mb-1">No job description available</p>
+        <p className="text-[12px] text-slate-500">
+          Save a job with its description via the Chrome extension to auto-extract keywords
+        </p>
+      </div>
+    );
+  }
+
+  if (!kw) {
+    return (
+      <div className="text-center py-10">
+        <Sparkles className="h-10 w-10 text-slate-700 mx-auto mb-3" />
+        <p className="text-sm text-slate-300 mb-1">Keywords not yet extracted</p>
+        <p className="text-[12px] text-slate-500 mb-4">
+          Extract skills, qualifications, and requirements from this job description
+        </p>
+        <button
+          onClick={handleExtract}
+          disabled={extracting}
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 rounded-lg text-sm font-medium text-white transition-colors"
+        >
+          {extracting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Sparkles className="h-4 w-4" />
+          )}
+          {extracting ? "Extracting..." : "Extract Keywords"}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Required Skills */}
+      {kw.required.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2.5">
+            <AlertCircle className="h-3.5 w-3.5 text-red-400" />
+            <span className="text-[12px] font-semibold text-slate-400">
+              Required Skills ({kw.required.length})
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {kw.required.map((s) => (
+              <KeywordBadge key={s} text={s} variant="required" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Preferred Skills */}
+      {kw.preferred.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2.5">
+            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+            <span className="text-[12px] font-semibold text-slate-400">
+              Preferred Skills ({kw.preferred.length})
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {kw.preferred.map((s) => (
+              <KeywordBadge key={s} text={s} variant="preferred" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tech Stack */}
+      {kw.tech_stack && kw.tech_stack.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2.5">
+            <Briefcase className="h-3.5 w-3.5 text-cyan-400" />
+            <span className="text-[12px] font-semibold text-slate-400">
+              Tech Stack ({kw.tech_stack.length})
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {kw.tech_stack.map((s) => (
+              <KeywordBadge key={s} text={s} variant="tech" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experience */}
+      {kw.experience_years && kw.experience_years !== "not specified" && (
+        <div className="flex items-center gap-2 px-3 py-2.5 bg-white/[0.03] border border-slate-800 rounded-lg">
+          <Clock className="h-3.5 w-3.5 text-slate-400" />
+          <span className="text-[12px] text-slate-300">
+            Experience: <span className="font-medium text-gray-50">{kw.experience_years}</span>
+          </span>
+        </div>
+      )}
+
+      {/* Key Responsibilities */}
+      {kw.responsibilities && kw.responsibilities.length > 0 && (
+        <div>
+          <div className="text-[12px] font-semibold text-slate-400 mb-2.5">
+            Key Responsibilities
+          </div>
+          <ul className="space-y-1.5">
+            {kw.responsibilities.slice(0, 6).map((r, i) => (
+              <li
+                key={i}
+                className="flex gap-2 text-[12px] text-slate-300 pl-1"
+              >
+                <span className="text-teal-500 shrink-0 mt-0.5">•</span>
+                {r}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Other Keywords */}
+      {kw.keywords.length > 0 && (
+        <div>
+          <div className="text-[12px] font-semibold text-slate-400 mb-2.5">
+            Other ATS Keywords ({kw.keywords.length})
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {kw.keywords.map((s) => (
+              <KeywordBadge key={s} text={s} variant="other" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Keyword Trends across saved jobs */}
+      {trendsLoading && (
+        <div className="flex items-center gap-2 py-4 text-slate-500 text-[12px]">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          Loading keyword trends...
+        </div>
+      )}
+
+      {trends && trends.length > 0 && (
+        <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-teal-400" />
+            <span className="text-[13px] font-semibold text-gray-50">
+              Keyword Trends Across Saved Jobs
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-500 mb-3">
+            Most frequently requested skills across all your saved jobs
+          </p>
+          <div className="space-y-2">
+            {trends.slice(0, 10).map((t) => (
+              <div key={t.keyword} className="flex items-center gap-3">
+                <span className="text-[12px] text-slate-300 flex-1 truncate capitalize">
+                  {t.keyword}
+                </span>
+                <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-teal-500 rounded-full"
+                    style={{
+                      width: `${Math.min(100, (t.count / t.jobCount) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <span className="text-[11px] text-slate-500 w-16 text-right">
+                  {t.count}/{t.jobCount} jobs
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Re-extract button */}
+      {job.job_description && job.job_description.length >= 20 && (
+        <div className="pt-2 border-t border-slate-800">
+          <button
+            onClick={handleExtract}
+            disabled={extracting}
+            className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-50"
+          >
+            {extracting ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3 w-3" />
+            )}
+            Re-extract keywords
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── DocumentsPanel ───
 
 function DocumentsPanel() {
@@ -780,10 +1073,12 @@ export default function JobDetailView({
   const [salaryRange, setSalaryRange] = useState(job.salary_range ?? "");
   const [location, setLocation] = useState(job.location ?? "");
   const [url, setUrl] = useState(job.url ?? "");
+  const [nextActionDate, setNextActionDate] = useState(job.next_action_date ?? "");
+  const [priority, setPriority] = useState<JobPriority | null>(job.priority ?? null);
   const [currentStage, setCurrentStage] = useState(job.stage);
-  const [activatedTabs, setActivatedTabs] = useState<Set<string>>(new Set(["ats"]));
+  const [activatedTabs, setActivatedTabs] = useState<Set<string>>(new Set(["keywords"]));
 
-  const { debouncedSave } = useAutoSave(job, email, onJobUpdate);
+  const { debouncedSave, persistField } = useAutoSave(job, email, onJobUpdate);
 
   useEffect(() => {
     setNotes(job.notes ?? "");
@@ -791,6 +1086,8 @@ export default function JobDetailView({
     setSalaryRange(job.salary_range ?? "");
     setLocation(job.location ?? "");
     setUrl(job.url ?? "");
+    setNextActionDate(job.next_action_date ?? "");
+    setPriority(job.priority ?? null);
     setCurrentStage(job.stage);
   }, [job]);
 
@@ -922,6 +1219,53 @@ export default function JobDetailView({
                 </div>
               </div>
 
+              {/* Follow-up Date */}
+              <div>
+                <label className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 mb-1.5">
+                  <Calendar className="h-3.5 w-3.5" /> Follow-up Date
+                </label>
+                <input
+                  type="date"
+                  value={nextActionDate}
+                  onChange={(e) => {
+                    const val = e.target.value || null;
+                    setNextActionDate(val ?? "");
+                    persistField("next_action_date", val as string);
+                  }}
+                  className="w-full px-3 py-2 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors [color-scheme:dark]"
+                />
+              </div>
+
+              {/* Priority */}
+              <div>
+                <label className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 mb-1.5">
+                  <Flame className="h-3.5 w-3.5" /> Priority
+                </label>
+                <div className="flex gap-1.5">
+                  {([
+                    { key: "hot" as const, label: "Hot", style: "text-red-400", activeStyle: "bg-red-500/15 border-red-500/40 text-red-300" },
+                    { key: "warm" as const, label: "Warm", style: "text-amber-400", activeStyle: "bg-amber-500/15 border-amber-500/40 text-amber-300" },
+                    { key: "cool" as const, label: "Cool", style: "text-slate-400", activeStyle: "bg-slate-500/15 border-slate-400/40 text-slate-300" },
+                  ] as const).map((p) => (
+                    <button
+                      key={p.key}
+                      onClick={() => {
+                        const next = priority === p.key ? null : p.key;
+                        setPriority(next);
+                        persistField("priority", next as string);
+                      }}
+                      className={`px-3 py-1.5 text-[11px] font-medium rounded-full border transition-all ${
+                        priority === p.key
+                          ? p.activeStyle
+                          : "border-slate-800 text-slate-600 hover:border-slate-700 hover:text-slate-400"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Salary Range */}
               <div>
                 <label className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 mb-1.5">
@@ -993,8 +1337,11 @@ export default function JobDetailView({
           {/* ── Main tabbed area ── */}
           <main className="flex-1 min-w-0">
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-              <Tabs defaultValue="ats" onValueChange={handleTabChange}>
+              <Tabs defaultValue="keywords" onValueChange={handleTabChange}>
                 <TabsList className="bg-slate-800/60 border border-slate-700/60 w-full mb-4">
+                  <TabsTrigger value="keywords" className="flex-1 text-xs">
+                    Keywords
+                  </TabsTrigger>
                   <TabsTrigger value="ats" className="flex-1 text-xs">
                     ATS Score
                   </TabsTrigger>
@@ -1011,6 +1358,16 @@ export default function JobDetailView({
                     Documents
                   </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="keywords">
+                  {activatedTabs.has("keywords") && (
+                    <KeywordsTabContent
+                      job={job}
+                      email={email}
+                      onJobUpdate={onJobUpdate}
+                    />
+                  )}
+                </TabsContent>
 
                 <TabsContent value="ats">
                   {activatedTabs.has("ats") && <AtsScoreTabContent job={job} />}
