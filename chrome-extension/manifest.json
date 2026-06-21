@@ -28,7 +28,12 @@
     "https://*.jazz.co/*",
     "https://*.jobvite.com/*",
     "https://ai-career-pivot.vercel.app/*",
-    "https://*.supabase.co/*"
+    "https://*.supabase.co/*",
+    "https://meet.google.com/*",
+    "https://*.zoom.us/*",
+    "https://teams.microsoft.com/*",
+    "https://teams.live.com/*",
+    "https://*.webex.com/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js",
@@ -72,6 +77,58 @@
     },
     {
       "matches": [
+        "https://boards.greenhouse.io/*/jobs/*",
+        "https://boards.greenhouse.io/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.lever.co/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle",
+      "exclude_matches": [
+        "https://*.lever.co/applications/*"
+      ]
+    },
+    {
+      "matches": [
+        "https://*.myworkdayjobs.com/*/job/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.smartrecruiters.com/*/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle",
+      "exclude_matches": [
+        "https://*.smartrecruiters.com/*/application*",
+        "https://*.smartrecruiters.com/apply/*"
+      ]
+    },
+    {
+      "matches": [
+        "https://*.ashbyhq.com/*/jobs/*",
+        "https://*.ashbyhq.com/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle",
+      "exclude_matches": [
+        "https://*.ashbyhq.com/*/application/*"
+      ]
+    },
+    {
+      "matches": [
         "https://*.greenhouse.io/applications/*",
         "https://boards.greenhouse.io/*",
         "https://*.lever.co/applications/*",
@@ -105,6 +162,19 @@
     },
     {
       "matches": [
+        "https://meet.google.com/*",
+        "https://*.zoom.us/j/*",
+        "https://*.zoom.us/wc/*",
+        "https://teams.microsoft.com/*/meeting/*",
+        "https://teams.live.com/meet/*",
+        "https://*.webex.com/meet/*",
+        "https://*.webex.com/join/*"
+      ],
+      "js": ["content/interview-detector.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
         "https://*.linkedin.com/jobs/application/*",
         "https://*.linkedin.com/talent/applications/*",
         "https://*.indeed.com/applystart*",
@@ -114,15 +184,6 @@
       ],
       "js": ["content/autofill.js", "content/ai-generate.js"],
       "css": ["content/injector.css"],
-      "run_at": "document_idle"
-    },
-    {
-      "matches": [
-        "*://*.linkedin.com/jobs/*",
-        "*://*.indeed.com/*",
-        "*://*.glassdoor.com/job-listing/*"
-      ],
-      "js": ["job-scorer.js"],
       "run_at": "document_idle"
     }
   ],
@@ -154,6 +215,10 @@
     "open-dashboard": {
       "suggested_key": { "default": "Ctrl+Shift+D", "mac": "MacCtrl+Shift+D" },
       "description": "Open AICareerPivot dashboard"
+    },
+    "interview-copilot": {
+      "suggested_key": { "default": "Ctrl+Shift+I", "mac": "MacCtrl+Shift+I" },
+      "description": "Launch Interview Copilot"
     }
   }
 }

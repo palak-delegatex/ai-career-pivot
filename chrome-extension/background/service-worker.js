@@ -686,6 +686,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           await updateBadgeCount();
           return { ok: true };
 
+        case "INTERVIEW_DETECTED":
+          await chrome.storage.local.set({
+            lastInterviewDetection: {
+              platform: msg.platform,
+              url: msg.url,
+              timestamp: msg.timestamp,
+            },
+          });
+          return { ok: true };
+
         default:
           return { ok: false, error: "Unknown message type" };
       }
@@ -704,6 +714,19 @@ chrome.commands.onCommand.addListener(async (command) => {
   if (command === "open-dashboard") {
     const config = await getConfig();
     chrome.tabs.create({ url: `${config.apiUrl}/dashboard` });
+    return;
+  }
+
+  if (command === "interview-copilot") {
+    const config = await getConfig();
+    chrome.windows.create({
+      url: `${config.apiUrl}/interview-copilot`,
+      type: "popup",
+      width: 420,
+      height: 700,
+      left: Math.max(0, screen.availWidth - 460),
+      top: 60,
+    });
     return;
   }
 

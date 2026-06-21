@@ -562,6 +562,17 @@ export default function MockInterviewClient() {
           <p className="text-slate-500 text-xs text-center">
             5 questions · ~10 minutes · {voiceMode ? "Voice-enabled · " : ""}{jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
           </p>
+
+          <div className="mt-4 pt-4 border-t border-slate-700/40">
+            <Link
+              href="/interview-copilot"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600/20 to-cyan-600/20 hover:from-emerald-600/30 hover:to-cyan-600/30 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-sm font-medium transition-all"
+            >
+              <span>⚡</span>
+              Have a real interview? Try Interview Copilot
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">New</span>
+            </Link>
+          </div>
         </div>
       </main>
     );
