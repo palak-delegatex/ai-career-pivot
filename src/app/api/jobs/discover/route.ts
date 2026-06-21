@@ -5,6 +5,7 @@ import {
   sortByMatch,
 } from "@/lib/job-match";
 import type { EnrichedJob, MatchProfile } from "@/lib/job-match";
+import { computeQuickMatchBreakdown } from "@/lib/ai-job-match";
 import {
   shouldIncludeJob,
   applyFeedbackBoost,
@@ -252,6 +253,8 @@ export async function POST(req: NextRequest) {
     job: EnrichedJob;
     adjustedScore: number;
     breakdown: { skills: number; role: number; location: number; salary: number; experience: number };
+    aiBreakdown: { skills: number; experience: number; education: number; keywords: number; location: number };
+    improvements: Array<{ action: string; keyword: string; estimatedImpact: number; priority: string }>;
     matchedSkills: string[];
     reasons: ReturnType<typeof buildMatchReasons>;
   }> = [];
@@ -272,6 +275,16 @@ export async function POST(req: NextRequest) {
     }
 
     const result = computeDetailedMatchScore(job, matchProfile);
+
+    const jobText = [job.title, ...(job.tags ?? []), job.description_snippet ?? ""].join(" ");
+    const aiBreakdown = computeQuickMatchBreakdown(userSkills, jobText, {
+      yearsExperience: profile?.years_experience ?? undefined,
+      education: [],
+      location: profile?.preferred_locations?.[0] ?? undefined,
+      jobLocation: job.location ?? undefined,
+      isRemote: job.is_remote ?? false,
+      remotePreferred: prefs?.remote_only ?? false,
+    });
 
     const feedbackBoost =
       applyFeedbackBoost(
@@ -306,10 +319,19 @@ export async function POST(req: NextRequest) {
       feedbackBoost
     );
 
+    const improvements = aiBreakdown.missingFromJd.slice(0, 3).map((kw, i) => ({
+      action: `Add "${kw}" to your resume`,
+      keyword: kw,
+      estimatedImpact: Math.max(2, 6 - i * 2),
+      priority: i === 0 ? "high" : "medium",
+    }));
+
     scored.push({
       job: { ...job, matchScore: adjustedScore, matchedSkills: result.matched },
       adjustedScore,
       breakdown: result.breakdown,
+      aiBreakdown: aiBreakdown.breakdown,
+      improvements,
       matchedSkills: result.matched,
       reasons,
     });
@@ -318,7 +340,7 @@ export async function POST(req: NextRequest) {
   scored.sort((a, b) => b.adjustedScore - a.adjustedScore);
   const top = scored.slice(0, 50);
 
-  const inserts = top.map(({ job, adjustedScore, breakdown, matchedSkills, reasons }) => ({
+  const inserts = top.map(({ job, adjustedScore, breakdown, aiBreakdown, improvements, matchedSkills, reasons }) => ({
     user_email: email,
     job_title: job.title,
     company: job.company_name,
@@ -333,7 +355,7 @@ export async function POST(req: NextRequest) {
     tags: job.tags ?? [],
     match_score: adjustedScore,
     matched_skills: matchedSkills,
-    match_breakdown: breakdown,
+    match_breakdown: { ...breakdown, ai: aiBreakdown, improvements },
     match_reasons: reasons,
     is_remote: job.is_remote ?? false,
     experience_level: job.experience_level ?? null,
@@ -392,11 +414,13 @@ export async function POST(req: NextRequest) {
       adzuna: allJobs.filter((j) => j.source === "adzuna").length,
       remotive: allJobs.filter((j) => j.source === "remotive").length,
     },
-    topMatches: top.slice(0, 10).map(({ job, adjustedScore, breakdown }) => ({
+    topMatches: top.slice(0, 10).map(({ job, adjustedScore, breakdown, aiBreakdown, improvements }) => ({
       title: job.title,
       company: job.company_name,
       score: adjustedScore,
       breakdown,
+      aiBreakdown,
+      improvements,
       location: job.location,
       salary: job.salary,
       source: job.source,

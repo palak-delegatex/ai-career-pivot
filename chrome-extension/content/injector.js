@@ -4,6 +4,7 @@
   let currentJobData = null;
   let savedJob = null;
   let scoreData = null;
+  let aiMatchData = null;
   let highlightActive = false;
 
   function msg(type, payload) {
@@ -164,6 +165,66 @@
           )
         ),
       ]));
+    }
+
+    return children;
+  }
+
+  function breakdownBarSvg(value, max, color) {
+    const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+    return `<div class="acp-breakdown-bar"><div class="acp-breakdown-fill" style="width:${pct}%;background:${color}"></div></div>`;
+  }
+
+  function buildAIBreakdownContent(data) {
+    if (!data?.breakdown) return [];
+
+    const categories = [
+      { key: "skills", label: "Skills", max: 40, color: "#10b981" },
+      { key: "experience", label: "Experience", max: 25, color: "#3b82f6" },
+      { key: "keywords", label: "Keywords", max: 15, color: "#8b5cf6" },
+      { key: "education", label: "Education", max: 10, color: "#f59e0b" },
+      { key: "location", label: "Location", max: 10, color: "#06b6d4" },
+    ];
+
+    const children = [
+      el("div", { className: "acp-ai-section-title", textContent: "Match Breakdown" }),
+      el("div", { className: "acp-breakdown-grid" },
+        categories.map(c => {
+          const val = data.breakdown[c.key] ?? 0;
+          return el("div", { className: "acp-breakdown-row" }, [
+            el("span", { className: "acp-breakdown-label", textContent: c.label }),
+            el("div", { className: "acp-breakdown-bar-wrap", innerHTML: breakdownBarSvg(val, c.max, c.color) }),
+            el("span", { className: "acp-breakdown-val", textContent: `${val}/${c.max}` }),
+          ]);
+        })
+      ),
+    ];
+
+    if (data.improvements?.length > 0) {
+      children.push(
+        el("div", { className: "acp-ai-section-title acp-improve-title", textContent: "Score Boosters" }),
+        el("div", { className: "acp-improve-list" },
+          data.improvements.slice(0, 3).map(imp =>
+            el("div", { className: `acp-improve-item acp-improve-${imp.priority}` }, [
+              el("span", { className: "acp-improve-impact", textContent: `+${imp.estimatedImpact}` }),
+              el("span", { className: "acp-improve-action", textContent: imp.action }),
+            ])
+          )
+        )
+      );
+    }
+
+    if (data.missingSkills?.length > 0) {
+      children.push(
+        el("div", { className: "acp-keywords" }, [
+          el("div", { className: "acp-kw-title", textContent: "Missing from JD" }),
+          el("div", { className: "acp-kw-list" },
+            data.missingSkills.slice(0, 6).map(kw =>
+              el("span", { className: "acp-kw-tag acp-kw-miss", textContent: kw })
+            )
+          ),
+        ])
+      );
     }
 
     return children;
@@ -390,34 +451,93 @@
 
     panel.appendChild(createHighlightToggle());
 
+    if (aiMatchData) {
+      for (const child of buildAIBreakdownContent(aiMatchData)) {
+        panel.appendChild(child);
+      }
+    }
+
     return panel;
   }
 
-  function injectSaveButton(board) {
-    if (document.querySelector(".acp-save-btn")) return;
+  function injectFloatingSaveButton() {
+    if (document.querySelector(".acp-floating-save")) return;
 
-    const applyBtn = window.__acpDetector.findApplyButton(board);
-    const btn = createSaveButton();
+    const btn = document.createElement("button");
+    btn.className = "acp-floating-save";
+    btn.title = "Save + Score (⌘⇧S)";
+    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+    </svg>`;
 
-    if (savedJob) {
-      btn.classList.add("acp-saved");
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!currentJobData || btn.classList.contains("acp-float-saved")) return;
+
+      btn.classList.add("acp-float-saving");
+
+      const result = await msg("SAVE_JOB", {
+        role: currentJobData.role,
+        company: currentJobData.company,
+        url: currentJobData.url,
+        source: currentJobData.source,
+        stage: "saved",
+        match_score: scoreData?.score || 0,
+      });
+
+      if (result.ok) {
+        savedJob = result.data.job;
+        btn.classList.remove("acp-float-saving");
+        btn.classList.add("acp-float-saved");
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span>Saved</span>
-        <span class="acp-stage-badge">${savedJob.stage}</span>
-      `;
-    }
-
-    if (applyBtn?.parentElement) {
-      applyBtn.parentElement.insertBefore(btn, applyBtn.nextSibling);
-    } else {
-      const h1 = document.querySelector("h1");
-      if (h1?.parentElement) {
-        h1.parentElement.appendChild(btn);
+        </svg>`;
+        showSaveToast(currentJobData, scoreData);
+        msg("UPDATE_BADGE");
+      } else {
+        btn.classList.remove("acp-float-saving");
       }
-    }
+    });
+
+    document.body.appendChild(btn);
+  }
+
+  function showSaveToast(jobData, scoreData) {
+    const existing = document.querySelector(".acp-save-toast");
+    if (existing) existing.remove();
+
+    const toast = document.createElement("div");
+    toast.className = "acp-save-toast";
+
+    const scoreMeta = scoreData?.score ? `${scoreData.score}% match · ` : "";
+
+    toast.innerHTML = `
+      <div class="acp-toast-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="acp-toast-info">
+        <div class="acp-toast-title">Saved to tracker</div>
+        <div class="acp-toast-meta">${scoreMeta}${jobData.role} at ${jobData.company}</div>
+      </div>
+      <a href="#" class="acp-toast-link">View</a>
+    `;
+
+    toast.querySelector(".acp-toast-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const configResult = await msg("GET_CONFIG");
+      const apiUrl = configResult.ok ? configResult.data.apiUrl : "https://ai-career-pivot.vercel.app";
+      window.open(`${apiUrl}/dashboard`, "_blank");
+    });
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add("acp-toast-exit");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
   function injectScorePanel() {
@@ -461,12 +581,37 @@
       activeResumeId = activeResult.data?.activeResumeId || null;
     }
 
-    injectSaveButton(board);
+    injectFloatingSaveButton();
+    if (savedJob) {
+      const floatBtn = document.querySelector(".acp-floating-save");
+      if (floatBtn) {
+        floatBtn.classList.add("acp-float-saved");
+        floatBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>`;
+      }
+    }
     if (scoreData && scoreData.score > 0) {
       injectScorePanel();
       if (highlightActive) {
         highlightKeywordsInPage();
       }
+    }
+
+    if (jobData.description) {
+      msg("AI_MATCH", {
+        jobDescription: jobData.description,
+        jobTitle: jobData.role || "",
+        jobLocation: jobData.location || "",
+        isRemote: /remote/i.test(jobData.location || ""),
+      }).then((result) => {
+        if (result.ok && result.data) {
+          aiMatchData = result.data;
+          if (scoreData && scoreData.score > 0) {
+            injectScorePanel();
+          }
+        }
+      });
     }
   }
 
@@ -474,8 +619,8 @@
 
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === "TRIGGER_SAVE") {
-      const btn = document.querySelector(".acp-save-btn");
-      if (btn && !btn.classList.contains("acp-saved")) btn.click();
+      const btn = document.querySelector(".acp-floating-save");
+      if (btn && !btn.classList.contains("acp-float-saved")) btn.click();
     }
   });
 })();

@@ -1032,6 +1032,131 @@ mark.acp-hl-missing:hover {
   pointer-events: none;
 }
 
+/* ---- Floating Save Button (acp-floating-save) ---- */
+.acp-floating-save {
+  all: initial;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(45, 212, 191, 0.3);
+  z-index: 2147483647;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.acp-floating-save:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(45, 212, 191, 0.4);
+}
+
+.acp-floating-save svg {
+  color: #0f172a;
+}
+
+.acp-floating-save.acp-float-saving {
+  opacity: 0.7;
+  pointer-events: none;
+  animation: acp-spin 0.6s linear infinite;
+}
+
+.acp-floating-save.acp-float-saved {
+  background: #064e3b;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  pointer-events: none;
+}
+
+.acp-floating-save.acp-float-saved svg {
+  color: #6ee7b7;
+}
+
+/* ---- Post-Save Toast (acp-save-toast) ---- */
+.acp-save-toast {
+  all: initial;
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  width: 300px;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: acp-toast-slide-up 0.3s ease-out;
+}
+
+.acp-save-toast.acp-toast-exit {
+  animation: acp-toast-slide-down 0.3s ease-in forwards;
+}
+
+@keyframes acp-toast-slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes acp-toast-slide-down {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+.acp-toast-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #064e3b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.acp-toast-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.acp-toast-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.acp-toast-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acp-toast-link {
+  all: initial;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #2dd4bf;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.acp-toast-link:hover {
+  text-decoration: underline;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
@@ -1040,7 +1165,10 @@ mark.acp-hl-missing:hover {
   .acp-ai-review-modal,
   .acp-ai-gen-error,
   .acp-resume-picker,
-  .acp-summary-panel {
+  .acp-summary-panel,
+  .acp-autofill-card,
+  .acp-autofill-pill,
+  .acp-li-optimizer-panel {
     animation: none;
   }
   .acp-save-btn,
@@ -1051,7 +1179,595 @@ mark.acp-hl-missing:hover {
   .acp-resume-picker-item,
   .acp-hl-toggle,
   .acp-fill-indicator,
-  .acp-clip-btn {
+  .acp-clip-btn,
+  .acp-li-optimize-trigger,
+  .acp-li-score-badge,
+  .acp-li-section-dot,
+  .acp-card-btn-never {
     transition: none;
   }
+}
+
+/* ---- LinkedIn Optimizer Panel ---- */
+.acp-li-optimizer-panel {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: 360px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 20px;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  font-size: 13px;
+  line-height: 1.5;
+  animation: acp-slide-in 0.2s ease-out;
+}
+
+.acp-li-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.acp-li-panel-close:hover { color: #e2e8f0; }
+
+.acp-li-opt-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.acp-li-opt-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.acp-li-opt-sublabel {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.acp-li-section-list {
+  margin-bottom: 16px;
+}
+
+.acp-li-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-li-section-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acp-li-section-dot-inline {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.acp-li-section-name {
+  font-size: 12px;
+}
+
+.acp-li-section-score {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.acp-li-qw-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: #fbbf24;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.acp-li-qw-item {
+  font-size: 11px;
+  color: #cbd5e1;
+  padding: 6px 8px;
+  background-color: #1a1f2e;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  border-left: 2px solid #fbbf24;
+}
+
+.acp-li-cta {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(135deg, #0d9488, #059669);
+}
+
+.acp-li-cta:hover { opacity: 0.9; }
+
+.acp-li-loading {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.acp-li-loading-title {
+  color: #2dd4bf;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.acp-li-loading-text {
+  color: #94a3b8;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.acp-li-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #334155;
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: acp-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.acp-li-error {
+  text-align: center;
+  padding: 24px;
+  color: #f87171;
+}
+
+.acp-li-error-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.acp-li-error-text {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.acp-li-error-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #2dd4bf;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* LinkedIn optimizer trigger button */
+.acp-li-optimize-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #0d9488, #059669);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(13,148,136,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.acp-li-optimize-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13,148,136,0.5);
+}
+
+/* Suggestion tooltip */
+.acp-li-suggestion-tooltip {
+  position: absolute;
+  z-index: 10000;
+  width: 320px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  font-size: 12px;
+  line-height: 1.5;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-li-tooltip-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.acp-li-tooltip-title-text {
+  font-weight: 700;
+}
+
+.acp-li-tooltip-dismiss {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.acp-li-tooltip-dismiss:hover { color: #e2e8f0; }
+
+.acp-li-tooltip-suggestion {
+  color: #94d8b8;
+  font-size: 11px;
+  margin-bottom: 10px;
+  background-color: #0f2922;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.acp-li-tooltip-copy {
+  background: none;
+  border: 1px solid #2dd4bf;
+  color: #2dd4bf;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.acp-li-tooltip-copy:hover { background: rgba(45, 212, 191, 0.1); }
+
+/* ---- LinkedIn Score Badge ---- */
+.acp-li-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.acp-li-score-badge:hover {
+  transform: scale(1.15);
+}
+
+/* Section-level colored dots on LinkedIn */
+.acp-li-section-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  cursor: help;
+  transition: transform 0.15s;
+}
+
+.acp-li-section-dot:hover {
+  transform: scale(1.4);
+}
+
+/* ---- Autofill Compact Card ---- */
+.acp-autofill-card {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 16px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  animation: acp-slide-up 0.25s ease-out;
+  font-size: 13px;
+}
+
+.acp-autofill-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.acp-autofill-card-header svg {
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.acp-autofill-card-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #f1f5f9;
+  flex: 1;
+}
+
+.acp-autofill-card-ats {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  text-transform: capitalize;
+}
+
+.acp-autofill-card-preview {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: #1e293b;
+  border-radius: 8px;
+}
+
+.acp-autofill-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acp-autofill-card-actions .acp-banner-btn {
+  flex: none;
+}
+
+.acp-card-btn-never {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 11px;
+  font-family: system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  padding: 4px;
+  text-align: center;
+}
+
+.acp-card-btn-never:hover {
+  color: #94a3b8;
+}
+
+/* ---- Autofill Summary Pill ---- */
+.acp-autofill-pill {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  animation: acp-slide-up 0.25s ease-out;
+}
+
+.acp-pill-collapsed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.15s;
+  font-size: 13px;
+}
+
+.acp-pill-collapsed:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.acp-pill-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #064e3b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.acp-pill-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #a7f3d0;
+}
+
+.acp-pill-expand {
+  all: initial;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: system-ui;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.acp-pill-expand:hover { color: #94a3b8; }
+
+.acp-pill-close {
+  all: initial;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: system-ui;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.acp-pill-close:hover { color: #e2e8f0; }
+
+.acp-pill-expanded {
+  width: 340px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.acp-pill-expanded .acp-summary-header,
+.acp-pill-expanded .acp-summary-stats,
+.acp-pill-expanded .acp-summary-details,
+.acp-pill-expanded .acp-summary-hint {
+  /* reuse existing summary panel styles */
+}
+
+/* ── AI Match Breakdown ── */
+
+.acp-ai-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 14px 6px;
+  border-top: 1px solid #1e293b;
+  margin-top: 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.acp-breakdown-grid {
+  padding: 4px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acp-breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acp-breakdown-label {
+  font-size: 11px;
+  color: #cbd5e1;
+  width: 72px;
+  flex-shrink: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.acp-breakdown-bar-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.acp-breakdown-bar {
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.acp-breakdown-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.acp-breakdown-val {
+  font-size: 10px;
+  color: #64748b;
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Score Boosters ── */
+
+.acp-improve-title {
+  color: #2dd4bf;
+}
+
+.acp-improve-list {
+  padding: 2px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acp-improve-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.acp-improve-impact {
+  font-size: 12px;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.acp-improve-high .acp-improve-impact {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.acp-improve-medium .acp-improve-impact {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.acp-improve-low .acp-improve-impact {
+  color: #64748b;
+  background: rgba(100, 116, 139, 0.12);
+}
+
+.acp-improve-action {
+  font-size: 11px;
+  color: #e2e8f0;
+  line-height: 1.4;
 }

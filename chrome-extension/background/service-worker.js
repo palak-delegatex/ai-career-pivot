@@ -411,6 +411,18 @@ async function checkIfSaved(url) {
   }
 }
 
+async function updateBadgeCount() {
+  try {
+    const { jobs } = await getJobs();
+    const count = jobs.length;
+    chrome.action.setBadgeText({ text: count > 0 ? String(count) : "" });
+    chrome.action.setBadgeBackgroundColor({ color: "#2dd4bf" });
+    chrome.action.setBadgeTextColor({ color: "#0f172a" });
+  } catch {
+    chrome.action.setBadgeText({ text: "" });
+  }
+}
+
 // --- Message Handler ---
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -429,8 +441,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           return { ok: true, data: session };
         }
 
-        case "SAVE_JOB":
-          return { ok: true, data: await saveJob(msg.payload) };
+        case "SAVE_JOB": {
+          const saved = await saveJob(msg.payload);
+          updateBadgeCount();
+          return { ok: true, data: saved };
+        }
 
         case "GET_JOBS":
           return { ok: true, data: await getJobs() };
@@ -650,6 +665,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           return { ok: true, data: await optRes.json() };
         }
 
+        case "AI_MATCH": {
+          const config = await getConfig();
+          if (!config.userEmail) throw new Error("Not signed in");
+          const matchRes = await apiRequest("/api/jobs/ai-match", {
+            method: "POST",
+            body: JSON.stringify({
+              email: config.userEmail,
+              jobDescription: msg.payload.jobDescription,
+              jobTitle: msg.payload.jobTitle,
+              jobLocation: msg.payload.jobLocation,
+              isRemote: msg.payload.isRemote,
+              deepAnalysis: msg.payload.deepAnalysis || false,
+            }),
+          });
+          return { ok: true, data: matchRes };
+        }
+
+        case "UPDATE_BADGE":
+          await updateBadgeCount();
+          return { ok: true };
+
         default:
           return { ok: false, error: "Unknown message type" };
       }
@@ -704,4 +740,5 @@ chrome.runtime.onStartup.addListener(async () => {
       refreshSession();
     }
   }
+  updateBadgeCount();
 });
