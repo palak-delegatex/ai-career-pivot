@@ -10,6 +10,7 @@ import {
   shouldIncludeJob,
   applyFeedbackBoost,
   buildMatchReasons,
+  shouldAutoSubmit,
 } from "@/lib/auto-apply";
 import type { AutoApplyPreferences, FeedbackEntry } from "@/lib/auto-apply";
 
@@ -393,7 +394,7 @@ export async function POST(req: NextRequest) {
       match_score: adjustedScore,
       matched_skills: matchedSkills,
       match_reasons: reasons,
-      status: "pending_review",
+      status: prefs && shouldAutoSubmit(adjustedScore, prefs) ? "approved" : "pending_review",
     }));
 
   if (queueInserts.length > 0) {

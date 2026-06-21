@@ -56,6 +56,14 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  await supabase.from("auto_apply_engine_runs").insert({
+    run_type: "scan",
+    users_processed: users.length,
+    applications_processed: totalDiscovered,
+    cover_letters_generated: 0,
+    errors,
+  });
+
   return NextResponse.json({
     scanned: users.length,
     discovered: totalDiscovered,
