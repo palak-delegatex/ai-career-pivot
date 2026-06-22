@@ -26,6 +26,7 @@ import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import GettingStartedChecklist from "@/components/GettingStartedChecklist";
+import CareerCoachWidget from "@/components/CareerCoachWidget";
 
 interface Report {
   id: string;
@@ -716,12 +717,6 @@ export default function DashboardClient() {
 
               <div className="pt-4 border-t border-slate-700/50 space-y-3">
                 <Link
-                  href="/chat"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
-                >
-                  Talk to Career Coach
-                </Link>
-                <Link
                   href="/mock-interview"
                   className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
                 >
@@ -760,6 +755,20 @@ export default function DashboardClient() {
           phaseLabel={celebratingPhase.label}
           phaseColor={celebratingPhase.color}
           onDismiss={() => setCelebratingPhase(null)}
+        />
+      )}
+
+      {activePlan && activeReport && (
+        <CareerCoachWidget
+          reportId={activeReport.id}
+          planIndex={selectedPlanIndex}
+          targetRole={activePlan.targetRole}
+          completionPercent={completionPercent}
+          completedMilestones={completedMilestones}
+          totalMilestones={totalMilestones}
+          currentPhaseLabel={currentPhaseLabel}
+          skillGaps={activePlan.skillGaps}
+          nextMilestone={nextActions[0]?.milestone}
         />
       )}
     </main>

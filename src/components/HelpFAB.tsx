@@ -5,8 +5,10 @@ import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFabPulseShown } from "@/lib/help-state";
 import { HelpPanel } from "@/components/HelpPanel";
+import { useCareerCoach } from "@/components/CareerCoachContext";
 
 export function HelpFAB() {
+  const { widgetActive } = useCareerCoach();
   const [open, setOpen] = useState(false);
   const [pulseShown, setPulseShown] = useFabPulseShown();
   const [shouldPulse, setShouldPulse] = useState(false);
@@ -51,7 +53,8 @@ export function HelpFAB() {
         aria-label="Open help"
         aria-expanded={open}
         className={cn(
-          "fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full",
+          "fixed bottom-6 z-40 flex h-12 w-12 items-center justify-center rounded-full",
+          widgetActive ? "left-6" : "right-6",
           "bg-primary text-primary-foreground shadow-lg",
           "transition-transform hover:scale-105 active:scale-95",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
