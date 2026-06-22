@@ -1168,7 +1168,9 @@ mark.acp-hl-missing:hover {
   .acp-summary-panel,
   .acp-autofill-card,
   .acp-autofill-pill,
-  .acp-li-optimizer-panel {
+  .acp-li-optimizer-panel,
+  .acp-submit-guard-overlay,
+  .acp-submit-guard-modal {
     animation: none;
   }
   .acp-save-btn,
@@ -1183,7 +1185,10 @@ mark.acp-hl-missing:hover {
   .acp-li-optimize-trigger,
   .acp-li-score-badge,
   .acp-li-section-dot,
-  .acp-card-btn-never {
+  .acp-card-btn-never,
+  .acp-card-btn-next,
+  .acp-pill-next-btn,
+  .acp-submit-guard-btn {
     transition: none;
   }
 }
@@ -1770,4 +1775,406 @@ mark.acp-hl-missing:hover {
   font-size: 11px;
   color: #e2e8f0;
   line-height: 1.4;
+}
+
+/* ---- Submit Guard Overlay ---- */
+.acp-submit-guard-overlay {
+  all: initial;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-submit-guard-modal {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  width: 420px;
+  max-width: 90vw;
+  padding: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: acp-modal-in 0.2s ease-out;
+}
+
+.acp-submit-guard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.acp-submit-guard-text {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.acp-submit-guard-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.acp-submit-guard-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.acp-submit-guard-review {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.acp-submit-guard-review:hover {
+  background: #1e293b;
+}
+
+.acp-submit-guard-confirm {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.acp-submit-guard-confirm:hover {
+  background: #5eead4;
+}
+
+/* ---- Multi-page Navigation ---- */
+.acp-card-btn-next {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #2dd4bf;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.acp-card-btn-next:hover {
+  background: #5eead4;
+}
+
+.acp-card-btn-next svg {
+  flex-shrink: 0;
+}
+
+.acp-card-progress {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.acp-card-final-note {
+  font-size: 11px;
+  color: #f59e0b;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 6px;
+  border-left: 2px solid #f59e0b;
+}
+
+.acp-pill-next-btn {
+  all: initial;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: #2dd4bf;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.acp-pill-next-btn:hover {
+  background: #5eead4;
+}
+
+.acp-pill-progress {
+  padding: 6px 16px;
+  font-size: 11px;
+  color: #94a3b8;
+  background: #1e293b;
+  text-align: center;
+  font-weight: 600;
+}
+
+.acp-pill-final-notice {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  text-align: center;
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* ---- Autofill Card Button Styles ---- */
+.acp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.acp-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #f1f5f9;
+}
+
+.acp-card-ats {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  text-transform: capitalize;
+}
+
+.acp-card-body {
+  font-size: 13px;
+}
+
+.acp-card-field-count {
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.acp-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acp-card-btn {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.acp-card-btn-fill {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.acp-card-btn-fill:hover {
+  background: #5eead4;
+}
+
+.acp-card-btn-fill:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.acp-card-btn-skip {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.acp-card-btn-skip:hover {
+  background: #1e293b;
+}
+
+.acp-card-btn-resume {
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  color: #ccfbf1;
+  border: 1px solid #2dd4bf;
+}
+
+.acp-card-btn-resume:hover {
+  background: #0f766e;
+}
+
+.acp-card-btn-resume:disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-card-btn-resume-done {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+}
+
+.acp-card-never-link {
+  all: initial;
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.acp-card-never-link:hover {
+  color: #94a3b8;
+}
+
+/* ---- Pill expanded details ---- */
+.acp-pill-collapsed-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+.acp-pill-collapsed-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.acp-pill-expand-btn,
+.acp-pill-collapse-btn {
+  all: initial;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.15s, background 0.15s;
+}
+
+.acp-pill-expand-btn:hover,
+.acp-pill-collapse-btn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.acp-pill-close-btn {
+  all: initial;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #64748b;
+  font-family: system-ui;
+  font-size: 16px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.acp-pill-close-btn:hover {
+  color: #e2e8f0;
+}
+
+.acp-pill-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-pill-expanded-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.acp-pill-expanded-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.acp-pill-ats {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  text-transform: capitalize;
+}
+
+.acp-pill-stats {
+  display: flex;
+  gap: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-pill-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.acp-pill-details {
+  padding: 10px 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.acp-pill-hint {
+  padding: 10px 16px;
+  font-size: 11px;
+  color: #64748b;
+  border-top: 1px solid #1e293b;
+  text-align: center;
 }

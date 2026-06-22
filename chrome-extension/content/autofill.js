@@ -412,6 +412,370 @@
     return false;
   }
 
+  // --- Custom dropdown/combobox handling ---
+
+  async function setCustomDropdownValue(trigger, value) {
+    if (!value || !trigger) return false;
+
+    trigger.click();
+    await new Promise((r) => setTimeout(r, 300));
+
+    const listboxId = trigger.getAttribute("aria-controls") || trigger.getAttribute("aria-owns");
+    let listbox = listboxId ? document.getElementById(listboxId) : null;
+    if (!listbox) {
+      listbox = document.querySelector('[role="listbox"]:not([hidden]), [role="listbox"][style*="display"]');
+    }
+    if (!listbox) {
+      listbox = trigger.closest("[data-automation-id]")?.querySelector('[role="listbox"]');
+    }
+    if (!listbox) {
+      trigger.click();
+      return false;
+    }
+
+    const valueLower = value.toLowerCase();
+    const options = listbox.querySelectorAll('[role="option"], li, [data-automation-id*="option"]');
+
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const opt of options) {
+      const text = opt.textContent.trim().toLowerCase();
+      if (text === valueLower) { bestMatch = opt; bestScore = 100; break; }
+      if (text.includes(valueLower) || valueLower.includes(text)) {
+        if (50 > bestScore) { bestMatch = opt; bestScore = 50; }
+      }
+      const words = valueLower.split(/\s+/);
+      if (words.some(w => w.length > 2 && text.includes(w))) {
+        if (30 > bestScore) { bestMatch = opt; bestScore = 30; }
+      }
+    }
+
+    if (bestMatch && bestScore >= 30) {
+      bestMatch.click();
+      await new Promise((r) => setTimeout(r, 150));
+      return true;
+    }
+
+    trigger.click();
+    return false;
+  }
+
+  async function setReactSelectValue(container, value) {
+    if (!value || !container) return false;
+
+    const input = container.querySelector('input[role="combobox"], input[aria-autocomplete]');
+    if (input) {
+      input.focus();
+      setFieldValue(input, value);
+      await new Promise((r) => setTimeout(r, 300));
+
+      const menu = document.querySelector('[class*="menu"], [class*="listbox"], [role="listbox"]');
+      if (menu) {
+        const options = menu.querySelectorAll('[class*="option"], [role="option"]');
+        for (const opt of options) {
+          if (opt.textContent.trim().toLowerCase().includes(value.toLowerCase())) {
+            opt.click();
+            await new Promise((r) => setTimeout(r, 150));
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  // --- Radio/checkbox handling ---
+
+  const RADIO_PATTERNS = {
+    authorization: { pattern: /authorized|legally|right.?to.?work|eligib|legally.?authorized/i, defaultAnswer: "yes" },
+    age18: { pattern: /18.?years|over.?18|at.?least.?18|are.?you.?18/i, defaultAnswer: "yes" },
+    sponsorship: { pattern: /sponsor|visa.?sponsor|require.?sponsor/i, defaultAnswer: "no" },
+    relocation: { pattern: /willing.?to.?relocat|open.?to.?relocat|relocat/i, defaultAnswer: null },
+    nonCompete: { pattern: /non.?compete|non.?disclosure|nda/i, defaultAnswer: null },
+    drugTest: { pattern: /drug.?test|background.?check|submit.?to.?a/i, defaultAnswer: "yes" },
+    commute: { pattern: /commute|commuting|travel.?to/i, defaultAnswer: "yes" },
+  };
+
+  function detectAndFillRadios(profile) {
+    const filled = [];
+    const radioGroups = new Map();
+
+    document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      const name = radio.name;
+      if (!name || radio.dataset.acpFilled) return;
+      if (!radioGroups.has(name)) radioGroups.set(name, []);
+      radioGroups.get(name).push(radio);
+    });
+
+    for (const [name, radios] of radioGroups) {
+      if (radios.some((r) => r.checked)) continue;
+
+      const context = radios.map((r) => {
+        const label = r.labels?.[0]?.textContent || "";
+        const parent = r.closest(".field, .form-group, [class*='field'], [class*='question']");
+        const parentLabel = parent?.querySelector("label, .label, legend, [class*='label']")?.textContent || "";
+        return parentLabel + " " + label;
+      }).join(" ");
+
+      for (const [key, config] of Object.entries(RADIO_PATTERNS)) {
+        if (!config.pattern.test(context)) continue;
+
+        let answer = config.defaultAnswer;
+        if (key === "authorization" && profile.authorization) answer = profile.authorization;
+        if (key === "sponsorship" && profile.sponsorship) answer = profile.sponsorship;
+        if (key === "relocation" && profile.relocation) answer = profile.relocation;
+        if (!answer) continue;
+
+        const yesPatterns = /^yes$|^true$|^1$|^y$/i;
+        const noPatterns = /^no$|^false$|^0$|^n$/i;
+        const targetPattern = answer.toLowerCase() === "yes" ? yesPatterns : noPatterns;
+
+        for (const radio of radios) {
+          const radioLabel = (radio.labels?.[0]?.textContent || radio.value || "").trim();
+          if (targetPattern.test(radioLabel) || radioLabel.toLowerCase() === answer.toLowerCase()) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change", { bubbles: true }));
+            radio.dispatchEvent(new Event("input", { bubbles: true }));
+            radio.dataset.acpFilled = "true";
+            filled.push({ field: key, label: context.slice(0, 60) });
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    return filled;
+  }
+
+  function detectAndFillCheckboxes(profile) {
+    const filled = [];
+
+    document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+      if (cb.checked || cb.dataset.acpFilled) return;
+
+      const context = [
+        cb.labels?.[0]?.textContent,
+        cb.closest("label")?.textContent,
+        cb.getAttribute("aria-label"),
+        cb.name,
+      ].filter(Boolean).join(" ");
+
+      if (/terms|conditions|agree|acknowledge|consent|privacy.?policy|certif/i.test(context) &&
+          !/marketing|newsletter|subscribe|opt.?in|notification/i.test(context)) {
+        cb.checked = true;
+        cb.dispatchEvent(new Event("change", { bubbles: true }));
+        cb.dispatchEvent(new Event("input", { bubbles: true }));
+        cb.dataset.acpFilled = "true";
+        filled.push({ field: "agreement", label: context.slice(0, 60) });
+      }
+    });
+
+    return filled;
+  }
+
+  // --- Date field handling ---
+
+  function detectAndFillDates(profile) {
+    const filled = [];
+    const dateInputs = document.querySelectorAll(
+      'input[type="date"], input[type="month"], input[data-type="date"], input[class*="date"], input[aria-label*="date" i]'
+    );
+
+    for (const input of dateInputs) {
+      if (input.value || input.dataset.acpFilled) continue;
+      if (input.offsetParent === null) continue;
+
+      const context = getFieldContext(input);
+
+      if (/graduat|completion.?date/i.test(context) && profile.education?.[0]?.year) {
+        const year = profile.education[0].year;
+        const dateVal = input.type === "month" ? `${year}-06` : `${year}-06-01`;
+        setFieldValue(input, dateVal);
+        filled.push({ field: "graduationDate", label: context.slice(0, 60) });
+      } else if (/start.?date|earliest.?start|availab/i.test(context)) {
+        const now = new Date();
+        now.setDate(now.getDate() + 14);
+        const dateVal = input.type === "month"
+          ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+          : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        setFieldValue(input, dateVal);
+        filled.push({ field: "startDate", label: context.slice(0, 60) });
+      }
+    }
+
+    return filled;
+  }
+
+  // --- Multi-page form navigation ---
+
+  const NEXT_BTN_SELECTORS = [
+    'button[data-automation-id="bottom-navigation-next-button"]',
+    'button[data-automation-id="next-button"]',
+    'button[aria-label*="Next" i]',
+    'button[aria-label*="Continue" i]',
+    'button[aria-label*="Save and Continue" i]',
+    'input[type="submit"][value*="Next" i]',
+    'input[type="submit"][value*="Continue" i]',
+    'a.btn[href*="next" i]',
+  ];
+
+  const NEXT_BTN_TEXT_PATTERNS = /^(next|continue|save\s*(?:&|and)\s*continue|proceed|save\s*(?:&|and)\s*next)$/i;
+
+  const SUBMIT_BTN_SELECTORS = [
+    'button[type="submit"]',
+    'input[type="submit"]',
+    'button[data-automation-id="bottom-navigation-submit-button"]',
+    'button[aria-label*="Submit" i]',
+  ];
+
+  const SUBMIT_BTN_TEXT_PATTERNS = /^(submit|submit\s*application|apply|apply\s*now|send\s*application|complete\s*application)$/i;
+
+  function findNextButton() {
+    for (const sel of NEXT_BTN_SELECTORS) {
+      const btn = document.querySelector(sel);
+      if (btn && btn.offsetParent !== null && !btn.disabled) return btn;
+    }
+
+    const allButtons = document.querySelectorAll('button, input[type="submit"], a.btn, a[role="button"]');
+    for (const btn of allButtons) {
+      if (btn.offsetParent === null || btn.disabled) continue;
+      const text = btn.textContent.trim();
+      if (NEXT_BTN_TEXT_PATTERNS.test(text)) return btn;
+    }
+
+    return null;
+  }
+
+  function findSubmitButton() {
+    for (const sel of SUBMIT_BTN_SELECTORS) {
+      const btn = document.querySelector(sel);
+      if (btn && btn.offsetParent !== null) {
+        const text = btn.textContent.trim() || btn.value || "";
+        if (SUBMIT_BTN_TEXT_PATTERNS.test(text)) return btn;
+      }
+    }
+
+    const allButtons = document.querySelectorAll('button[type="submit"], input[type="submit"]');
+    for (const btn of allButtons) {
+      if (btn.offsetParent === null) continue;
+      const text = (btn.textContent || btn.value || "").trim();
+      if (SUBMIT_BTN_TEXT_PATTERNS.test(text)) return btn;
+    }
+
+    return null;
+  }
+
+  function isOnFinalPage() {
+    const nextBtn = findNextButton();
+    const submitBtn = findSubmitButton();
+    return !nextBtn && !!submitBtn;
+  }
+
+  function detectPageProgress() {
+    const progressBar = document.querySelector(
+      '[role="progressbar"], .progress-bar, [class*="progress"], [data-automation-id*="progress"]'
+    );
+    if (progressBar) {
+      const val = progressBar.getAttribute("aria-valuenow") || progressBar.style.width;
+      if (val) return { type: "progressbar", value: parseInt(val, 10) };
+    }
+
+    const steps = document.querySelectorAll(
+      '[class*="step"], [role="tab"], .wizard-step, [data-automation-id*="step"]'
+    );
+    if (steps.length > 1) {
+      const activeStep = document.querySelector(
+        '[class*="step"][class*="active"], [class*="step"][class*="current"], [role="tab"][aria-selected="true"], [class*="step"][aria-current]'
+      );
+      const currentIdx = activeStep ? Array.from(steps).indexOf(activeStep) : -1;
+      return { type: "steps", current: currentIdx + 1, total: steps.length };
+    }
+
+    return null;
+  }
+
+  // --- Submit prevention guard ---
+
+  let submitGuardInstalled = false;
+
+  function installSubmitGuard() {
+    if (submitGuardInstalled) return;
+    submitGuardInstalled = true;
+
+    document.addEventListener("submit", (e) => {
+      const submitter = e.submitter;
+      const text = (submitter?.textContent || submitter?.value || "").trim();
+      if (!SUBMIT_BTN_TEXT_PATTERNS.test(text)) return;
+
+      if (submitter?.dataset.acpConfirmed === "true") return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      showSubmitConfirmation(submitter, e.target);
+    }, true);
+
+    const submitBtn = findSubmitButton();
+    if (submitBtn) {
+      submitBtn.addEventListener("click", (e) => {
+        if (submitBtn.dataset.acpConfirmed === "true") return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showSubmitConfirmation(submitBtn, submitBtn.closest("form"));
+      }, true);
+    }
+  }
+
+  function showSubmitConfirmation(submitBtn, form) {
+    const existing = document.querySelector(".acp-submit-guard-overlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.className = "acp-submit-guard-overlay";
+    overlay.innerHTML = `
+      <div class="acp-submit-guard-modal">
+        <div class="acp-submit-guard-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>Review before submitting</span>
+        </div>
+        <p class="acp-submit-guard-text">
+          You're about to submit this application. Please review all fields before proceeding.
+        </p>
+        <div class="acp-submit-guard-actions">
+          <button class="acp-submit-guard-btn acp-submit-guard-review" type="button">Go back & review</button>
+          <button class="acp-submit-guard-btn acp-submit-guard-confirm" type="button">Submit application</button>
+        </div>
+      </div>
+    `;
+
+    overlay.querySelector(".acp-submit-guard-review").addEventListener("click", () => {
+      overlay.remove();
+    });
+
+    overlay.querySelector(".acp-submit-guard-confirm").addEventListener("click", () => {
+      overlay.remove();
+      if (submitBtn) {
+        submitBtn.dataset.acpConfirmed = "true";
+        submitBtn.click();
+        setTimeout(() => delete submitBtn.dataset.acpConfirmed, 1000);
+      } else if (form) {
+        form.submit();
+      }
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
+  }
+
   // --- Visual indicators ---
 
   function markFieldFilled(input) {
@@ -497,7 +861,7 @@
     }
 
     const inputs = document.querySelectorAll(
-      'input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input:not([type]), textarea, select'
+      'input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input[type="date"], input[type="month"], input:not([type]), textarea, select'
     );
 
     for (const input of inputs) {
@@ -526,6 +890,38 @@
           isSelect: input.tagName === "SELECT",
           label: input.labels?.[0]?.textContent?.trim() || context.slice(0, 60),
         });
+      }
+    }
+
+    if (atsAdapter?.getSelectFields) {
+      const customDropdowns = atsAdapter.getSelectFields();
+      for (const trigger of customDropdowns) {
+        if (processedInputs.has(trigger)) continue;
+        if (trigger.offsetParent === null) continue;
+
+        const context = [
+          trigger.getAttribute("aria-label"),
+          trigger.getAttribute("data-automation-id"),
+          trigger.textContent?.trim(),
+          trigger.closest("[class*='field'], [data-automation-id]")
+            ?.querySelector("label, [class*='label']")?.textContent?.trim(),
+        ].filter(Boolean).join(" ");
+
+        const field = identifyField({ ...trigger, name: "", id: "", placeholder: "",
+          getAttribute: (a) => a === "aria-label" ? trigger.getAttribute("aria-label") :
+            a === "data-automation-id" ? trigger.getAttribute("data-automation-id") : null,
+          labels: [], closest: () => null,
+        });
+
+        if (field) {
+          fields.push({
+            input: trigger,
+            field,
+            needsAttention: false,
+            isCustomDropdown: true,
+            label: context.slice(0, 60),
+          });
+        }
       }
     }
 
@@ -737,14 +1133,14 @@
     setTimeout(() => document.addEventListener("click", dismiss), 0);
   }
 
-  // --- Summary panel ---
+  // --- Summary pill (persistent, collapsible) ---
 
-  function createSummaryPanel(results) {
-    const existing = document.querySelector(".acp-summary-panel");
+  function createSummaryPill(results) {
+    const existing = document.querySelector(".acp-autofill-pill");
     if (existing) existing.remove();
 
-    const panel = document.createElement("div");
-    panel.className = "acp-summary-panel";
+    const pill = document.createElement("div");
+    pill.className = "acp-autofill-pill";
 
     const filledItems = results.filledFields.map((f) =>
       `<div class="acp-summary-item acp-summary-filled">
@@ -780,44 +1176,113 @@
         : "";
 
     const atsLabel = results.atsName
-      ? `<span class="acp-summary-ats">${results.atsName}</span>`
+      ? `<span class="acp-pill-ats">${results.atsName}</span>`
       : "";
 
-    panel.innerHTML = `
-      <div class="acp-summary-header">
-        <div class="acp-summary-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          <span>Autofill Complete</span>
+    const progressHtml = results.pageProgress?.type === "steps"
+      ? `<div class="acp-pill-progress">Page ${results.pageProgress.current} of ${results.pageProgress.total}</div>`
+      : "";
+
+    const nextPageHtml = results.hasNextPage
+      ? `<button class="acp-pill-next-btn" type="button">
+          <span>Fill next page</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>`
+      : "";
+
+    const finalPageHtml = results.isFinalPage
+      ? `<div class="acp-pill-final-notice">Final page — review before submitting</div>`
+      : "";
+
+    pill.innerHTML = `
+      <div class="acp-pill-collapsed">
+        <div class="acp-pill-collapsed-content">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>${results.filled} field${results.filled !== 1 ? "s" : ""} filled</span>
           ${atsLabel}
         </div>
-        <button class="acp-summary-close" type="button">&times;</button>
-      </div>
-      <div class="acp-summary-stats">
-        <div class="acp-summary-stat">
-          <span class="acp-stat-num" style="color:#10b981">${results.filled}</span>
-          <span class="acp-stat-label">Filled</span>
-        </div>
-        <div class="acp-summary-stat">
-          <span class="acp-stat-num" style="color:#f59e0b">${results.attention}</span>
-          <span class="acp-stat-label">Review</span>
-        </div>
-        <div class="acp-summary-stat">
-          <span class="acp-stat-num" style="color:#64748b">${results.skipped}</span>
-          <span class="acp-stat-label">Skipped</span>
+        <div class="acp-pill-collapsed-actions">
+          <button class="acp-pill-expand-btn" type="button" title="Show details">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="acp-pill-close-btn" type="button" title="Dismiss">&times;</button>
         </div>
       </div>
-      <div class="acp-summary-details">
-        ${filledItems}${resumeHtml}${attentionItems}${skippedItems}
+      <div class="acp-pill-expanded" style="display:none">
+        <div class="acp-pill-expanded-header">
+          <div class="acp-pill-expanded-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Autofill Complete</span>
+            ${atsLabel}
+          </div>
+          <div class="acp-pill-expanded-actions">
+            <button class="acp-pill-collapse-btn" type="button" title="Collapse">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button class="acp-pill-close-btn" type="button" title="Dismiss">&times;</button>
+          </div>
+        </div>
+        ${progressHtml}
+        <div class="acp-pill-stats">
+          <div class="acp-pill-stat">
+            <span class="acp-stat-num" style="color:#10b981">${results.filled}</span>
+            <span class="acp-stat-label">Filled</span>
+          </div>
+          <div class="acp-pill-stat">
+            <span class="acp-stat-num" style="color:#f59e0b">${results.attention}</span>
+            <span class="acp-stat-label">Review</span>
+          </div>
+          <div class="acp-pill-stat">
+            <span class="acp-stat-num" style="color:#64748b">${results.skipped}</span>
+            <span class="acp-stat-label">Skipped</span>
+          </div>
+        </div>
+        <div class="acp-pill-details">
+          ${filledItems}${resumeHtml}${attentionItems}${skippedItems}
+        </div>
+        ${nextPageHtml}
+        ${finalPageHtml}
+        <div class="acp-pill-hint">Click the ✓ icon on any field to clear and manually edit</div>
       </div>
-      <div class="acp-summary-hint">Click the ✓ icon on any field to clear and manually edit</div>
     `;
 
-    panel.querySelector(".acp-summary-close").addEventListener("click", () => panel.remove());
+    const collapsedEl = pill.querySelector(".acp-pill-collapsed");
+    const expandedEl = pill.querySelector(".acp-pill-expanded");
 
-    document.body.appendChild(panel);
-    setTimeout(() => panel.remove(), 15000);
+    // Expand
+    pill.querySelector(".acp-pill-expand-btn").addEventListener("click", () => {
+      collapsedEl.style.display = "none";
+      expandedEl.style.display = "block";
+      pill.classList.add("acp-pill-is-expanded");
+    });
+
+    // Collapse
+    pill.querySelector(".acp-pill-collapse-btn").addEventListener("click", () => {
+      expandedEl.style.display = "none";
+      collapsedEl.style.display = "flex";
+      pill.classList.remove("acp-pill-is-expanded");
+    });
+
+    // Close (all close buttons)
+    pill.querySelectorAll(".acp-pill-close-btn").forEach((btn) => {
+      btn.addEventListener("click", () => pill.remove());
+    });
+
+    // Next page button
+    const nextPageBtn = pill.querySelector(".acp-pill-next-btn");
+    if (nextPageBtn) {
+      nextPageBtn.addEventListener("click", () => {
+        const nextBtn = findNextButton();
+        if (nextBtn) {
+          pill.remove();
+          nextBtn.click();
+        }
+      });
+    }
+
+    document.body.appendChild(pill);
   }
 
   function escapeHtml(str) {
@@ -862,7 +1327,7 @@
     const skippedFields = [];
 
     for (const entry of fields) {
-      const { input, field, needsAttention, isSelect, isEeo } = entry;
+      const { input, field, needsAttention, isSelect, isEeo, isCustomDropdown } = entry;
 
       if (isEeo) {
         continue;
@@ -876,7 +1341,8 @@
 
       if (!field) continue;
 
-      if (input.value && input.value.trim()) {
+      const currentVal = input.value || input.textContent?.trim();
+      if (currentVal && currentVal.trim() && !isCustomDropdown) {
         skippedFields.push({ ...entry, label: entry.label || field });
         continue;
       }
@@ -889,7 +1355,14 @@
 
       await new Promise((r) => setTimeout(r, 80));
 
-      if (isSelect) {
+      if (isCustomDropdown) {
+        const filled = await setCustomDropdownValue(input, value);
+        if (filled) {
+          filledFields.push({ ...entry, label: entry.label || field });
+        } else {
+          skippedFields.push({ ...entry, label: entry.label || field });
+        }
+      } else if (isSelect) {
         if (setSelectValue(input, value)) {
           filledFields.push({ ...entry, label: entry.label || field });
         } else {
@@ -900,6 +1373,21 @@
           filledFields.push({ ...entry, label: entry.label || field });
         }
       }
+    }
+
+    const radioFilled = detectAndFillRadios(profile);
+    for (const r of radioFilled) {
+      filledFields.push({ input: null, field: r.field, label: r.label });
+    }
+
+    const checkboxFilled = detectAndFillCheckboxes(profile);
+    for (const c of checkboxFilled) {
+      filledFields.push({ input: null, field: c.field, label: c.label });
+    }
+
+    const dateFilled = detectAndFillDates(profile);
+    for (const d of dateFilled) {
+      filledFields.push({ input: null, field: d.field, label: d.label });
     }
 
     let resumeAttached = false;
@@ -919,90 +1407,150 @@
       } catch {}
     }
 
+    if (isOnFinalPage()) {
+      installSubmitGuard();
+    }
+
+    const pageProgress = detectPageProgress();
+    const nextBtn = findNextButton();
+
     const results = {
       filled: filledFields.length,
       attention: attentionFields.length,
       skipped: skippedFields.length,
-      total: fields.length,
+      total: fields.length + radioFilled.length + checkboxFilled.length + dateFilled.length,
       filledFields,
       attentionFields,
       skippedFields,
       resumeAttached,
       resumeDetected,
       atsName: ats?.name ? ats.name.charAt(0).toUpperCase() + ats.name.slice(1) : null,
+      hasNextPage: !!nextBtn,
+      isFinalPage: isOnFinalPage(),
+      pageProgress,
     };
 
-    createSummaryPanel(results);
+    createSummaryPill(results);
     return results;
   }
 
-  // --- Banner ---
+  // --- Autofill Card (compact, bottom-right) ---
 
-  function showBanner() {
-    if (document.querySelector(".acp-autofill-banner")) return;
+  function showAutofillCard() {
+    if (document.querySelector(".acp-autofill-card")) return;
 
     const ats = detectATS();
-    const atsLabel = ats ? ` (${ats.name.charAt(0).toUpperCase() + ats.name.slice(1)} detected)` : "";
+    const atsLabel = ats
+      ? `<span class="acp-card-ats">${ats.name.charAt(0).toUpperCase() + ats.name.slice(1)} detected</span>`
+      : "";
 
-    const banner = document.createElement("div");
-    banner.className = "acp-autofill-banner";
-    banner.innerHTML = `
-      <div class="acp-autofill-banner-text">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <span>AICareerPivot can fill in your details${atsLabel}</span>
+    const fields = detectFormFields(ats);
+    const fieldCount = fields.filter((f) => f.field).length;
+    const pageProgress = detectPageProgress();
+    const progressHtml = pageProgress?.type === "steps"
+      ? `<p class="acp-card-progress">Page ${pageProgress.current} of ${pageProgress.total}</p>`
+      : "";
+
+    const card = document.createElement("div");
+    card.className = "acp-autofill-card";
+    card.innerHTML = `
+      <div class="acp-card-header">
+        <div class="acp-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>AICareerPivot</span>
+        </div>
+        ${atsLabel}
       </div>
-      <button class="acp-banner-btn acp-banner-btn-fill">Autofill</button>
-      <button class="acp-banner-btn acp-banner-btn-skip">Not now</button>
-      <button class="acp-banner-btn acp-banner-btn-never">Never on this site</button>
+      <div class="acp-card-body">
+        ${progressHtml}
+        <p class="acp-card-field-count">${fieldCount} field${fieldCount !== 1 ? "s" : ""} detected</p>
+        <div class="acp-card-actions">
+          <button class="acp-card-btn acp-card-btn-fill" type="button">Autofill</button>
+          <button class="acp-card-btn acp-card-btn-skip" type="button">Not now</button>
+        </div>
+        <a href="#" class="acp-card-never-link">Never on this site</a>
+      </div>
     `;
 
-    const fillBtn = banner.querySelector(".acp-banner-btn-fill");
-    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
-    const neverBtn = banner.querySelector(".acp-banner-btn-never");
+    const fillBtn = card.querySelector(".acp-card-btn-fill");
+    const skipBtn = card.querySelector(".acp-card-btn-skip");
+    const neverLink = card.querySelector(".acp-card-never-link");
 
     fillBtn.addEventListener("click", async () => {
       fillBtn.textContent = "Filling...";
       fillBtn.disabled = true;
       const result = await runAutofill();
-      banner.querySelector(".acp-autofill-banner-text span").textContent =
-        `Filled ${result.filled} of ${result.total} fields` +
-        (result.attention ? ` — ${result.attention} need review` : "");
+
+      let statusText = `Filled ${result.filled} of ${result.total} fields`;
+      if (result.attention) statusText += ` — ${result.attention} need review`;
+
+      card.querySelector(".acp-card-field-count").textContent = statusText;
       fillBtn.remove();
-      skipBtn.textContent = "Done";
-      neverBtn.remove();
-      setTimeout(() => banner.remove(), 4000);
+
+      if (result.hasNextPage) {
+        const nextPageBtn = document.createElement("button");
+        nextPageBtn.className = "acp-card-btn acp-card-btn-next";
+        nextPageBtn.type = "button";
+        nextPageBtn.innerHTML = `
+          <span>Continue to next page</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        `;
+        nextPageBtn.addEventListener("click", () => {
+          const nextBtn = findNextButton();
+          if (nextBtn) {
+            card.remove();
+            nextBtn.click();
+          }
+        });
+        card.querySelector(".acp-card-actions").prepend(nextPageBtn);
+        skipBtn.textContent = "Review first";
+      } else if (result.isFinalPage) {
+        const reviewNote = document.createElement("p");
+        reviewNote.className = "acp-card-final-note";
+        reviewNote.textContent = "Final page — review all fields before submitting";
+        card.querySelector(".acp-card-body").appendChild(reviewNote);
+        skipBtn.textContent = "Done";
+      } else {
+        skipBtn.textContent = "Done";
+        setTimeout(() => card.remove(), 4000);
+      }
+
+      neverLink.remove();
     });
 
-    skipBtn.addEventListener("click", () => banner.remove());
+    skipBtn.addEventListener("click", () => card.remove());
 
-    neverBtn.addEventListener("click", async () => {
+    neverLink.addEventListener("click", async (e) => {
+      e.preventDefault();
       const host = window.location.hostname;
       const { disabledSites = [] } = await chrome.storage.sync.get("disabledSites");
       if (!disabledSites.includes(host)) {
         disabledSites.push(host);
         await chrome.storage.sync.set({ disabledSites });
       }
-      banner.remove();
+      card.remove();
     });
 
-    document.body.prepend(banner);
+    document.body.appendChild(card);
 
     injectClipButton();
   }
 
   function showResumeUploadBanner(fileInputs) {
     if (!fileInputs.length) return;
-    const banner = document.querySelector(".acp-autofill-banner");
-    if (!banner) return;
+    const card = document.querySelector(".acp-autofill-card");
+    if (!card) return;
 
-    const existing = banner.querySelector(".acp-banner-btn-resume");
+    const existing = card.querySelector(".acp-card-btn-resume");
     if (existing) return;
 
-    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
+    const skipBtn = card.querySelector(".acp-card-btn-skip");
     const resumeBtn = document.createElement("button");
-    resumeBtn.className = "acp-banner-btn acp-banner-btn-resume";
+    resumeBtn.className = "acp-card-btn acp-card-btn-resume";
     resumeBtn.textContent = "Upload Resume";
 
     resumeBtn.addEventListener("click", async () => {
@@ -1019,7 +1567,7 @@
         }
 
         resumeBtn.textContent = "Resume attached ✓";
-        resumeBtn.classList.add("acp-banner-btn-resume-done");
+        resumeBtn.classList.add("acp-card-btn-resume-done");
       } catch (err) {
         resumeBtn.textContent = "Upload Resume";
         resumeBtn.disabled = false;
@@ -1027,9 +1575,9 @@
     });
 
     if (skipBtn) {
-      banner.insertBefore(resumeBtn, skipBtn);
+      card.insertBefore(resumeBtn, skipBtn);
     } else {
-      banner.appendChild(resumeBtn);
+      card.appendChild(resumeBtn);
     }
   }
 
@@ -1133,22 +1681,48 @@
   }
 
   function injectClipButton() {
-    const banner = document.querySelector(".acp-autofill-banner");
-    if (!banner) return;
+    const card = document.querySelector(".acp-autofill-card");
+    if (!card) return;
 
-    const existing = banner.querySelector(".acp-clip-btn");
+    const existing = card.querySelector(".acp-clip-btn");
     if (existing) return;
 
     const btn = createClipButton();
-    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
+    const skipBtn = card.querySelector(".acp-card-btn-skip");
     if (skipBtn) {
-      banner.insertBefore(btn, skipBtn);
+      card.insertBefore(btn, skipBtn);
     } else {
-      banner.appendChild(btn);
+      card.appendChild(btn);
     }
   }
 
   // --- Init ---
+
+  let lastPageUrl = "";
+  let pageChangeDebounce = null;
+
+  function onPageChange() {
+    const currentUrl = window.location.href;
+    if (currentUrl === lastPageUrl) return;
+    lastPageUrl = currentUrl;
+
+    if (pageChangeDebounce) clearTimeout(pageChangeDebounce);
+    pageChangeDebounce = setTimeout(() => {
+      const existingCard = document.querySelector(".acp-autofill-card");
+      const existingPill = document.querySelector(".acp-autofill-pill");
+      if (existingCard) existingCard.remove();
+      if (existingPill) existingPill.remove();
+
+      const fields = detectFormFields(detectATS());
+      const fileInputs = detectFileInputs();
+
+      if (fields.some(f => f.field) || fileInputs.length) {
+        showAutofillCard();
+        for (const fi of fileInputs) createResumeUploadBtn(fi);
+        if (fileInputs.length) showResumeUploadBanner(fileInputs);
+      }
+    }, 1000);
+  }
 
   async function init() {
     const config = await msg("GET_CONFIG");
@@ -1157,11 +1731,13 @@
     const { disabledSites = [] } = await chrome.storage.sync.get("disabledSites");
     if (disabledSites.includes(window.location.hostname)) return;
 
+    lastPageUrl = window.location.href;
+
     setTimeout(() => {
       const fields = detectFormFields(detectATS());
       const fileInputs = detectFileInputs();
 
-      if (fields.some(f => f.field) || fileInputs.length) showBanner();
+      if (fields.some(f => f.field) || fileInputs.length) showAutofillCard();
 
       for (const fi of fileInputs) {
         createResumeUploadBtn(fi);
@@ -1177,8 +1753,13 @@
       for (const fi of newFileInputs) {
         createResumeUploadBtn(fi);
       }
+
+      onPageChange();
     });
     observer.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener("popstate", onPageChange);
+    window.addEventListener("hashchange", onPageChange);
   }
 
   init();
