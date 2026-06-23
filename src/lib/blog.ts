@@ -11,6 +11,7 @@ export interface PostFrontmatter {
   date: string;
   keywords: string[];
   tldr?: string[];
+  pinned?: boolean;
 }
 
 export interface Post extends PostFrontmatter {
@@ -52,12 +53,17 @@ export function getAllPosts(): Omit<Post, "content">[] {
         date: fm.date,
         keywords: fm.keywords ?? [],
         tldr: fm.tldr,
+        pinned: fm.pinned ?? false,
         readingTime: stats.text,
         excerpt,
         lastModified: mtime,
       };
     })
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+    .sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return a.date < b.date ? 1 : -1;
+    });
 }
 
 export function getPost(slug: string): Post | null {
