@@ -6,7 +6,14 @@ import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
 import { HelpProvider } from "@/components/HelpProvider";
 import { CareerCoachProvider } from "@/components/CareerCoachContext";
-import { hasLocale, locales, localeDirections } from "@/i18n/config";
+import {
+  hasLocale,
+  locales,
+  localeDirections,
+  localeUrl,
+  localeToOgLocale,
+  type Locale,
+} from "@/i18n/config";
 import { notFound } from "next/navigation";
 
 const inter = Inter({
@@ -32,58 +39,78 @@ const jetbrainsMono = JetBrains_Mono({
 
 const BASE_URL = "https://ai-career-pivot.com";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    default: "AICareerPivot — Your Personal Career Strategist",
-    template: "%s | AICareerPivot",
-  },
-  description:
-    "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
-  keywords: [
-    "career pivot",
-    "career change",
-    "career transition",
-    "career roadmap",
-    "AI career advice",
-    "career planning",
-    "job change",
-    "career strategy",
-  ],
-  authors: [{ name: "AICareerPivot", url: BASE_URL }],
-  creator: "AICareerPivot",
-  publisher: "AICareerPivot",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!hasLocale(lang)) return {};
+  const locale = lang as Locale;
+
+  const languages: Record<string, string> = {};
+  for (const l of locales) {
+    languages[l] = localeUrl("/", l);
+  }
+  languages["x-default"] = localeUrl("/");
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      default: "AICareerPivot — Your Personal Career Strategist",
+      template: "%s | AICareerPivot",
     },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: BASE_URL,
-    siteName: "AICareerPivot",
-    title: "AICareerPivot — Your Personal Career Strategist",
     description:
       "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AICareerPivot — Your Personal Career Strategist",
-    description:
-      "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
-    creator: "@aicareer_pivot",
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-};
+    keywords: [
+      "career pivot",
+      "career change",
+      "career transition",
+      "career roadmap",
+      "AI career advice",
+      "career planning",
+      "job change",
+      "career strategy",
+    ],
+    authors: [{ name: "AICareerPivot", url: BASE_URL }],
+    creator: "AICareerPivot",
+    publisher: "AICareerPivot",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: localeToOgLocale[locale],
+      alternateLocale: locales
+        .filter((l) => l !== locale)
+        .map((l) => localeToOgLocale[l]),
+      url: localeUrl("/", locale),
+      siteName: "AICareerPivot",
+      title: "AICareerPivot — Your Personal Career Strategist",
+      description:
+        "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "AICareerPivot — Your Personal Career Strategist",
+      description:
+        "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
+      creator: "@aicareer_pivot",
+    },
+    alternates: {
+      canonical: localeUrl("/", locale),
+      languages,
+    },
+  };
+}
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));

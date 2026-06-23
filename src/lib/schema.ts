@@ -1,3 +1,5 @@
+import { type Locale, defaultLocale, localePath, localeUrl } from "@/i18n/config";
+
 const BASE_URL = "https://ai-career-pivot.com";
 
 const ENTITY_DESCRIPTION =
@@ -20,6 +22,7 @@ export function organizationSchema() {
 
 export function breadcrumbSchema(
   items: { name: string; path: string }[],
+  locale: Locale = defaultLocale,
 ) {
   return {
     "@context": "https://schema.org",
@@ -29,14 +32,49 @@ export function breadcrumbSchema(
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: BASE_URL,
+        item: localeUrl("/", locale),
       },
       ...items.map((item, i) => ({
         "@type": "ListItem",
         position: i + 2,
         name: item.name,
-        item: `${BASE_URL}${item.path}`,
+        item: localeUrl(item.path, locale),
       })),
     ],
+  };
+}
+
+export function blogPostingSchema(
+  post: {
+    title: string;
+    description: string;
+    date: string;
+    lastModified: string;
+    keywords: string[];
+    slug: string;
+  },
+  locale: Locale = defaultLocale,
+) {
+  const url = localeUrl(`/blog/${post.slug}`, locale);
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.lastModified,
+    inLanguage: locale,
+    author: {
+      "@type": "Organization",
+      name: "AICareerPivot",
+      url: BASE_URL,
+    },
+    publisher: organizationSchema(),
+    url,
+    keywords: post.keywords.join(", "),
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
   };
 }

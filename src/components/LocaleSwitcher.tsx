@@ -1,15 +1,27 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { locales, localeNames, type Locale } from "@/i18n/config";
+import { locales, localeNames, defaultLocale, hasLocale, type Locale } from "@/i18n/config";
 
 export function LocaleSwitcher({ currentLocale }: { currentLocale: string }) {
   const pathname = usePathname();
 
   function switchLocale(newLocale: Locale) {
     const segments = pathname.split("/");
-    segments[1] = newLocale;
-    const newPath = segments.join("/");
+    const firstSegment = segments[1];
+    const currentIsNonDefault = hasLocale(firstSegment) && firstSegment !== defaultLocale;
+
+    let pathWithoutLocale: string;
+    if (currentIsNonDefault) {
+      pathWithoutLocale = "/" + segments.slice(2).join("/");
+    } else {
+      pathWithoutLocale = pathname;
+    }
+
+    const newPath =
+      newLocale === defaultLocale
+        ? pathWithoutLocale
+        : `/${newLocale}${pathWithoutLocale}`;
 
     document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=31536000;SameSite=Lax`;
     window.location.href = newPath;

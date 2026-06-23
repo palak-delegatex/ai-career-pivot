@@ -2,24 +2,63 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
+import {
+  locales,
+  localeUrl,
+  localePath,
+  localeToOgLocale,
+  hasLocale,
+  type Locale,
+} from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Blog — Career Pivot Guides & Resources",
-  description:
-    "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/blog",
-  },
-  openGraph: {
-    url: "https://ai-career-pivot.com/blog",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!hasLocale(lang)) return {};
+  const locale = lang as Locale;
+  const url = localeUrl("/blog", locale);
+
+  const languages: Record<string, string> = {};
+  for (const l of locales) {
+    languages[l] = localeUrl("/blog", l);
+  }
+  languages["x-default"] = localeUrl("/blog");
+
+  return {
     title: "Blog — Career Pivot Guides & Resources",
     description:
-      "Actionable guides for professionals ready to change careers.",
-  },
-};
+      "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
+    alternates: {
+      canonical: url,
+      languages,
+    },
+    openGraph: {
+      url,
+      locale: localeToOgLocale[locale],
+      alternateLocale: locales
+        .filter((l) => l !== locale)
+        .map((l) => localeToOgLocale[l]),
+      title: "Blog — Career Pivot Guides & Resources",
+      description:
+        "Actionable guides for professionals ready to change careers.",
+    },
+  };
+}
 
-export default function BlogIndex() {
-  const posts = getAllPosts();
+export default async function BlogIndex({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  if (!hasLocale(lang)) return null;
+  const locale = lang as Locale;
+  const posts = getAllPosts(locale);
+
+  const blogUrl = localeUrl("/blog", locale);
 
   const collectionSchema = {
     "@context": "https://schema.org",
@@ -27,7 +66,8 @@ export default function BlogIndex() {
     name: "AICareerPivot Career Pivot Blog",
     description:
       "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
-    url: "https://ai-career-pivot.com/blog",
+    url: blogUrl,
+    inLanguage: locale,
     dateModified: posts[0]?.date ?? "2026-06-12",
     isPartOf: {
       "@type": "WebSite",
@@ -40,7 +80,7 @@ export default function BlogIndex() {
       itemListElement: posts.map((post, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `https://ai-career-pivot.com/blog/${post.slug}`,
+        url: localeUrl(`/blog/${post.slug}`, locale),
         name: post.title,
       })),
     },
@@ -54,13 +94,13 @@ export default function BlogIndex() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://ai-career-pivot.com",
+        item: localeUrl("/", locale),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Blog",
-        item: "https://ai-career-pivot.com/blog",
+        item: blogUrl,
       },
     ],
   };
@@ -88,7 +128,7 @@ export default function BlogIndex() {
           {posts.map((post) => (
             <article key={post.slug} className="border-b border-slate-800 pb-10">
               <time className="text-sm text-slate-500">
-                {new Date(post.date).toLocaleDateString("en-US", {
+                {new Date(post.date).toLocaleDateString(locale, {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -98,7 +138,7 @@ export default function BlogIndex() {
               </time>
               <h2 className="text-2xl font-bold mt-2 mb-3">
                 <Link
-                  href={`/blog/${post.slug}`}
+                  href={localePath(`/blog/${post.slug}`, locale)}
                   className="hover:text-teal-400 transition-colors"
                 >
                   {post.title}
@@ -108,7 +148,7 @@ export default function BlogIndex() {
                 {post.excerpt}
               </p>
               <Link
-                href={`/blog/${post.slug}`}
+                href={localePath(`/blog/${post.slug}`, locale)}
                 className="text-teal-400 font-medium hover:text-teal-300 transition-colors"
               >
                 Read article →

@@ -22,6 +22,7 @@ import { MenuIcon } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import { useLocale } from "@/i18n/use-locale";
+import { hasLocale, defaultLocale, localePath, type Locale } from "@/i18n/config";
 
 const NAV_LINKS = [
   { href: "/free", label: "Free Snapshot" },
@@ -56,9 +57,9 @@ const LogoIcon = (
   </svg>
 );
 
-function Logo({ locale = "en" }: { locale?: string }) {
+function Logo({ homePath }: { homePath: string }) {
   return (
-    <Link href={`/${locale}`} className="flex items-center gap-2.5">
+    <Link href={homePath} className="flex items-center gap-2.5">
       <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
         {LogoIcon}
       </div>
@@ -75,12 +76,16 @@ export default function SiteNav() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
+  const lp = (p: string) => localePath(p, locale as Locale);
   const localizedLinks = useMemo(
-    () => NAV_LINKS.map((link) => ({ ...link, href: `/${locale}${link.href}` })),
+    () => NAV_LINKS.map((link) => ({ ...link, href: localePath(link.href, locale as Locale) })),
     [locale]
   );
 
-  const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+  const segments = pathname.split("/");
+  const firstSeg = segments[1];
+  const hasLocalePrefix = hasLocale(firstSeg) && firstSeg !== defaultLocale;
+  const pathWithoutLocale = hasLocalePrefix ? "/" + segments.slice(2).join("/") : pathname;
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -102,7 +107,7 @@ export default function SiteNav() {
         Skip to content
       </a>
     <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
-      <Logo locale={locale} />
+      <Logo homePath={lp("/")} />
 
       {/* Desktop nav */}
       <div className="hidden md:flex items-center gap-1">
@@ -124,7 +129,7 @@ export default function SiteNav() {
         {user ? (
           <div className="flex items-center gap-3 ml-2">
             <Link
-              href={`/${locale}/account`}
+              href={lp("/account")}
               className="text-sm text-slate-300 hover:text-white truncate max-w-[150px] transition-colors"
             >
               {user.user_metadata?.full_name || user.email}
@@ -136,7 +141,7 @@ export default function SiteNav() {
             </form>
           </div>
         ) : (
-          <Button render={<Link href={`/${locale}/login`} />} size="sm" className="ml-2">
+          <Button render={<Link href={lp("/login")} />} size="sm" className="ml-2">
             Sign In
           </Button>
         )}
@@ -157,7 +162,7 @@ export default function SiteNav() {
             <div className="flex flex-col gap-1 p-4 pt-6">
               {/* Logo at top of sheet */}
               <div className="mb-4">
-                <Logo locale={locale} />
+                <Logo homePath={lp("/")} />
               </div>
 
               {/* Prominent CTA for non-auth users */}
@@ -165,7 +170,7 @@ export default function SiteNav() {
                 <SheetClose
                   render={
                     <Link
-                      href={`/${locale}/preview`}
+                      href={lp("/preview")}
                       className="block rounded-lg px-4 py-3 min-h-[44px] flex items-center justify-center text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:shadow-lg hover:shadow-teal-500/30 transition-all mb-3"
                     />
                   }
@@ -199,7 +204,7 @@ export default function SiteNav() {
                   <SheetClose
                     render={
                       <Link
-                        href={`/${locale}/account`}
+                        href={lp("/account")}
                         className={`block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-medium transition-colors ${
                           pathWithoutLocale === "/account"
                             ? "bg-muted text-white border-l-4 border-teal-500"
@@ -223,7 +228,7 @@ export default function SiteNav() {
                 <SheetClose
                   render={
                     <Link
-                      href={`/${locale}/login`}
+                      href={lp("/login")}
                       className="block rounded-lg px-3 py-3 min-h-[44px] flex items-center text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors"
                     />
                   }

@@ -74,12 +74,25 @@ export async function proxy(request: NextRequest) {
 
   if (!pathnameHasLocale(pathname)) {
     const locale = getPreferredLocale(request);
+    if (locale === defaultLocale) {
+      const rewriteUrl = request.nextUrl.clone();
+      rewriteUrl.pathname = `/${defaultLocale}${pathname}`;
+      return NextResponse.rewrite(rewriteUrl, { request });
+    }
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = `/${locale}${pathname}`;
     return NextResponse.redirect(redirectUrl);
   }
 
   const locale = getLocaleFromPathname(pathname)!;
+
+  if (locale === defaultLocale) {
+    const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = pathWithoutLocale;
+    return NextResponse.redirect(redirectUrl);
+  }
+
   const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
 
   const response = NextResponse.next({ request });

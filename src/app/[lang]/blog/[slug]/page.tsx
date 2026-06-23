@@ -2,32 +2,62 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllSlugs, getPost } from "@/lib/blog";
+import { getAllSlugs, getPost, getAvailableLocales } from "@/lib/blog";
+import { blogPostingSchema, breadcrumbSchema } from "@/lib/schema";
 import SiteNav from "@/components/SiteNav";
-import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import { BlogLanguageSelector } from "@/components/BlogLanguageSelector";
+import {
+  locales,
+  localeUrl,
+  localePath,
+  localeToOgLocale,
+  hasLocale,
+  type Locale,
+} from "@/i18n/config";
 
 export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
+  const slugs = getAllSlugs();
+  return locales.flatMap((lang) =>
+    slugs.map((slug) => ({ lang, slug })),
+  );
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lang: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = getPost(slug);
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) return {};
+  const locale = lang as Locale;
+  const post = getPost(slug, locale);
   if (!post) return {};
 
-  const url = `https://ai-career-pivot.com/blog/${slug}`;
+  const url = localeUrl(`/blog/${slug}`, locale);
+  const ogLocale = localeToOgLocale[locale];
+  const alternateOgLocales = locales
+    .filter((l) => l !== locale)
+    .map((l) => localeToOgLocale[l]);
+
+  const languages: Record<string, string> = {};
+  for (const l of locales) {
+    languages[l] = localeUrl(`/blog/${slug}`, l);
+  }
+  languages["x-default"] = localeUrl(`/blog/${slug}`);
+
   return {
     title: post.title,
     description: post.description,
     keywords: post.keywords,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages,
+    },
     openGraph: {
       type: "article",
       url,
+      locale: ogLocale,
+      alternateLocale: alternateOgLocales,
       title: post.title,
       description: post.description,
       publishedTime: post.date,
@@ -86,37 +116,24 @@ const components = { WaitlistCTA, PricingCTA };
 export default async function BlogPost({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lang: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const post = getPost(slug);
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) notFound();
+  const locale = lang as Locale;
+
+  const post = getPost(slug, locale);
   if (!post) notFound();
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.lastModified,
-    author: {
-      "@type": "Organization",
-      name: "AICareerPivot",
-      url: "https://ai-career-pivot.com",
-    },
-    publisher: organizationSchema(),
-    url: `https://ai-career-pivot.com/blog/${slug}`,
-    keywords: post.keywords.join(", "),
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://ai-career-pivot.com/blog/${slug}`,
-    },
-  };
-
-  const crumbs = breadcrumbSchema([
-    { name: "Blog", path: "/blog" },
-    { name: post.title, path: `/blog/${slug}` },
-  ]);
+  const availableLocales = getAvailableLocales(slug);
+  const articleSchema = blogPostingSchema(post, locale);
+  const crumbs = breadcrumbSchema(
+    [
+      { name: "Blog", path: "/blog" },
+      { name: post.title, path: `/blog/${slug}` },
+    ],
+    locale,
+  );
 
   return (
     <>
@@ -130,16 +147,25 @@ export default async function BlogPost({
         <SiteNav />
         <main className="py-10 px-6">
         <div className="max-w-2xl mx-auto">
-          <Link
-            href="/blog"
-            className="text-slate-500 hover:text-teal-400 text-sm transition-colors mb-8 inline-block"
-          >
-            ← Back to blog
-          </Link>
+          <div className="flex items-center justify-between mb-8">
+            <Link
+              href={localePath("/blog", locale)}
+              className="text-slate-500 hover:text-teal-400 text-sm transition-colors"
+            >
+              ← Back to blog
+            </Link>
+            {availableLocales.length > 1 && (
+              <BlogLanguageSelector
+                slug={slug}
+                availableLocales={availableLocales}
+                currentLocale={locale}
+              />
+            )}
+          </div>
 
           <header className="mb-10">
             <time className="text-sm text-slate-500 block mb-3">
-              {new Date(post.date).toLocaleDateString("en-US", {
+              {new Date(post.date).toLocaleDateString(locale, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -152,7 +178,7 @@ export default async function BlogPost({
               {post.title}
             </h1>
             <p className="text-xs text-slate-600 mt-2">
-              Last updated: {new Date(post.lastModified).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              Last updated: {new Date(post.lastModified).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" })}
             </p>
           </header>
 

@@ -12,6 +12,7 @@ export function useLocale(): Locale {
 
 export function useLocalePath(path: string): string {
   const locale = useLocale();
-  if (path.startsWith("/")) return `/${locale}${path}`;
-  return path;
+  if (!path.startsWith("/")) return path;
+  if (locale === defaultLocale) return path;
+  return `/${locale}${path}`;
 }
