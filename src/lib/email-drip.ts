@@ -1,9 +1,6 @@
 import { Resend } from "resend";
-
-const FROM = "AICareerPivot Team <team@ai-career-pivot.com>";
-const REPLY_TO = "founders@ai-career-pivot.com";
-const SITE = "https://ai-career-pivot.com";
-const FOUNDER = "The AICareerPivot Team";
+import { baseHtml, p, h1, cta, sig, utmLink, FROM, REPLY_TO, SITE } from "./email-html";
+import { getLocalizedEmailTemplate } from "./email-i18n";
 
 export const TIER_THRESHOLDS: Record<number, string> = {
   1: "mover",
@@ -11,47 +8,6 @@ export const TIER_THRESHOLDS: Record<number, string> = {
   5: "pioneer",
   10: "architect",
 };
-
-function utmLink(path: string, campaign: string) {
-  return `${SITE}${path}?utm_source=email&utm_medium=nurture&utm_campaign=${campaign}`;
-}
-
-function baseHtml(content: string) {
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#030712;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <div style="max-width:580px;margin:0 auto;padding:40px 24px;">
-    <div style="margin-bottom:32px;">
-      <span style="color:#2dd4bf;font-weight:700;font-size:18px;">AICareerPivot</span>
-    </div>
-    ${content}
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid #1e293b;">
-      <p style="color:#475569;font-size:12px;line-height:1.6;margin:0;">
-        You're receiving this because you joined the AICareerPivot waitlist.<br>
-        <a href="${utmLink("/", "unsubscribe")}" style="color:#475569;">Unsubscribe</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-function p(text: string) {
-  return `<p style="color:#94a3b8;font-size:16px;line-height:1.7;margin:0 0 16px 0;">${text}</p>`;
-}
-
-function h1(text: string) {
-  return `<h1 style="color:#f1f5f9;font-size:26px;font-weight:700;line-height:1.3;margin:0 0 24px 0;">${text}</h1>`;
-}
-
-function cta(text: string, href: string) {
-  return `<a href="${href}" style="display:inline-block;margin-top:8px;padding:14px 28px;background:#0d9488;color:#f9fafb;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;">${text}</a>`;
-}
-
-function sig() {
-  return `<p style="color:#64748b;font-size:15px;line-height:1.6;margin:24px 0 0 0;">${FOUNDER}</p>`;
-}
 
 export interface EmailTemplate {
   subject: string;
@@ -83,8 +39,12 @@ export interface EmailOpts {
 export function getEmailTemplate(
   step: number,
   firstName: string,
-  opts?: EmailOpts
+  opts?: EmailOpts,
+  locale: string = "en"
 ): EmailTemplate | null {
+  const localized = getLocalizedEmailTemplate(step, locale, firstName, opts);
+  if (localized) return localized;
+
   const name = firstName || "there";
   const intakeSkillCount = opts?.intakeSkillCount;
 
@@ -607,10 +567,11 @@ export async function sendDripEmail(
   to: string,
   firstName: string,
   step: number,
-  opts?: EmailOpts
+  opts?: EmailOpts,
+  locale: string = "en"
 ): Promise<boolean> {
   if (!process.env.RESEND_API_KEY) return false;
-  const template = getEmailTemplate(step, firstName, opts);
+  const template = getEmailTemplate(step, firstName, opts, locale);
   if (!template) return false;
 
   const resend = new Resend(process.env.RESEND_API_KEY);
@@ -631,8 +592,9 @@ export async function sendDripEmail(
 
 const LAUNCH_UTM = "utm_source=email&utm_medium=waitlist&utm_campaign=launch";
 
-function launchUtmLink(path: string) {
-  return `${SITE}${path}?${LAUNCH_UTM}`;
+function launchUtmLink(path: string, locale: string = "en") {
+  const prefix = locale !== "en" ? `/${locale}` : "";
+  return `${SITE}${prefix}${path}?${LAUNCH_UTM}`;
 }
 
 const LAUNCH_SUBJECTS = {
@@ -645,7 +607,8 @@ export type LaunchSubjectVariant = keyof typeof LAUNCH_SUBJECTS;
 
 export function getLaunchEmailTemplate(
   firstName: string,
-  variant: LaunchSubjectVariant = "A"
+  variant: LaunchSubjectVariant = "A",
+  locale: string = "en"
 ): EmailTemplate {
   const subject =
     LAUNCH_SUBJECTS[variant].replace("[First name]", firstName);
@@ -677,13 +640,13 @@ export function getLaunchEmailTemplate(
       ${p("Standard pricing will be significantly higher. This pricing is exclusively for our waitlist and won't last.")}
     </div>
 
-    ${cta("Get Your Career Roadmap →", launchUtmLink("/pricing"))}
+    ${cta("Get Your Career Roadmap →", launchUtmLink("/pricing", locale))}
 
     <div style="margin-top:32px;">
       ${p("Thank you for believing in this before it existed. Your support got us here.")}
       ${sig()}
     </div>
-  `);
+  `, locale);
 
   return { subject, previewText: "AICareerPivot is live — early-bird pricing for waitlist members", html };
 }
@@ -691,10 +654,11 @@ export function getLaunchEmailTemplate(
 export async function sendLaunchEmail(
   to: string,
   firstName: string,
-  variant: LaunchSubjectVariant = "A"
+  variant: LaunchSubjectVariant = "A",
+  locale: string = "en"
 ): Promise<boolean> {
   if (!process.env.RESEND_API_KEY) return false;
-  const template = getLaunchEmailTemplate(firstName, variant);
+  const template = getLaunchEmailTemplate(firstName, variant, locale);
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({

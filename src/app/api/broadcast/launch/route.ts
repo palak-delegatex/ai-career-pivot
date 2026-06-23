@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   const { data: rows, error } = await supabase
     .from("waitlist")
-    .select("id, name, email")
+    .select("id, name, email, locale")
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
       batch.map(async (row, batchIdx) => {
         const firstName = (row.name as string).split(" ")[0];
         const variant = pickVariant(i + batchIdx);
-        const ok = await sendLaunchEmail(row.email, firstName, variant);
+        const locale = (row.locale as string) || "en";
+        const ok = await sendLaunchEmail(row.email, firstName, variant, locale);
         if (!ok) throw new Error(`Failed: ${row.email}`);
         variantCounts[variant]++;
         return row.email;

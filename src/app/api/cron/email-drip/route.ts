@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   const now = new Date().toISOString();
   const { data: rows, error } = await supabase
     .from("waitlist")
-    .select("id, name, email, email_step")
+    .select("id, name, email, email_step, locale")
     .gte("email_step", 2)
     .lte("email_step", 5)
     .lte("next_email_at", now)
@@ -44,8 +44,9 @@ export async function GET(req: NextRequest) {
     rows.map(async (row) => {
       const firstName = (row.name as string).split(" ")[0];
       const step = row.email_step as number;
+      const locale = (row.locale as string) || "en";
 
-      const sent = await sendDripEmail(row.email, firstName, step);
+      const sent = await sendDripEmail(row.email, firstName, step, undefined, locale);
       if (!sent) throw new Error(`Send failed for ${row.email} step ${step}`);
 
       // Determine next state

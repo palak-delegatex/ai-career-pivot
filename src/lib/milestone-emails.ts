@@ -18,7 +18,8 @@ export async function scheduleMilestoneEmails(
   email: string,
   firstName: string,
   plans: PlanMilestones[],
-  planIndex: number = 0
+  planIndex: number = 0,
+  locale: string = "en"
 ) {
   const plan = plans[planIndex];
   if (!plan) return;
@@ -34,6 +35,7 @@ export async function scheduleMilestoneEmails(
     milestone_text: string;
     send_at: string;
     email_type: string;
+    locale: string;
   }> = [];
 
   for (const [phase, offsetDays] of Object.entries(PHASE_OFFSETS_DAYS)) {
@@ -61,6 +63,7 @@ export async function scheduleMilestoneEmails(
         milestone_text: text,
         send_at: sendAt,
         email_type: "checkin",
+        locale,
       });
     });
   }

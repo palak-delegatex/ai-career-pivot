@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendDripEmail, TIER_THRESHOLDS, MILESTONE_EMAIL_STEP } from "@/lib/email-drip";
 import { getSupabaseClient } from "@/lib/supabase";
 import { randomBytes } from "crypto";
+import { locales, defaultLocale } from "@/i18n/config";
 
 function generateReferralCode(): string {
   return randomBytes(4).toString("hex");
@@ -15,13 +16,32 @@ function getNextTier(count: number): { name: string; count: number } | null {
   return null;
 }
 
+function detectLocale(req: NextRequest): string {
+  const acceptLang = req.headers.get("accept-language");
+  if (!acceptLang) return defaultLocale;
+  const preferred = acceptLang
+    .split(",")
+    .map((part) => {
+      const [lang, q] = part.trim().split(";q=");
+      return { lang: lang.trim().split("-")[0].toLowerCase(), q: q ? parseFloat(q) : 1 };
+    })
+    .sort((a, b) => b.q - a.q);
+  for (const { lang } of preferred) {
+    if ((locales as readonly string[]).includes(lang)) return lang;
+  }
+  return defaultLocale;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, persona, utm_source, utm_medium, utm_campaign } =
-      await req.json();
+    const body = await req.json();
+    const { name, email, persona, utm_source, utm_medium, utm_campaign } = body;
 
     // Read ref from query param
     const refCode = req.nextUrl.searchParams.get("ref") ?? null;
+    const locale = body.locale && (locales as readonly string[]).includes(body.locale)
+      ? body.locale
+      : detectLocale(req);
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
@@ -50,6 +70,7 @@ export async function POST(req: NextRequest) {
       next_email_at: nextEmailAt,
       referral_code: referralCode,
       referred_by: refCode || null,
+      locale,
     });
 
     if (error) {
@@ -71,7 +92,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Send Email 1 immediately with referral code (non-blocking)
-    sendDripEmail(trimmedEmail, firstName, 1, { referralCode }).catch((err) =>
+    sendDripEmail(trimmedEmail, firstName, 1, { referralCode }, locale).catch((err) =>
       console.error("Email 1 send error (non-fatal):", err)
     );
 
@@ -86,7 +107,7 @@ async function handleReferral(refCode: string, newMemberFirstName: string) {
   const supabase = getSupabaseClient();
   const { data: referrer, error: fetchErr } = await supabase
     .from("waitlist")
-    .select("id, name, email, referral_code, referral_count, current_tier")
+    .select("id, name, email, referral_code, referral_count, current_tier, locale")
     .eq("referral_code", refCode)
     .single();
 
@@ -114,6 +135,7 @@ async function handleReferral(refCode: string, newMemberFirstName: string) {
     .eq("referral_code", refCode);
 
   const referrerFirstName = (referrer.name ?? "there").split(" ")[0];
+  const referrerLocale = (referrer.locale as string) || "en";
   const nextTier = getNextTier(newCount);
 
   // Send referral notification email (fires on every increment)
@@ -123,13 +145,13 @@ async function handleReferral(refCode: string, newMemberFirstName: string) {
     referralName: newMemberFirstName,
     nextTierName: nextTier?.name,
     nextTierCount: nextTier?.count,
-  });
+  }, referrerLocale);
 
   // Send milestone email if a new tier was crossed
   if (tierCrossed && MILESTONE_EMAIL_STEP[newTierKey]) {
     await sendDripEmail(referrer.email, referrerFirstName, MILESTONE_EMAIL_STEP[newTierKey], {
       referralCode: referrer.referral_code,
       referralCount: newCount,
-    });
+    }, referrerLocale);
   }
 }

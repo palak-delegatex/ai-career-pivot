@@ -39,11 +39,12 @@ export async function GET(req: NextRequest) {
   if (dueEmails && dueEmails.length > 0) {
     const results = await Promise.allSettled(
       dueEmails.map(async (row) => {
+        const locale = (row.locale as string) || "en";
         const sent = await sendDripEmail(row.email, row.first_name, CHECKIN_EMAIL_STEP, {
           milestoneName: row.milestone_text,
           reportId: row.report_id,
           planIndex: row.plan_index,
-        });
+        }, locale);
 
         if (!sent) throw new Error(`Send failed for ${row.email}`);
 
@@ -67,6 +68,7 @@ export async function GET(req: NextRequest) {
           milestone_text: row.milestone_text,
           send_at: nudgeSendAt,
           email_type: "nudge",
+          locale: row.locale || "en",
         });
       })
     );
@@ -111,10 +113,11 @@ export async function GET(req: NextRequest) {
           return;
         }
 
+        const nudgeLocale = (row.locale as string) || "en";
         const sent = await sendDripEmail(row.email, row.first_name, NUDGE_EMAIL_STEP, {
           reportId: row.report_id,
           planIndex: row.plan_index,
-        });
+        }, nudgeLocale);
 
         if (!sent) throw new Error(`Nudge send failed for ${row.email}`);
 
