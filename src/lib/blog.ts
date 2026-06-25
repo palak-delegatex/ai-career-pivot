@@ -53,7 +53,7 @@ export function getAllPosts(): Omit<Post, "content">[] {
         date: fm.date,
         keywords: fm.keywords ?? [],
         tldr: fm.tldr,
-        pinned: fm.pinned,
+        pinned: fm.pinned ?? false,
         readingTime: stats.text,
         excerpt,
         lastModified: mtime,
