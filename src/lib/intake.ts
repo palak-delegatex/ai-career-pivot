@@ -229,3 +229,62 @@ export interface IntakeResult {
   profile: UserProfile;
   plans: PivotPlan[];
 }
+
+export interface LearningResource {
+  name: string;
+  provider: string;
+  type: "course" | "certification" | "project" | "book" | "tutorial" | "bootcamp";
+  url: string;
+  cost: "free" | "low" | "medium" | "high";
+  estimatedHours: number;
+  impactScore: number;
+}
+
+export interface SkillGapItem {
+  skill: string;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  importance: "critical" | "important" | "nice-to-have";
+  gapType: "transferable" | "learnable" | "deep-investment";
+  currentLevel: string | null;
+  requiredLevel: string;
+  adjacentSkill: string | null;
+  transferExplanation: string | null;
+  bridgeActions: string[];
+  estimatedWeeksToClose: number;
+  learningPath: LearningResource[];
+  priorityRank: number;
+}
+
+export interface SkillGapAnalysisResult {
+  userSkills: ExtractedSkill[];
+  targetRoleSkills: TargetRoleSkill[];
+  matchedSkills: {
+    skill: string;
+    proficiency: string;
+    matchConfidence: number;
+  }[];
+  gaps: {
+    transferable: SkillGapItem[];
+    learnable: SkillGapItem[];
+    deepInvestment: SkillGapItem[];
+  };
+  summary: {
+    matchedPercent: number;
+    transferablePercent: number;
+    learnablePercent: number;
+    deepInvestmentPercent: number;
+    readinessScore: number;
+    readinessLabel: string;
+    estimatedTransitionWeeks: number;
+    topStrength: string;
+    biggestGap: string;
+    transitionNarrative: string;
+  };
+  learningRoadmap: {
+    phase: "quick-wins" | "core-skills" | "deep-expertise";
+    title: string;
+    durationWeeks: number;
+    skills: string[];
+    resources: LearningResource[];
+  }[];
+}
