@@ -163,6 +163,46 @@ export interface MarketData {
   updatedAt: string;
 }
 
+export interface DemandSignal {
+  trend: "growing" | "stable" | "declining";
+  trendStrength: "strong" | "moderate" | "weak";
+  growthPercent: number;
+  totalEmployment: number;
+  postingVolume: "very-high" | "high" | "moderate" | "low";
+  yoyGrowthLabel: string;
+}
+
+export interface SkillDemand {
+  skill: string;
+  frequencyPercent: number;
+  category: "technical" | "soft" | "domain" | "certification" | "tool";
+  trending: boolean;
+}
+
+export interface GeographicHotspot {
+  metro: string;
+  state: string;
+  salaryMedian: number;
+  salaryP75: number;
+  employmentConcentration: "very-high" | "high" | "moderate" | "low";
+  remoteAvailability: "high" | "moderate" | "low";
+}
+
+export interface MarketContext {
+  role: string;
+  socCode: string;
+  salary: {
+    p25: number;
+    p50: number;
+    p75: number;
+  };
+  demand: DemandSignal;
+  topSkills: SkillDemand[];
+  geographicHotspots: GeographicHotspot[];
+  source: string;
+  updatedAt: string;
+}
+
 export interface TransferabilityAnalysis {
   totalSkillsAssessed: number;
   directTransferCount: number;

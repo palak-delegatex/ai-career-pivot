@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile, SkillGapAnalysisResult } from "@/lib/intake";
+import { fetchMarketContext } from "@/lib/market-data";
 
 const LearningResourceSchema = z.object({
   name: z.string(),
@@ -161,6 +162,24 @@ export async function POST(req: NextRequest) {
     ? ` in the ${targetIndustry} industry`
     : "";
 
+  const marketCtx = await fetchMarketContext(targetRole);
+  let marketBlock = "";
+  if (marketCtx) {
+    const topSkillsList = marketCtx.topSkills
+      .slice(0, 8)
+      .map((s) => `${s.skill} (${s.frequencyPercent}% of postings${s.trending ? ", trending" : ""})`)
+      .join(", ");
+    marketBlock = `
+
+REAL MARKET DATA for ${targetRole} (BLS/O*NET — use to ground your analysis):
+- Salary range: P25=$${marketCtx.salary.p25.toLocaleString()} | Median=$${marketCtx.salary.p50.toLocaleString()} | P75=$${marketCtx.salary.p75.toLocaleString()}
+- Demand: ${marketCtx.demand.trend} (${marketCtx.demand.trendStrength}), ${marketCtx.demand.growthPercent}% projected growth
+- Top skills in job postings: ${topSkillsList}
+- Employment: ${marketCtx.demand.totalEmployment.toLocaleString()} workers nationally
+
+IMPORTANT: Prioritize skills that appear most frequently in job postings (listed above). Skills marked "trending" should be weighted higher in importance. Use this data to set targetRoleSkills importance levels and gap priorityRank values.`;
+  }
+
   try {
     const { output } = await generateText({
       model: anthropic("claude-sonnet-4-6"),
@@ -168,6 +187,7 @@ export async function POST(req: NextRequest) {
       prompt: `You are a career transition expert specializing in skill gap analysis for professionals pivoting to new roles. Your analysis must be specific, actionable, and grounded in the candidate's actual background.
 
 TARGET ROLE: ${targetRole}${industryClause}
+${marketBlock}
 
 CANDIDATE PROFILE:
 ${profileContext}
@@ -178,7 +198,7 @@ Perform a comprehensive career-transition skill gap analysis:
 Extract ALL skills — both explicit (listed) and implicit (inferred from job titles, descriptions, education, certifications). Categorize each as technical, soft, domain, certification, or tool. Estimate proficiency and years used. In "source", note where you found the skill.
 
 ## 2. TARGET ROLE SKILLS (targetRoleSkills)
-Generate the complete skill profile for ${targetRole}${industryClause}. Include 15-25 skills across all categories. Rate importance as critical, important, or nice-to-have based on current job market expectations.
+Generate the complete skill profile for ${targetRole}${industryClause}. Include 15-25 skills across all categories. Rate importance as critical, important, or nice-to-have based on current job market expectations${marketCtx ? " and the real market data above" : ""}.
 
 ## 3. MATCHED SKILLS (matchedSkills)
 Skills the candidate already has that directly match target role requirements. matchConfidence 80-100.

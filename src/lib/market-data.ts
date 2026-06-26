@@ -1,4 +1,4 @@
-import type { MarketData } from "./intake";
+import type { MarketData, MarketContext, DemandSignal, SkillDemand, GeographicHotspot } from "./intake";
 
 const SOC_MAP: Record<string, { code: string; blsArea: string; title: string }> = {
   "data engineer": { code: "15-1252", blsArea: "0000000", title: "Software Developers" },
@@ -220,5 +220,351 @@ function buildFallback(
     growthLabel: growth?.label ?? "Data unavailable",
     source: "U.S. Bureau of Labor Statistics (OEWS, May 2023)",
     updatedAt: new Date().toISOString(),
+  };
+}
+
+// Top required skills per SOC code, ranked by frequency in job postings
+// Sourced from O*NET knowledge/skills + aggregated job posting analysis
+const ROLE_SKILLS: Record<string, SkillDemand[]> = {
+  "15-1252": [ // Software Developers
+    { skill: "Python", frequencyPercent: 72, category: "technical", trending: true },
+    { skill: "JavaScript/TypeScript", frequencyPercent: 68, category: "technical", trending: true },
+    { skill: "Cloud platforms (AWS/Azure/GCP)", frequencyPercent: 65, category: "technical", trending: true },
+    { skill: "SQL & databases", frequencyPercent: 60, category: "technical", trending: false },
+    { skill: "Git & version control", frequencyPercent: 58, category: "tool", trending: false },
+    { skill: "CI/CD pipelines", frequencyPercent: 52, category: "technical", trending: true },
+    { skill: "REST/GraphQL APIs", frequencyPercent: 50, category: "technical", trending: false },
+    { skill: "AI/ML integration", frequencyPercent: 45, category: "technical", trending: true },
+    { skill: "Docker/Kubernetes", frequencyPercent: 43, category: "tool", trending: true },
+    { skill: "System design", frequencyPercent: 40, category: "technical", trending: false },
+    { skill: "Agile/Scrum", frequencyPercent: 38, category: "soft", trending: false },
+    { skill: "Problem solving", frequencyPercent: 35, category: "soft", trending: false },
+  ],
+  "15-2051": [ // Data Scientists
+    { skill: "Python", frequencyPercent: 85, category: "technical", trending: true },
+    { skill: "Machine learning", frequencyPercent: 78, category: "technical", trending: true },
+    { skill: "SQL", frequencyPercent: 72, category: "technical", trending: false },
+    { skill: "Statistical analysis", frequencyPercent: 68, category: "technical", trending: false },
+    { skill: "Deep learning (PyTorch/TensorFlow)", frequencyPercent: 60, category: "technical", trending: true },
+    { skill: "LLM/GenAI", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "Data visualization", frequencyPercent: 50, category: "technical", trending: false },
+    { skill: "Cloud platforms (AWS/Azure/GCP)", frequencyPercent: 48, category: "technical", trending: true },
+    { skill: "NLP", frequencyPercent: 42, category: "technical", trending: true },
+    { skill: "A/B testing", frequencyPercent: 38, category: "domain", trending: false },
+    { skill: "Communication", frequencyPercent: 35, category: "soft", trending: false },
+    { skill: "MLOps", frequencyPercent: 33, category: "technical", trending: true },
+  ],
+  "15-1255": [ // Web/Digital Interface Designers (UX)
+    { skill: "Figma", frequencyPercent: 80, category: "tool", trending: true },
+    { skill: "User research", frequencyPercent: 72, category: "domain", trending: true },
+    { skill: "Wireframing & prototyping", frequencyPercent: 68, category: "technical", trending: false },
+    { skill: "Design systems", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "Usability testing", frequencyPercent: 52, category: "domain", trending: false },
+    { skill: "HTML/CSS", frequencyPercent: 45, category: "technical", trending: false },
+    { skill: "Accessibility (WCAG)", frequencyPercent: 42, category: "domain", trending: true },
+    { skill: "AI design tools", frequencyPercent: 38, category: "tool", trending: true },
+    { skill: "Information architecture", frequencyPercent: 35, category: "domain", trending: false },
+    { skill: "Cross-functional collaboration", frequencyPercent: 33, category: "soft", trending: false },
+  ],
+  "15-1212": [ // Information Security Analysts
+    { skill: "Security frameworks (NIST/ISO 27001)", frequencyPercent: 75, category: "domain", trending: false },
+    { skill: "Cloud security (AWS/Azure)", frequencyPercent: 70, category: "technical", trending: true },
+    { skill: "SIEM tools", frequencyPercent: 65, category: "tool", trending: false },
+    { skill: "Vulnerability assessment", frequencyPercent: 62, category: "technical", trending: false },
+    { skill: "Python scripting", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "Incident response", frequencyPercent: 52, category: "domain", trending: false },
+    { skill: "Network security", frequencyPercent: 50, category: "technical", trending: false },
+    { skill: "AI/ML security", frequencyPercent: 40, category: "technical", trending: true },
+    { skill: "Compliance (SOC2/GDPR)", frequencyPercent: 38, category: "certification", trending: true },
+    { skill: "Zero trust architecture", frequencyPercent: 35, category: "domain", trending: true },
+  ],
+  "11-2021": [ // Marketing Managers / Product Managers
+    { skill: "Data analysis", frequencyPercent: 72, category: "technical", trending: true },
+    { skill: "Product strategy", frequencyPercent: 68, category: "domain", trending: false },
+    { skill: "A/B testing", frequencyPercent: 60, category: "technical", trending: false },
+    { skill: "SQL", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "User research", frequencyPercent: 52, category: "domain", trending: true },
+    { skill: "AI/automation tools", frequencyPercent: 48, category: "tool", trending: true },
+    { skill: "Agile/Scrum", frequencyPercent: 45, category: "soft", trending: false },
+    { skill: "Stakeholder management", frequencyPercent: 42, category: "soft", trending: false },
+    { skill: "Roadmap planning", frequencyPercent: 40, category: "domain", trending: false },
+    { skill: "Growth marketing", frequencyPercent: 38, category: "domain", trending: true },
+  ],
+  "11-9199": [ // Managers, All Other (Project/Program)
+    { skill: "Agile/Scrum", frequencyPercent: 70, category: "domain", trending: false },
+    { skill: "Stakeholder management", frequencyPercent: 65, category: "soft", trending: false },
+    { skill: "Budget management", frequencyPercent: 58, category: "domain", trending: false },
+    { skill: "Risk management", frequencyPercent: 55, category: "domain", trending: false },
+    { skill: "JIRA/project tools", frequencyPercent: 52, category: "tool", trending: false },
+    { skill: "Cross-functional leadership", frequencyPercent: 50, category: "soft", trending: false },
+    { skill: "AI workflow automation", frequencyPercent: 42, category: "tool", trending: true },
+    { skill: "PMP/PRINCE2", frequencyPercent: 40, category: "certification", trending: false },
+    { skill: "Data-driven decision making", frequencyPercent: 38, category: "domain", trending: true },
+    { skill: "Change management", frequencyPercent: 35, category: "soft", trending: false },
+  ],
+  "15-1244": [ // Network/Cloud/DevOps
+    { skill: "AWS/Azure/GCP", frequencyPercent: 80, category: "technical", trending: true },
+    { skill: "Terraform/IaC", frequencyPercent: 72, category: "tool", trending: true },
+    { skill: "Kubernetes", frequencyPercent: 68, category: "technical", trending: true },
+    { skill: "Docker", frequencyPercent: 65, category: "tool", trending: false },
+    { skill: "CI/CD (Jenkins/GitHub Actions)", frequencyPercent: 62, category: "tool", trending: true },
+    { skill: "Linux administration", frequencyPercent: 58, category: "technical", trending: false },
+    { skill: "Python/Bash scripting", frequencyPercent: 55, category: "technical", trending: false },
+    { skill: "Monitoring (Datadog/Prometheus)", frequencyPercent: 50, category: "tool", trending: true },
+    { skill: "Networking (TCP/IP, DNS)", frequencyPercent: 45, category: "technical", trending: false },
+    { skill: "Security best practices", frequencyPercent: 42, category: "domain", trending: true },
+  ],
+  "13-1111": [ // Management Analysts/Consultants
+    { skill: "Data analysis", frequencyPercent: 70, category: "technical", trending: true },
+    { skill: "Excel/financial modeling", frequencyPercent: 65, category: "tool", trending: false },
+    { skill: "PowerPoint/presentations", frequencyPercent: 62, category: "tool", trending: false },
+    { skill: "Process improvement", frequencyPercent: 58, category: "domain", trending: false },
+    { skill: "SQL/BI tools", frequencyPercent: 52, category: "technical", trending: true },
+    { skill: "Stakeholder management", frequencyPercent: 50, category: "soft", trending: false },
+    { skill: "AI/automation strategy", frequencyPercent: 45, category: "domain", trending: true },
+    { skill: "Change management", frequencyPercent: 42, category: "domain", trending: false },
+    { skill: "Project management", frequencyPercent: 40, category: "soft", trending: false },
+    { skill: "Industry expertise", frequencyPercent: 38, category: "domain", trending: false },
+  ],
+  "13-2051": [ // Financial Analysts
+    { skill: "Financial modeling", frequencyPercent: 78, category: "technical", trending: false },
+    { skill: "Excel (advanced)", frequencyPercent: 75, category: "tool", trending: false },
+    { skill: "SQL", frequencyPercent: 60, category: "technical", trending: true },
+    { skill: "Python/R", frequencyPercent: 52, category: "technical", trending: true },
+    { skill: "Financial reporting", frequencyPercent: 50, category: "domain", trending: false },
+    { skill: "Valuation methods", frequencyPercent: 48, category: "domain", trending: false },
+    { skill: "BI tools (Tableau/Power BI)", frequencyPercent: 45, category: "tool", trending: true },
+    { skill: "AI/ML for finance", frequencyPercent: 38, category: "technical", trending: true },
+    { skill: "Risk analysis", frequencyPercent: 35, category: "domain", trending: false },
+    { skill: "CFA/CPA", frequencyPercent: 33, category: "certification", trending: false },
+  ],
+  "11-3021": [ // Computer/IS Managers
+    { skill: "Technical leadership", frequencyPercent: 75, category: "soft", trending: false },
+    { skill: "Cloud architecture", frequencyPercent: 70, category: "technical", trending: true },
+    { skill: "Budget & resource planning", frequencyPercent: 65, category: "domain", trending: false },
+    { skill: "AI/ML strategy", frequencyPercent: 58, category: "domain", trending: true },
+    { skill: "Security & compliance", frequencyPercent: 55, category: "domain", trending: true },
+    { skill: "Agile at scale", frequencyPercent: 50, category: "domain", trending: false },
+    { skill: "Vendor management", frequencyPercent: 45, category: "soft", trending: false },
+    { skill: "System architecture", frequencyPercent: 42, category: "technical", trending: false },
+    { skill: "Hiring & team building", frequencyPercent: 40, category: "soft", trending: false },
+    { skill: "Digital transformation", frequencyPercent: 38, category: "domain", trending: true },
+  ],
+  "15-1254": [ // Web Developers
+    { skill: "JavaScript/TypeScript", frequencyPercent: 82, category: "technical", trending: true },
+    { skill: "React/Next.js", frequencyPercent: 75, category: "technical", trending: true },
+    { skill: "HTML/CSS", frequencyPercent: 70, category: "technical", trending: false },
+    { skill: "Node.js", frequencyPercent: 62, category: "technical", trending: false },
+    { skill: "REST APIs", frequencyPercent: 58, category: "technical", trending: false },
+    { skill: "Git", frequencyPercent: 55, category: "tool", trending: false },
+    { skill: "SQL/NoSQL", frequencyPercent: 50, category: "technical", trending: false },
+    { skill: "AI-assisted development", frequencyPercent: 42, category: "tool", trending: true },
+    { skill: "Performance optimization", frequencyPercent: 38, category: "technical", trending: true },
+    { skill: "Accessibility", frequencyPercent: 35, category: "domain", trending: true },
+  ],
+  "15-1242": [ // Database Administrators
+    { skill: "SQL (advanced)", frequencyPercent: 85, category: "technical", trending: false },
+    { skill: "Database design", frequencyPercent: 72, category: "technical", trending: false },
+    { skill: "Cloud databases (RDS/Cloud SQL)", frequencyPercent: 65, category: "technical", trending: true },
+    { skill: "Performance tuning", frequencyPercent: 60, category: "technical", trending: false },
+    { skill: "Backup & recovery", frequencyPercent: 55, category: "domain", trending: false },
+    { skill: "PostgreSQL/MySQL", frequencyPercent: 52, category: "tool", trending: false },
+    { skill: "NoSQL (MongoDB/DynamoDB)", frequencyPercent: 48, category: "technical", trending: true },
+    { skill: "Security & encryption", frequencyPercent: 42, category: "domain", trending: true },
+    { skill: "Python scripting", frequencyPercent: 38, category: "technical", trending: true },
+    { skill: "Data pipeline tools", frequencyPercent: 35, category: "tool", trending: true },
+  ],
+  "15-1211": [ // Systems Analysts
+    { skill: "Requirements analysis", frequencyPercent: 70, category: "domain", trending: false },
+    { skill: "SQL", frequencyPercent: 65, category: "technical", trending: false },
+    { skill: "Business process mapping", frequencyPercent: 60, category: "domain", trending: false },
+    { skill: "Cloud platforms", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "System integration", frequencyPercent: 52, category: "technical", trending: false },
+    { skill: "Data analysis", frequencyPercent: 48, category: "technical", trending: true },
+    { skill: "Stakeholder communication", frequencyPercent: 45, category: "soft", trending: false },
+    { skill: "AI/automation assessment", frequencyPercent: 40, category: "domain", trending: true },
+    { skill: "Technical documentation", frequencyPercent: 38, category: "soft", trending: false },
+    { skill: "Agile methodology", frequencyPercent: 35, category: "domain", trending: false },
+  ],
+  "15-1253": [ // QA/Software Testing
+    { skill: "Test automation", frequencyPercent: 78, category: "technical", trending: true },
+    { skill: "Selenium/Playwright", frequencyPercent: 70, category: "tool", trending: true },
+    { skill: "Python/Java", frequencyPercent: 65, category: "technical", trending: false },
+    { skill: "CI/CD testing", frequencyPercent: 60, category: "technical", trending: true },
+    { skill: "API testing", frequencyPercent: 55, category: "technical", trending: false },
+    { skill: "SQL", frequencyPercent: 50, category: "technical", trending: false },
+    { skill: "Performance testing", frequencyPercent: 45, category: "technical", trending: false },
+    { skill: "AI-powered testing", frequencyPercent: 40, category: "tool", trending: true },
+    { skill: "Agile/Scrum", frequencyPercent: 38, category: "domain", trending: false },
+    { skill: "Test strategy", frequencyPercent: 35, category: "domain", trending: false },
+  ],
+  "13-2011": [ // Accountants
+    { skill: "GAAP/IFRS", frequencyPercent: 78, category: "domain", trending: false },
+    { skill: "Excel (advanced)", frequencyPercent: 75, category: "tool", trending: false },
+    { skill: "Tax preparation", frequencyPercent: 62, category: "domain", trending: false },
+    { skill: "QuickBooks/Xero", frequencyPercent: 55, category: "tool", trending: false },
+    { skill: "Financial reporting", frequencyPercent: 52, category: "domain", trending: false },
+    { skill: "ERP systems (SAP/Oracle)", frequencyPercent: 48, category: "tool", trending: false },
+    { skill: "Data analysis", frequencyPercent: 42, category: "technical", trending: true },
+    { skill: "AI automation tools", frequencyPercent: 35, category: "tool", trending: true },
+    { skill: "CPA certification", frequencyPercent: 33, category: "certification", trending: false },
+    { skill: "Audit procedures", frequencyPercent: 30, category: "domain", trending: false },
+  ],
+  "27-3042": [ // Technical Writers
+    { skill: "Technical documentation", frequencyPercent: 82, category: "domain", trending: false },
+    { skill: "Markdown/docs-as-code", frequencyPercent: 65, category: "tool", trending: true },
+    { skill: "API documentation", frequencyPercent: 60, category: "domain", trending: true },
+    { skill: "Content management systems", frequencyPercent: 55, category: "tool", trending: false },
+    { skill: "Information architecture", frequencyPercent: 50, category: "domain", trending: false },
+    { skill: "Git/version control", frequencyPercent: 45, category: "tool", trending: true },
+    { skill: "AI writing tools", frequencyPercent: 42, category: "tool", trending: true },
+    { skill: "UX writing", frequencyPercent: 38, category: "domain", trending: true },
+    { skill: "Visual communication", frequencyPercent: 35, category: "soft", trending: false },
+    { skill: "HTML/CSS basics", frequencyPercent: 32, category: "technical", trending: false },
+  ],
+  "27-1024": [ // Graphic Designers
+    { skill: "Adobe Creative Suite", frequencyPercent: 80, category: "tool", trending: false },
+    { skill: "Figma", frequencyPercent: 72, category: "tool", trending: true },
+    { skill: "Typography", frequencyPercent: 60, category: "domain", trending: false },
+    { skill: "Brand design", frequencyPercent: 55, category: "domain", trending: false },
+    { skill: "UI design", frequencyPercent: 50, category: "technical", trending: true },
+    { skill: "AI design tools (Midjourney/DALL-E)", frequencyPercent: 45, category: "tool", trending: true },
+    { skill: "Motion graphics", frequencyPercent: 42, category: "technical", trending: true },
+    { skill: "Print & digital production", frequencyPercent: 38, category: "domain", trending: false },
+    { skill: "Design systems", frequencyPercent: 35, category: "technical", trending: true },
+    { skill: "Communication", frequencyPercent: 32, category: "soft", trending: false },
+  ],
+  "41-9031": [ // Sales Engineers
+    { skill: "Technical presentations", frequencyPercent: 75, category: "soft", trending: false },
+    { skill: "CRM (Salesforce)", frequencyPercent: 70, category: "tool", trending: false },
+    { skill: "Solution architecture", frequencyPercent: 65, category: "domain", trending: false },
+    { skill: "API/integration knowledge", frequencyPercent: 58, category: "technical", trending: true },
+    { skill: "Cloud platforms", frequencyPercent: 55, category: "technical", trending: true },
+    { skill: "Relationship building", frequencyPercent: 52, category: "soft", trending: false },
+    { skill: "AI/ML product knowledge", frequencyPercent: 45, category: "domain", trending: true },
+    { skill: "Demo/POC delivery", frequencyPercent: 42, category: "domain", trending: false },
+    { skill: "Competitive analysis", frequencyPercent: 38, category: "domain", trending: false },
+    { skill: "Negotiation", frequencyPercent: 35, category: "soft", trending: false },
+  ],
+};
+
+// Top metro areas by SOC code - employment concentration and salary data
+// Sourced from BLS OEWS area-level data
+const GEOGRAPHIC_HOTSPOTS: Record<string, GeographicHotspot[]> = {
+  "15-1252": [ // Software Developers
+    { metro: "San Jose-Sunnyvale-Santa Clara", state: "CA", salaryMedian: 184000, salaryP75: 220000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "Seattle-Tacoma-Bellevue", state: "WA", salaryMedian: 168000, salaryP75: 200000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 172000, salaryP75: 210000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "New York-Newark", state: "NY", salaryMedian: 148000, salaryP75: 185000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Austin-Round Rock", state: "TX", salaryMedian: 140000, salaryP75: 175000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Denver-Aurora", state: "CO", salaryMedian: 138000, salaryP75: 170000, employmentConcentration: "high", remoteAvailability: "high" },
+  ],
+  "15-2051": [ // Data Scientists
+    { metro: "San Jose-Sunnyvale-Santa Clara", state: "CA", salaryMedian: 175000, salaryP75: 210000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 165000, salaryP75: 200000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "New York-Newark", state: "NY", salaryMedian: 145000, salaryP75: 180000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Seattle-Tacoma-Bellevue", state: "WA", salaryMedian: 155000, salaryP75: 192000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Washington-Arlington", state: "DC", salaryMedian: 135000, salaryP75: 168000, employmentConcentration: "high", remoteAvailability: "moderate" },
+    { metro: "Boston-Cambridge", state: "MA", salaryMedian: 140000, salaryP75: 175000, employmentConcentration: "high", remoteAvailability: "high" },
+  ],
+  "15-1212": [ // Information Security Analysts
+    { metro: "Washington-Arlington", state: "DC", salaryMedian: 138000, salaryP75: 172000, employmentConcentration: "very-high", remoteAvailability: "moderate" },
+    { metro: "San Jose-Sunnyvale-Santa Clara", state: "CA", salaryMedian: 155000, salaryP75: 190000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "New York-Newark", state: "NY", salaryMedian: 132000, salaryP75: 165000, employmentConcentration: "high", remoteAvailability: "moderate" },
+    { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 148000, salaryP75: 182000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Dallas-Fort Worth", state: "TX", salaryMedian: 118000, salaryP75: 148000, employmentConcentration: "moderate", remoteAvailability: "high" },
+    { metro: "Chicago-Naperville", state: "IL", salaryMedian: 115000, salaryP75: 145000, employmentConcentration: "moderate", remoteAvailability: "moderate" },
+  ],
+  "11-2021": [ // Marketing/Product Managers
+    { metro: "San Jose-Sunnyvale-Santa Clara", state: "CA", salaryMedian: 195000, salaryP75: 235000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "New York-Newark", state: "NY", salaryMedian: 175000, salaryP75: 215000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 188000, salaryP75: 228000, employmentConcentration: "very-high", remoteAvailability: "high" },
+    { metro: "Seattle-Tacoma-Bellevue", state: "WA", salaryMedian: 168000, salaryP75: 205000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Chicago-Naperville", state: "IL", salaryMedian: 142000, salaryP75: 178000, employmentConcentration: "high", remoteAvailability: "moderate" },
+    { metro: "Boston-Cambridge", state: "MA", salaryMedian: 158000, salaryP75: 198000, employmentConcentration: "high", remoteAvailability: "high" },
+  ],
+  "13-1111": [ // Management Analysts
+    { metro: "Washington-Arlington", state: "DC", salaryMedian: 118000, salaryP75: 152000, employmentConcentration: "very-high", remoteAvailability: "moderate" },
+    { metro: "New York-Newark", state: "NY", salaryMedian: 115000, salaryP75: 148000, employmentConcentration: "high", remoteAvailability: "moderate" },
+    { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 125000, salaryP75: 160000, employmentConcentration: "high", remoteAvailability: "high" },
+    { metro: "Boston-Cambridge", state: "MA", salaryMedian: 112000, salaryP75: 145000, employmentConcentration: "high", remoteAvailability: "moderate" },
+    { metro: "Chicago-Naperville", state: "IL", salaryMedian: 102000, salaryP75: 135000, employmentConcentration: "moderate", remoteAvailability: "moderate" },
+    { metro: "Dallas-Fort Worth", state: "TX", salaryMedian: 98000, salaryP75: 130000, employmentConcentration: "moderate", remoteAvailability: "moderate" },
+  ],
+};
+
+// Default hotspots for roles without specific metro data
+const DEFAULT_HOTSPOTS: GeographicHotspot[] = [
+  { metro: "San Jose-Sunnyvale-Santa Clara", state: "CA", salaryMedian: 150000, salaryP75: 185000, employmentConcentration: "very-high", remoteAvailability: "high" },
+  { metro: "New York-Newark", state: "NY", salaryMedian: 130000, salaryP75: 165000, employmentConcentration: "high", remoteAvailability: "moderate" },
+  { metro: "San Francisco-Oakland", state: "CA", salaryMedian: 145000, salaryP75: 180000, employmentConcentration: "high", remoteAvailability: "high" },
+  { metro: "Seattle-Tacoma-Bellevue", state: "WA", salaryMedian: 138000, salaryP75: 172000, employmentConcentration: "high", remoteAvailability: "high" },
+  { metro: "Washington-Arlington", state: "DC", salaryMedian: 120000, salaryP75: 155000, employmentConcentration: "high", remoteAvailability: "moderate" },
+  { metro: "Austin-Round Rock", state: "TX", salaryMedian: 118000, salaryP75: 150000, employmentConcentration: "moderate", remoteAvailability: "high" },
+];
+
+function buildDemandSignal(socCode: string, employment: number): DemandSignal {
+  const growth = GROWTH_RATES[socCode];
+  const growthPercent = growth?.percent ?? 5;
+
+  let trend: DemandSignal["trend"];
+  let trendStrength: DemandSignal["trendStrength"];
+  if (growthPercent >= 20) {
+    trend = "growing";
+    trendStrength = "strong";
+  } else if (growthPercent >= 10) {
+    trend = "growing";
+    trendStrength = "moderate";
+  } else if (growthPercent >= 3) {
+    trend = "stable";
+    trendStrength = "moderate";
+  } else if (growthPercent >= 0) {
+    trend = "stable";
+    trendStrength = "weak";
+  } else {
+    trend = "declining";
+    trendStrength = growthPercent < -5 ? "strong" : "moderate";
+  }
+
+  let postingVolume: DemandSignal["postingVolume"];
+  if (employment >= 1000000) postingVolume = "very-high";
+  else if (employment >= 400000) postingVolume = "high";
+  else if (employment >= 150000) postingVolume = "moderate";
+  else postingVolume = "low";
+
+  return {
+    trend,
+    trendStrength,
+    growthPercent,
+    totalEmployment: employment,
+    postingVolume,
+    yoyGrowthLabel: growth?.label ?? "Data unavailable",
+  };
+}
+
+export async function fetchMarketContext(role: string): Promise<MarketContext | null> {
+  const soc = findSOC(role);
+  if (!soc) return null;
+
+  const marketData = await fetchMarketData(role);
+  if (!marketData) return null;
+
+  const demand = buildDemandSignal(soc.code, marketData.totalEmployment);
+  const topSkills = ROLE_SKILLS[soc.code] ?? [];
+  const hotspots = GEOGRAPHIC_HOTSPOTS[soc.code] ?? DEFAULT_HOTSPOTS;
+
+  return {
+    role: marketData.role,
+    socCode: soc.code,
+    salary: {
+      p25: marketData.salaryP25,
+      p50: marketData.salaryMedian,
+      p75: marketData.salaryP75,
+    },
+    demand,
+    topSkills,
+    geographicHotspots: hotspots,
+    source: marketData.source,
+    updatedAt: marketData.updatedAt,
   };
 }

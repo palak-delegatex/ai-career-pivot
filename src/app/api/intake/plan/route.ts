@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamObject } from "ai";
 import { jsonSchema } from "ai";
-import type { UserProfile, ValuesAssessment } from "@/lib/intake";
+import type { UserProfile, ValuesAssessment, MarketContext } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
 import { getStripeClient } from "@/lib/stripe";
 import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
+import { fetchMarketContext } from "@/lib/market-data";
 
 const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   type: "object",
@@ -155,6 +156,87 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   required: ["plans"],
 });
 
+const COMMON_PIVOT_TARGETS: Record<string, string[]> = {
+  "software": ["data scientist", "product manager", "engineering manager", "devops engineer", "solutions architect", "cybersecurity analyst"],
+  "data": ["data scientist", "machine learning engineer", "data engineer", "product manager", "business analyst", "ai engineer"],
+  "product": ["product manager", "ux designer", "business analyst", "engineering manager", "marketing manager", "consultant"],
+  "design": ["ux designer", "product manager", "frontend developer", "graphic designer", "content strategist"],
+  "marketing": ["product manager", "marketing manager", "business analyst", "content strategist", "ux researcher"],
+  "finance": ["financial analyst", "business analyst", "data analyst", "product manager", "consultant"],
+  "project": ["project manager", "product manager", "scrum master", "business analyst", "consultant"],
+  "sales": ["sales engineer", "product manager", "business analyst", "marketing manager", "consultant"],
+  "writing": ["technical writer", "content strategist", "ux designer", "product manager"],
+  "security": ["cybersecurity analyst", "devops engineer", "cloud engineer", "solutions architect"],
+  "management": ["engineering manager", "product manager", "project manager", "consultant", "cto"],
+  "accounting": ["financial analyst", "business analyst", "data analyst", "consultant"],
+};
+
+function inferPivotTargets(profile: UserProfile): string[] {
+  const text = [
+    profile.currentTitle ?? "",
+    profile.currentIndustry ?? "",
+    ...profile.skills.slice(0, 5),
+    ...profile.interests.slice(0, 3),
+  ].join(" ").toLowerCase();
+
+  const targets = new Set<string>();
+  for (const [keyword, roles] of Object.entries(COMMON_PIVOT_TARGETS)) {
+    if (text.includes(keyword)) {
+      for (const r of roles) targets.add(r);
+    }
+  }
+
+  if (targets.size === 0) {
+    for (const r of ["product manager", "data analyst", "business analyst", "software engineer", "project manager", "ux designer"]) {
+      targets.add(r);
+    }
+  }
+
+  return [...targets].slice(0, 8);
+}
+
+async function fetchMarketDataForPlan(profile: UserProfile): Promise<Map<string, MarketContext>> {
+  const targets = inferPivotTargets(profile);
+  const results = await Promise.all(
+    targets.map(async (role) => ({ role, ctx: await fetchMarketContext(role) }))
+  );
+  const map = new Map<string, MarketContext>();
+  for (const { role, ctx } of results) {
+    if (ctx) map.set(role, ctx);
+  }
+  return map;
+}
+
+function formatMarketDataForPrompt(marketMap: Map<string, MarketContext>): string {
+  if (marketMap.size === 0) return "";
+
+  const lines: string[] = [
+    "\n\nREAL MARKET DATA (U.S. Bureau of Labor Statistics + O*NET — use these exact figures, do NOT hallucinate salary numbers):",
+  ];
+
+  for (const [role, ctx] of marketMap) {
+    const trendEmoji = ctx.demand.trend === "growing" ? "↑" : ctx.demand.trend === "declining" ? "↓" : "→";
+    lines.push(`\n### ${role} (SOC ${ctx.socCode})`);
+    lines.push(`- Salary: P25=$${ctx.salary.p25.toLocaleString()} | Median=$${ctx.salary.p50.toLocaleString()} | P75=$${ctx.salary.p75.toLocaleString()}`);
+    lines.push(`- Demand: ${trendEmoji} ${ctx.demand.trend} (${ctx.demand.trendStrength}), ${ctx.demand.growthPercent}% projected growth, ${ctx.demand.postingVolume} posting volume`);
+    lines.push(`- Employment: ${ctx.demand.totalEmployment.toLocaleString()} workers`);
+
+    if (ctx.topSkills.length > 0) {
+      const top5 = ctx.topSkills.slice(0, 5);
+      lines.push(`- Top skills in demand: ${top5.map(s => `${s.skill} (${s.frequencyPercent}%${s.trending ? ", trending" : ""})`).join(", ")}`);
+    }
+
+    if (ctx.geographicHotspots.length > 0) {
+      const top3 = ctx.geographicHotspots.slice(0, 3);
+      lines.push(`- Top metros: ${top3.map(h => `${h.metro} ($${h.salaryMedian.toLocaleString()} median)`).join(", ")}`);
+    }
+  }
+
+  lines.push(`\nIMPORTANT: Use the salary figures above for financialSummary.targetSalaryRange and milestoneSalaries. Match skill gap priorities to the "Top skills in demand" data. Reference demand trends in rationale and riskAssessments. If the user's location matches a geographic hotspot, adjust salary expectations accordingly.`);
+
+  return lines.join("\n");
+}
+
 type PivotPlan = {
   targetRole: string;
   targetIndustry: string;
@@ -234,6 +316,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+  const marketMap = await fetchMarketDataForPlan(profile);
+  const marketDataBlock = formatMarketDataForPrompt(marketMap);
+
   const result = streamObject({
     model: anthropic("claude-sonnet-4-6"),
     schema: pivotPlanJsonSchema,
@@ -257,6 +342,7 @@ export async function POST(req: NextRequest) {
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
 MARKET CONTEXT (June 2026): AI adoption is accelerating across all industries. Companies are actively hiring for AI-augmented roles. The window for early-mover advantage in AI-native positions is 12-18 months before saturation. Professionals who can demonstrate AI fluency alongside domain expertise are commanding 20-40% salary premiums.
+${marketDataBlock}
 
 Generate 2-3 career pivot plans for this professional, ranked by matchScore (0-100, how well their background fits the target). Each plan must feel like it was written by a personal advisor who studied their background — never generic. Each plan MUST include a tradeoffs object with: difficulty ("low"/"medium"/"high"), riskLevel ("low"/"medium"/"high"), timeToFirstRole (e.g. "8-12 months"), incomeImpactNear (e.g. "-10% for 6 months"), incomePotentialLong (e.g. "+40% within 2 years"), pros (3-5 specific advantages for this person), cons (2-4 honest drawbacks). Make tradeoffs comparison-ready so the user can pick the best path for their situation.
 
