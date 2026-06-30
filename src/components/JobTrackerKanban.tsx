@@ -70,6 +70,7 @@ import {
   daysInStageUrgency,
 } from "@/lib/job-tracker";
 import JobDetailView from "@/components/JobDetailView";
+import JobSearchPanel from "@/components/JobSearchPanel";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -1066,7 +1067,7 @@ export default function JobTrackerKanban({
   onJobsChange,
 }: JobTrackerKanbanProps) {
   const [jobs, setJobs] = useState(initialJobs);
-  const [view, setView] = useState<"board" | "analytics">("board");
+  const [view, setView] = useState<"board" | "find" | "analytics">("board");
   const [modalOpen, setModalOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<JobStage | null>(null);
@@ -1203,6 +1204,13 @@ export default function JobTrackerKanban({
     [email, jobs, updateJobs]
   );
 
+  const handleJobAddedFromSearch = useCallback(
+    (newJob: TrackedJob) => {
+      updateJobs([newJob, ...jobs]);
+    },
+    [jobs, updateJobs]
+  );
+
   const handleDelete = useCallback(
     async (id: string) => {
       updateJobs(jobs.filter((j) => j.id !== id));
@@ -1265,6 +1273,16 @@ export default function JobTrackerKanban({
               }`}
             >
               Board
+            </button>
+            <button
+              onClick={() => setView("find")}
+              className={`px-4 py-1.5 text-[12px] font-medium rounded-md transition-all ${
+                view === "find"
+                  ? "bg-teal-500/20 text-teal-300"
+                  : "text-slate-400 hover:text-gray-50 hover:bg-white/[0.04]"
+              }`}
+            >
+              Find Jobs
             </button>
             <button
               onClick={() => setView("analytics")}
@@ -1359,6 +1377,15 @@ export default function JobTrackerKanban({
             onSelectJob={setSelectedJobId}
           />
         </>
+      )}
+
+      {/* Find Jobs view */}
+      {view === "find" && (
+        <JobSearchPanel
+          email={email}
+          trackedJobs={jobs}
+          onJobAdded={handleJobAddedFromSearch}
+        />
       )}
 
       {/* Analytics view */}
