@@ -17,6 +17,8 @@ import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import DocumentsCard from "@/components/DocumentsCard";
+import ToolsGrid from "@/components/ToolsGrid";
+import QuickActions from "@/components/QuickActions";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
@@ -704,22 +706,20 @@ export default function DashboardClient() {
                 plan={activePlan}
               />
 
-              <div className="pt-4 border-t border-slate-700/50 space-y-3">
-                <Link
-                  href="/chat"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
-                >
-                  Talk to Career Coach
-                </Link>
-                <Link
-                  href="/mock-interview"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
-                >
-                  Practice Mock Interview
-                </Link>
+              <QuickActions
+                hasResume={false}
+                hasGapAnalysis={false}
+                hasJobsTracked={false}
+                hasLinkedIn={false}
+                hasMockInterview={false}
+              />
+
+              <ToolsGrid />
+
+              <div className="flex justify-center">
                 <Link
                   href={`/report/${activeReport!.id}`}
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
                 >
                   View Full Report
                 </Link>
