@@ -6,6 +6,7 @@ import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import DashboardHero from "@/components/DashboardHero";
 import MilestoneChecklist from "@/components/MilestoneChecklist";
+import WeeklyProgressStrip from "@/components/WeeklyProgressStrip";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
 import NextActionsWidget from "@/components/NextActionsWidget";
 import JobBoard from "@/components/JobBoard";
@@ -687,6 +688,12 @@ export default function DashboardClient() {
                     streakDays={streakDays}
                     earnedBadgeCount={earnedBadges.size}
                     reportId={activeReport!.id}
+                  />
+
+                  <WeeklyProgressStrip
+                    phases={phases}
+                    statuses={milestoneStatuses}
+                    reportCreatedAt={activeReport!.created_at}
                   />
 
                   <MilestoneChecklist
