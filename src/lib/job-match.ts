@@ -103,3 +103,62 @@ export function computeMatchScore(
 export function sortByMatch(jobs: EnrichedJob[]): EnrichedJob[] {
   return [...jobs].sort((a, b) => b.matchScore - a.matchScore);
 }
+
+export function computePlanRelevance(
+  job: { title: string; tags?: string[]; description_snippet?: string },
+  plan: { targetRole: string; targetIndustry: string; skillGaps?: Array<{ skill: string; priority: string }> }
+): { relevant: boolean; planScore: number; reasons: string[] } {
+  const jobText = [job.title, ...(job.tags ?? []), job.description_snippet ?? ""]
+    .join(" ")
+    .toLowerCase();
+  const jobTokens = tokenize(jobText);
+  const reasons: string[] = [];
+  let score = 0;
+
+  const roleTokens = tokenize(plan.targetRole);
+  let roleOverlap = 0;
+  for (const t of roleTokens) {
+    if (jobTokens.has(t)) roleOverlap++;
+  }
+  if (roleTokens.size > 0 && roleOverlap / roleTokens.size >= 0.5) {
+    score += 40;
+    reasons.push("Matches target role");
+  }
+
+  const industryTokens = tokenize(plan.targetIndustry);
+  for (const t of industryTokens) {
+    if (t.length > 2 && jobTokens.has(t)) {
+      score += 20;
+      reasons.push("Matches target industry");
+      break;
+    }
+  }
+
+  const gaps = plan.skillGaps ?? [];
+  const highGaps = gaps.filter((g) => g.priority === "high");
+  const medGaps = gaps.filter((g) => g.priority === "medium");
+  let gapMatches = 0;
+  for (const gap of highGaps) {
+    const variants = normalizeSkill(gap.skill);
+    if (variants.some((v) => jobText.includes(v) || (v.length > 2 && jobTokens.has(v)))) {
+      gapMatches++;
+    }
+  }
+  if (gapMatches > 0) {
+    score += Math.min(gapMatches * 15, 30);
+    reasons.push(`Needs ${gapMatches} skill${gapMatches > 1 ? "s" : ""} you're building`);
+  }
+
+  let medMatches = 0;
+  for (const gap of medGaps) {
+    const variants = normalizeSkill(gap.skill);
+    if (variants.some((v) => jobText.includes(v) || (v.length > 2 && jobTokens.has(v)))) {
+      medMatches++;
+    }
+  }
+  if (medMatches > 0) {
+    score += Math.min(medMatches * 5, 10);
+  }
+
+  return { relevant: score >= 30, planScore: Math.min(score, 99), reasons };
+}
