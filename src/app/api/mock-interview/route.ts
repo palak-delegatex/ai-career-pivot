@@ -2,6 +2,16 @@ import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 
+interface SpeechMetricsPayload {
+  totalAnswers: number;
+  totalDurationSeconds: number;
+  totalWords: number;
+  averageWordsPerMinute: number;
+  totalFillerWords: number;
+  fillerWordPercentage: number;
+  topFillers: { word: string; count: number }[];
+}
+
 export async function POST(req: NextRequest) {
   const {
     targetRole,
@@ -9,12 +19,14 @@ export async function POST(req: NextRequest) {
     jobDescription,
     messages,
     questionCount = 0,
+    speechMetrics,
   }: {
     targetRole: string;
     interviewType?: "behavioral" | "technical" | "situational";
     jobDescription?: string;
     messages: { role: "user" | "assistant"; content: string }[];
     questionCount?: number;
+    speechMetrics?: SpeechMetricsPayload;
   } = await req.json();
 
   if (!targetRole || !messages) {
@@ -28,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const jd = jobDescription?.trim() || undefined;
   const systemPrompt = isEndOfInterview
-    ? buildFeedbackPrompt(targetRole, jd)
+    ? buildFeedbackPrompt(targetRole, jd, speechMetrics)
     : buildInterviewerPrompt(targetRole, interviewType, questionCount, jd);
 
   const result = streamText({
@@ -81,7 +93,7 @@ INTERVIEW STRUCTURE:
 ${isFirst ? `This is the START of the interview. Briefly introduce yourself as a hiring manager (1 sentence), state this is a ${interviewType} interview for ${targetRole}, and immediately ask Question 1. Do not explain the format — just start.` : `Continue the interview naturally. Give brief feedback on their last answer, then ask the next question.`}${jdSection}`;
 }
 
-function buildFeedbackPrompt(targetRole: string, jobDescription?: string): string {
+function buildFeedbackPrompt(targetRole: string, jobDescription?: string, speechMetrics?: SpeechMetricsPayload): string {
   const jdSection = jobDescription
     ? `\n\nJOB DESCRIPTION THE CANDIDATE IS TARGETING:
 """
@@ -92,7 +104,20 @@ CRITICAL: Score the candidate against the SPECIFIC requirements in this job desc
 - Map their demonstrated skills to the JD's listed requirements.
 - Call out which JD requirements they addressed well and which they missed.
 - In "Areas to Improve", focus on gaps relative to this specific JD.
-- In "JD Fit Score", rate how well their answers demonstrate readiness for THIS specific role.`
+- In "JD Fit Score", rate how well their answers match the specific job requirements? List 2-3 JD requirements they demonstrated and 2-3 they should prepare for.`
+    : "";
+
+  const speechSection = speechMetrics
+    ? `\n\n**SPEECH ANALYSIS DATA** (candidate used voice mode):
+- Total speaking time: ${speechMetrics.totalDurationSeconds} seconds across ${speechMetrics.totalAnswers} answers
+- Average pace: ${speechMetrics.averageWordsPerMinute} words per minute (ideal: 120-160 wpm)
+- Filler words: ${speechMetrics.totalFillerWords} total (${speechMetrics.fillerWordPercentage}% of words)${speechMetrics.topFillers.length > 0 ? `\n- Most common fillers: ${speechMetrics.topFillers.map((f) => `"${f.word}" (${f.count}x)`).join(", ")}` : ""}
+
+CRITICAL: Include a **Speech & Delivery** section in the debrief that covers:
+- Pacing assessment (too fast >170wpm, too slow <100wpm, or good range)
+- Filler word feedback with specific reduction strategies
+- Overall verbal delivery impression
+- Concrete tips to improve spoken delivery (e.g. pausing instead of using fillers, practicing with a timer)`
     : "";
 
   return `You are a senior hiring manager who just completed a mock interview for a ${targetRole} candidate.
@@ -104,10 +129,10 @@ Generate a structured interview debrief with:
 **Strengths** (3 bullet points with specific examples from their answers)
 
 **Areas to Improve** (3 bullet points with concrete advice)
-${jobDescription ? `\n**JD Fit Score**: X/10 — How well do their answers match the specific job requirements? List 2-3 JD requirements they demonstrated and 2-3 they should prepare for.\n` : ""}
+${jobDescription ? `\n**JD Fit Score**: X/10\n` : ""}${speechMetrics ? `\n**Speech & Delivery** (pacing, filler words, verbal confidence — use the speech data above)\n` : ""}
 **Recommended Practice** (2-3 specific resources, question types, or frameworks to practice)
 
 **Hiring Recommendation**: Would you advance them? (Yes / Maybe with coaching / Not yet — with brief reason)
 
-Be honest but constructive. Reference specific answers from the conversation. End with one sentence of encouragement.${jdSection}`;
+Be honest but constructive. Reference specific answers from the conversation. End with one sentence of encouragement.${jdSection}${speechSection}`;
 }

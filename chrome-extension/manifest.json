@@ -67,6 +67,56 @@
     },
     {
       "matches": [
+        "https://boards.greenhouse.io/*/jobs/*",
+        "https://*.greenhouse.io/embed/job_app*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://jobs.lever.co/*/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.myworkdayjobs.com/*/job/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.ashbyhq.com/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.icims.com/jobs/*/job*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.taleo.net/careersection/*/jobdetail*",
+        "https://*.oraclecloud.com/hcmUI/CandidateExperience/*/en/sites/*/job/*"
+      ],
+      "js": ["content/detector.js", "content/injector.js"],
+      "css": ["content/injector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
         "https://*.greenhouse.io/applications/*",
         "https://boards.greenhouse.io/*",
         "https://*.lever.co/applications/*",
@@ -107,7 +157,13 @@
       "matches": [
         "*://*.linkedin.com/jobs/*",
         "*://*.indeed.com/*",
-        "*://*.glassdoor.com/job-listing/*"
+        "*://*.glassdoor.com/job-listing/*",
+        "https://boards.greenhouse.io/*/jobs/*",
+        "https://jobs.lever.co/*/*",
+        "https://*.myworkdayjobs.com/*/job/*",
+        "https://*.ashbyhq.com/*",
+        "https://*.icims.com/jobs/*/job*",
+        "https://*.taleo.net/careersection/*/jobdetail*"
       ],
       "js": ["job-scorer.js"],
       "run_at": "document_idle"

@@ -993,25 +993,532 @@ mark.acp-hl-missing:hover {
   text-align: center;
 }
 
+/* Autofill floating card (replaces banner) */
+.acp-autofill-card {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: acp-slide-up 0.2s ease-out;
+}
+
+.acp-autofill-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.acp-autofill-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.acp-autofill-card-title svg {
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.acp-autofill-card-close {
+  all: initial;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+  padding: 2px;
+}
+
+.acp-autofill-card-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-autofill-card-ats {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  text-transform: capitalize;
+}
+
+.acp-autofill-card-preview {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.acp-autofill-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.acp-autofill-card-fill {
+  all: initial;
+  flex: 1;
+  padding: 8px 14px;
+  background: #2dd4bf;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.acp-autofill-card-fill:hover {
+  background: #5eead4;
+}
+
+.acp-autofill-card-fill:disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.acp-autofill-card-never {
+  all: initial;
+  display: block;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  text-align: center;
+}
+
+.acp-autofill-card-never:hover {
+  color: #94a3b8;
+  text-decoration: underline;
+}
+
+/* Autofill persistent pill (replaces auto-dismiss summary) */
+.acp-autofill-pill {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: acp-slide-up 0.2s ease-out;
+}
+
+.acp-autofill-pill-collapsed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.97);
+  border: 1px solid #334155;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: background 0.15s;
+}
+
+.acp-autofill-pill-collapsed:hover {
+  background: rgba(30, 41, 59, 0.97);
+}
+
+.acp-autofill-pill-collapsed svg {
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.acp-autofill-pill-stat-filled {
+  color: #6ee7b7;
+}
+
+.acp-autofill-pill-stat-attention {
+  color: #fde68a;
+}
+
+.acp-autofill-pill-close {
+  all: initial;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: system-ui;
+  line-height: 1;
+  padding: 0 0 0 4px;
+}
+
+.acp-autofill-pill-close:hover {
+  color: #e2e8f0;
+}
+
+/* LinkedIn score badge overlay */
+.acp-li-score-badge {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: transform 0.15s;
+}
+
+.acp-li-score-badge:hover {
+  transform: scale(1.1);
+}
+
+/* LinkedIn section score dots */
+.acp-li-section-dot {
+  all: initial;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: transform 0.15s;
+}
+
+.acp-li-section-dot:hover {
+  transform: scale(1.5);
+}
+
+/* LinkedIn optimizer panel (CSS replacement for inline styles) */
+.acp-li-optimizer-panel {
+  all: initial;
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: 360px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 20px;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+  line-height: 1.5;
+  animation: acp-slide-in 0.2s ease-out;
+}
+
+.acp-li-panel-close {
+  all: initial;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  font-family: system-ui;
+  line-height: 1;
+}
+
+.acp-li-panel-close:hover {
+  color: #e2e8f0;
+}
+
+.acp-li-panel-loading {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.acp-li-panel-loading-title {
+  color: #2dd4bf;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.acp-li-panel-loading-subtitle {
+  color: #94a3b8;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.acp-li-panel-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #334155;
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: acp-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.acp-li-opt-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.acp-li-opt-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.acp-li-opt-summary {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.acp-li-section-list {
+  margin-bottom: 16px;
+}
+
+.acp-li-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.acp-li-section-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acp-li-section-dot-panel {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.acp-li-section-name {
+  font-size: 12px;
+}
+
+.acp-li-section-score {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.acp-li-qw-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: #fbbf24;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.acp-li-qw-item {
+  font-size: 11px;
+  color: #cbd5e1;
+  padding: 6px 8px;
+  background: #1a1f2e;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  border-left: 2px solid #fbbf24;
+}
+
+.acp-li-cta {
+  all: initial;
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(135deg, #0d9488, #059669);
+}
+
+.acp-li-cta:hover {
+  opacity: 0.9;
+}
+
+.acp-li-trigger-btn {
+  all: initial;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #0d9488, #059669);
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.acp-li-trigger-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13, 148, 136, 0.5);
+}
+
+.acp-li-trigger-btn svg {
+  flex-shrink: 0;
+}
+
+.acp-li-suggestion-tooltip {
+  all: initial;
+  position: absolute;
+  z-index: 10000;
+  width: 320px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  font-size: 12px;
+  line-height: 1.5;
+  animation: acp-fade-in 0.15s ease-out;
+}
+
+.acp-li-tooltip-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.acp-li-tooltip-title {
+  font-weight: 700;
+}
+
+.acp-li-tooltip-dismiss {
+  all: initial;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  font-family: system-ui;
+  line-height: 1;
+}
+
+.acp-li-tooltip-dismiss:hover {
+  color: #e2e8f0;
+}
+
+.acp-li-tooltip-suggestion {
+  color: #94d8b8;
+  font-size: 11px;
+  margin-bottom: 10px;
+  background-color: #0f2922;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.acp-li-tooltip-copy {
+  all: initial;
+  background: none;
+  border: 1px solid #2dd4bf;
+  color: #2dd4bf;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.acp-li-tooltip-copy:hover {
+  background: rgba(45, 212, 191, 0.1);
+}
+
+.acp-li-panel-error {
+  text-align: center;
+  padding: 24px;
+}
+
+.acp-li-panel-error-title {
+  color: #f87171;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.acp-li-panel-error-msg {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.acp-li-panel-error-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #2dd4bf;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.acp-li-panel-error-link:hover {
+  text-decoration: underline;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acp-score-panel,
   .acp-autofill-banner,
+  .acp-autofill-card,
+  .acp-autofill-pill,
   .acp-field-highlight,
   .acp-ai-review-overlay,
   .acp-ai-review-modal,
   .acp-ai-gen-error,
   .acp-resume-picker,
-  .acp-summary-panel {
+  .acp-summary-panel,
+  .acp-li-optimizer-panel,
+  .acp-li-suggestion-tooltip {
     animation: none;
   }
   .acp-save-btn,
   .acp-banner-btn,
+  .acp-autofill-card-fill,
+  .acp-autofill-pill-collapsed,
   .acp-ai-gen-btn,
   .acp-review-btn,
   .acp-resume-upload-btn,
   .acp-resume-picker-item,
   .acp-hl-toggle,
-  .acp-fill-indicator {
+  .acp-fill-indicator,
+  .acp-li-score-badge,
+  .acp-li-section-dot,
+  .acp-li-trigger-btn {
     transition: none;
   }
 }

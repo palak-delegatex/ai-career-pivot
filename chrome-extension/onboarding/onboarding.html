@@ -23,7 +23,7 @@
 
       <div class="features">
         <div class="feature-card">
-          <div class="feature-icon">
+          <div class="feature-icon feature-icon-save">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
               <polyline points="17 21 17 13 7 13 7 21"/>
@@ -66,17 +66,16 @@
       <button id="nextBtn" class="btn-primary">Get Started</button>
     </div>
 
-    <!-- Step 2: Resume Selector -->
-    <div id="stepResume" class="step" hidden>
+    <!-- Step 2: Connect (sign-in + resume combined) -->
+    <div id="stepConnect" class="step" hidden>
       <div class="step-header">
-        <h2>Select Your Active Resume</h2>
-        <p class="step-desc">Choose which resume to use for ATS scoring and autofill. You can change this anytime.</p>
+        <h2>Connect Your Account</h2>
+        <p class="step-desc">Sign in to load your resumes for ATS scoring and autofill.</p>
       </div>
 
       <!-- Auth required -->
-      <div id="authRequired" hidden>
+      <div id="authRequired">
         <div class="auth-prompt">
-          <p>Sign in to load your saved resumes.</p>
           <button id="signInBtn" class="btn-google">
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -108,17 +107,125 @@
       </div>
 
       <div class="step-actions">
-        <button id="backBtn" class="btn-secondary">Back</button>
-        <button id="finishBtn" class="btn-primary" disabled>Finish Setup</button>
+        <button id="backToWelcome" class="btn-secondary">Back</button>
+        <button id="nextToTryIt" class="btn-primary">Continue</button>
       </div>
 
-      <button id="skipBtn" class="btn-skip">Skip for now</button>
+      <button id="skipConnect" class="btn-skip">Skip for now</button>
     </div>
 
-    <!-- Step indicators -->
-    <div class="step-dots">
-      <span class="dot active" id="dot1"></span>
-      <span class="dot" id="dot2"></span>
+    <!-- Step 3: Try It (activation) -->
+    <div id="stepTryIt" class="step" hidden>
+      <div class="step-header">
+        <h2>Let's Save Your First Job!</h2>
+        <p class="step-desc">Visit any job listing and click the save button to get started.</p>
+      </div>
+
+      <div class="try-it-boards">
+        <div class="board-card">
+          <div class="board-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0a66c2" stroke-width="1.5">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+            </svg>
+          </div>
+          <span class="board-name">LinkedIn</span>
+        </div>
+        <div class="board-card">
+          <div class="board-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2557a7" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 9h6v6H9z"/>
+            </svg>
+          </div>
+          <span class="board-name">Indeed</span>
+        </div>
+        <div class="board-card">
+          <div class="board-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0caa41" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/>
+            </svg>
+          </div>
+          <span class="board-name">Glassdoor</span>
+        </div>
+      </div>
+
+      <div class="shortcut-card">
+        <div class="shortcut-label">Pro tip</div>
+        <div class="shortcut-text">
+          <kbd>⌘⇧S</kbd> to save instantly without opening the popup
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button id="backToConnect" class="btn-secondary">Back</button>
+        <button id="nextToReady" class="btn-primary">Continue</button>
+      </div>
+
+      <button id="skipTryIt" class="btn-skip">I'll try later</button>
+    </div>
+
+    <!-- Step 4: You're Set -->
+    <div id="stepReady" class="step" hidden>
+      <div class="ready-header">
+        <div class="ready-check">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2>You're All Set!</h2>
+        <p class="step-desc">Your extension is ready. Here's what you can do:</p>
+      </div>
+
+      <div class="ready-reminders">
+        <div class="reminder-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          </svg>
+          <span>Save jobs from any supported board with one click</span>
+        </div>
+        <div class="reminder-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>Autofill applications on Greenhouse, Lever, Workday & more</span>
+        </div>
+        <div class="reminder-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+          <span>Optimize your LinkedIn profile with AI-powered scoring</span>
+        </div>
+      </div>
+
+      <button id="openDashboard" class="btn-primary">Open Dashboard</button>
+    </div>
+
+    <!-- Step track with labels -->
+    <div class="step-track">
+      <div class="track-line">
+        <div class="track-fill" id="trackFill"></div>
+      </div>
+      <div class="track-steps">
+        <div class="track-step active" id="track1">
+          <span class="track-dot"></span>
+          <span class="track-label">Welcome</span>
+        </div>
+        <div class="track-step" id="track2">
+          <span class="track-dot"></span>
+          <span class="track-label">Connect</span>
+        </div>
+        <div class="track-step" id="track3">
+          <span class="track-dot"></span>
+          <span class="track-label">Try It</span>
+        </div>
+        <div class="track-step" id="track4">
+          <span class="track-dot"></span>
+          <span class="track-label">Ready</span>
+        </div>
+      </div>
     </div>
   </div>
 

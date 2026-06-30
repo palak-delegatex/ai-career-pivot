@@ -1,6 +1,24 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Briefcase,
   Plus,
@@ -8,16 +26,51 @@ import {
   X,
   TrendingUp,
   Clock,
-  FileText,
   Activity,
   CheckCircle2,
   AlertTriangle,
   ChevronDown,
   GripVertical,
+  MoreHorizontal,
+  Sparkles,
+  BookOpen,
+  Scale,
+  Megaphone,
+  Search,
+  Pencil,
+  ArrowRightLeft,
   Trash2,
+  ExternalLink,
+  Zap,
+  MessageSquare,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
-import { STAGES, pickCompanyColor, detectSource } from "@/lib/job-tracker";
+import {
+  STAGES,
+  STAGE_CTAS,
+  pickCompanyColor,
+  detectSource,
+  daysInStage,
+  daysInStageUrgency,
+} from "@/lib/job-tracker";
+import JobDetailView from "@/components/JobDetailView";
+import JobSearchPanel from "@/components/JobSearchPanel";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -49,20 +102,21 @@ const MATCH_STYLES = {
   low: "bg-slate-400/10 border-slate-400/20 text-slate-400",
 };
 
-const SOURCE_STYLES: Record<JobSource, string> = {
-  linkedin: "bg-blue-500/10 border-blue-500/25 text-blue-300",
-  indeed: "bg-indigo-500/10 border-indigo-500/25 text-indigo-300",
-  glassdoor: "bg-green-500/10 border-green-500/25 text-green-300",
-  direct: "bg-emerald-500/10 border-emerald-500/25 text-emerald-300",
-  other: "bg-slate-400/10 border-slate-400/25 text-slate-400",
-};
-
 const SOURCE_LABELS: Record<JobSource, string> = {
   linkedin: "LinkedIn",
   indeed: "Indeed",
   glassdoor: "Glassdoor",
   direct: "Direct",
   other: "Other",
+};
+
+const CTA_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Sparkles,
+  Clock,
+  BookOpen,
+  Scale,
+  Megaphone,
+  Search,
 };
 
 // ─── MatchBadge ───
@@ -75,60 +129,222 @@ function MatchBadge({ score }: { score: number }) {
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${MATCH_STYLES[tier]}`}
     >
       <TrendingUp className="h-2.5 w-2.5" />
-      {score}% match
+      {score}%
     </span>
   );
 }
 
-// ─── SourceBadge ───
+// ─── DaysInStageBadge ───
 
-function SourceBadge({ source }: { source: JobSource }) {
+function DaysInStageBadge({ stageChangedAt }: { stageChangedAt: string }) {
+  const days = daysInStage(stageChangedAt);
+  const urgency = daysInStageUrgency(days);
   return (
-    <span
-      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${SOURCE_STYLES[source]}`}
-    >
-      {SOURCE_LABELS[source]}
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.04] border border-white/[0.06] ${urgency}`}>
+      <Clock className="h-2.5 w-2.5" />
+      {days}d in stage
     </span>
   );
 }
 
-// ─── JobCard ───
+// ─── ClippedBadge ───
 
-function JobCard({
+function ClippedBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/10 border border-violet-500/25 text-violet-300">
+      <Zap className="h-2.5 w-2.5" />
+      Clipped
+    </span>
+  );
+}
+
+// ─── StageActionCTA ───
+
+function StageActionCTA({ stage }: { stage: JobStage }) {
+  const cta = STAGE_CTAS[stage];
+  const Icon = CTA_ICONS[cta.icon];
+  return (
+    <button className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-primary/[0.08] border border-primary/15 rounded-lg text-[11px] text-primary font-medium hover:bg-primary/[0.12] transition-colors">
+      {Icon && <Icon className="h-3 w-3 shrink-0" />}
+      {cta.label}
+    </button>
+  );
+}
+
+// ─── CardOverflowMenu ───
+
+function CardOverflowMenu({
   job,
-  onDragStart,
   onDelete,
-  isRejected,
+  onMoveToStage,
 }: {
   job: TrackedJob;
-  onDragStart: (e: React.DragEvent, id: string) => void;
   onDelete: (id: string) => void;
-  isRejected?: boolean;
+  onMoveToStage: (id: string, stage: JobStage) => void;
 }) {
   return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="w-7 h-7 flex items-center justify-center rounded-md text-slate-600 hover:text-slate-300 hover:bg-white/[0.06] transition-colors">
+        <MoreHorizontal className="h-3.5 w-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-44">
+        {job.url && (
+          <DropdownMenuItem
+            onClick={() => window.open(job.url, "_blank")}
+          >
+            <ExternalLink className="h-3.5 w-3.5 mr-2" />
+            Open URL
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem>
+          <Pencil className="h-3.5 w-3.5 mr-2" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <ArrowRightLeft className="h-3.5 w-3.5 mr-2" />
+            Move to...
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {STAGES.filter((s) => s.key !== job.stage).map((s) => (
+              <DropdownMenuItem
+                key={s.key}
+                onClick={() => onMoveToStage(job.id, s.key)}
+              >
+                <span className={`w-2 h-2 rounded-full ${s.dotColor} mr-2`} />
+                {s.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => onDelete(job.id)}
+        >
+          <Trash2 className="h-3.5 w-3.5 mr-2" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// ─── SortableJobCard ───
+
+function SortableJobCard({
+  job,
+  onDelete,
+  onMoveToStage,
+  onSelect,
+  isPassed,
+}: {
+  job: TrackedJob;
+  onDelete: (id: string) => void;
+  onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelect?: (id: string) => void;
+  isPassed?: boolean;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: job.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
     <div
-      draggable
-      onDragStart={(e) => onDragStart(e, job.id)}
-      className={`group relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-teal-500/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 ${isRejected ? "opacity-60" : ""}`}
+      ref={setNodeRef}
+      style={style}
+      className={`group relative bg-card border rounded-xl p-3.5 transition-all ${
+        isDragging
+          ? "border-primary ring-2 ring-primary/20 opacity-80 scale-[1.02] rotate-[2deg] shadow-2xl z-50"
+          : "border-border hover:border-primary/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5"
+      } ${isPassed ? "opacity-60" : ""}`}
+      {...attributes}
     >
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-40 md:opacity-0 md:group-hover:opacity-40 transition-opacity min-w-[44px] min-h-[44px] flex items-center justify-center">
-        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
+      {/* Grip + Overflow row */}
+      <div className="flex items-center justify-between mb-2">
+        <div
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing opacity-40 group-hover:opacity-60 transition-opacity p-1 -ml-1"
+          aria-roledescription="sortable"
+        >
+          <GripVertical className="h-3.5 w-3.5 text-slate-500" />
+        </div>
+        <CardOverflowMenu
+          job={job}
+          onDelete={onDelete}
+          onMoveToStage={onMoveToStage}
+        />
       </div>
 
+      {/* Company avatar + Role + Company·Source */}
+      <div
+        className="flex items-start gap-2.5 mb-2.5 cursor-pointer"
+        onClick={() => onSelect?.(job.id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter") onSelect?.(job.id); }}
+      >
+        <div
+          className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
+        >
+          {job.company.charAt(0).toUpperCase()}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
+            {job.role}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {job.company}
+            {job.source !== "other" && (
+              <span className="text-slate-600"> · via {SOURCE_LABELS[job.source]}</span>
+            )}
+          </div>
+          <div className="text-[10px] text-slate-600 mt-0.5">
+            {job.stage === "exploring"
+              ? `Added ${timeAgo(job.created_at)}`
+              : job.stage === "passed"
+                ? `Passed ${timeAgo(job.stage_changed_at)}`
+                : `Applied ${timeAgo(job.applied_at || job.created_at)}`}
+          </div>
+        </div>
+      </div>
+
+      {/* Badges row: match + days-in-stage + clipped */}
+      <div className="flex items-center flex-wrap gap-1.5 mb-2.5">
+        <MatchBadge score={job.match_score} />
+        <DaysInStageBadge stageChangedAt={job.stage_changed_at} />
+        {job.source_type === "extension_clip" && <ClippedBadge />}
+      </div>
+
+      {/* Stage CTA */}
+      <StageActionCTA stage={job.stage} />
+
+      {/* Notes preview */}
       {job.notes && (
-        <div className="absolute top-2.5 right-2.5 text-slate-600 opacity-60">
-          <FileText className="h-3.5 w-3.5" />
+        <div className="flex items-start gap-1.5 mt-2 text-[11px] text-slate-500 line-clamp-1">
+          <MessageSquare className="h-3 w-3 shrink-0 mt-0.5" />
+          <span className="line-clamp-1">{job.notes}</span>
         </div>
       )}
+    </div>
+  );
+}
 
-      <button
-        onClick={() => onDelete(job.id)}
-        className="absolute top-2.5 right-2.5 text-slate-700 hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
-      >
-        <Trash2 className="h-3 w-3" />
-      </button>
+// ─── DragOverlayCard (static preview during drag) ───
 
-      <div className="flex items-start gap-2.5 mb-2.5">
+function DragOverlayCard({ job }: { job: TrackedJob }) {
+  return (
+    <div className="bg-card border-primary ring-2 ring-primary/20 rounded-xl p-3.5 shadow-2xl scale-[1.02] rotate-[2deg] opacity-90 w-[240px]">
+      <div className="flex items-start gap-2.5">
         <div
           className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
         >
@@ -141,26 +357,6 @@ function JobCard({
           <div className="text-[11px] text-slate-400 mt-0.5">{job.company}</div>
         </div>
       </div>
-
-      <div className="flex items-center flex-wrap gap-1.5 mt-2">
-        <MatchBadge score={job.match_score} />
-        {job.source !== "other" && <SourceBadge source={job.source} />}
-      </div>
-
-      {job.next_action && (
-        <div className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1.5 bg-teal-500/[0.08] border border-teal-500/15 rounded-lg text-[11px] text-teal-300">
-          <Clock className="h-3 w-3 shrink-0" />
-          <span className="line-clamp-1">{job.next_action}</span>
-        </div>
-      )}
-
-      <div className="text-[10px] text-slate-600 mt-1.5">
-        {job.stage === "saved"
-          ? `Saved ${timeAgo(job.created_at)}`
-          : job.stage === "rejected"
-            ? `Rejected ${timeAgo(job.stage_changed_at)}`
-            : `Applied ${timeAgo(job.applied_at || job.created_at)}`}
-      </div>
     </div>
   );
 }
@@ -171,23 +367,25 @@ function KanbanColumn({
   stageKey,
   label,
   dotColor,
+  emptyState,
   jobs,
-  onDragStart,
-  onDrop,
+  isOver,
   onDelete,
+  onMoveToStage,
+  onSelectJob,
 }: {
   stageKey: JobStage;
   label: string;
   dotColor: string;
+  emptyState: string;
   jobs: TrackedJob[];
-  onDragStart: (e: React.DragEvent, id: string) => void;
-  onDrop: (stage: JobStage) => void;
+  isOver: boolean;
   onDelete: (id: string) => void;
+  onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelectJob?: (id: string) => void;
 }) {
-  const [dragOver, setDragOver] = useState(false);
-
   return (
-    <div className="min-w-[200px] scroll-snap-start">
+    <div className="min-w-[200px]">
       <div className="flex items-center justify-between px-1 mb-2.5">
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${dotColor}`} />
@@ -199,41 +397,63 @@ function KanbanColumn({
           {jobs.length}
         </span>
       </div>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-          onDrop(stageKey);
-        }}
-        className={`rounded-2xl border p-2 min-h-[280px] flex flex-col gap-2 transition-colors ${
-          dragOver
-            ? "bg-teal-500/[0.06] border-teal-500/30"
-            : "bg-slate-900/50 border-slate-800"
-        }`}
+      <SortableContext
+        items={jobs.map((j) => j.id)}
+        strategy={verticalListSortingStrategy}
       >
-        {jobs.length === 0 && (
-          <div className="text-center py-10 text-slate-600 text-[12px] italic">
-            {stageKey === "offer"
-              ? "No offers yet -- keep going!"
-              : "Drop jobs here"}
-          </div>
-        )}
-        {jobs.map((job) => (
-          <JobCard
-            key={job.id}
-            job={job}
-            onDragStart={onDragStart}
-            onDelete={onDelete}
-            isRejected={stageKey === "rejected"}
-          />
-        ))}
-      </div>
+        <div
+          data-stage={stageKey}
+          className={`rounded-2xl border p-2 min-h-[280px] flex flex-col gap-2 transition-colors ${
+            isOver
+              ? "bg-primary/[0.06] border-primary/30 border-solid"
+              : "bg-card/50 border-dashed border-slate-800"
+          }`}
+        >
+          {jobs.length === 0 && (
+            <div className="text-center py-10 text-slate-600 text-[12px] italic">
+              {emptyState}
+            </div>
+          )}
+          {jobs.map((job) => (
+            <SortableJobCard
+              key={job.id}
+              job={job}
+              onDelete={onDelete}
+              onMoveToStage={onMoveToStage}
+              onSelect={onSelectJob}
+              isPassed={stageKey === "passed"}
+            />
+          ))}
+        </div>
+      </SortableContext>
     </div>
+  );
+}
+
+// ─── CollapsedPassedColumn ───
+
+function CollapsedPassedColumn({
+  count,
+  onExpand,
+}: {
+  count: number;
+  onExpand: () => void;
+}) {
+  return (
+    <button
+      onClick={onExpand}
+      className="w-10 min-h-[280px] bg-card/50 border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-slate-700 hover:bg-card/80 transition-colors shrink-0"
+    >
+      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-white/[0.06] text-slate-500">
+        {count}
+      </span>
+      <span
+        className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider"
+        style={{ writingMode: "vertical-lr", textOrientation: "mixed" }}
+      >
+        Passed
+      </span>
+    </button>
   );
 }
 
@@ -241,14 +461,14 @@ function KanbanColumn({
 
 function MobileAccordion({
   jobs,
-  onDragStart,
-  onDrop,
   onDelete,
+  onMoveToStage,
+  onSelectJob,
 }: {
   jobs: TrackedJob[];
-  onDragStart: (e: React.DragEvent, id: string) => void;
-  onDrop: (stage: JobStage) => void;
   onDelete: (id: string) => void;
+  onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelectJob?: (id: string) => void;
 }) {
   const [open, setOpen] = useState<JobStage | null>(null);
   const grouped = useMemo(() => {
@@ -286,24 +506,19 @@ function MobileAccordion({
               </span>
             </button>
             {isOpen && (
-              <div
-                className="p-3 bg-slate-900/30 flex flex-col gap-2"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  onDrop(s.key);
-                }}
-              >
+              <div className="p-3 bg-slate-900/30 flex flex-col gap-2">
                 {stageJobs.length === 0 && (
-                  <p className="text-[12px] text-slate-600 py-2 px-2">No jobs in this stage</p>
+                  <p className="text-[12px] text-slate-600 py-2 px-2 italic">
+                    {s.emptyState}
+                  </p>
                 )}
                 {stageJobs.map((job) => (
-                  <JobCard
+                  <MobileJobCard
                     key={job.id}
                     job={job}
-                    onDragStart={onDragStart}
                     onDelete={onDelete}
-                    isRejected={s.key === "rejected"}
+                    onMoveToStage={onMoveToStage}
+                    onSelect={onSelectJob}
                   />
                 ))}
               </div>
@@ -315,25 +530,114 @@ function MobileAccordion({
   );
 }
 
+// ─── MobileJobCard (with stage selector dropdown) ───
+
+function MobileJobCard({
+  job,
+  onDelete,
+  onMoveToStage,
+  onSelect,
+}: {
+  job: TrackedJob;
+  onDelete: (id: string) => void;
+  onMoveToStage: (id: string, stage: JobStage) => void;
+  onSelect?: (id: string) => void;
+}) {
+  return (
+    <div className={`relative bg-card border border-border rounded-xl p-3.5 ${job.stage === "passed" ? "opacity-60" : ""}`}>
+      {/* Overflow menu */}
+      <div className="absolute top-2.5 right-2.5">
+        <CardOverflowMenu job={job} onDelete={onDelete} onMoveToStage={onMoveToStage} />
+      </div>
+
+      {/* Company avatar + Role + Company·Source */}
+      <div
+        className="flex items-start gap-2.5 mb-2.5 pr-8 cursor-pointer"
+        onClick={() => onSelect?.(job.id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter") onSelect?.(job.id); }}
+      >
+        <div
+          className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
+        >
+          {job.company.charAt(0).toUpperCase()}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
+            {job.role}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {job.company}
+            {job.source !== "other" && (
+              <span className="text-slate-600"> · via {SOURCE_LABELS[job.source]}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Badges */}
+      <div className="flex items-center flex-wrap gap-1.5 mb-2.5">
+        <MatchBadge score={job.match_score} />
+        <DaysInStageBadge stageChangedAt={job.stage_changed_at} />
+        {job.source_type === "extension_clip" && <ClippedBadge />}
+      </div>
+
+      {/* Stage CTA */}
+      <StageActionCTA stage={job.stage} />
+
+      {/* Notes preview */}
+      {job.notes && (
+        <div className="flex items-start gap-1.5 mt-2 text-[11px] text-slate-500">
+          <MessageSquare className="h-3 w-3 shrink-0 mt-0.5" />
+          <span className="line-clamp-1">{job.notes}</span>
+        </div>
+      )}
+
+      {/* Mobile stage selector */}
+      <div className="mt-2.5 pt-2.5 border-t border-slate-800">
+        <Select
+          value={job.stage}
+          onValueChange={(val) => onMoveToStage(job.id, val as JobStage)}
+        >
+          <SelectTrigger className="h-8 text-[11px] bg-white/[0.04] border-slate-800">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {STAGES.map((s) => (
+              <SelectItem key={s.key} value={s.key} className="text-[12px]">
+                <span className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${s.dotColor}`} />
+                  {s.label}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+
 // ─── Funnel Analytics ───
 
 const FUNNEL_STAGES: JobStage[] = [
-  "saved",
+  "exploring",
   "applied",
-  "phone_screen",
-  "interview",
+  "interviewing",
   "offer",
+  "pivoted",
 ];
+
 const FUNNEL_LABELS: Record<string, string> = {
-  saved: "Saved",
+  exploring: "Exploring",
   applied: "Applied",
-  phone_screen: "Phone Screen",
-  interview: "Interview",
+  interviewing: "Interviewing",
   offer: "Offer",
+  pivoted: "Pivoted",
 };
 
 function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
-
   const cumulativeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     const stageIndex: Record<string, number> = {};
@@ -341,11 +645,11 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
       stageIndex[s] = i;
       counts[s] = 0;
     });
-    stageIndex["rejected"] = 5;
+    stageIndex["passed"] = 5;
 
     for (const job of jobs) {
       const jIdx =
-        job.stage === "rejected" ? 5 : (stageIndex[job.stage] ?? 0);
+        job.stage === "passed" ? 5 : (stageIndex[job.stage] ?? 0);
       for (let i = 0; i < FUNNEL_STAGES.length; i++) {
         if (i <= jIdx) counts[FUNNEL_STAGES[i]]++;
       }
@@ -382,9 +686,9 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
   const BAR_COLORS = [
     "from-slate-400/30 to-slate-400/15",
     "from-teal-500/40 to-teal-500/20",
-    "from-cyan-400/40 to-cyan-400/20",
     "from-amber-400/40 to-amber-400/20",
     "from-emerald-400/40 to-emerald-400/20",
+    "from-violet-400/40 to-violet-400/20",
   ];
 
   const timeInStage = useMemo(() => {
@@ -410,7 +714,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
 
   const totalPipelineAvg = useMemo(() => {
     const durations = jobs
-      .filter((j) => j.stage !== "saved")
+      .filter((j) => j.stage !== "exploring")
       .map((j) => {
         const created = new Date(j.created_at).getTime();
         const changed = new Date(j.stage_changed_at).getTime();
@@ -421,12 +725,12 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
     return `${avg.toFixed(1)}d`;
   }, [jobs]);
 
-  const appliedToScreenRate = cumulativeCounts["applied"] > 0
-    ? Math.round((cumulativeCounts["phone_screen"] / cumulativeCounts["applied"]) * 100)
+  const appliedToInterviewRate = cumulativeCounts["applied"] > 0
+    ? Math.round((cumulativeCounts["interviewing"] / cumulativeCounts["applied"]) * 100)
     : 0;
 
-  const screenToInterviewRate = cumulativeCounts["phone_screen"] > 0
-    ? Math.round((cumulativeCounts["interview"] / cumulativeCounts["phone_screen"]) * 100)
+  const interviewToOfferRate = cumulativeCounts["interviewing"] > 0
+    ? Math.round((cumulativeCounts["offer"] / cumulativeCounts["interviewing"]) * 100)
     : 0;
 
   return (
@@ -535,35 +839,34 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
 
       {/* AI Insights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {screenToInterviewRate >= 55 && (
+        {interviewToOfferRate >= 55 && (
           <div className="bg-emerald-500/[0.06] border border-emerald-500/25 rounded-xl p-4 flex gap-3">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
               <CheckCircle2 className="h-4 w-4 text-emerald-300" />
             </div>
             <div>
               <div className="text-[13px] font-semibold text-gray-50 mb-1">
-                Strong Phone Screen Performance
+                Strong Interview Performance
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
-                Your Phone Screen to Interview rate ({screenToInterviewRate}%) is
-                well above the 55% benchmark. You&apos;re making strong first
-                impressions.
+                Your Interviewing to Offer rate ({interviewToOfferRate}%) is
+                well above the 55% benchmark. You&apos;re making strong impressions.
               </div>
             </div>
           </div>
         )}
 
-        {appliedToScreenRate > 0 && appliedToScreenRate < 45 && (
+        {appliedToInterviewRate > 0 && appliedToInterviewRate < 45 && (
           <div className="bg-amber-500/[0.04] border border-amber-500/20 rounded-xl p-4 flex gap-3">
             <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
               <AlertTriangle className="h-4 w-4 text-amber-300" />
             </div>
             <div>
               <div className="text-[13px] font-semibold text-gray-50 mb-1">
-                Low Applied to Screen Rate
+                Low Applied to Interview Rate
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
-                Your Applied to Phone Screen rate ({appliedToScreenRate}%) is
+                Your Applied to Interviewing rate ({appliedToInterviewRate}%) is
                 below the 45% average. Applications may need stronger tailoring.
               </div>
               <div className="mt-2 px-2.5 py-2 bg-teal-500/[0.08] rounded-lg text-[11px] text-teal-300 leading-snug">
@@ -586,7 +889,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
                 Track your applications to unlock pipeline analytics and
-                AI-powered insights about your job search.
+                AI-powered insights about your career pivot.
               </div>
             </div>
           </div>
@@ -618,7 +921,7 @@ function QuickAddModal({
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
   const [notes, setNotes] = useState("");
-  const [stage, setStage] = useState<JobStage>("saved");
+  const [stage, setStage] = useState<JobStage>("exploring");
 
   function handleSubmit() {
     if (!role.trim() || !company.trim()) return;
@@ -628,7 +931,7 @@ function QuickAddModal({
     setRole("");
     setCompany("");
     setNotes("");
-    setStage("saved");
+    setStage("exploring");
     onClose();
   }
 
@@ -718,7 +1021,7 @@ function QuickAddModal({
               Add to stage
             </label>
             <div className="flex flex-wrap gap-1.5">
-              {STAGES.filter((s) => s.key !== "rejected").map((s) => (
+              {STAGES.filter((s) => s.key !== "passed").map((s) => (
                 <button
                   key={s.key}
                   onClick={() => setStage(s.key)}
@@ -764,9 +1067,23 @@ export default function JobTrackerKanban({
   onJobsChange,
 }: JobTrackerKanbanProps) {
   const [jobs, setJobs] = useState(initialJobs);
-  const [view, setView] = useState<"board" | "analytics">("board");
+  const [view, setView] = useState<"board" | "find" | "analytics">("board");
   const [modalOpen, setModalOpen] = useState(false);
-  const dragIdRef = useRef<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [overStage, setOverStage] = useState<JobStage | null>(null);
+  const [passedExpanded, setPassedExpanded] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const activeJob = useMemo(
+    () => (activeId ? jobs.find((j) => j.id === activeId) ?? null : null),
+    [activeId, jobs]
+  );
 
   const updateJobs = useCallback(
     (next: TrackedJob[]) => {
@@ -783,20 +1100,60 @@ export default function JobTrackerKanban({
     return map;
   }, [jobs]);
 
-  const handleDragStart = useCallback(
-    (e: React.DragEvent, id: string) => {
-      dragIdRef.current = id;
-      e.dataTransfer.effectAllowed = "move";
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const overEl = event.over;
+    if (!overEl) {
+      setOverStage(null);
+      return;
+    }
+    const overJob = jobs.find((j) => j.id === overEl.id);
+    if (overJob) {
+      setOverStage(overJob.stage);
+    }
+  }, [jobs]);
+
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      setActiveId(null);
+      setOverStage(null);
+
+      if (!over) return;
+
+      const draggedJob = jobs.find((j) => j.id === active.id);
+      if (!draggedJob) return;
+
+      let newStage: JobStage | null = null;
+
+      const overJob = jobs.find((j) => j.id === over.id);
+      if (overJob && overJob.id !== draggedJob.id) {
+        newStage = overJob.stage;
+      }
+
+      if (!newStage || newStage === draggedJob.stage) return;
+
+      const updated = jobs.map((j) =>
+        j.id === draggedJob.id
+          ? { ...j, stage: newStage!, stage_changed_at: new Date().toISOString() }
+          : j
+      );
+      updateJobs(updated);
+
+      await fetch("/api/job-tracker", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: draggedJob.id, email, stage: newStage }),
+      });
     },
-    []
+    [jobs, email, updateJobs]
   );
 
-  const handleDrop = useCallback(
-    async (newStage: JobStage) => {
-      const id = dragIdRef.current;
-      if (!id) return;
-      dragIdRef.current = null;
-
+  const handleMoveToStage = useCallback(
+    async (id: string, newStage: JobStage) => {
       const job = jobs.find((j) => j.id === id);
       if (!job || job.stage === newStage) return;
 
@@ -815,6 +1172,11 @@ export default function JobTrackerKanban({
     },
     [jobs, email, updateJobs]
   );
+
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null);
+    setOverStage(null);
+  }, []);
 
   const handleAdd = useCallback(
     async (data: {
@@ -842,6 +1204,13 @@ export default function JobTrackerKanban({
     [email, jobs, updateJobs]
   );
 
+  const handleJobAddedFromSearch = useCallback(
+    (newJob: TrackedJob) => {
+      updateJobs([newJob, ...jobs]);
+    },
+    [jobs, updateJobs]
+  );
+
   const handleDelete = useCallback(
     async (id: string) => {
       updateJobs(jobs.filter((j) => j.id !== id));
@@ -853,6 +1222,31 @@ export default function JobTrackerKanban({
     },
     [jobs, email, updateJobs]
   );
+
+  const activeStages = STAGES.filter((s) => s.key !== "passed");
+  const passedJobs = grouped.get("passed") ?? [];
+
+  const selectedJob = selectedJobId
+    ? jobs.find((j) => j.id === selectedJobId) ?? null
+    : null;
+
+  const handleJobUpdateFromDetail = useCallback(
+    (updated: TrackedJob) => {
+      updateJobs(jobs.map((j) => (j.id === updated.id ? updated : j)));
+    },
+    [jobs, updateJobs]
+  );
+
+  if (selectedJob) {
+    return (
+      <JobDetailView
+        job={selectedJob}
+        email={email}
+        onBack={() => setSelectedJobId(null)}
+        onJobUpdate={handleJobUpdateFromDetail}
+      />
+    );
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
@@ -881,6 +1275,16 @@ export default function JobTrackerKanban({
               Board
             </button>
             <button
+              onClick={() => setView("find")}
+              className={`px-4 py-1.5 text-[12px] font-medium rounded-md transition-all ${
+                view === "find"
+                  ? "bg-teal-500/20 text-teal-300"
+                  : "text-slate-400 hover:text-gray-50 hover:bg-white/[0.04]"
+              }`}
+            >
+              Find Jobs
+            </button>
+            <button
               onClick={() => setView("analytics")}
               className={`px-4 py-1.5 text-[12px] font-medium rounded-md transition-all ${
                 view === "analytics"
@@ -904,29 +1308,84 @@ export default function JobTrackerKanban({
       {/* Board view */}
       {view === "board" && (
         <>
-          {/* Desktop Kanban */}
-          <div className="hidden md:grid grid-cols-6 gap-3 overflow-x-auto pb-2 scroll-snap-x-mandatory -webkit-overflow-scrolling-touch kanban-grid">
-            {STAGES.map((s) => (
-              <KanbanColumn
-                key={s.key}
-                stageKey={s.key}
-                label={s.label}
-                dotColor={s.dotColor}
-                jobs={grouped.get(s.key) ?? []}
-                onDragStart={handleDragStart}
-                onDrop={handleDrop}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
+          {/* Desktop Kanban with DnD */}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <div
+              className="hidden md:flex gap-3 overflow-x-auto pb-2"
+              role="application"
+              aria-label="Job tracker board"
+            >
+              {activeStages.map((s) => (
+                <div key={s.key} className="flex-1 min-w-[200px]">
+                  <KanbanColumn
+                    stageKey={s.key}
+                    label={s.label}
+                    dotColor={s.dotColor}
+                    emptyState={s.emptyState}
+                    jobs={grouped.get(s.key) ?? []}
+                    isOver={overStage === s.key}
+                    onDelete={handleDelete}
+                    onMoveToStage={handleMoveToStage}
+                    onSelectJob={setSelectedJobId}
+                  />
+                </div>
+              ))}
+
+              {/* Passed column — collapsed or expanded */}
+              {passedExpanded ? (
+                <div className="min-w-[200px] flex-1">
+                  <KanbanColumn
+                    stageKey="passed"
+                    label="Passed"
+                    dotColor="bg-slate-500"
+                    emptyState="No passes yet — that's a good sign"
+                    jobs={passedJobs}
+                    isOver={overStage === "passed"}
+                    onDelete={handleDelete}
+                    onMoveToStage={handleMoveToStage}
+                    onSelectJob={setSelectedJobId}
+                  />
+                </div>
+              ) : (
+                <CollapsedPassedColumn
+                  count={passedJobs.length}
+                  onExpand={() => setPassedExpanded(true)}
+                />
+              )}
+            </div>
+
+            <DragOverlay dropAnimation={{
+              duration: 200,
+              easing: "ease-out",
+            }}>
+              {activeJob ? <DragOverlayCard job={activeJob} /> : null}
+            </DragOverlay>
+          </DndContext>
+
           {/* Mobile accordion */}
           <MobileAccordion
             jobs={jobs}
-            onDragStart={handleDragStart}
-            onDrop={handleDrop}
             onDelete={handleDelete}
+            onMoveToStage={handleMoveToStage}
+            onSelectJob={setSelectedJobId}
           />
         </>
+      )}
+
+      {/* Find Jobs view */}
+      {view === "find" && (
+        <JobSearchPanel
+          email={email}
+          trackedJobs={jobs}
+          onJobAdded={handleJobAddedFromSearch}
+        />
       )}
 
       {/* Analytics view */}

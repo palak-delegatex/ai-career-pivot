@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { StepIndicator } from "@/components/StepIndicator";
+import { ContextualHint } from "@/components/ui/contextual-hint";
+import { FeatureTour } from "@/components/ui/feature-tour";
 import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
@@ -722,6 +724,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6 py-20 pb-24 md:pb-20">
+      <FeatureTour />
       <div className="max-w-lg w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
@@ -787,6 +790,9 @@ export default function OnboardingPage() {
                   {emailTouched && email && !emailError && (
                     <p className="mt-1.5 text-xs" style={{ color: "var(--chart-3)" }}>&#10003; Valid email</p>
                   )}
+                  <ContextualHint id="hint-email" className="mt-2">
+                    We&apos;ll use this to save your report. You can access it anytime from your dashboard.
+                  </ContextualHint>
                 </div>
 
                 <div>
@@ -842,6 +848,9 @@ export default function OnboardingPage() {
                   {resumeError && (
                     <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{resumeError}</p>
                   )}
+                  <ContextualHint id="hint-resume" className="mt-2">
+                    PDF or DOCX works best. Our AI extracts your skills, experience, and education automatically — no manual entry needed.
+                  </ContextualHint>
                 </div>
 
                 <div>
@@ -919,6 +928,9 @@ export default function OnboardingPage() {
                       <span className="text-sm text-teal-300/90 capitalize truncate">{linkedinPreview.username}</span>
                     </div>
                   )}
+                  <ContextualHint id="hint-linkedin" variant="info" className="mt-2">
+                    Adding your LinkedIn helps us capture endorsements and recommendations that don&apos;t appear on your resume.
+                  </ContextualHint>
                 </div>
 
                 {error && (
@@ -962,6 +974,9 @@ export default function OnboardingPage() {
                     placeholder="https://yoursite.com"
                     className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
                   />
+                  <ContextualHint id="hint-portfolio" variant="info" className="mt-2">
+                    Have a personal site or GitHub? We&apos;ll scan it for skills and projects that strengthen your pivot case.
+                  </ContextualHint>
                 </div>
 
                 <div>

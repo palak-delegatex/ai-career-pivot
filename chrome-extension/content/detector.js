@@ -131,6 +131,174 @@
       },
       source: "other",
     },
+    greenhouse: {
+      hostPattern: /greenhouse\.io/,
+      selectors: {
+        title: [
+          "h1.app-title",
+          ".job__title h1",
+          "h1[class*='heading']",
+          "h1",
+        ],
+        company: [
+          ".company-name",
+          "[class*='company']",
+          "meta[property='og:site_name']",
+        ],
+        location: [
+          ".location",
+          "[class*='location']",
+        ],
+        salary: [],
+        description: [
+          "#content",
+          ".job__description",
+          "[class*='description']",
+          ".content",
+        ],
+        applyButton: [
+          "#submit_app",
+          "a[href*='application']",
+          "[class*='apply']",
+        ],
+      },
+      source: "greenhouse",
+    },
+    lever: {
+      hostPattern: /lever\.co/,
+      selectors: {
+        title: [
+          ".posting-headline h2",
+          "h2[class*='posting']",
+          "h2",
+        ],
+        company: [],
+        location: [
+          ".posting-categories .sort-by-time",
+          ".location",
+          "[class*='location']",
+        ],
+        salary: [],
+        description: [
+          ".posting-page [data-qa='job-description']",
+          ".section-wrapper .content-wrapper",
+          ".posting-page .content",
+        ],
+        applyButton: [
+          ".postings-btn-wrapper a",
+          "a[href*='apply']",
+          ".apply-btn",
+        ],
+      },
+      source: "lever",
+    },
+    workday: {
+      hostPattern: /myworkdayjobs\.com/,
+      selectors: {
+        title: [
+          "[data-automation-id='jobPostingHeader']",
+          "h2[data-automation-id='jobPostingHeader']",
+          "h1",
+        ],
+        company: [],
+        location: [
+          "[data-automation-id='locations'] dd",
+          "[data-automation-id='locations']",
+        ],
+        salary: [
+          "[data-automation-id='salary'] dd",
+        ],
+        description: [
+          "[data-automation-id='jobPostingDescription']",
+          ".job-description",
+        ],
+        applyButton: [
+          "a[data-automation-id='jobPostingApplyButton']",
+          "[data-automation-id='applyButton']",
+        ],
+      },
+      source: "workday",
+    },
+    ashby: {
+      hostPattern: /ashbyhq\.com/,
+      selectors: {
+        title: [
+          "h1[class*='ashby-job-posting-brief-title']",
+          "h1",
+        ],
+        company: [],
+        location: [
+          "[class*='ashby-job-posting-brief-location']",
+          "[class*='location']",
+        ],
+        salary: [
+          "[class*='compensation']",
+        ],
+        description: [
+          "[class*='ashby-job-posting-description']",
+          ".job-description",
+        ],
+        applyButton: [
+          "a[href*='application']",
+          "button[class*='apply']",
+        ],
+      },
+      source: "ashby",
+    },
+    icims: {
+      hostPattern: /icims\.com/,
+      selectors: {
+        title: [
+          ".iCIMS_Header h1",
+          "h1.iCIMS_Header",
+          ".header-title h1",
+          "h1",
+        ],
+        company: [],
+        location: [
+          ".iCIMS_JobHeaderField:nth-child(2)",
+          "[class*='location']",
+        ],
+        salary: [],
+        description: [
+          ".iCIMS_JobContent",
+          ".job-description",
+          "#jobDescription",
+        ],
+        applyButton: [
+          ".iCIMS_Apply a",
+          "a[class*='apply']",
+        ],
+      },
+      source: "icims",
+    },
+    taleo: {
+      hostPattern: /taleo\.net|oraclecloud\.com/,
+      selectors: {
+        title: [
+          ".requisitionTitle h1",
+          ".job-title h1",
+          "h1.requisitionTitle",
+          "h1",
+        ],
+        company: [],
+        location: [
+          ".job-location span",
+          "[class*='location']",
+        ],
+        salary: [],
+        description: [
+          ".requisitionContent",
+          ".job-description",
+          "#requisitionDescriptionInterface",
+        ],
+        applyButton: [
+          "a[class*='apply']",
+          "#applyButton",
+        ],
+      },
+      source: "taleo",
+    },
   };
 
   function queryFirst(selectors) {

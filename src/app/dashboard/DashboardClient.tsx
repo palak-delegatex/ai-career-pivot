@@ -6,6 +6,7 @@ import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import DashboardHero from "@/components/DashboardHero";
 import MilestoneChecklist from "@/components/MilestoneChecklist";
+import WeeklyProgressStrip from "@/components/WeeklyProgressStrip";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
 import NextActionsWidget from "@/components/NextActionsWidget";
 import JobBoard from "@/components/JobBoard";
@@ -17,10 +18,13 @@ import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import DocumentsCard from "@/components/DocumentsCard";
+import ToolsGrid from "@/components/ToolsGrid";
+import QuickActions from "@/components/QuickActions";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ContextualHint } from "@/components/ui/contextual-hint";
 
 interface Report {
   id: string;
@@ -489,6 +493,9 @@ export default function DashboardClient() {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
+        <ContextualHint id="hint-dashboard-empty" className="mb-4 text-left">
+          Your saved reports will appear here. Generate your first pivot plan to get started.
+        </ContextualHint>
         <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
         <Link
           href="/pricing"
@@ -592,9 +599,13 @@ export default function DashboardClient() {
       <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
-      <p className="text-slate-400 text-center text-sm italic mb-6 sm:mb-8">
+      <p className="text-slate-400 text-center text-sm italic mb-4 sm:mb-6">
         &ldquo;{dailyQuote}&rdquo;
       </p>
+
+      <ContextualHint id="hint-dashboard" className="mb-6">
+        Click any report to see your full roadmap. Reports are saved permanently — come back anytime.
+      </ContextualHint>
 
       {activeReport && activeReport.plans.length > 1 && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -679,6 +690,12 @@ export default function DashboardClient() {
                     reportId={activeReport!.id}
                   />
 
+                  <WeeklyProgressStrip
+                    phases={phases}
+                    statuses={milestoneStatuses}
+                    reportCreatedAt={activeReport!.created_at}
+                  />
+
                   <MilestoneChecklist
                     phases={phases}
                     statuses={milestoneStatuses}
@@ -696,22 +713,20 @@ export default function DashboardClient() {
                 plan={activePlan}
               />
 
-              <div className="pt-4 border-t border-slate-700/50 space-y-3">
-                <Link
-                  href="/chat"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
-                >
-                  Talk to Career Coach
-                </Link>
-                <Link
-                  href="/mock-interview"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
-                >
-                  Practice Mock Interview
-                </Link>
+              <QuickActions
+                hasResume={false}
+                hasGapAnalysis={false}
+                hasJobsTracked={false}
+                hasLinkedIn={false}
+                hasMockInterview={false}
+              />
+
+              <ToolsGrid />
+
+              <div className="flex justify-center">
                 <Link
                   href={`/report/${activeReport!.id}`}
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
                 >
                   View Full Report
                 </Link>
