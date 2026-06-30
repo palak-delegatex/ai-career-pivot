@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Keyboard, Play, Pause, Square, Volume2 } from "lucide-react";
 import Link from "next/link";
+import NextStepCTA from "@/components/NextStepCTA";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 
 type InterviewType = "behavioral" | "technical" | "situational";
@@ -608,15 +609,18 @@ export default function MockInterviewClient() {
           )}
 
           {phase === "done" && (
-            <div className="rounded-2xl bg-emerald-950/30 border border-emerald-800/30 p-5 text-center">
-              <p className="text-emerald-400 font-semibold mb-3">Interview Complete</p>
-              <div className="flex gap-3 justify-center">
+            <div className="rounded-2xl bg-emerald-950/30 border border-emerald-800/30 p-5">
+              <p className="text-emerald-400 font-semibold mb-3 text-center">Interview Complete</p>
+              <div className="flex gap-3 justify-center mb-4">
                 <button
                   onClick={resetInterview}
                   className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
                 >
                   Practice Again
                 </button>
+              </div>
+              <NextStepCTA fromTool="mock-interview" />
+              <div className="flex justify-center mt-4">
                 <Link
                   href="/dashboard"
                   className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"

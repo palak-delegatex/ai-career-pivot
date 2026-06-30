@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import NextStepCTA from "@/components/NextStepCTA";
 import {
   FileText,
   Mail,
@@ -354,39 +355,30 @@ export default function ResumeGeneratorClient() {
             </div>
 
             {phase === "done" && !editing && (
-              <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={switchMode}
-                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                    mode === "resume"
-                      ? "bg-purple-600 hover:bg-purple-500"
-                      : "bg-teal-600 hover:bg-teal-500"
-                  }`}
-                >
-                  {mode === "resume"
-                    ? "Now Generate Cover Letter →"
-                    : "Now Generate Resume →"}
-                </button>
-                {mode === "resume" && (
-                  <Link
-                    href="/cover-letter"
-                    className="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-600 font-semibold text-sm transition-colors"
+              <div className="mt-6">
+                <div className="flex justify-center mb-4">
+                  <button
+                    onClick={switchMode}
+                    className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                      mode === "resume"
+                        ? "bg-purple-600 hover:bg-purple-500"
+                        : "bg-teal-600 hover:bg-teal-500"
+                    }`}
                   >
-                    Create Cover Letter
+                    {mode === "resume"
+                      ? "Now Generate Cover Letter →"
+                      : "Now Generate Resume →"}
+                  </button>
+                </div>
+                <NextStepCTA fromTool="resume-generator" />
+                <div className="flex justify-center mt-4">
+                  <Link
+                    href="/dashboard"
+                    className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
+                  >
+                    Dashboard
                   </Link>
-                )}
-                <Link
-                  href="/ats-score"
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"
-                >
-                  Check ATS Score
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
-                >
-                  Dashboard
-                </Link>
+                </div>
               </div>
             )}
           </div>
