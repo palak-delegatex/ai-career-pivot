@@ -3,13 +3,29 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import {
-  computeATSMatchBreakdown,
+  computeMultiDimensionalScore,
   computeStandaloneFormattingScore,
   parseResumeIntoSections,
+  analyzeRecruiterTips,
+  analyzeSearchability,
+  analyzeKeywordDensity,
+  matchKeywordsAgainstResume,
   type MatchRateBreakdown,
+  type MultiDimensionalATSResult,
+  type CategoryScore,
+  type EnrichedJDKeywords,
 } from "@/lib/ats-scoring";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
+
+const EnrichedJDSchema = z.object({
+  required: z.array(z.string()).describe("Must-have skills and qualifications from the JD"),
+  preferred: z.array(z.string()).describe("Nice-to-have skills and qualifications"),
+  keywords: z.array(z.string()).describe("Important ATS terms: technologies, methodologies, certifications, domain terms"),
+  hardSkills: z.array(z.string()).describe("Technical/domain-specific skills: programming languages, tools, frameworks, certifications, technical methodologies"),
+  softSkills: z.array(z.string()).describe("Interpersonal/behavioral skills: leadership, communication, teamwork, problem-solving, adaptability"),
+  jobTitle: z.string().describe("The primary job title from the posting"),
+});
 
 const SemanticAnalysisSchema = z.object({
   semanticKeywordMatches: z.array(z.string()).describe(
@@ -22,18 +38,14 @@ const SemanticAnalysisSchema = z.object({
       improved: z.string(),
     })
   ),
-  quantificationScore: z.object({
-    score: z.number().min(0).max(100),
-    bulletsWithMetrics: z.number(),
-    totalBullets: z.number(),
-    suggestions: z.array(z.string()),
-  }),
   topPriorityFixes: z.array(z.string()),
 });
 
 const StandaloneAnalysisSchema = z.object({
   inferredRole: z.string(),
   inferredKeywords: z.array(z.string()).describe("Industry-standard keywords this resume should contain for its apparent target role"),
+  hardSkills: z.array(z.string()).describe("Technical/domain-specific skills inferred from the resume's target role"),
+  softSkills: z.array(z.string()).describe("Interpersonal/behavioral skills expected for this role"),
   contentSuggestions: z.array(
     z.object({
       area: z.string(),
@@ -41,12 +53,6 @@ const StandaloneAnalysisSchema = z.object({
       improved: z.string(),
     })
   ),
-  quantificationScore: z.object({
-    score: z.number().min(0).max(100),
-    bulletsWithMetrics: z.number(),
-    totalBullets: z.number(),
-    suggestions: z.array(z.string()),
-  }),
   topPriorityFixes: z.array(z.string()),
 });
 
@@ -57,6 +63,20 @@ export interface ATSScoreResult {
   scoreLabel: "Excellent" | "Good" | "Needs Work" | "Poor";
   formattingScore: number;
   keywordScore: number;
+  categoryScores: {
+    name: string;
+    key: string;
+    score: number;
+    weight: number;
+    checks: {
+      name: string;
+      passed: boolean;
+      score: number;
+      maxScore: number;
+      detail: string;
+      fix: string | null;
+    }[];
+  }[];
   formatIssues: {
     issue: string;
     severity: "critical" | "warning" | "minor";
@@ -64,12 +84,13 @@ export interface ATSScoreResult {
     category: string;
   }[];
   keywordAnalysis: {
-    foundKeywords: { keyword: string; matchType: "exact" | "variant" | "semantic"; foundIn: string[] }[];
+    foundKeywords: { keyword: string; matchType: "exact" | "variant" | "semantic"; foundIn: string[]; frequency: number; skillType: "hard" | "soft" | "other" }[];
     missingKeywords: {
       keyword: string;
       importance: "critical" | "important" | "helpful";
       suggestion: string;
       suggestedSection: string | null;
+      skillType: "hard" | "soft" | "other";
     }[];
     keywordDensityScore: number;
     summary: MatchRateBreakdown["summary"];
@@ -83,6 +104,19 @@ export interface ATSScoreResult {
     coverage: number;
     suggestion: string;
   }[];
+  searchability: {
+    score: number;
+    contactFields: { email: boolean; phone: boolean; location: boolean; linkedin: boolean; name: boolean };
+    jobTitleMatch: boolean;
+  };
+  recruiterTips: {
+    score: number;
+    actionVerbRate: number;
+    measurableResultRate: number;
+    bulletsWithMetrics: number;
+    totalBullets: number;
+    estimatedPages: number;
+  };
   contentSuggestions: { area: string; current: string; improved: string }[];
   quantificationScore: {
     score: number;
@@ -183,12 +217,6 @@ async function scoreWithJD(
   bytes: ArrayBuffer,
   jobDescription: string
 ): Promise<NextResponse> {
-  const JDKeywordsSchema = z.object({
-    required: z.array(z.string()),
-    preferred: z.array(z.string()),
-    keywords: z.array(z.string()),
-  });
-
   const resumeText = file.type === "application/pdf"
     ? await extractTextForAnalysis(file.type, base64, bytes)
     : new TextDecoder().decode(bytes).replace(/[^\x20-\x7E\n\r\t]/g, " ");
@@ -198,10 +226,16 @@ async function scoreWithJD(
   const [jdResult, semanticResult] = await Promise.all([
     generateText({
       model,
-      output: Output.object({ schema: JDKeywordsSchema }),
+      output: Output.object({ schema: EnrichedJDSchema }),
       messages: [{
         role: "user",
-        content: `Extract structured keywords from this job description. Categorize as required (must-have skills), preferred (nice-to-have), and keywords (important ATS terms like technologies, methodologies, certifications, domain terms).
+        content: `Extract structured keywords from this job description. Separate into:
+- required: must-have skills and qualifications
+- preferred: nice-to-have skills
+- keywords: important ATS terms (technologies, methodologies, certifications, domain terms)
+- hardSkills: technical/domain-specific skills (programming languages, tools, frameworks, certifications, technical methodologies)
+- softSkills: interpersonal/behavioral skills (leadership, communication, teamwork, problem-solving, collaboration, adaptability)
+- jobTitle: the primary job title from the posting
 
 JOB DESCRIPTION:
 """
@@ -220,8 +254,7 @@ ${jobDescription.slice(0, 4000)}
 Provide:
 1. semanticKeywordMatches: keywords from the JD that are SEMANTICALLY present but not exact text matches (e.g. "team leadership" matching "managed a team of 8", "data visualization" matching "built dashboards and reports")
 2. contentSuggestions: 3-5 bullet points that could be improved with better action verbs, specificity, or keyword integration. Show current vs improved.
-3. quantificationScore: how many bullet points include measurable results? Score and suggest where to add metrics.
-4. topPriorityFixes: the 3-5 most impactful changes, considering both formatting issues and keyword gaps.`;
+3. topPriorityFixes: the 3-5 most impactful changes, considering both formatting issues and keyword gaps.`;
 
       if (file.type === "application/pdf") {
         return generateText({
@@ -252,68 +285,16 @@ Provide:
     return NextResponse.json({ error: "Could not parse job description" }, { status: 422 });
   }
 
-  const jdKeywords = jdResult.output;
+  const enriched = jdResult.output as EnrichedJDKeywords;
   const semanticMatches = semanticResult.output?.semanticKeywordMatches || [];
 
-  const breakdown = computeATSMatchBreakdown(resumeText, jdKeywords, {
+  const multiResult = computeMultiDimensionalScore(resumeText, enriched, {
     fileType: file.type,
     semanticMatches,
+    enriched,
   });
 
-  const result: ATSScoreResult = {
-    overallScore: breakdown.overallScore,
-    scoreLabel: scoreLabel(breakdown.overallScore),
-    formattingScore: breakdown.formattingScore,
-    keywordScore: breakdown.keywordScore,
-    formatIssues: breakdown.formattingIssues.map(i => ({
-      issue: i.issue,
-      severity: i.severity,
-      fix: i.fix,
-      category: i.category,
-    })),
-    keywordAnalysis: {
-      foundKeywords: breakdown.keywordMatches
-        .filter(m => m.matched)
-        .map(m => ({
-          keyword: m.keyword,
-          matchType: m.matchType!,
-          foundIn: m.foundIn,
-        })),
-      missingKeywords: breakdown.keywordMatches
-        .filter(m => !m.matched)
-        .map(m => ({
-          keyword: m.keyword,
-          importance: importanceFromCategory(m.category),
-          suggestion: m.suggestedSection
-            ? `Add "${m.keyword}" to your ${m.suggestedSection} section`
-            : `Incorporate "${m.keyword}" naturally into your resume`,
-          suggestedSection: m.suggestedSection,
-        })),
-      keywordDensityScore: breakdown.keywordScore,
-      summary: breakdown.summary,
-    },
-    sectionAnalysis: breakdown.sectionScores.map(s => {
-      const quality = sectionQuality(s.coverage, s.present);
-      return {
-        section: s.section,
-        present: s.present,
-        quality,
-        keywordsFound: s.keywordsFound,
-        keywordsMissing: s.keywordsMissing,
-        coverage: s.coverage,
-        suggestion: sectionSuggestion(s.section, quality, s.keywordsMissing),
-      };
-    }),
-    contentSuggestions: semanticResult.output?.contentSuggestions || [],
-    quantificationScore: semanticResult.output?.quantificationScore || {
-      score: 0,
-      bulletsWithMetrics: 0,
-      totalBullets: 0,
-      suggestions: [],
-    },
-    topPriorityFixes: semanticResult.output?.topPriorityFixes || [],
-  };
-
+  const result: ATSScoreResult = buildATSResponse(multiResult, semanticResult.output, enriched);
   return NextResponse.json(result);
 }
 
@@ -326,9 +307,6 @@ async function scoreStandalone(
     ? await extractTextForAnalysis(file.type, base64, bytes)
     : new TextDecoder().decode(bytes).replace(/[^\x20-\x7E\n\r\t]/g, " ");
 
-  const { score: formattingScore, issues: formattingIssues } =
-    computeStandaloneFormattingScore(resumeText, file.type);
-
   const model = anthropic("claude-sonnet-4-6");
 
   const standalonePrompt = `Analyze this resume. Identify the target role and suggest industry-standard keywords it should contain.
@@ -336,9 +314,10 @@ async function scoreStandalone(
 Provide:
 1. inferredRole: the apparent target role
 2. inferredKeywords: 15-25 industry-standard keywords this resume should contain for ATS matching
-3. contentSuggestions: 3-5 bullet points that could be improved
-4. quantificationScore: measurable results rating
-5. topPriorityFixes: 3-5 most impactful changes`;
+3. hardSkills: technical/domain-specific skills expected for this role
+4. softSkills: interpersonal/behavioral skills expected for this role
+5. contentSuggestions: 3-5 bullet points that could be improved
+6. topPriorityFixes: 3-5 most impactful changes`;
 
   let output: z.infer<typeof StandaloneAnalysisSchema> | undefined;
 
@@ -374,39 +353,61 @@ Provide:
     );
   }
 
-  const jdKeywords = {
+  const enriched: EnrichedJDKeywords = {
     required: output.inferredKeywords.slice(0, 8),
     preferred: output.inferredKeywords.slice(8, 16),
     keywords: output.inferredKeywords.slice(16),
+    hardSkills: output.hardSkills,
+    softSkills: output.softSkills,
+    jobTitle: output.inferredRole,
   };
 
-  const sections = parseResumeIntoSections(resumeText);
-  const breakdown = computeATSMatchBreakdown(resumeText, jdKeywords, {
+  const multiResult = computeMultiDimensionalScore(resumeText, enriched, {
     fileType: file.type,
+    enriched,
   });
 
-  const overallScore = Math.round(formattingScore * 0.35 + breakdown.keywordScore * 0.65);
+  const result: ATSScoreResult = buildATSResponse(multiResult, output, enriched);
+  return NextResponse.json(result);
+}
 
-  const result: ATSScoreResult = {
-    overallScore,
-    scoreLabel: scoreLabel(overallScore),
-    formattingScore,
-    keywordScore: breakdown.keywordScore,
-    formatIssues: formattingIssues.map(i => ({
+function buildATSResponse(
+  multi: MultiDimensionalATSResult,
+  semanticOutput: { contentSuggestions: { area: string; current: string; improved: string }[]; topPriorityFixes: string[] } | null | undefined,
+  _enriched: EnrichedJDKeywords
+): ATSScoreResult {
+  const hardSkillsCat = multi.categoryScores.find(c => c.key === "hard_skills");
+  const keywordDensityCat = multi.categoryScores.find(c => c.key === "keyword_density");
+
+  return {
+    overallScore: multi.overallScore,
+    scoreLabel: multi.scoreLabel,
+    formattingScore: multi.formatting.score,
+    keywordScore: hardSkillsCat?.score ?? 0,
+    categoryScores: multi.categoryScores.map(c => ({
+      name: c.name,
+      key: c.key,
+      score: c.score,
+      weight: c.weight,
+      checks: c.checks,
+    })),
+    formatIssues: multi.formatting.issues.map(i => ({
       issue: i.issue,
       severity: i.severity,
       fix: i.fix,
       category: i.category,
     })),
     keywordAnalysis: {
-      foundKeywords: breakdown.keywordMatches
+      foundKeywords: multi.keywordMatches
         .filter(m => m.matched)
         .map(m => ({
           keyword: m.keyword,
           matchType: m.matchType!,
           foundIn: m.foundIn,
+          frequency: m.frequency,
+          skillType: m.skillType,
         })),
-      missingKeywords: breakdown.keywordMatches
+      missingKeywords: multi.keywordMatches
         .filter(m => !m.matched)
         .map(m => ({
           keyword: m.keyword,
@@ -415,11 +416,12 @@ Provide:
             ? `Add "${m.keyword}" to your ${m.suggestedSection} section`
             : `Incorporate "${m.keyword}" naturally into your resume`,
           suggestedSection: m.suggestedSection,
+          skillType: m.skillType,
         })),
-      keywordDensityScore: breakdown.keywordScore,
-      summary: breakdown.summary,
+      keywordDensityScore: keywordDensityCat?.score ?? 0,
+      summary: multi.summary,
     },
-    sectionAnalysis: breakdown.sectionScores.map(s => {
+    sectionAnalysis: multi.sectionScores.map(s => {
       const quality = sectionQuality(s.coverage, s.present);
       return {
         section: s.section,
@@ -431,12 +433,46 @@ Provide:
         suggestion: sectionSuggestion(s.section, quality, s.keywordsMissing),
       };
     }),
-    contentSuggestions: output.contentSuggestions,
-    quantificationScore: output.quantificationScore,
-    topPriorityFixes: output.topPriorityFixes,
+    searchability: {
+      score: multi.searchability.score,
+      contactFields: multi.searchability.contactFields,
+      jobTitleMatch: multi.searchability.jobTitleMatch,
+    },
+    recruiterTips: {
+      score: multi.recruiterTips.score,
+      actionVerbRate: multi.recruiterTips.actionVerbRate,
+      measurableResultRate: multi.recruiterTips.measurableResultRate,
+      bulletsWithMetrics: multi.recruiterTips.bulletsWithMetrics,
+      totalBullets: multi.recruiterTips.totalBullets,
+      estimatedPages: multi.recruiterTips.estimatedPages,
+    },
+    contentSuggestions: semanticOutput?.contentSuggestions || [],
+    quantificationScore: {
+      score: multi.recruiterTips.score,
+      bulletsWithMetrics: multi.recruiterTips.bulletsWithMetrics,
+      totalBullets: multi.recruiterTips.totalBullets,
+      suggestions: multi.recruiterTips.checks
+        .filter(c => !c.passed && c.fix)
+        .map(c => c.fix!),
+    },
+    topPriorityFixes: semanticOutput?.topPriorityFixes || generateTopFixes(multi),
   };
+}
 
-  return NextResponse.json(result);
+function generateTopFixes(multi: MultiDimensionalATSResult): string[] {
+  const fixes: string[] = [];
+  const sortedCategories = [...multi.categoryScores].sort((a, b) => a.score - b.score);
+
+  for (const cat of sortedCategories) {
+    for (const check of cat.checks) {
+      if (!check.passed && check.fix && fixes.length < 5) {
+        fixes.push(check.fix);
+      }
+    }
+    if (fixes.length >= 5) break;
+  }
+
+  return fixes;
 }
 
 async function extractTextForAnalysis(

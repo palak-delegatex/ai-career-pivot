@@ -31,6 +31,8 @@ interface FoundKeyword {
   keyword: string;
   matchType: "exact" | "variant" | "semantic";
   foundIn: string[];
+  frequency: number;
+  skillType: "hard" | "soft" | "other";
 }
 
 interface MissingKeyword {
@@ -38,6 +40,7 @@ interface MissingKeyword {
   importance: "critical" | "important" | "helpful";
   suggestion: string;
   suggestedSection: string | null;
+  skillType: "hard" | "soft" | "other";
 }
 
 interface SectionItem {
@@ -69,11 +72,29 @@ interface MatchSummary {
   preferredTotal: number;
 }
 
+interface CategoryCheck {
+  name: string;
+  passed: boolean;
+  score: number;
+  maxScore: number;
+  detail: string;
+  fix: string | null;
+}
+
+interface CategoryScoreItem {
+  name: string;
+  key: string;
+  score: number;
+  weight: number;
+  checks: CategoryCheck[];
+}
+
 interface ATSResult {
   overallScore: number;
   scoreLabel: string;
   formattingScore: number;
   keywordScore: number;
+  categoryScores?: CategoryScoreItem[];
   formatIssues: FormatIssue[];
   keywordAnalysis: {
     foundKeywords: FoundKeyword[];
@@ -82,6 +103,19 @@ interface ATSResult {
     summary: MatchSummary;
   };
   sectionAnalysis: SectionItem[];
+  searchability?: {
+    score: number;
+    contactFields: { email: boolean; phone: boolean; location: boolean; linkedin: boolean; name: boolean };
+    jobTitleMatch: boolean;
+  };
+  recruiterTips?: {
+    score: number;
+    actionVerbRate: number;
+    measurableResultRate: number;
+    bulletsWithMetrics: number;
+    totalBullets: number;
+    estimatedPages: number;
+  };
   contentSuggestions: ContentSuggestion[];
   quantificationScore: {
     score: number;
@@ -119,6 +153,21 @@ const MATCH_TYPE_LABEL = {
   exact: "Exact",
   variant: "Variant",
   semantic: "Semantic",
+};
+
+const CATEGORY_COLOR: Record<string, { bar: string; text: string; bg: string; border: string }> = {
+  hard_skills: { bar: "bg-blue-500", text: "text-blue-400", bg: "bg-blue-900/20", border: "border-blue-700/30" },
+  soft_skills: { bar: "bg-violet-500", text: "text-violet-400", bg: "bg-violet-900/20", border: "border-violet-700/30" },
+  keyword_density: { bar: "bg-cyan-500", text: "text-cyan-400", bg: "bg-cyan-900/20", border: "border-cyan-700/30" },
+  searchability: { bar: "bg-amber-500", text: "text-amber-400", bg: "bg-amber-900/20", border: "border-amber-700/30" },
+  formatting: { bar: "bg-emerald-500", text: "text-emerald-400", bg: "bg-emerald-900/20", border: "border-emerald-700/30" },
+  recruiter_tips: { bar: "bg-rose-500", text: "text-rose-400", bg: "bg-rose-900/20", border: "border-rose-700/30" },
+};
+
+const SKILL_TYPE_LABEL: Record<string, string> = {
+  hard: "Hard Skill",
+  soft: "Soft Skill",
+  other: "Keyword",
 };
 
 // ── Components ───────────────────────────────────────────────────────────────
@@ -301,29 +350,29 @@ export default function ATSScoreClient() {
           </div>
         </div>
 
-        {/* Sub-scores row */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-blue-400">{result.keywordScore}</div>
-            <div className="text-xs text-slate-400 mt-1">Keyword Match</div>
-          </div>
-          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{result.formattingScore}</div>
-            <div className="text-xs text-slate-400 mt-1">Formatting</div>
-          </div>
-          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-purple-400">
-              {result.quantificationScore.score}
+        {/* Category Breakdown */}
+        {result.categoryScores && result.categoryScores.length > 0 && (
+          <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5 mb-8">
+            <h2 className="text-sm font-bold text-slate-300 mb-4 uppercase tracking-wider">Score Breakdown</h2>
+            <div className="space-y-3">
+              {result.categoryScores.map((cat) => {
+                const colors = CATEGORY_COLOR[cat.key] || CATEGORY_COLOR.hard_skills;
+                return (
+                  <div key={cat.key}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-white">{cat.name}</span>
+                        <span className="text-[10px] text-slate-500">{Math.round(cat.weight * 100)}% weight</span>
+                      </div>
+                      <span className={`text-sm font-bold ${colors.text}`}>{cat.score}/100</span>
+                    </div>
+                    <MiniBar value={cat.score} color={colors.bar} />
+                  </div>
+                );
+              })}
             </div>
-            <div className="text-xs text-slate-400 mt-1">Quantification</div>
           </div>
-          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-amber-400">
-              {result.sectionAnalysis.filter((s) => s.present).length}/{result.sectionAnalysis.length}
-            </div>
-            <div className="text-xs text-slate-400 mt-1">Sections</div>
-          </div>
-        </div>
+        )}
 
         {/* Match Rate Breakdown */}
         {summary && (
@@ -386,9 +435,10 @@ export default function ATSScoreClient() {
                 <span
                   key={i}
                   className={`text-xs px-2.5 py-1.5 rounded-full border flex items-center gap-1.5 ${MATCH_TYPE_STYLE[kw.matchType]}`}
-                  title={`${MATCH_TYPE_LABEL[kw.matchType]} match · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
+                  title={`${MATCH_TYPE_LABEL[kw.matchType]} match · ${SKILL_TYPE_LABEL[kw.skillType]} · ${kw.frequency}x · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
                 >
                   {kw.keyword}
+                  {kw.frequency > 1 && <span className="text-[9px] opacity-60">{kw.frequency}x</span>}
                   <span className="text-[9px] opacity-60">{MATCH_TYPE_LABEL[kw.matchType]}</span>
                 </span>
               ))}
@@ -414,6 +464,9 @@ export default function ATSScoreClient() {
                           : SEVERITY_STYLE.minor
                     }`}>
                       {kw.importance}
+                    </span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                      {SKILL_TYPE_LABEL[kw.skillType]}
                     </span>
                     {kw.suggestedSection && (
                       <span className="text-xs text-slate-500 flex items-center gap-1">
@@ -524,28 +577,53 @@ export default function ATSScoreClient() {
           </section>
         )}
 
-        {/* Quantification */}
-        <section className="mb-12">
-          <h2 className="text-lg font-bold mb-4">Quantification Score</h2>
-          <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl font-bold text-purple-400">{result.quantificationScore.score}/100</span>
-              <span className="text-sm text-slate-400">
-                {result.quantificationScore.bulletsWithMetrics} of {result.quantificationScore.totalBullets} bullets include metrics
-              </span>
+        {/* Category Detail Checks */}
+        {result.categoryScores && result.categoryScores.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-blue-400" />
+              Detailed Checks ({result.categoryScores.reduce((s, c) => s + c.checks.length, 0)} total)
+            </h2>
+            <div className="space-y-4">
+              {result.categoryScores.map((cat) => {
+                const colors = CATEGORY_COLOR[cat.key] || CATEGORY_COLOR.hard_skills;
+                const passed = cat.checks.filter(c => c.passed).length;
+                const total = cat.checks.length;
+                return (
+                  <div key={cat.key} className={`${colors.bg} border ${colors.border} rounded-xl p-4`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-semibold text-sm ${colors.text}`}>{cat.name}</span>
+                        <span className="text-xs text-slate-400">{passed}/{total} passed</span>
+                      </div>
+                      <span className={`text-lg font-bold ${colors.text}`}>{cat.score}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {cat.checks.map((check, j) => (
+                        <div key={j} className="flex items-start gap-2">
+                          {check.passed ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                          ) : (
+                            <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm text-slate-300">{check.detail}</div>
+                            {!check.passed && check.fix && (
+                              <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                                <ArrowRight className="w-3 h-3 shrink-0" />
+                                {check.fix}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            {result.quantificationScore.suggestions.length > 0 && (
-              <ul className="space-y-1.5">
-                {result.quantificationScore.suggestions.map((s, i) => (
-                  <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 mt-0.5 shrink-0" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
+          </section>
+        )}
 
         <NextStepCTA fromTool="ats-score" />
 
