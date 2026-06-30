@@ -1,0 +1,137 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; background: #1a1a2e; font-family: system-ui, -apple-system, sans-serif; }
+  .chrome-frame { display: flex; flex-direction: column; height: 100%; }
+  .chrome-titlebar { display: flex; align-items: center; height: 38px; background: #202124; padding: 0 12px; gap: 8px; }
+  .chrome-dots { display: flex; gap: 6px; }
+  .chrome-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .chrome-dot.red { background: #ff5f57; }
+  .chrome-dot.yellow { background: #febc2e; }
+  .chrome-dot.green { background: #28c840; }
+  .chrome-tabs { display: flex; align-items: flex-end; flex: 1; padding-left: 8px; gap: 1px; height: 100%; }
+  .chrome-tab { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #292a2d; border-radius: 8px 8px 0 0; color: #e8eaed; font-size: 12px; max-width: 200px; height: 32px; margin-top: auto; }
+  .chrome-tab.active { background: #35363a; }
+  .chrome-tab-icon { width: 16px; height: 16px; border-radius: 2px; background: #4a9; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; font-weight: 700; }
+  .chrome-toolbar { display: flex; align-items: center; height: 36px; background: #35363a; padding: 0 8px; gap: 6px; }
+  .chrome-nav-btn { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #9aa0a6; font-size: 16px; }
+  .chrome-url-bar { flex: 1; height: 28px; background: #202124; border-radius: 14px; padding: 0 12px; display: flex; align-items: center; color: #bdc1c6; font-size: 13px; gap: 6px; }
+  .chrome-url-lock { color: #9aa0a6; font-size: 12px; }
+  .chrome-url-text { color: #bdc1c6; }
+  .chrome-url-domain { color: #9aa0a6; }
+  .chrome-extensions { display: flex; align-items: center; gap: 4px; padding-left: 8px; }
+  .chrome-ext-icon { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+  .chrome-ext-icon.active { background: #4a4b4e; }
+  .chrome-ext-icon svg { width: 16px; height: 16px; }
+  .chrome-content { flex: 1; position: relative; overflow: hidden; }
+</style>
+<style>.page-bg{width:100%;height:100%;}</style>
+</head><body>
+<div class="chrome-frame">
+  <div class="chrome-titlebar">
+    <div class="chrome-dots"><div class="chrome-dot red"></div><div class="chrome-dot yellow"></div><div class="chrome-dot green"></div></div>
+    <div class="chrome-tabs"><div class="chrome-tab active"><div class="chrome-tab-icon" style="background:#0077b5">in</div><span>Senior Product Designer - Stripe | LinkedIn</span></div></div>
+  </div>
+  <div class="chrome-toolbar">
+    <div class="chrome-nav-btn">&larr;</div><div class="chrome-nav-btn">&rarr;</div><div class="chrome-nav-btn">&#x21bb;</div>
+    <div class="chrome-url-bar"><span class="chrome-url-lock">&#x1f512;</span><span class="chrome-url-text">linkedin.com/jobs/view/senior-product-designer-at-stripe</span></div>
+    <div class="chrome-extensions"><div class="chrome-ext-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+  </div>
+  <div class="chrome-content"><div class="page-bg">
+<style>
+  .linkedin-page { font-family: system-ui, -apple-system, sans-serif; background: #f4f2ee; height: 100%; padding: 20px; display: flex; gap: 20px; justify-content: center; }
+  .linkedin-sidebar { width: 240px; background: white; border-radius: 8px; height: 280px; padding: 20px; border: 1px solid #ddd; }
+  .linkedin-main { width: 640px; }
+  .linkedin-card { background: white; border-radius: 8px; padding: 24px; border: 1px solid #ddd; margin-bottom: 8px; }
+  .linkedin-job-header { display: flex; gap: 16px; margin-bottom: 16px; }
+  .linkedin-logo { width: 56px; height: 56px; background: #6366f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700; }
+  .linkedin-title { font-size: 22px; font-weight: 700; color: #111; }
+  .linkedin-company { color: #0077b5; font-size: 15px; margin-top: 2px; }
+  .linkedin-loc { color: #666; font-size: 13px; margin-top: 4px; }
+  .linkedin-actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
+  .linkedin-btn-apply { padding: 8px 24px; background: #0077b5; color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 14px; }
+  .linkedin-btn-save { padding: 8px 24px; border: 1px solid #0077b5; color: #0077b5; background: white; border-radius: 20px; font-weight: 600; font-size: 14px; }
+  .acp-save-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; margin: 0 8px; background: #0f172a; color: #2dd4bf; border: 1px solid #334155; border-radius: 20px; font-family: system-ui; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .acp-mini-score { font-weight: 700; margin-left: 4px; }
+  .acp-score-panel { position: fixed; top: 80px; right: 20px; width: 320px; background: rgba(15,23,42,0.95); border: 1px solid #334155; border-radius: 12px; padding: 16px; font-family: system-ui; color: #e2e8f0; box-shadow: 0 20px 60px rgba(0,0,0,0.5); z-index: 100; }
+  .acp-score-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .acp-score-label { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
+  .acp-score-detail { font-size: 12px; color: #94a3b8; }
+  .acp-score-metrics { display: flex; gap: 8px; margin-bottom: 12px; }
+  .acp-metric { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px; background: #1e293b; border-radius: 8px; }
+  .acp-metric-val { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+  .acp-metric-label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .acp-keywords { margin-top: 8px; }
+  .acp-kw-title { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .acp-kw-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .acp-kw-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .acp-kw-exact { background: #064e3b; color: #6ee7b7; }
+  .acp-kw-variant { background: #1e3a5f; color: #7dd3fc; }
+  .acp-kw-miss { background: #451a03; color: #fbbf24; }
+  .acp-panel-close { position: absolute; top: 8px; right: 12px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; font-family: system-ui; }
+  .linkedin-desc { color: #333; font-size: 14px; line-height: 1.6; }
+  .linkedin-sidebar-title { font-weight: 600; color: #111; margin-bottom: 8px; font-size: 15px; }
+  .linkedin-sidebar-item { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; color: #666; }
+</style>
+<div class="linkedin-page">
+  <div class="linkedin-sidebar">
+    <div class="linkedin-sidebar-title">Similar jobs</div>
+    <div class="linkedin-sidebar-item">UX Designer &middot; Google</div>
+    <div class="linkedin-sidebar-item">Product Designer &middot; Meta</div>
+    <div class="linkedin-sidebar-item">Design Lead &middot; Figma</div>
+    <div class="linkedin-sidebar-item">Sr. Designer &middot; Canva</div>
+  </div>
+  <div class="linkedin-main">
+    <div class="linkedin-card">
+      <div class="linkedin-job-header">
+        <div class="linkedin-logo">S</div>
+        <div>
+          <div class="linkedin-title">Senior Product Designer</div>
+          <div class="linkedin-company">Stripe</div>
+          <div class="linkedin-loc">San Francisco, CA &middot; Full-time &middot; $180k-$240k/yr</div>
+        </div>
+      </div>
+      <div class="linkedin-actions">
+        <button class="linkedin-btn-apply">&#9889; Easy Apply</button>
+        <button class="linkedin-btn-save">Save</button>
+        <div class="acp-save-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Save & Score<span class="acp-mini-score">82</span>
+        </div>
+      </div>
+    </div>
+    <div class="linkedin-card">
+      <div class="linkedin-desc"><strong>About the role</strong><br><br>We are looking for a Senior Product Designer to join our design team. You will work on defining and building the future of financial infrastructure products used by millions of businesses worldwide...</div>
+    </div>
+  </div>
+  <div class="acp-score-panel">
+    <button class="acp-panel-close">&times;</button>
+    <div class="acp-score-header">
+      <div><svg width="56" height="56" viewBox="0 0 56 56">
+    <circle cx="28" cy="28" r="26" fill="none" stroke="#1e293b" stroke-width="4"/>
+    <circle cx="28" cy="28" r="26" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="163.36281798666926" stroke-dashoffset="29.405307237600475" stroke-linecap="round" transform="rotate(-90 28 28)"/>
+    <text x="28" y="28" text-anchor="middle" dy="0.35em" fill="#f1f5f9" font-size="16.8" font-weight="700" font-family="system-ui">82</text>
+  </svg></div>
+      <div><div class="acp-score-label">ATS Match Score</div><div class="acp-score-detail">AI Product Design Resume</div></div>
+    </div>
+    <div class="acp-score-metrics">
+      <div class="acp-metric"><span class="acp-metric-val">14</span><span class="acp-metric-label">Exact</span></div>
+      <div class="acp-metric"><span class="acp-metric-val">6</span><span class="acp-metric-label">Variant</span></div>
+      <div class="acp-metric"><span class="acp-metric-val">4</span><span class="acp-metric-label">Semantic</span></div>
+      <div class="acp-metric"><span class="acp-metric-val">3</span><span class="acp-metric-label">Missing</span></div>
+    </div>
+    <div class="acp-keywords"><div class="acp-kw-title">Keywords</div><div class="acp-kw-list">
+      <span class="acp-kw-tag acp-kw-exact">Figma</span>
+      <span class="acp-kw-tag acp-kw-exact">Design Systems</span>
+      <span class="acp-kw-tag acp-kw-exact">Prototyping</span>
+      <span class="acp-kw-tag acp-kw-exact">User Research</span>
+      <span class="acp-kw-tag acp-kw-variant">UI/UX</span>
+      <span class="acp-kw-tag acp-kw-variant">JavaScript</span>
+      <span class="acp-kw-tag acp-kw-miss">Stripe API</span>
+      <span class="acp-kw-tag acp-kw-miss">FinTech</span>
+    </div></div>
+  </div>
+</div></div></div>
+</div>
+</body></html>

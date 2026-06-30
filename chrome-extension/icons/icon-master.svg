@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="tealGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="50%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="checkGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#99f6e4"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="128" height="128" rx="28" ry="28" fill="url(#bgGrad)"/>
+
+  <!-- Outer ring with teal gradient -->
+  <circle cx="64" cy="64" r="38" fill="none" stroke="url(#tealGrad)" stroke-width="5" opacity="0.3"/>
+
+  <!-- Inner filled circle - subtle teal -->
+  <circle cx="64" cy="64" r="32" fill="url(#tealGrad)" opacity="0.15"/>
+
+  <!-- Career path arc (partial circle representing progress/pivot) -->
+  <path d="M 40 80 A 34 34 0 1 1 96 58" fill="none" stroke="url(#tealGrad)" stroke-width="5.5" stroke-linecap="round"/>
+
+  <!-- Checkmark / arrow head (representing achievement + forward motion) -->
+  <polyline points="52,64 62,74 82,50" fill="none" stroke="url(#checkGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

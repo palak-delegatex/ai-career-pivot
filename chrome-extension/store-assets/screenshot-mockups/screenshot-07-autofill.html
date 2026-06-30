@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; background: #1a1a2e; font-family: system-ui, -apple-system, sans-serif; }
+  .chrome-frame { display: flex; flex-direction: column; height: 100%; }
+  .chrome-titlebar { display: flex; align-items: center; height: 38px; background: #202124; padding: 0 12px; gap: 8px; }
+  .chrome-dots { display: flex; gap: 6px; }
+  .chrome-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .chrome-dot.red { background: #ff5f57; }
+  .chrome-dot.yellow { background: #febc2e; }
+  .chrome-dot.green { background: #28c840; }
+  .chrome-tabs { display: flex; align-items: flex-end; flex: 1; padding-left: 8px; gap: 1px; height: 100%; }
+  .chrome-tab { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #292a2d; border-radius: 8px 8px 0 0; color: #e8eaed; font-size: 12px; max-width: 200px; height: 32px; margin-top: auto; }
+  .chrome-tab.active { background: #35363a; }
+  .chrome-tab-icon { width: 16px; height: 16px; border-radius: 2px; background: #4a9; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; font-weight: 700; }
+  .chrome-toolbar { display: flex; align-items: center; height: 36px; background: #35363a; padding: 0 8px; gap: 6px; }
+  .chrome-nav-btn { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #9aa0a6; font-size: 16px; }
+  .chrome-url-bar { flex: 1; height: 28px; background: #202124; border-radius: 14px; padding: 0 12px; display: flex; align-items: center; color: #bdc1c6; font-size: 13px; gap: 6px; }
+  .chrome-url-lock { color: #9aa0a6; font-size: 12px; }
+  .chrome-url-text { color: #bdc1c6; }
+  .chrome-url-domain { color: #9aa0a6; }
+  .chrome-extensions { display: flex; align-items: center; gap: 4px; padding-left: 8px; }
+  .chrome-ext-icon { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+  .chrome-ext-icon.active { background: #4a4b4e; }
+  .chrome-ext-icon svg { width: 16px; height: 16px; }
+  .chrome-content { flex: 1; position: relative; overflow: hidden; }
+</style>
+<style>.page-bg{width:100%;height:100%;}</style>
+</head><body>
+<div class="chrome-frame">
+  <div class="chrome-titlebar">
+    <div class="chrome-dots"><div class="chrome-dot red"></div><div class="chrome-dot yellow"></div><div class="chrome-dot green"></div></div>
+    <div class="chrome-tabs"><div class="chrome-tab active"><div class="chrome-tab-icon" style="background:#43a047">G</div><span>Stripe - Senior Product Designer | Greenhouse</span></div></div>
+  </div>
+  <div class="chrome-toolbar">
+    <div class="chrome-nav-btn">&larr;</div><div class="chrome-nav-btn">&rarr;</div><div class="chrome-nav-btn">&#x21bb;</div>
+    <div class="chrome-url-bar"><span class="chrome-url-lock">&#x1f512;</span><span class="chrome-url-text">boards.greenhouse.io/stripe/jobs/5432198/application</span></div>
+    <div class="chrome-extensions"><div class="chrome-ext-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+  </div>
+  <div class="chrome-content"><div class="page-bg">
+<style>
+  .greenhouse-page { font-family: system-ui, -apple-system, sans-serif; background: #fff; height: 100%; position: relative; }
+  .acp-autofill-banner { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: 1px solid #334155; font-family: system-ui; font-size: 13px; color: #e2e8f0; z-index: 100; }
+  .acp-banner-text { display: flex; align-items: center; gap: 8px; }
+  .acp-banner-btn { padding: 6px 14px; border-radius: 6px; font-family: system-ui; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+  .acp-banner-btn-fill { background: #2dd4bf; color: #0f172a; }
+  .acp-banner-btn-skip { background: transparent; color: #94a3b8; border: 1px solid #475569; }
+  .acp-banner-btn-never { background: transparent; color: #64748b; font-size: 11px; border: none; }
+  .gh-header { padding: 20px 40px; padding-top: 56px; border-bottom: 1px solid #e5e7eb; }
+  .gh-company { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .gh-company-logo { width: 48px; height: 48px; background: #6366f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+  .gh-company-name { font-size: 18px; font-weight: 700; color: #111; }
+  .gh-job-title { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .gh-job-loc { color: #666; font-size: 14px; }
+  .gh-form { max-width: 640px; margin: 0 auto; padding: 32px 40px; }
+  .gh-form-section { margin-bottom: 24px; }
+  .gh-form-title { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 16px; }
+  .gh-field { margin-bottom: 16px; }
+  .gh-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px; }
+  .gh-label .req { color: #e53e3e; }
+  .gh-input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; color: #111; background: #fff; }
+  .gh-input.acp-filled { outline: 2px solid #2dd4bf; outline-offset: 1px; background: #f0fdf4; }
+  .gh-row { display: flex; gap: 16px; }
+  .gh-row > .gh-field { flex: 1; }
+</style>
+<div class="greenhouse-page">
+  <div class="acp-autofill-banner">
+    <div class="acp-banner-text">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>AICareerPivot can autofill this application</span>
+    </div>
+    <button class="acp-banner-btn acp-banner-btn-fill">Autofill</button>
+    <button class="acp-banner-btn acp-banner-btn-skip">Skip</button>
+    <button class="acp-banner-btn acp-banner-btn-never">Never on this site</button>
+  </div>
+  <div class="gh-header">
+    <div class="gh-company"><div class="gh-company-logo">S</div><div class="gh-company-name">Stripe</div></div>
+    <div class="gh-job-title">Senior Product Designer</div>
+    <div class="gh-job-loc">San Francisco, CA</div>
+  </div>
+  <div class="gh-form">
+    <div class="gh-form-section">
+      <div class="gh-form-title">Your Information</div>
+      <div class="gh-row">
+        <div class="gh-field"><label class="gh-label">First Name <span class="req">*</span></label><input class="gh-input acp-filled" value="Jordan" readonly></div>
+        <div class="gh-field"><label class="gh-label">Last Name <span class="req">*</span></label><input class="gh-input acp-filled" value="Rivera" readonly></div>
+      </div>
+      <div class="gh-field"><label class="gh-label">Email <span class="req">*</span></label><input class="gh-input acp-filled" value="jordan.rivera@email.com" readonly></div>
+      <div class="gh-field"><label class="gh-label">Phone <span class="req">*</span></label><input class="gh-input acp-filled" value="+1 (555) 123-4567" readonly></div>
+      <div class="gh-field"><label class="gh-label">LinkedIn Profile</label><input class="gh-input acp-filled" value="linkedin.com/in/jordanrivera" readonly></div>
+    </div>
+  </div>
+</div></div></div>
+</div>
+</body></html>
