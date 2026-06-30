@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import CoverLetterClient from "./CoverLetterClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -17,7 +18,9 @@ export default function CoverLetterPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
-      <CoverLetterClient />
+      <AuthenticatedLayout>
+        <CoverLetterClient />
+      </AuthenticatedLayout>
     </>
   );
 }

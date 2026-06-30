@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import AssessmentClient from "./AssessmentClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -17,7 +18,9 @@ export default function AssessmentPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
-      <AssessmentClient />
+      <AuthenticatedLayout>
+        <AssessmentClient />
+      </AuthenticatedLayout>
     </>
   );
 }

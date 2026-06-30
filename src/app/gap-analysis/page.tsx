@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import GapAnalysisClient from "./GapAnalysisClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -17,7 +18,9 @@ export default function GapAnalysisPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
-      <GapAnalysisClient />
+      <AuthenticatedLayout>
+        <GapAnalysisClient />
+      </AuthenticatedLayout>
     </>
   );
 }

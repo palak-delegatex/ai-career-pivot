@@ -6,6 +6,7 @@ import Link from "next/link";
 import WeeklyCheckIn from "@/components/WeeklyCheckIn";
 import SuggestedTopics from "@/components/SuggestedTopics";
 import SessionSelector from "@/components/SessionSelector";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 
 interface Message {
   role: "user" | "assistant";
@@ -400,32 +401,37 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <main className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading your coaching session...</p>
-        </div>
-      </main>
+      <AuthenticatedLayout>
+        <main className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-slate-400">Loading your coaching session...</p>
+          </div>
+        </main>
+      </AuthenticatedLayout>
     );
   }
 
   if (!planContext) {
     return (
-      <main className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-slate-400 mb-4">No career plan found. Complete your assessment first.</p>
-          <Link
-            href="/dashboard"
-            className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
-          >
-            Go to Dashboard
-          </Link>
-        </div>
-      </main>
+      <AuthenticatedLayout>
+        <main className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-slate-400 mb-4">No career plan found. Complete your assessment first.</p>
+            <Link
+              href="/dashboard"
+              className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
+            >
+              Go to Dashboard
+            </Link>
+          </div>
+        </main>
+      </AuthenticatedLayout>
     );
   }
 
   return (
+    <AuthenticatedLayout>
     <main className="flex flex-col h-screen max-h-screen bg-[var(--background)]">
       {/* Header */}
       <header className="shrink-0 border-b border-slate-700/60 bg-slate-900/80 backdrop-blur-sm px-4 py-3">
@@ -544,5 +550,6 @@ export default function ChatPage() {
         </div>
       </div>
     </main>
+    </AuthenticatedLayout>
   );
 }

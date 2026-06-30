@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import ResumeGeneratorClient from "./ResumeGeneratorClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -17,7 +18,9 @@ export default function ResumeGeneratorPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
-      <ResumeGeneratorClient />
+      <AuthenticatedLayout>
+        <ResumeGeneratorClient />
+      </AuthenticatedLayout>
     </>
   );
 }
