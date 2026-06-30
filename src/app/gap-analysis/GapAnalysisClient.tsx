@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import NextStepCTA from "@/components/NextStepCTA";
+import LearningResources from "@/components/LearningResources";
 import {
   Search,
   CheckCircle2,
@@ -338,6 +339,19 @@ export default function GapAnalysisClient() {
               ))}
             </div>
           </section>
+        )}
+
+        {/* Learning Resources */}
+        {result.missingSkills.length > 0 && (
+          <LearningResources
+            skillGaps={result.missingSkills.map((s) => ({
+              skill: s.skill,
+              currentLevel: "none",
+              requiredLevel: s.importance === "must-have" ? "proficient" : "familiar",
+              priority: s.importance === "must-have" ? "high" : "medium",
+            }))}
+            targetRole={result.careerPivotFit?.summary}
+          />
         )}
 
         {/* Experience Gaps */}
