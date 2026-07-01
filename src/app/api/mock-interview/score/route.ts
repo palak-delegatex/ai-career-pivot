@@ -28,6 +28,26 @@ const ScoreSchema = z.object({
   rewriteHint: z.string(),
 });
 
+export interface DeliveryData {
+  wordsPerMinute: number;
+  totalWords: number;
+  durationSeconds: number;
+  fillerWords: { word: string; count: number }[];
+  fillerRate: number;
+  longPauseCount: number;
+  averagePauseDurationMs: number;
+  deliveryScore: number;
+  paceLabel: string;
+  paceFeedback: string;
+  fillerFeedback: string;
+  pauseFeedback: string;
+}
+
+export interface ScoreResultWithDelivery extends ScoreResult {
+  delivery?: DeliveryData;
+  combinedScore?: number;
+}
+
 export type ScoreResult = z.infer<typeof ScoreSchema>;
 
 export async function POST(req: NextRequest) {

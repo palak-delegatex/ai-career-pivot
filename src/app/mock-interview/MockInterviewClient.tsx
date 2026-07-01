@@ -4,14 +4,17 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp,
   BookOpen, Target, BarChart3, Sparkles, CheckCircle2, AlertTriangle,
-  Clock, Filter, Trophy, ChevronRight, Loader2, X,
+  Clock, Filter, Trophy, ChevronRight, Loader2, X, MicOff, Activity,
+  Gauge, Volume2,
 } from "lucide-react";
 import Link from "next/link";
 import {
   getArchetypes, getQuestionsForRole, getGeneralBehavioral,
   type InterviewQuestion, type PivotArchetype,
 } from "@/lib/interview-questions";
-import type { ScoreResult } from "@/app/api/mock-interview/score/route";
+import type { ScoreResult, ScoreResultWithDelivery } from "@/app/api/mock-interview/score/route";
+import { useSpeechAnalysis } from "@/hooks/use-speech-analysis";
+import { analyzeDelivery, type DeliveryMetrics, type PauseEvent } from "@/lib/speech-analysis";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +43,8 @@ interface PracticeSession {
   question: string;
   answer: StarAnswer;
   score: ScoreResult;
+  delivery?: DeliveryMetrics;
+  combinedScore?: number;
   targetRole: string;
   timestamp: number;
 }
@@ -150,6 +155,15 @@ export default function MockInterviewClient() {
   const [starAnswer, setStarAnswer] = useState<StarAnswer>({ situation: "", task: "", action: "", result: "" });
   const [scoring, setScoring] = useState(false);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
+
+  // Speech analysis state
+  const speech = useSpeechAnalysis();
+  const [deliveryMetrics, setDeliveryMetrics] = useState<DeliveryMetrics | null>(null);
+  const [recordingField, setRecordingField] = useState<keyof StarAnswer | null>(null);
+  const [combinedScore, setCombinedScore] = useState<number | null>(null);
+  const spokenTranscriptsRef = useRef<string[]>([]);
+  const spokenDurationsRef = useRef<number[]>([]);
+  const spokenPausesRef = useRef<PauseEvent[]>([]);
 
   // Question bank state
   const [bankFilter, setBankFilter] = useState<"all" | "behavioral" | "technical">("all");
@@ -321,7 +335,43 @@ export default function MockInterviewClient() {
     setStarQuestion(q);
     setStarAnswer({ situation: "", task: "", action: "", result: "" });
     setScoreResult(null);
+    setDeliveryMetrics(null);
+    setCombinedScore(null);
+    speech.reset();
+    setRecordingField(null);
+    spokenTranscriptsRef.current = [];
+    spokenDurationsRef.current = [];
+    spokenPausesRef.current = [];
     setMode("star-practice");
+  }
+
+  function startSpeechForField(field: keyof StarAnswer) {
+    setRecordingField(field);
+    speech.reset();
+    speech.startRecording();
+  }
+
+  function stopSpeechForField() {
+    const metrics = speech.stopRecording();
+    if (recordingField && speech.transcript) {
+      setStarAnswer((prev) => ({
+        ...prev,
+        [recordingField]: prev[recordingField]
+          ? prev[recordingField] + " " + speech.transcript
+          : speech.transcript,
+      }));
+    }
+    if (metrics) {
+      spokenTranscriptsRef.current.push(speech.transcript);
+      spokenDurationsRef.current.push(metrics.durationSeconds);
+      spokenPausesRef.current.push(...metrics.pauses);
+
+      const fullTranscript = spokenTranscriptsRef.current.join(" ");
+      const totalDuration = spokenDurationsRef.current.reduce((a, b) => a + b, 0);
+      const allPauses = spokenPausesRef.current;
+      setDeliveryMetrics(analyzeDelivery(fullTranscript, totalDuration, allPauses));
+    }
+    setRecordingField(null);
   }
 
   async function submitStarAnswer() {
@@ -341,12 +391,19 @@ export default function MockInterviewClient() {
       const score: ScoreResult = await res.json();
       setScoreResult(score);
 
+      const combined = deliveryMetrics
+        ? Math.round(((score.overallScore * 0.7) + (deliveryMetrics.deliveryScore * 0.3)) * 10) / 10
+        : undefined;
+      if (combined !== undefined) setCombinedScore(combined);
+
       const session: PracticeSession = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         questionId: starQuestion.id,
         question: starQuestion.question,
         answer: starAnswer,
         score,
+        delivery: deliveryMetrics ?? undefined,
+        combinedScore: combined,
         targetRole: displayRole || "General",
         timestamp: Date.now(),
       };
@@ -469,12 +526,73 @@ export default function MockInterviewClient() {
           )}
         </div>
 
+        {/* Speech recording indicator */}
+        {speech.isRecording && recordingField && (
+          <div className="rounded-2xl bg-red-900/20 border border-red-700/40 p-4 mb-6 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-sm font-semibold text-red-300">Recording {STAR_GUIDANCE[recordingField].label}…</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">{speech.durationSeconds}s</span>
+                <button onClick={stopSpeechForField}
+                  className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs font-semibold transition-colors flex items-center gap-1.5">
+                  <MicOff className="w-3 h-3" /> Stop
+                </button>
+              </div>
+            </div>
+            {(speech.transcript || speech.interimTranscript) && (
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                {speech.transcript}
+                {speech.interimTranscript && <span className="text-slate-600"> {speech.interimTranscript}</span>}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Live delivery stats while recording */}
+        {deliveryMetrics && !scoreResult && (
+          <div className="rounded-2xl bg-slate-800/40 border border-slate-700/50 p-4 mb-6">
+            <p className="text-xs font-semibold text-slate-300 mb-3 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-purple-400" /> Delivery Analysis
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center">
+                <div className={`text-lg font-bold ${deliveryMetrics.wordsPerMinute >= 130 && deliveryMetrics.wordsPerMinute <= 160 ? "text-emerald-400" : "text-yellow-400"}`}>
+                  {deliveryMetrics.wordsPerMinute}
+                </div>
+                <div className="text-xs text-slate-500">WPM</div>
+                <div className={`text-[10px] mt-0.5 ${deliveryMetrics.wordsPerMinute >= 130 && deliveryMetrics.wordsPerMinute <= 160 ? "text-emerald-500" : "text-yellow-500"}`}>
+                  {deliveryMetrics.paceLabel}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className={`text-lg font-bold ${deliveryMetrics.fillerRate < 0.02 ? "text-emerald-400" : deliveryMetrics.fillerRate < 0.05 ? "text-yellow-400" : "text-red-400"}`}>
+                  {deliveryMetrics.fillerWords.reduce((s, f) => s + f.count, 0)}
+                </div>
+                <div className="text-xs text-slate-500">Fillers</div>
+                {deliveryMetrics.fillerWords.length > 0 && (
+                  <div className="text-[10px] text-slate-600 mt-0.5">{deliveryMetrics.fillerWords.slice(0, 2).map((f) => f.word).join(", ")}</div>
+                )}
+              </div>
+              <div className="text-center">
+                <div className={`text-lg font-bold ${deliveryMetrics.longPauseCount <= 2 ? "text-emerald-400" : "text-yellow-400"}`}>
+                  {deliveryMetrics.longPauseCount}
+                </div>
+                <div className="text-xs text-slate-500">Long Pauses</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* STAR Form */}
         <div className="space-y-5">
           {(Object.entries(STAR_GUIDANCE) as [keyof StarAnswer, typeof STAR_GUIDANCE.situation][]).map(([key, { label, hint, target }]) => {
             const wc = wordCount(starAnswer[key]);
             const [minTarget] = target.split("-").map((s) => parseInt(s));
             const atTarget = wc >= minTarget;
+            const isFieldRecording = speech.isRecording && recordingField === key;
             return (
               <div key={key}>
                 <div className="flex items-center justify-between mb-2">
@@ -484,16 +602,34 @@ export default function MockInterviewClient() {
                     </span>
                     {label}
                   </label>
-                  <span className={`text-xs ${atTarget ? "text-emerald-400" : "text-slate-500"}`}>
-                    {wc} words · target {target}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs ${atTarget ? "text-emerald-400" : "text-slate-500"}`}>
+                      {wc} words · target {target}
+                    </span>
+                    {speech.isSupported && (
+                      <button
+                        onClick={() => isFieldRecording ? stopSpeechForField() : startSpeechForField(key)}
+                        disabled={scoring || (speech.isRecording && !isFieldRecording)}
+                        className={`p-1.5 rounded-lg transition-colors ${
+                          isFieldRecording
+                            ? "bg-red-600 text-white hover:bg-red-500"
+                            : "bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white disabled:opacity-30"
+                        }`}
+                        title={isFieldRecording ? "Stop recording" : `Dictate ${label}`}
+                      >
+                        {isFieldRecording ? <MicOff className="w-3.5 h-3.5" /> : <Mic2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="text-xs text-slate-400 mb-2">{hint}</p>
                 <textarea
                   value={starAnswer[key]}
                   onChange={(e) => setStarAnswer((prev) => ({ ...prev, [key]: e.target.value }))}
                   rows={key === "action" ? 5 : 3}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                  className={`w-full px-4 py-3 rounded-xl bg-slate-800 border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y ${
+                    isFieldRecording ? "border-red-500/60" : "border-slate-700"
+                  }`}
                   placeholder={hint}
                   disabled={scoring}
                 />
@@ -511,12 +647,32 @@ export default function MockInterviewClient() {
         {/* Score Result */}
         {scoreResult && (
           <div className="mt-8 space-y-4">
-            <div className="text-center">
-              <div className={`inline-flex items-center gap-2 text-4xl font-black ${scoreColor(scoreResult.overallScore)}`}>
-                {scoreResult.overallScore}/10
+            {/* Combined / Overall Score */}
+            {combinedScore !== null && deliveryMetrics ? (
+              <div className="text-center">
+                <div className={`inline-flex items-center gap-2 text-4xl font-black ${scoreColor(combinedScore)}`}>
+                  {combinedScore}/10
+                </div>
+                <p className="text-sm text-slate-400 mt-1">Combined Score</p>
+                <div className="flex items-center justify-center gap-4 mt-2 text-xs text-slate-500">
+                  <span>Content: <span className={scoreColor(scoreResult.overallScore)}>{scoreResult.overallScore}</span></span>
+                  <span>·</span>
+                  <span>Delivery: <span className={scoreColor(deliveryMetrics.deliveryScore)}>{deliveryMetrics.deliveryScore}</span></span>
+                  <span>·</span>
+                  <span className="text-slate-600">70/30 weight</span>
+                </div>
               </div>
-              <p className="text-sm text-slate-400 mt-1">Overall Score</p>
-            </div>
+            ) : (
+              <div className="text-center">
+                <div className={`inline-flex items-center gap-2 text-4xl font-black ${scoreColor(scoreResult.overallScore)}`}>
+                  {scoreResult.overallScore}/10
+                </div>
+                <p className="text-sm text-slate-400 mt-1">Content Score</p>
+                {!deliveryMetrics && speech.isSupported && (
+                  <p className="text-xs text-slate-600 mt-1">Use the mic buttons to get a delivery score too</p>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -547,6 +703,54 @@ export default function MockInterviewClient() {
                 })}
               </div>
             </div>
+
+            {/* Delivery Analysis */}
+            {deliveryMetrics && (
+              <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
+                <p className="text-xs font-semibold text-purple-300 mb-3 flex items-center gap-1.5">
+                  <Volume2 className="w-3.5 h-3.5" /> Speech & Delivery Analysis
+                </p>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className={`rounded-lg border p-3 ${scoreBg(deliveryMetrics.deliveryScore)}`}>
+                    <div className={`text-xl font-bold ${scoreColor(deliveryMetrics.deliveryScore)}`}>{deliveryMetrics.deliveryScore}/10</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Delivery Score</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-700/50 bg-slate-800/60 p-3">
+                    <div className="flex items-center gap-1">
+                      <Gauge className="w-3.5 h-3.5 text-slate-500" />
+                      <span className={`text-xl font-bold ${deliveryMetrics.wordsPerMinute >= 130 && deliveryMetrics.wordsPerMinute <= 160 ? "text-emerald-400" : deliveryMetrics.wordsPerMinute >= 100 && deliveryMetrics.wordsPerMinute <= 190 ? "text-yellow-400" : "text-red-400"}`}>
+                        {deliveryMetrics.wordsPerMinute}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-0.5">WPM · {deliveryMetrics.paceLabel}</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-700/50 bg-slate-800/60 p-3">
+                    <div className="text-xl font-bold text-slate-300">{deliveryMetrics.durationSeconds}s</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{deliveryMetrics.totalWords} words</div>
+                  </div>
+                </div>
+
+                {/* Filler words breakdown */}
+                {deliveryMetrics.fillerWords.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-slate-500 mb-1.5">Filler Words Detected</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {deliveryMetrics.fillerWords.map((f) => (
+                        <span key={f.word} className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">
+                          &ldquo;{f.word}&rdquo; × {f.count}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2 text-xs text-slate-400 leading-relaxed">
+                  <p><span className="text-slate-300 font-medium">Pace:</span> {deliveryMetrics.paceFeedback}</p>
+                  <p><span className="text-slate-300 font-medium">Fillers:</span> {deliveryMetrics.fillerFeedback}</p>
+                  <p><span className="text-slate-300 font-medium">Flow:</span> {deliveryMetrics.pauseFeedback}</p>
+                </div>
+              </div>
+            )}
 
             {/* Improvements */}
             <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
@@ -582,7 +786,16 @@ export default function MockInterviewClient() {
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => { setScoreResult(null); setStarAnswer({ situation: "", task: "", action: "", result: "" }); }}
+              <button onClick={() => {
+                setScoreResult(null);
+                setStarAnswer({ situation: "", task: "", action: "", result: "" });
+                setDeliveryMetrics(null);
+                setCombinedScore(null);
+                speech.reset();
+                spokenTranscriptsRef.current = [];
+                spokenDurationsRef.current = [];
+                spokenPausesRef.current = [];
+              }}
                 className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors">
                 Try Again
               </button>
@@ -788,14 +1001,20 @@ export default function MockInterviewClient() {
                       </span>
                     </div>
                   </div>
-                  <div className={`text-lg font-bold ${scoreColor(s.score.overallScore)}`}>
-                    {s.score.overallScore}/10
+                  <div className={`text-lg font-bold ${scoreColor(s.combinedScore ?? s.score.overallScore)}`}>
+                    {s.combinedScore ?? s.score.overallScore}/10
                   </div>
                 </div>
-                <div className="flex gap-4 mt-3 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-slate-500">
                   <span>Relevance: <span className={scoreColor(s.score.relevance.score)}>{s.score.relevance.score}</span></span>
                   <span>STAR: <span className={scoreColor(s.score.starStructure.score)}>{s.score.starStructure.score}</span></span>
                   <span>Specificity: <span className={scoreColor(s.score.specificity.score)}>{s.score.specificity.score}</span></span>
+                  {s.delivery && (
+                    <>
+                      <span>Delivery: <span className={scoreColor(s.delivery.deliveryScore)}>{s.delivery.deliveryScore}</span></span>
+                      <span className="text-slate-600">{s.delivery.wordsPerMinute} WPM · {s.delivery.fillerWords.reduce((sum, f) => sum + f.count, 0)} fillers</span>
+                    </>
+                  )}
                 </div>
                 <button onClick={() => selectStarQuestion({
                   id: s.questionId, question: s.question, type: "behavioral",
