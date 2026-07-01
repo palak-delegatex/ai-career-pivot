@@ -131,6 +131,113 @@
       },
       source: "other",
     },
+    greenhouse: {
+      hostPattern: /greenhouse\.io/,
+      selectors: {
+        title: [".app-title", ".posting-headline h2", "#header h1", "h1.heading", "h1"],
+        company: [".company-name", "#header .company", "span.company-name"],
+        location: [".location", ".body--metadata div"],
+        salary: [],
+        description: ["#content", ".content-intro", "#app_body"],
+        applyButton: ["#apply_button", 'a[href*="#app"]', ".btn-apply"],
+      },
+      source: "greenhouse",
+    },
+    lever: {
+      hostPattern: /lever\.co/,
+      selectors: {
+        title: [".posting-headline h2", ".posting-title", "h2"],
+        company: [".posting-headline .company", ".main-header-logo img"],
+        location: [".posting-categories .location", ".sort-by-commitment", ".posting-categories .workplaceTypes"],
+        salary: [],
+        description: [".posting-page .content", '[data-qa="job-description"]', ".section-wrapper .section"],
+        applyButton: [".posting-btn-submit", 'a[href*="apply"]'],
+      },
+      source: "lever",
+    },
+    workday: {
+      hostPattern: /myworkdayjobs\.com/,
+      selectors: {
+        title: ['[data-automation-id="jobPostingHeader"]', "h2.css-1saizt3", "h2"],
+        company: [],
+        location: ['[data-automation-id="locations"]', ".css-cygeeu dd"],
+        salary: [],
+        description: ['[data-automation-id="jobPostingDescription"]', ".css-hboir5"],
+        applyButton: ['a[data-automation-id="jobPostingApplyButton"]'],
+      },
+      source: "workday",
+    },
+    smartrecruiters: {
+      hostPattern: /smartrecruiters\.com/,
+      selectors: {
+        title: ["h1.job-title", ".job-title", "h1"],
+        company: [".company-name", ".company"],
+        location: [".job-location", ".location"],
+        salary: [],
+        description: [".job-description", ".job-sections"],
+        applyButton: [".apply-btn", 'a[href*="apply"]'],
+      },
+      source: "smartrecruiters",
+    },
+    ashby: {
+      hostPattern: /ashbyhq\.com/,
+      selectors: {
+        title: ["h1.ashby-job-posting-brief-title", "h1"],
+        company: [],
+        location: [".ashby-job-posting-brief-location", '[class*="location"]'],
+        salary: ['[class*="compensation"]'],
+        description: [".ashby-job-posting-description", '[class*="description"]'],
+        applyButton: ['a[href*="application"]', 'button[type="submit"]'],
+      },
+      source: "ashby",
+    },
+    taleo: {
+      hostPattern: /taleo\.net/,
+      selectors: {
+        title: [".titlepage h1", ".requisitioncontenttitle", "h1"],
+        company: [],
+        location: [".location", ".contentlinepanel .displayfield"],
+        salary: [],
+        description: ["#requisitionDescriptionInterface", ".reqcontenttext", ".jobdescriptionc"],
+        applyButton: ['a[href*="jobapply"]', ".applybutton"],
+      },
+      source: "taleo",
+    },
+    icims: {
+      hostPattern: /icims\.com/,
+      selectors: {
+        title: [".iCIMS_Header h1", ".header-title", "h1"],
+        company: [".iCIMS_CompanyName", ".company-name"],
+        location: [".iCIMS_JobHeaderData .location", ".header-location"],
+        salary: [],
+        description: [".iCIMS_JobDescription", ".iCIMS_MainWrapper .description"],
+        applyButton: ['a[href*="candidate"]', ".iCIMS_ApplyButton"],
+      },
+      source: "icims",
+    },
+    oracleCloud: {
+      hostPattern: /oraclecloud\.com/,
+      selectors: {
+        title: [".job-title", "h1"],
+        company: [],
+        location: [".job-location", ".location"],
+        salary: [],
+        description: [".job-description", ".description"],
+        applyButton: ['a[href*="apply"]', 'button[type="submit"]'],
+      },
+      source: "oracle_cloud",
+    },
+  };
+
+  const ATS_PLATFORMS = {
+    greenhouse: { label: "Greenhouse", fileFormat: ["PDF", "DOCX"], tip: "Include a standalone Skills section with comma-separated keywords" },
+    workday: { label: "Workday", fileFormat: ["DOCX"], tip: "DOCX preferred — Workday's PDF parser is less reliable. Avoid headers/footers." },
+    lever: { label: "Lever", fileFormat: ["PDF", "DOCX"], tip: "Lever's parser is forgiving — include a Summary section for keyword matching" },
+    taleo: { label: "Oracle Taleo", fileFormat: ["DOCX"], tip: "Use the simplest formatting possible — Taleo has the least reliable parser" },
+    icims: { label: "iCIMS", fileFormat: ["DOCX", "PDF"], tip: "Put name, email, phone on the first 3 lines for best parsing" },
+    smartrecruiters: { label: "SmartRecruiters", fileFormat: ["PDF", "DOCX"], tip: "Skills sections are weighted heavily — put key skills early" },
+    ashby: { label: "Ashby", fileFormat: ["PDF", "DOCX"], tip: "Modern parser — clean formatting works well, full-text search indexes everything" },
+    oracle_cloud: { label: "Oracle Cloud HCM", fileFormat: ["DOCX", "PDF"], tip: "Follow the employer's specific format instructions carefully" },
   };
 
   function queryFirst(selectors) {
@@ -152,6 +259,20 @@
       if (config.hostPattern.test(host)) return config;
     }
     return null;
+  }
+
+  function detectATS() {
+    const board = detectBoard();
+    if (!board) return null;
+    const source = board.source;
+    const atsInfo = ATS_PLATFORMS[source];
+    if (!atsInfo) return null;
+    return {
+      platform: source,
+      label: atsInfo.label,
+      fileFormat: atsInfo.fileFormat,
+      tip: atsInfo.tip,
+    };
   }
 
   function extractJobData(board) {
@@ -192,8 +313,9 @@
     debounceTimer = setTimeout(() => {
       const jobData = extractJobData(board);
       if (jobData) {
+        const atsInfo = detectATS();
         window.dispatchEvent(
-          new CustomEvent("acp-job-detected", { detail: { jobData, board } })
+          new CustomEvent("acp-job-detected", { detail: { jobData, board, atsInfo } })
         );
       }
     }, 800);
@@ -204,5 +326,5 @@
 
   detectAndNotify();
 
-  window.__acpDetector = { detectBoard, extractJobData, findApplyButton, BOARD_CONFIGS };
+  window.__acpDetector = { detectBoard, extractJobData, findApplyButton, detectATS, BOARD_CONFIGS, ATS_PLATFORMS };
 })();
