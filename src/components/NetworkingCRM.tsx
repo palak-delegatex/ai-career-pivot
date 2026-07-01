@@ -23,6 +23,17 @@ import {
   Building2,
   Briefcase,
   X,
+  Sparkles,
+  Send,
+  Copy,
+  Check,
+  ArrowRight,
+  GraduationCap,
+  UserPlus,
+  Globe,
+  Link2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   Sheet,
@@ -76,6 +87,39 @@ interface Interaction {
   type: string;
   description: string;
   occurred_at: string;
+}
+
+interface WarmIntroPath {
+  pathType: string;
+  description: string;
+  strength: string;
+  actionSteps: string[];
+  suggestedContact: {
+    name: string;
+    inferredRole: string;
+    company: string;
+    connectionReason: string;
+  };
+}
+
+interface OutreachTemplate {
+  templateType: string;
+  subject: string;
+  body: string;
+  tips: string[];
+}
+
+interface WarmIntroStrategy {
+  warmestPath: string;
+  estimatedResponseRate: string;
+  recommendedApproach: string;
+  timingAdvice: string;
+}
+
+interface WarmIntroResult {
+  connectionPaths: WarmIntroPath[];
+  outreachTemplates: OutreachTemplate[];
+  strategy: WarmIntroStrategy;
 }
 
 /* ------------------------------------------------------------------ */
@@ -163,6 +207,7 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [activeView, setActiveView] = useState<"contacts" | "warm-intros">("contacts");
 
   const fetchContacts = useCallback(async () => {
     const params = new URLSearchParams({ email: userEmail });
@@ -263,142 +308,172 @@ export default function NetworkingCRM({ userEmail }: { userEmail: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={<Users className="w-5 h-5 text-teal-400" />}
-          label="Total Contacts"
-          value={totalContacts}
-        />
-        <StatCard
-          icon={<Bell className="w-5 h-5 text-amber-400" />}
-          label="Follow-ups Due"
-          value={followUpsDue}
-        />
-        <StatCard
-          icon={<Handshake className="w-5 h-5 text-emerald-400" />}
-          label="Strong Connections"
-          value={strongConnections}
-        />
-        <StatCard
-          icon={<TrendingUp className="w-5 h-5 text-cyan-400" />}
-          label="Avg. Strength"
-          value={`${avgScore}%`}
-        />
+      {/* View Toggle */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setActiveView("contacts")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+            activeView === "contacts"
+              ? "bg-teal-600 text-white"
+              : "bg-slate-800/60 border border-slate-700 text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <Users className="w-4 h-4" /> Contacts
+        </button>
+        <button
+          onClick={() => setActiveView("warm-intros")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+            activeView === "warm-intros"
+              ? "bg-teal-600 text-white"
+              : "bg-slate-800/60 border border-slate-700 text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <Sparkles className="w-4 h-4" /> Warm Intros
+        </button>
       </div>
 
-      {/* Follow-up Reminders */}
-      {reminders.length > 0 && (
-        <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-amber-400" />
-            Follow-up Reminders
-          </h3>
-          <div className="divide-y divide-slate-700/40">
-            {reminders.slice(0, 5).map((r) => {
-              const status = dueStatus(r.due_date);
-              return (
-                <div
-                  key={r.id}
-                  className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full shrink-0 ${DUE_DOT[status]}`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-200 truncate">
-                      {r.contacts?.name ?? "Unknown"}
-                    </p>
-                    <p className="text-xs text-slate-400 truncate">
-                      {r.description || "Follow up"}
-                    </p>
-                  </div>
-                  <span className={`text-xs shrink-0 ${DUE_STYLES[status]}`}>
-                    {relativeDate(r.due_date)}
-                  </span>
-                  <div className="flex gap-1.5 shrink-0">
-                    <button
-                      onClick={() => handleReminderAction(r.id, "done")}
-                      className="px-2.5 py-1 text-xs rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors"
-                    >
-                      Done
-                    </button>
-                    <button
-                      onClick={() => handleReminderAction(r.id, "snooze")}
-                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
-                    >
-                      Snooze
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Search + Filters + Actions */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search contacts..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
-          />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {FILTERS.map((f) => (
-            <button
-              key={f.label}
-              onClick={() => setActiveTier(f.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                activeTier === f.value
-                  ? "bg-teal-600 border-teal-500 text-white"
-                  : "bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-sm font-medium text-white transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Add
-          </button>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-medium text-slate-200 transition-colors"
-          >
-            <Upload className="w-4 h-4" /> Import
-          </button>
-        </div>
-      </div>
-
-      {/* Contact Cards Grid */}
-      {contacts.length === 0 ? (
-        <div className="text-center py-16">
-          <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">No contacts yet</p>
-          <p className="text-slate-500 text-xs mt-1">
-            Add a contact or import from LinkedIn to get started
-          </p>
-        </div>
+      {activeView === "warm-intros" ? (
+        <WarmIntrosPanel userEmail={userEmail} onSaveContact={fetchContacts} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {contacts.map((c) => (
-            <ContactCard
-              key={c.id}
-              contact={c}
-              onClick={() => openContact(c)}
+        <>
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              icon={<Users className="w-5 h-5 text-teal-400" />}
+              label="Total Contacts"
+              value={totalContacts}
             />
-          ))}
-        </div>
+            <StatCard
+              icon={<Bell className="w-5 h-5 text-amber-400" />}
+              label="Follow-ups Due"
+              value={followUpsDue}
+            />
+            <StatCard
+              icon={<Handshake className="w-5 h-5 text-emerald-400" />}
+              label="Strong Connections"
+              value={strongConnections}
+            />
+            <StatCard
+              icon={<TrendingUp className="w-5 h-5 text-cyan-400" />}
+              label="Avg. Strength"
+              value={`${avgScore}%`}
+            />
+          </div>
+
+          {/* Follow-up Reminders */}
+          {reminders.length > 0 && (
+            <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+              <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+                <Bell className="w-4 h-4 text-amber-400" />
+                Follow-up Reminders
+              </h3>
+              <div className="divide-y divide-slate-700/40">
+                {reminders.slice(0, 5).map((r) => {
+                  const status = dueStatus(r.due_date);
+                  return (
+                    <div
+                      key={r.id}
+                      className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 ${DUE_DOT[status]}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-slate-200 truncate">
+                          {r.contacts?.name ?? "Unknown"}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {r.description || "Follow up"}
+                        </p>
+                      </div>
+                      <span className={`text-xs shrink-0 ${DUE_STYLES[status]}`}>
+                        {relativeDate(r.due_date)}
+                      </span>
+                      <div className="flex gap-1.5 shrink-0">
+                        <button
+                          onClick={() => handleReminderAction(r.id, "done")}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => handleReminderAction(r.id, "snooze")}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                        >
+                          Snooze
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Search + Filters + Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search contacts..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.label}
+                  onClick={() => setActiveTier(f.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    activeTier === f.value
+                      ? "bg-teal-600 border-teal-500 text-white"
+                      : "bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-sm font-medium text-white transition-colors"
+              >
+                <Plus className="w-4 h-4" /> Add
+              </button>
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-medium text-slate-200 transition-colors"
+              >
+                <Upload className="w-4 h-4" /> Import
+              </button>
+            </div>
+          </div>
+
+          {/* Contact Cards Grid */}
+          {contacts.length === 0 ? (
+            <div className="text-center py-16">
+              <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">No contacts yet</p>
+              <p className="text-slate-500 text-xs mt-1">
+                Add a contact or import from LinkedIn to get started
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {contacts.map((c) => (
+                <ContactCard
+                  key={c.id}
+                  contact={c}
+                  onClick={() => openContact(c)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Add Contact Modal */}
@@ -922,6 +997,422 @@ function ModalInput({
         onChange={(e) => onChange(e.target.value)}
         className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500"
       />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Warm Intros Panel                                                  */
+/* ------------------------------------------------------------------ */
+
+const PATH_TYPE_META: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
+  alumni: { icon: <GraduationCap className="w-4 h-4" />, label: "Alumni", color: "text-violet-400" },
+  "former-colleague": { icon: <Briefcase className="w-4 h-4" />, label: "Former Colleague", color: "text-blue-400" },
+  "industry-peer": { icon: <Globe className="w-4 h-4" />, label: "Industry Peer", color: "text-cyan-400" },
+  community: { icon: <Users className="w-4 h-4" />, label: "Community", color: "text-amber-400" },
+  "second-degree": { icon: <Link2 className="w-4 h-4" />, label: "2nd Degree", color: "text-emerald-400" },
+};
+
+const STRENGTH_BADGE: Record<string, { bg: string; text: string }> = {
+  strong: { bg: "bg-emerald-900/40", text: "text-emerald-300" },
+  moderate: { bg: "bg-amber-900/40", text: "text-amber-300" },
+  speculative: { bg: "bg-slate-700/40", text: "text-slate-400" },
+};
+
+const TEMPLATE_LABELS: Record<string, string> = {
+  "alumni-intro": "Alumni Introduction",
+  "mutual-connection": "Mutual Connection",
+  "cold-warm": "Cold-Warm Outreach",
+  "informational-interview": "Informational Interview",
+  "referral-request": "Referral Request",
+};
+
+function WarmIntrosPanel({
+  userEmail,
+  onSaveContact,
+}: {
+  userEmail: string;
+  onSaveContact: () => void;
+}) {
+  const [targetCompany, setTargetCompany] = useState("");
+  const [targetRole, setTargetRole] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<WarmIntroResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedPath, setExpandedPath] = useState<number | null>(null);
+  const [expandedTemplate, setExpandedTemplate] = useState<number | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [savingContact, setSavingContact] = useState<number | null>(null);
+
+  const handleAnalyze = async () => {
+    if (!targetCompany.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/networking/warm-intros", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          targetCompany: targetCompany.trim(),
+          targetRole: targetRole.trim() || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to analyze");
+      }
+      const data = await res.json();
+      setResult(data);
+      setExpandedPath(0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyTemplate = async (index: number, template: OutreachTemplate) => {
+    const text = `Subject: ${template.subject}\n\n${template.body}`;
+    await navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  const handleSaveContact = async (index: number, path: WarmIntroPath) => {
+    setSavingContact(index);
+    try {
+      await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          name: path.suggestedContact.name,
+          company: path.suggestedContact.company,
+          role: path.suggestedContact.inferredRole,
+          source: "ai-suggested",
+          tags: ["warm-intro", path.pathType],
+          notes: `${path.suggestedContact.connectionReason}\n\nAction steps:\n${path.actionSteps.map((s) => `- ${s}`).join("\n")}`,
+        }),
+      });
+      onSaveContact();
+    } finally {
+      setSavingContact(null);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-1 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-violet-400" />
+          Find Warm Introductions
+        </h3>
+        <p className="text-xs text-slate-400 mb-4">
+          Enter a target company to discover connection paths through your alumni
+          network, former colleagues, and existing contacts.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            placeholder="Target company (e.g. Google, Stripe)"
+            value={targetCompany}
+            onChange={(e) => setTargetCompany(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+            className="flex-1 bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+          />
+          <input
+            type="text"
+            placeholder="Target role (optional)"
+            value={targetRole}
+            onChange={(e) => setTargetRole(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+            className="sm:w-48 bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+          />
+          <button
+            onClick={handleAnalyze}
+            disabled={loading || !targetCompany.trim()}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-sm font-medium text-white transition-colors shrink-0"
+          >
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Search className="w-4 h-4" /> Find Paths
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
+
+      {result && (
+        <>
+          {/* Strategy Overview */}
+          <div className="bg-gradient-to-br from-violet-900/20 to-slate-800/60 border border-violet-700/30 rounded-2xl p-5">
+            <h3 className="text-sm font-semibold text-violet-300 mb-3 flex items-center gap-2">
+              <ArrowRight className="w-4 h-4" />
+              Strategy for {targetCompany}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-slate-400 mb-1">Warmest Path</p>
+                <p className="text-sm text-slate-200">
+                  {result.strategy.warmestPath}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 mb-1">
+                  Est. Response Rate
+                </p>
+                <p className="text-sm text-slate-200">
+                  {result.strategy.estimatedResponseRate}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 mb-1">
+                  Recommended Approach
+                </p>
+                <p className="text-sm text-slate-200">
+                  {result.strategy.recommendedApproach}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 mb-1">Timing Advice</p>
+                <p className="text-sm text-slate-200">
+                  {result.strategy.timingAdvice}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Connection Paths */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+              <Handshake className="w-4 h-4 text-teal-400" />
+              Connection Paths ({result.connectionPaths.length})
+            </h3>
+            <div className="space-y-3">
+              {result.connectionPaths.map((path, i) => {
+                const meta = PATH_TYPE_META[path.pathType] ?? PATH_TYPE_META.community;
+                const badge = STRENGTH_BADGE[path.strength] ?? STRENGTH_BADGE.speculative;
+                const isExpanded = expandedPath === i;
+
+                return (
+                  <div
+                    key={i}
+                    className="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setExpandedPath(isExpanded ? null : i)}
+                      className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-800/80 transition-colors"
+                    >
+                      <div className={`shrink-0 ${meta.color}`}>
+                        {meta.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-sm font-medium text-slate-200 truncate">
+                            {path.suggestedContact.name}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs ${badge.bg} ${badge.text}`}
+                          >
+                            {path.strength}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs bg-slate-700/40 ${meta.color}`}
+                          >
+                            {meta.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 truncate">
+                          {path.suggestedContact.inferredRole} at{" "}
+                          {path.suggestedContact.company}
+                        </p>
+                      </div>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-slate-500 shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+                      )}
+                    </button>
+
+                    {isExpanded && (
+                      <div className="px-4 pb-4 space-y-3 border-t border-slate-700/50">
+                        <div className="pt-3">
+                          <p className="text-xs text-slate-400 mb-1">
+                            Connection Reason
+                          </p>
+                          <p className="text-sm text-slate-300">
+                            {path.suggestedContact.connectionReason}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 mb-1">
+                            How to Approach
+                          </p>
+                          <p className="text-sm text-slate-300">
+                            {path.description}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 mb-2">
+                            Action Steps
+                          </p>
+                          <ol className="space-y-1.5">
+                            {path.actionSteps.map((step, si) => (
+                              <li
+                                key={si}
+                                className="flex items-start gap-2 text-sm text-slate-300"
+                              >
+                                <span className="w-5 h-5 rounded-full bg-teal-900/40 text-teal-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                  {si + 1}
+                                </span>
+                                {step}
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                        <button
+                          onClick={() => handleSaveContact(i, path)}
+                          disabled={savingContact === i}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600/20 hover:bg-teal-600/30 text-teal-400 text-xs font-medium transition-colors"
+                        >
+                          <UserPlus className="w-3.5 h-3.5" />
+                          {savingContact === i
+                            ? "Saving..."
+                            : "Save to Contacts"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Outreach Templates */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-blue-400" />
+              Outreach Templates ({result.outreachTemplates.length})
+            </h3>
+            <div className="space-y-3">
+              {result.outreachTemplates.map((tpl, i) => {
+                const isExpanded = expandedTemplate === i;
+                return (
+                  <div
+                    key={i}
+                    className="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden"
+                  >
+                    <button
+                      onClick={() =>
+                        setExpandedTemplate(isExpanded ? null : i)
+                      }
+                      className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-800/80 transition-colors"
+                    >
+                      <Send className="w-4 h-4 text-blue-400 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-200">
+                          {TEMPLATE_LABELS[tpl.templateType] || tpl.templateType}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {tpl.subject}
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCopyTemplate(i, tpl);
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs text-slate-300 transition-colors shrink-0"
+                      >
+                        {copiedIndex === i ? (
+                          <>
+                            <Check className="w-3 h-3 text-emerald-400" />{" "}
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" /> Copy
+                          </>
+                        )}
+                      </button>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-slate-500 shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+                      )}
+                    </button>
+
+                    {isExpanded && (
+                      <div className="px-4 pb-4 space-y-3 border-t border-slate-700/50">
+                        <div className="pt-3">
+                          <p className="text-xs text-slate-400 mb-1">
+                            Subject
+                          </p>
+                          <p className="text-sm text-slate-200 font-medium">
+                            {tpl.subject}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 mb-1">Body</p>
+                          <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                            <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
+                              {tpl.body}
+                            </p>
+                          </div>
+                        </div>
+                        {tpl.tips.length > 0 && (
+                          <div>
+                            <p className="text-xs text-slate-400 mb-1">Tips</p>
+                            <ul className="space-y-1">
+                              {tpl.tips.map((tip, ti) => (
+                                <li
+                                  key={ti}
+                                  className="flex items-start gap-2 text-xs text-slate-400"
+                                >
+                                  <Sparkles className="w-3 h-3 text-violet-400 shrink-0 mt-0.5" />
+                                  {tip}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      {!result && !loading && !error && (
+        <div className="text-center py-16">
+          <Sparkles className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+          <p className="text-slate-400 text-sm">
+            Find warm introduction paths to any company
+          </p>
+          <p className="text-slate-500 text-xs mt-1">
+            We&apos;ll analyze your education, work history, and existing
+            contacts to find the warmest paths in
+          </p>
+        </div>
+      )}
     </div>
   );
 }
