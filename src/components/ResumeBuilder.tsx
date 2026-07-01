@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -22,8 +22,16 @@ import {
 } from "lucide-react";
 import type { PivotPlan, UserProfile, SkillGap } from "@/lib/intake";
 import type { ResumeVersion } from "./ResumeVersionList";
-
-type Template = "professional" | "modern" | "minimal";
+import {
+  type Template,
+  type TemplateCategory,
+  TEMPLATES,
+  TEMPLATE_CATEGORIES,
+  TEMPLATE_THEMES,
+  getTheme,
+} from "@/lib/resume-templates";
+import { useRealtimeScore } from "@/hooks/use-realtime-score";
+import { LiveScorePanel } from "@/components/LiveScorePanel";
 
 function skillTransferCategory(gap: SkillGap): "direct" | "partial" | "new" {
   if (gap.transferCategory === "direct-transfer") return "direct";
@@ -50,12 +58,6 @@ const TRANSFER_STYLES = {
   },
 };
 
-const TEMPLATES: { key: Template; name: string; desc: string }[] = [
-  { key: "professional", name: "Professional", desc: "Clean ATS-friendly layout" },
-  { key: "modern", name: "Modern", desc: "Contemporary with subtle design" },
-  { key: "minimal", name: "Minimal", desc: "Streamlined and concise" },
-];
-
 interface ResumeBuilderProps {
   profile: UserProfile;
   plan: PivotPlan;
@@ -65,6 +67,7 @@ interface ResumeBuilderProps {
     target_role: string;
     target_company: string;
     template: Template;
+    theme_id: string;
     enabled_skills: string[];
     enabled_experience_indices: number[];
     sections: Record<string, boolean>;
@@ -179,6 +182,13 @@ export default function ResumeBuilder({
   const [template, setTemplate] = useState<Template>(
     (version?.template as Template) || "professional"
   );
+  const [themeId, setThemeId] = useState<string>(
+    () => {
+      const vThemeId = version && "theme_id" in version ? (version as unknown as { theme_id?: string }).theme_id : undefined;
+      return vThemeId || getTheme((version?.template as Template) || "professional").id;
+    }
+  );
+  const [categoryFilter, setCategoryFilter] = useState<TemplateCategory | "all">("all");
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
     () =>
       new Set(
@@ -238,12 +248,31 @@ export default function ResumeBuilder({
     versionName
   );
 
+  const { scores, score: triggerScore } = useRealtimeScore(500);
+
+  useEffect(() => {
+    if (preview.trim().length > 20) {
+      triggerScore(preview);
+    }
+  }, [preview, triggerScore]);
+
+  const filteredTemplates =
+    categoryFilter === "all"
+      ? TEMPLATES
+      : TEMPLATES.filter((t) => t.category === categoryFilter);
+
+  function handleTemplateChange(t: Template) {
+    setTemplate(t);
+    setThemeId(getTheme(t).id);
+  }
+
   function handleSave() {
     onSave({
       name: versionName,
       target_role: plan.targetRole,
       target_company: targetCompany,
       template,
+      theme_id: themeId,
       enabled_skills: [...selectedSkills],
       enabled_experience_indices: [...includedExperience],
       sections,
@@ -309,11 +338,36 @@ export default function ResumeBuilder({
               <label className="text-xs text-slate-400 mb-2 block">
                 Template
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {TEMPLATES.map((t) => (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                <button
+                  onClick={() => setCategoryFilter("all")}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors ${
+                    categoryFilter === "all"
+                      ? "bg-teal-600 text-white"
+                      : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  All
+                </button>
+                {TEMPLATE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.key}
+                    onClick={() => setCategoryFilter(cat.key)}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors ${
+                      categoryFilter === cat.key
+                        ? "bg-teal-600 text-white"
+                        : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                {filteredTemplates.map((t) => (
                   <button
                     key={t.key}
-                    onClick={() => setTemplate(t.key)}
+                    onClick={() => handleTemplateChange(t.key)}
                     className={`p-3 rounded-lg border text-left transition-all ${
                       template === t.key
                         ? "bg-teal-900/30 border-teal-600/50 ring-1 ring-teal-500/30"
@@ -326,6 +380,28 @@ export default function ResumeBuilder({
                     <span className="text-[10px] text-slate-500">{t.desc}</span>
                   </button>
                 ))}
+              </div>
+
+              {/* Color theme swatches */}
+              <div className="mt-3">
+                <label className="text-[10px] text-slate-500 mb-1.5 block">
+                  Color Theme
+                </label>
+                <div className="flex gap-2">
+                  {TEMPLATE_THEMES[template].map((theme) => (
+                    <button
+                      key={theme.id}
+                      onClick={() => setThemeId(theme.id)}
+                      title={theme.name}
+                      className={`w-7 h-7 rounded-full border-2 transition-all ${
+                        themeId === theme.id
+                          ? "border-white ring-2 ring-teal-500/50 scale-110"
+                          : "border-slate-600 hover:border-slate-400"
+                      }`}
+                      style={{ backgroundColor: theme.swatch }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -437,9 +513,10 @@ export default function ResumeBuilder({
         </button>
       </div>
 
-      {/* Right panel — live preview */}
-      <div className="lg:w-1/2 flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
+      {/* Right panel — live preview + score */}
+      <div className="lg:w-1/2 flex flex-col gap-3">
+        <LiveScorePanel scores={scores} />
+        <div className="flex items-center gap-2">
           <Eye className="h-4 w-4 text-slate-400" />
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">
             Preview
@@ -449,7 +526,7 @@ export default function ResumeBuilder({
           </Badge>
         </div>
         <div className="flex-1 rounded-xl border border-slate-700/60 bg-slate-900/80 overflow-hidden">
-          <ScrollArea className="h-[calc(100vh-320px)]">
+          <ScrollArea className="h-[calc(100vh-480px)]">
             <pre className="p-6 text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">
               {preview}
             </pre>

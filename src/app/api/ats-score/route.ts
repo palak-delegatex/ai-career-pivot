@@ -15,6 +15,11 @@ import {
   type CategoryScore,
   type EnrichedJDKeywords,
 } from "@/lib/ats-scoring";
+import {
+  parseJobDescription,
+  matchResponsibilities,
+  type ResponsibilityMatchResult,
+} from "@/lib/jd-parser";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -125,6 +130,7 @@ export interface ATSScoreResult {
     suggestions: string[];
   };
   topPriorityFixes: string[];
+  responsibilityMatch?: ResponsibilityMatchResult;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -223,7 +229,7 @@ async function scoreWithJD(
 
   const model = anthropic("claude-sonnet-4-6");
 
-  const [jdResult, semanticResult] = await Promise.all([
+  const [jdResult, semanticResult, structuredJD] = await Promise.all([
     generateText({
       model,
       output: Output.object({ schema: EnrichedJDSchema }),
@@ -279,6 +285,7 @@ Provide:
         }],
       });
     })(),
+    parseJobDescription(jobDescription).catch(() => null),
   ]);
 
   if (!jdResult.output) {
@@ -288,13 +295,21 @@ Provide:
   const enriched = jdResult.output as EnrichedJDKeywords;
   const semanticMatches = semanticResult.output?.semanticKeywordMatches || [];
 
-  const multiResult = computeMultiDimensionalScore(resumeText, enriched, {
-    fileType: file.type,
-    semanticMatches,
-    enriched,
-  });
+  const [multiResult, responsibilityResult] = await Promise.all([
+    Promise.resolve(computeMultiDimensionalScore(resumeText, enriched, {
+      fileType: file.type,
+      semanticMatches,
+      enriched,
+    })),
+    structuredJD
+      ? matchResponsibilities(structuredJD, resumeText).catch(() => null)
+      : Promise.resolve(null),
+  ]);
 
   const result: ATSScoreResult = buildATSResponse(multiResult, semanticResult.output, enriched);
+  if (responsibilityResult) {
+    result.responsibilityMatch = responsibilityResult;
+  }
   return NextResponse.json(result);
 }
 
