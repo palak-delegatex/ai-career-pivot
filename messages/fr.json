@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "Commencer gratuitement",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "account": "Compte",
+    "loading": "Chargement…",
+    "learnMore": "En savoir plus",
+    "tagline": "Votre carrière, à votre rythme."
+  },
+  "nav": {
+    "freeSnapshot": "Bilan gratuit",
+    "blog": "Blog",
+    "pricing": "Tarifs",
+    "howItWorks": "Comment ça marche",
+    "myRoadmaps": "Mes feuilles de route",
+    "jobTracker": "Suivi des candidatures",
+    "networking": "Réseautage",
+    "coverLetter": "Lettre de motivation",
+    "linkedin": "LinkedIn",
+    "openMenu": "Ouvrir le menu",
+    "skipToContent": "Aller au contenu"
+  },
+  "languageSwitcher": {
+    "label": "Langue",
+    "change": "Changer de langue"
+  },
+  "footer": {
+    "description": "Votre stratège de carrière propulsé par l'IA. Des feuilles de route de transition personnalisées selon vos compétences, vos finances et votre calendrier.",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "Produit",
+    "resourcesHeading": "Ressources",
+    "useCasesHeading": "Cas d'usage",
+    "links": {
+      "howItWorks": "Comment ça marche",
+      "pricing": "Tarifs",
+      "freeAssessment": "Évaluation gratuite",
+      "mockInterview": "Entretien blanc",
+      "gapAnalysis": "Analyse des écarts",
+      "atsScore": "Score ATS",
+      "resumeGenerator": "Générateur de CV",
+      "dashboard": "Tableau de bord",
+      "blog": "Blog",
+      "faq": "FAQ",
+      "aboutUs": "À propos",
+      "careerAssessment": "Évaluation de carrière",
+      "careerPivotPlanning": "Planification de reconversion",
+      "salaryGrowthStrategy": "Stratégie d'évolution salariale",
+      "skillGapAnalysis": "Analyse des écarts de compétences",
+      "aiJobSearch": "Recherche d'emploi avec l'IA",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "contact": "Contact"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Stratège de carrière propulsé par l'IA",
+      "title": "Ne restez plus prisonnier de la mauvaise carrière",
+      "subtitle": "Construisez une feuille de route de reconversion personnalisée en fonction de vos compétences réelles, de vos finances et de vos contraintes familiales — avec des plans concrets à 6 mois, 1 an et 2 ans.",
+      "ctaPrimary": "Obtenez votre bilan gratuit",
+      "ctaSecondary": "Découvrez comment ça marche",
+      "trustNote": "Aucune carte bancaire requise."
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — Votre stratège de carrière personnel",
+    "defaultDescription": "Ne restez plus prisonnier. Construisez une feuille de route de reconversion personnalisée selon vos compétences, vos finances et vos contraintes familiales. Des plans concrets à 6 mois, 1 an et 2 ans."
+  }
+}

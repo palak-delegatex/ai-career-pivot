@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "Comienza gratis",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "account": "Cuenta",
+    "loading": "Cargando…",
+    "learnMore": "Saber más",
+    "tagline": "Tu carrera, a tu ritmo."
+  },
+  "nav": {
+    "freeSnapshot": "Diagnóstico gratis",
+    "blog": "Blog",
+    "pricing": "Precios",
+    "howItWorks": "Cómo funciona",
+    "myRoadmaps": "Mis planes",
+    "jobTracker": "Seguimiento de empleos",
+    "networking": "Networking",
+    "coverLetter": "Carta de presentación",
+    "linkedin": "LinkedIn",
+    "openMenu": "Abrir menú",
+    "skipToContent": "Saltar al contenido"
+  },
+  "languageSwitcher": {
+    "label": "Idioma",
+    "change": "Cambiar idioma"
+  },
+  "footer": {
+    "description": "Tu estratega de carrera con IA. Planes de transición personalizados según tus habilidades, finanzas y tiempos.",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "Producto",
+    "resourcesHeading": "Recursos",
+    "useCasesHeading": "Casos de uso",
+    "links": {
+      "howItWorks": "Cómo funciona",
+      "pricing": "Precios",
+      "freeAssessment": "Evaluación gratuita",
+      "mockInterview": "Entrevista de práctica",
+      "gapAnalysis": "Análisis de brechas",
+      "atsScore": "Puntuación ATS",
+      "resumeGenerator": "Generador de CV",
+      "dashboard": "Panel",
+      "blog": "Blog",
+      "faq": "Preguntas frecuentes",
+      "aboutUs": "Sobre nosotros",
+      "careerAssessment": "Evaluación de carrera",
+      "careerPivotPlanning": "Planificación de cambio de carrera",
+      "salaryGrowthStrategy": "Estrategia de crecimiento salarial",
+      "skillGapAnalysis": "Análisis de brechas de habilidades",
+      "aiJobSearch": "Búsqueda de empleo con IA",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Estratega de carrera con IA",
+      "title": "Deja de sentirte atrapado en la carrera equivocada",
+      "subtitle": "Crea un plan de transición profesional personalizado según tus habilidades reales, tus finanzas y tus circunstancias familiares, con planes accionables a 6 meses, 1 año y 2 años.",
+      "ctaPrimary": "Obtén tu diagnóstico gratis",
+      "ctaSecondary": "Descubre cómo funciona",
+      "trustNote": "No se requiere tarjeta de crédito."
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — Tu estratega de carrera personal",
+    "defaultDescription": "Deja de sentirte atrapado. Crea un plan de transición profesional personalizado según tus habilidades, finanzas y circunstancias familiares. Planes accionables a 6 meses, 1 año y 2 años."
+  }
+}

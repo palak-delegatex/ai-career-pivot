@@ -10,6 +10,19 @@ body {
   overflow-x: hidden;
 }
 
+/* Multilingual script fonts (AIC-662) — applied per <html lang>. */
+:lang(hi) body,
+body:lang(hi) {
+  font-family: var(--font-noto-devanagari), var(--font-sans), ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+:lang(ja) body,
+body:lang(ja) {
+  font-family: var(--font-noto-jp), var(--font-sans), ui-sans-serif, system-ui,
+    sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }

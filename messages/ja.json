@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "無料で始める",
+    "signIn": "ログイン",
+    "signOut": "ログアウト",
+    "account": "アカウント",
+    "loading": "読み込み中…",
+    "learnMore": "詳しく見る",
+    "tagline": "あなたのキャリアを、あなたのペースで。"
+  },
+  "nav": {
+    "freeSnapshot": "無料診断",
+    "blog": "ブログ",
+    "pricing": "料金",
+    "howItWorks": "使い方",
+    "myRoadmaps": "マイロードマップ",
+    "jobTracker": "求人トラッカー",
+    "networking": "ネットワーキング",
+    "coverLetter": "カバーレター",
+    "linkedin": "LinkedIn",
+    "openMenu": "メニューを開く",
+    "skipToContent": "本文へスキップ"
+  },
+  "languageSwitcher": {
+    "label": "言語",
+    "change": "言語を変更"
+  },
+  "footer": {
+    "description": "AIによるキャリア戦略パートナー。あなたのスキル・資金・スケジュールに基づいた、パーソナライズされた転身ロードマップ。",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "製品",
+    "resourcesHeading": "リソース",
+    "useCasesHeading": "ユースケース",
+    "links": {
+      "howItWorks": "使い方",
+      "pricing": "料金",
+      "freeAssessment": "無料アセスメント",
+      "mockInterview": "模擬面接",
+      "gapAnalysis": "ギャップ分析",
+      "atsScore": "ATSスコア",
+      "resumeGenerator": "履歴書ジェネレーター",
+      "dashboard": "ダッシュボード",
+      "blog": "ブログ",
+      "faq": "よくある質問",
+      "aboutUs": "私たちについて",
+      "careerAssessment": "キャリア診断",
+      "careerPivotPlanning": "キャリアチェンジ計画",
+      "salaryGrowthStrategy": "年収アップ戦略",
+      "skillGapAnalysis": "スキルギャップ分析",
+      "aiJobSearch": "AI求人検索",
+      "privacy": "プライバシー",
+      "terms": "利用規約",
+      "contact": "お問い合わせ"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "AIによるキャリア戦略パートナー",
+      "title": "間違ったキャリアに縛られる日々を終わりにしましょう",
+      "subtitle": "あなたの本当のスキル・資金・家庭の事情に基づいて、パーソナライズされたキャリア転身ロードマップを作成。6か月・1年・2年の実行可能なプラン付き。",
+      "ctaPrimary": "無料診断を受ける",
+      "ctaSecondary": "使い方を見る",
+      "trustNote": "クレジットカードは不要です。"
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — あなた専属のキャリア戦略パートナー",
+    "defaultDescription": "縛られる日々を終わりに。あなたのスキル・資金・家庭の事情に基づいた、パーソナライズされたキャリア転身ロードマップを作成。6か月・1年・2年の実行可能なプラン。"
+  }
+}
