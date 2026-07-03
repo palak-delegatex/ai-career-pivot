@@ -21,6 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { SkillGap, RecommendedResource } from "@/lib/intake";
 import UpgradePrompt from "@/components/UpgradePrompt";
+import ContextualGate from "@/components/ContextualGate";
 
 type MilestoneStatus = "not-started" | "in-progress" | "completed";
 
@@ -569,16 +570,22 @@ export default function InteractiveRoadmap({
 
       {/* Free tier upgrade prompt */}
       {isFreeTier && totalAllMilestones > FREE_TIER_VISIBLE_MILESTONES && (
-        <div className="mt-6 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/60 to-slate-900 pointer-events-none rounded-xl -top-8 z-0" />
-          <div className="relative z-10">
-            <UpgradePrompt
-              feature="full roadmap"
-              message={`You're seeing ${FREE_TIER_VISIBLE_MILESTONES} of ${totalAllMilestones} milestones. Upgrade to unlock your complete career roadmap with 1-year and 2-year plans.`}
-              location="roadmap"
-              compact
-            />
-          </div>
+        <div className="mt-6">
+          <ContextualGate
+            count={totalAllMilestones - FREE_TIER_VISIBLE_MILESTONES}
+            label="more milestones across 3 phases"
+            cta="Upgrade to unlock full roadmap"
+            onUpgrade={() => window.location.href = "/pricing"}
+          >
+            <div className="space-y-3 py-4">
+              {allPhases.slice(1).map((phase) => (
+                <div key={phase.key} className="bg-slate-800/40 border border-slate-700/40 rounded-lg p-3">
+                  <p className="text-sm font-medium text-slate-500">{phase.label}</p>
+                  <p className="text-xs text-slate-600 mt-1">{phase.milestones.length} milestones</p>
+                </div>
+              ))}
+            </div>
+          </ContextualGate>
         </div>
       )}
 

@@ -27,6 +27,8 @@ import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import QuickActionsCard from "@/components/QuickActionsCard";
 import ToolsGrid from "@/components/ToolsGrid";
 import UpgradePrompt from "@/components/UpgradePrompt";
+import PlanBadge from "@/components/PlanBadge";
+import UsageMeterStrip from "@/components/UsageMeterStrip";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { UserPlanResponse } from "@/app/api/user-plan/route";
 
@@ -655,9 +657,12 @@ export default function DashboardClient() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-4">
-        Your Dashboard
-      </h1>
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-center">
+          Your Dashboard
+        </h1>
+        {userPlan && <PlanBadge plan={userPlan.plan} />}
+      </div>
       {activeReport && (
         <QuickActionsCard
           completionPercent={completionPercent}
@@ -707,6 +712,8 @@ export default function DashboardClient() {
                 daysElapsed={daysElapsed}
                 currentPhaseLabel={currentPhaseLabel}
               />
+
+              {isFreeTier && <UsageMeterStrip />}
 
               {progressLoaded && (
                 <>
@@ -779,6 +786,15 @@ export default function DashboardClient() {
               />
 
               <ToolsGrid reportId={activeReport!.id} />
+
+              {isFreeTier && (
+                <UpgradePrompt
+                  feature="all premium tools"
+                  variant="banner"
+                  price="$19"
+                  location="dashboard_bottom"
+                />
+              )}
             </div>
           </TabsContent>
 
@@ -798,7 +814,9 @@ export default function DashboardClient() {
             {isFreeTier ? (
               <UpgradePrompt
                 feature="salary negotiation"
-                message="Salary negotiation prep is a paid feature. Upgrade to get data-driven negotiation scripts, market salary ranges, and counter-offer strategies."
+                variant="gate"
+                price="$19"
+                message="Upgrade to get data-driven negotiation scripts, market salary ranges, and counter-offer strategies."
                 location="dashboard_negotiation_tab"
               />
             ) : (
@@ -810,7 +828,9 @@ export default function DashboardClient() {
             {isFreeTier ? (
               <UpgradePrompt
                 feature="networking tools"
-                message="The Networking CRM is a paid feature. Upgrade to track connections, generate warm intro templates, and manage your professional network."
+                variant="gate"
+                price="$19"
+                message="Upgrade to track connections, generate warm intro templates, and manage your professional network."
                 location="dashboard_network_tab"
               />
             ) : (

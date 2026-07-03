@@ -9,6 +9,7 @@ import {
   SheetDescription,
   SheetFooter,
 } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -29,10 +30,19 @@ import {
   Lightbulb,
   Loader2,
   Wand2,
+  ExternalLink,
+  GraduationCap,
+  Sparkles,
+  TrendingUp,
+  Award,
 } from "lucide-react";
 import type { EnrichedJob } from "@/lib/job-match";
-import type { UserProfile, PivotPlan } from "@/lib/intake";
+import type { UserProfile, PivotPlan, CourseResource, GapLearningRoadmapPhase } from "@/lib/intake";
 import { ScoreRing } from "@/components/ScoreRing";
+import UpgradePrompt from "@/components/UpgradePrompt";
+import ContextualGate from "@/components/ContextualGate";
+
+const FREE_PREVIEW_GAPS = 3;
 
 interface MatchedSkill {
   skill: string;
@@ -45,7 +55,7 @@ interface MissingSkill {
   importance: "must-have" | "nice-to-have";
   actionStep: string;
   timeToAcquire: string;
-  recommendedResource: string;
+  recommendedResources: CourseResource[];
 }
 
 interface ExperienceGap {
@@ -68,6 +78,7 @@ interface GapAnalysisResult {
   missingSkills: MissingSkill[];
   experienceGaps: ExperienceGap[];
   weeklyActionPlan: WeeklyAction[];
+  learningRoadmap: GapLearningRoadmapPhase[];
   applicationTips: string[];
 }
 
@@ -81,6 +92,7 @@ interface GapAnalysisSheetProps {
   onOpenResume?: () => void;
   onOpenCoverLetter?: () => void;
   onOpenTailor?: () => void;
+  isFreeTier?: boolean;
 }
 
 function StrengthBar({ strength }: { strength: "strong" | "moderate" | "basic" }) {
@@ -100,6 +112,137 @@ function StrengthBar({ strength }: { strength: "strong" | "moderate" | "basic" }
   );
 }
 
+const costLabel: Record<string, string> = {
+  free: "Free",
+  low: "< $50",
+  medium: "$50-200",
+  high: "$200+",
+};
+
+const credentialIcon: Record<string, string> = {
+  high: "Industry Cert",
+  medium: "Certificate",
+  low: "Badge",
+  none: "Self-study",
+};
+
+function CourseResourceCard({ resource }: { resource: CourseResource }) {
+  const typeIcon = {
+    course: BookOpen,
+    certification: GraduationCap,
+    tutorial: Sparkles,
+    book: BookOpen,
+    youtube: ExternalLink,
+    practice: Target,
+  };
+  const Icon = typeIcon[resource.type] || BookOpen;
+
+  return (
+    <div className="flex items-start gap-3 p-2.5 bg-slate-900/40 rounded-lg group">
+      <Icon className="h-4 w-4 text-teal-400 mt-0.5 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-medium text-slate-200 truncate">
+            {resource.name}
+          </p>
+          {resource.url && (
+            <a
+              href={resource.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ExternalLink className="h-3 w-3 text-slate-500 hover:text-teal-400" />
+            </a>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
+          <span>{resource.provider}</span>
+          <span>&middot;</span>
+          <span>{resource.duration}</span>
+          <span>&middot;</span>
+          <span>{costLabel[resource.cost] ?? resource.cost}</span>
+          {resource.credentialValue !== "none" && (
+            <>
+              <span>&middot;</span>
+              <span className="text-amber-400 flex items-center gap-0.5">
+                <Award className="h-2.5 w-2.5" />
+                {credentialIcon[resource.credentialValue]}
+              </span>
+            </>
+          )}
+        </div>
+        <p className="text-[10px] text-slate-500 mt-1">{resource.reason}</p>
+      </div>
+    </div>
+  );
+}
+
+function RoadmapPhaseCard({ phase }: { phase: GapLearningRoadmapPhase }) {
+  const phaseConfig = {
+    foundation: {
+      color: "text-emerald-400",
+      bg: "bg-emerald-900/20",
+      border: "border-emerald-700/30",
+      dot: "bg-emerald-500",
+    },
+    "core-skills": {
+      color: "text-teal-400",
+      bg: "bg-teal-900/20",
+      border: "border-teal-700/30",
+      dot: "bg-teal-500",
+    },
+    advanced: {
+      color: "text-violet-400",
+      bg: "bg-violet-900/20",
+      border: "border-violet-700/30",
+      dot: "bg-violet-500",
+    },
+  };
+  const config = phaseConfig[phase.phase];
+
+  return (
+    <div className={`${config.bg} border ${config.border} rounded-xl p-4`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className={`w-2.5 h-2.5 rounded-full ${config.dot}`} />
+          <h4 className={`text-sm font-semibold ${config.color}`}>
+            {phase.title}
+          </h4>
+        </div>
+        <span className="text-[10px] text-slate-500">{phase.weeks}</span>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {phase.skills.map((skill) => (
+          <span
+            key={skill}
+            className="px-2 py-1 text-[10px] bg-slate-800/60 border border-slate-700 rounded-md text-slate-300"
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+
+      {phase.resources.length > 0 && (
+        <div className="space-y-1.5 mb-3">
+          {phase.resources.map((resource, i) => (
+            <CourseResourceCard key={i} resource={resource} />
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-start gap-2 pt-2 border-t border-slate-700/40">
+        <Target className="h-3.5 w-3.5 text-teal-400 mt-0.5 shrink-0" />
+        <p className="text-xs text-slate-300">
+          <span className="font-medium text-teal-300">Milestone:</span>{" "}
+          {phase.milestone}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function GapAnalysisSheet({
   job,
   jobDescription: externalJD,
@@ -110,10 +253,13 @@ export default function GapAnalysisSheet({
   onOpenResume,
   onOpenCoverLetter,
   onOpenTailor,
+  isFreeTier = false,
 }: GapAnalysisSheetProps) {
+  const isMobile = useIsMobile();
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<GapAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [upgradeNeeded, setUpgradeNeeded] = useState<{ message: string; url: string } | null>(null);
   const [animated, setAnimated] = useState(false);
   const [jobDescInput, setJobDescInput] = useState("");
 
@@ -137,6 +283,7 @@ export default function GapAnalysisSheet({
     if (!open) {
       setResult(null);
       setError(null);
+      setUpgradeNeeded(null);
       setAnimated(false);
       setJobDescInput("");
     }
@@ -176,6 +323,16 @@ export default function GapAnalysisSheet({
         }),
       });
 
+      if (res.status === 401 || res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setUpgradeNeeded({
+          message: data.error ?? "Upgrade required",
+          url: data.upgradeUrl ?? "/pricing",
+        });
+        setAnalyzing(false);
+        return;
+      }
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Analysis failed");
@@ -192,21 +349,30 @@ export default function GapAnalysisSheet({
     }
   }
 
-  const mustHaveGaps = result?.missingSkills.filter(
+  const allGaps = result?.missingSkills ?? [];
+  const visibleGaps = isFreeTier ? allGaps.slice(0, FREE_PREVIEW_GAPS) : allGaps;
+  const hiddenGapCount = isFreeTier ? Math.max(0, allGaps.length - FREE_PREVIEW_GAPS) : 0;
+
+  const mustHaveGaps = visibleGaps.filter(
     (s) => s.importance === "must-have"
-  ) ?? [];
-  const niceToHaveGaps = result?.missingSkills.filter(
+  );
+  const niceToHaveGaps = visibleGaps.filter(
     (s) => s.importance === "nice-to-have"
-  ) ?? [];
+  );
 
   const title = job ? `${job.title} at ${job.company_name}` : "Job Fit Analysis";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="right"
-        className="w-[540px] md:w-[640px] max-w-full md:max-w-[640px] bg-slate-900 border-slate-700 p-0 flex flex-col h-screen md:h-full"
+        side={isMobile ? "bottom" : "right"}
+        className={
+          isMobile
+            ? "max-w-full bg-slate-900 border-slate-700 p-0 flex flex-col max-h-[90vh] rounded-t-2xl"
+            : "w-[540px] md:w-[640px] max-w-full md:max-w-[640px] bg-slate-900 border-slate-700 p-0 flex flex-col h-screen md:h-full"
+        }
       >
+        {isMobile && <div className="w-10 h-1 rounded-full bg-slate-600 mx-auto mt-2 mb-1 shrink-0" />}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-slate-700/60 shrink-0">
           <div className="flex items-center gap-2">
             <Target className="h-5 w-5 text-teal-400" />
@@ -287,6 +453,15 @@ export default function GapAnalysisSheet({
                   This takes about 10-15 seconds
                 </p>
               </div>
+            )}
+
+            {/* Upgrade prompt */}
+            {upgradeNeeded && (
+              <UpgradePrompt
+                feature="skill gap analysis"
+                message={upgradeNeeded.message}
+                upgradeUrl={upgradeNeeded.url}
+              />
             )}
 
             {/* Error */}
@@ -396,10 +571,13 @@ export default function GapAnalysisSheet({
                                   <p className="text-xs text-slate-400 mt-1">
                                     {s.actionStep}
                                   </p>
-                                  <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-300/80">
-                                    <BookOpen className="h-3 w-3 shrink-0" />
-                                    <span>{s.recommendedResource}</span>
-                                  </div>
+                                  {s.recommendedResources?.length > 0 && (
+                                    <div className="space-y-1.5 mt-2 pt-2 border-t border-red-800/20">
+                                      {s.recommendedResources.map((r, ri) => (
+                                        <CourseResourceCard key={ri} resource={r} />
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -428,10 +606,13 @@ export default function GapAnalysisSheet({
                                   <p className="text-xs text-slate-400 mt-1">
                                     {s.actionStep}
                                   </p>
-                                  <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-300/80">
-                                    <BookOpen className="h-3 w-3 shrink-0" />
-                                    <span>{s.recommendedResource}</span>
-                                  </div>
+                                  {s.recommendedResources?.length > 0 && (
+                                    <div className="space-y-1.5 mt-2 pt-2 border-t border-amber-800/20">
+                                      {s.recommendedResources.map((r, ri) => (
+                                        <CourseResourceCard key={ri} resource={r} />
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -440,6 +621,18 @@ export default function GapAnalysisSheet({
                       </div>
                     </AccordionContent>
                   </AccordionItem>
+
+                  {/* Contextual gate for remaining gaps */}
+                  {isFreeTier && hiddenGapCount > 0 && (
+                    <div className="px-1 py-2">
+                      <ContextualGate
+                        count={hiddenGapCount}
+                        label="more gaps"
+                        cta="Upgrade to see all gaps"
+                        onUpgrade={() => window.location.href = "/pricing"}
+                      />
+                    </div>
+                  )}
 
                   {/* Experience Gaps */}
                   {result.experienceGaps.length > 0 && (
@@ -486,36 +679,46 @@ export default function GapAnalysisSheet({
                       </span>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div className="space-y-4">
-                        {result.weeklyActionPlan.map((week) => (
-                          <div
-                            key={week.week}
-                            className="bg-slate-800/40 border border-slate-700/60 rounded-lg p-3"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-sm font-semibold text-teal-300">
-                                Week {week.week}: {week.focus}
-                              </p>
-                              <span className="text-[10px] text-slate-500">
-                                ~{week.hoursPerWeek}h/week
-                              </span>
+                      {isFreeTier ? (
+                        <UpgradePrompt
+                          feature="weekly action plan"
+                          variant="gate"
+                          price="$19"
+                          message="Upgrade to get your personalized weekly action plan"
+                          location="gap_analysis_action_plan"
+                        />
+                      ) : (
+                        <div className="space-y-4">
+                          {result.weeklyActionPlan.map((week) => (
+                            <div
+                              key={week.week}
+                              className="bg-slate-800/40 border border-slate-700/60 rounded-lg p-3"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <p className="text-sm font-semibold text-teal-300">
+                                  Week {week.week}: {week.focus}
+                                </p>
+                                <span className="text-[10px] text-slate-500">
+                                  ~{week.hoursPerWeek}h/week
+                                </span>
+                              </div>
+                              <ul className="space-y-1.5">
+                                {week.tasks.map((task, i) => (
+                                  <li
+                                    key={i}
+                                    className="text-xs text-slate-400 flex items-start gap-2"
+                                  >
+                                    <span className="text-teal-500 mt-0.5 shrink-0">
+                                      &bull;
+                                    </span>
+                                    {task}
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
-                            <ul className="space-y-1.5">
-                              {week.tasks.map((task, i) => (
-                                <li
-                                  key={i}
-                                  className="text-xs text-slate-400 flex items-start gap-2"
-                                >
-                                  <span className="text-teal-500 mt-0.5 shrink-0">
-                                    &bull;
-                                  </span>
-                                  {task}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      )}
                     </AccordionContent>
                   </AccordionItem>
 

@@ -18,6 +18,8 @@ interface UpgradePromptProps {
   upgradeUrl?: string;
   location?: string;
   compact?: boolean;
+  variant?: "banner" | "gate" | "inline";
+  price?: string;
 }
 
 const VALUE_PROPS: Record<string, string[]> = {
@@ -63,6 +65,8 @@ export default function UpgradePrompt({
   upgradeUrl = "/pricing",
   location = "unknown",
   compact = false,
+  variant = "inline",
+  price,
 }: UpgradePromptProps) {
   useEffect(() => {
     trackUpgradePromptViewed({ feature, location });
@@ -85,15 +89,62 @@ export default function UpgradePrompt({
     );
   }
 
+  if (variant === "banner") {
+    return (
+      <div className="bg-gradient-to-r from-[#0f172a] to-teal-900/30 border border-[#334155] rounded-xl p-5 flex items-center gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-white">
+            Unlock all features{price ? ` for ${price}` : ""}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            {message ?? "Get unlimited access to gap analyses, resume generation, cover letters, and more."}
+          </p>
+        </div>
+        <Link
+          href={upgradeUrl}
+          onClick={() => trackUpgradePromptClicked({ feature, location, destination: upgradeUrl })}
+          className="inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 px-5 py-2.5 text-sm font-medium text-white transition-colors shrink-0"
+        >
+          Upgrade{price ? ` — ${price}` : ""}
+        </Link>
+      </div>
+    );
+  }
+
+  if (variant === "gate") {
+    return (
+      <div
+        className="flex flex-col items-center justify-center gap-3 py-8 px-4 text-center"
+        style={{
+          background: "rgba(3, 7, 18, 0.5)",
+          backdropFilter: "blur(2px)",
+          border: "1px solid #334155",
+          borderRadius: "12px",
+        }}
+      >
+        <p className="text-sm text-slate-300 font-medium">
+          {message ?? `Upgrade to unlock ${feature}`}
+        </p>
+        <Link
+          href={upgradeUrl}
+          onClick={() => trackUpgradePromptClicked({ feature, location, destination: upgradeUrl })}
+          className="inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 px-5 py-2.5 text-sm font-medium text-white transition-colors"
+        >
+          Upgrade{price ? ` — ${price}` : ""}
+        </Link>
+      </div>
+    );
+  }
+
   const valueProps = getValueProps(feature);
 
   return (
-    <Card className="border-amber-700/30 bg-gradient-to-br from-slate-800/80 to-amber-900/20">
+    <Card className="border-[#334155] bg-[#0f172a]">
       <CardHeader>
-        <CardTitle className="text-amber-200">
+        <CardTitle className="text-white">
           Upgrade to unlock {feature}
         </CardTitle>
-        <CardDescription className="text-amber-300/70">
+        <CardDescription className="text-slate-400">
           {message ??
             "You've reached the limit of your free plan. Upgrade to get unlimited access to all features."}
         </CardDescription>
@@ -108,13 +159,13 @@ export default function UpgradePrompt({
           ))}
         </ul>
       </CardContent>
-      <CardFooter className="border-amber-700/20">
+      <CardFooter className="border-slate-700/40">
         <Link
           href={upgradeUrl}
           onClick={() => trackUpgradePromptClicked({ feature, location, destination: upgradeUrl })}
           className="inline-flex items-center rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal-500"
         >
-          View Plans
+          {price ? `Upgrade — ${price}` : "View Plans"}
         </Link>
       </CardFooter>
     </Card>
