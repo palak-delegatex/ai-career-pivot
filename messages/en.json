@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "Get Started Free",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "account": "Account",
+    "loading": "Loading…",
+    "learnMore": "Learn more",
+    "tagline": "Your career, your timeline."
+  },
+  "nav": {
+    "freeSnapshot": "Free Snapshot",
+    "blog": "Blog",
+    "pricing": "Pricing",
+    "howItWorks": "How It Works",
+    "myRoadmaps": "My Roadmaps",
+    "jobTracker": "Job Tracker",
+    "networking": "Networking",
+    "coverLetter": "Cover Letter",
+    "linkedin": "LinkedIn",
+    "openMenu": "Open menu",
+    "skipToContent": "Skip to content"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "footer": {
+    "description": "Your AI-powered career strategist. Personalized transition roadmaps based on your skills, finances, and timeline.",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "Product",
+    "resourcesHeading": "Resources",
+    "useCasesHeading": "Use Cases",
+    "links": {
+      "howItWorks": "How It Works",
+      "pricing": "Pricing",
+      "freeAssessment": "Free Assessment",
+      "mockInterview": "Mock Interview",
+      "gapAnalysis": "Gap Analysis",
+      "atsScore": "ATS Score",
+      "resumeGenerator": "Resume Generator",
+      "dashboard": "Dashboard",
+      "blog": "Blog",
+      "faq": "FAQ",
+      "aboutUs": "About Us",
+      "careerAssessment": "Career Assessment",
+      "careerPivotPlanning": "Career Pivot Planning",
+      "salaryGrowthStrategy": "Salary Growth Strategy",
+      "skillGapAnalysis": "Skill Gap Analysis",
+      "aiJobSearch": "AI Job Search",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "AI-powered career strategist",
+      "title": "Stop feeling trapped in the wrong career",
+      "subtitle": "Build a personalized career transition roadmap based on your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans.",
+      "ctaPrimary": "Get your free snapshot",
+      "ctaSecondary": "See how it works",
+      "trustNote": "No credit card required."
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — Your Personal Career Strategist",
+    "defaultDescription": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+  }
+}

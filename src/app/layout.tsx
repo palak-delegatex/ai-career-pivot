@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
+import {
+  Inter,
+  Source_Serif_4,
+  JetBrains_Mono,
+  Noto_Sans_Devanagari,
+  Noto_Sans_JP,
+} from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "./PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
@@ -24,6 +30,23 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+});
+
+// Script fonts for multilingual support (AIC-662). Not preloaded — the browser
+// only fetches them when Devanagari (Hindi) or CJK (Japanese) glyphs render.
+const notoDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-noto-devanagari",
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoJP = Noto_Sans_JP({
+  variable: "--font-noto-jp",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
 });
 
 const BASE_URL = "https://ai-career-pivot.com";
@@ -89,7 +112,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
           <PostHogProvider>
