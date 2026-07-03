@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
+import { getStripeClient, PLANS, type PaidPlanKey, isBypassEmail } from "@/lib/stripe";
 import { getSupabaseClient, getSupabaseAdmin } from "@/lib/supabase";
 import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
-  const { email, discountCode, plan: planKey = "report" } = await req.json();
+  const { email, discountCode, plan: planKey = "report", sourceFeature } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
-  const plan = PLANS[planKey as PlanKey];
+  const plan = PLANS[planKey as PaidPlanKey];
   if (!plan) {
     return NextResponse.json({ error: "invalid plan" }, { status: 400 });
   }
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       line_items: [{ price_data: priceData as never, quantity: 1 }],
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/pricing`,
-      metadata: { email, plan: planKey, discountCode: discountCode ?? "" },
+      metadata: { email, plan: planKey, discountCode: discountCode ?? "", source_feature: sourceFeature ?? "" },
     };
 
     if (discountCode) {

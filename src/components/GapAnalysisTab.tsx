@@ -12,6 +12,11 @@ import {
   Loader2,
   FileText,
   FileSignature,
+  ExternalLink,
+  GraduationCap,
+  Sparkles,
+  TrendingUp,
+  Award,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,8 +25,10 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import type { UserProfile, PivotPlan } from "@/lib/intake";
+import type { UserProfile, PivotPlan, CourseResource, GapLearningRoadmapPhase } from "@/lib/intake";
 import ResumeGeneratorSheet from "@/components/ResumeGeneratorSheet";
+import UpgradePrompt from "@/components/UpgradePrompt";
+import { trackGateHit, trackFreeFeatureUsed } from "@/lib/tracking";
 
 interface MatchedSkill {
   skill: string;
@@ -34,7 +41,7 @@ interface MissingSkill {
   importance: "must-have" | "nice-to-have";
   actionStep: string;
   timeToAcquire: string;
-  recommendedResource: string;
+  recommendedResources: CourseResource[];
 }
 
 interface ExperienceGap {
@@ -55,9 +62,13 @@ interface GapAnalysisResult {
   fitLabel: string;
   matchedSkills: MatchedSkill[];
   missingSkills: MissingSkill[];
+  totalMissingSkills?: number;
   experienceGaps: ExperienceGap[];
+  totalExperienceGaps?: number;
   weeklyActionPlan: WeeklyAction[];
+  learningRoadmap: GapLearningRoadmapPhase[];
   applicationTips: string[];
+  _freeTier?: boolean;
 }
 
 interface GapAnalysisTabProps {
@@ -139,6 +150,137 @@ function StrengthBar({ strength }: { strength: "strong" | "moderate" | "basic" }
   );
 }
 
+const costLabel: Record<string, string> = {
+  free: "Free",
+  low: "< $50",
+  medium: "$50-200",
+  high: "$200+",
+};
+
+const credentialIcon: Record<string, string> = {
+  high: "Industry Cert",
+  medium: "Certificate",
+  low: "Badge",
+  none: "Self-study",
+};
+
+function CourseResourceCard({ resource }: { resource: CourseResource }) {
+  const typeIcon = {
+    course: BookOpen,
+    certification: GraduationCap,
+    tutorial: Sparkles,
+    book: BookOpen,
+    youtube: ExternalLink,
+    practice: Target,
+  };
+  const Icon = typeIcon[resource.type] || BookOpen;
+
+  return (
+    <div className="flex items-start gap-3 p-2.5 bg-slate-900/40 rounded-lg group">
+      <Icon className="h-4 w-4 text-teal-400 mt-0.5 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-medium text-slate-200 truncate">
+            {resource.name}
+          </p>
+          {resource.url && (
+            <a
+              href={resource.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ExternalLink className="h-3 w-3 text-slate-500 hover:text-teal-400" />
+            </a>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
+          <span>{resource.provider}</span>
+          <span>&middot;</span>
+          <span>{resource.duration}</span>
+          <span>&middot;</span>
+          <span>{costLabel[resource.cost] ?? resource.cost}</span>
+          {resource.credentialValue !== "none" && (
+            <>
+              <span>&middot;</span>
+              <span className="text-amber-400 flex items-center gap-0.5">
+                <Award className="h-2.5 w-2.5" />
+                {credentialIcon[resource.credentialValue]}
+              </span>
+            </>
+          )}
+        </div>
+        <p className="text-[10px] text-slate-500 mt-1">{resource.reason}</p>
+      </div>
+    </div>
+  );
+}
+
+function RoadmapPhaseCard({ phase }: { phase: GapLearningRoadmapPhase }) {
+  const phaseConfig = {
+    foundation: {
+      color: "text-emerald-400",
+      bg: "bg-emerald-900/20",
+      border: "border-emerald-700/30",
+      dot: "bg-emerald-500",
+    },
+    "core-skills": {
+      color: "text-teal-400",
+      bg: "bg-teal-900/20",
+      border: "border-teal-700/30",
+      dot: "bg-teal-500",
+    },
+    advanced: {
+      color: "text-violet-400",
+      bg: "bg-violet-900/20",
+      border: "border-violet-700/30",
+      dot: "bg-violet-500",
+    },
+  };
+  const config = phaseConfig[phase.phase];
+
+  return (
+    <div className={`${config.bg} border ${config.border} rounded-xl p-4`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className={`w-2.5 h-2.5 rounded-full ${config.dot}`} />
+          <h4 className={`text-sm font-semibold ${config.color}`}>
+            {phase.title}
+          </h4>
+        </div>
+        <span className="text-[10px] text-slate-500">{phase.weeks}</span>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {phase.skills.map((skill) => (
+          <span
+            key={skill}
+            className="px-2 py-1 text-[10px] bg-slate-800/60 border border-slate-700 rounded-md text-slate-300"
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+
+      {phase.resources.length > 0 && (
+        <div className="space-y-1.5 mb-3">
+          {phase.resources.map((resource, i) => (
+            <CourseResourceCard key={i} resource={resource} />
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-start gap-2 pt-2 border-t border-slate-700/40">
+        <Target className="h-3.5 w-3.5 text-teal-400 mt-0.5 shrink-0" />
+        <p className="text-xs text-slate-300">
+          <span className="font-medium text-teal-300">Milestone:</span>{" "}
+          {phase.milestone}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
   const [jobDesc, setJobDesc] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
@@ -179,6 +321,11 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
         }),
       });
 
+      if (res.status === 401 || res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        trackGateHit({ feature: "gap_analysis", plan: "free", gate_type: res.status === 402 ? "limit_reached" : "blocked" });
+        throw new Error(data.error || "Upgrade required to use this feature");
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Analysis failed");
@@ -186,6 +333,9 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
 
       const data: GapAnalysisResult = await res.json();
       setResult(data);
+      if (data._freeTier) {
+        trackFreeFeatureUsed({ feature: "gap_analysis", usage_count: 1, limit: 1 });
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to analyze. Please try again."
@@ -308,7 +458,7 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6">
             <Accordion
               type="multiple"
-              defaultValue={["matched", "gaps", "action-plan"]}
+              defaultValue={["matched", "gaps", "learning-roadmap", "action-plan"]}
             >
               {/* Matched Skills */}
               <AccordionItem value="matched">
@@ -348,6 +498,18 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                 </AccordionContent>
               </AccordionItem>
 
+              {/* Free tier banner */}
+              {result._freeTier && (
+                <div className="mb-4 bg-amber-900/20 border border-amber-700/30 rounded-xl p-4">
+                  <p className="text-sm text-amber-200 font-medium mb-1">
+                    Free preview — showing top {result.missingSkills.length} of {result.totalMissingSkills ?? result.missingSkills.length} gaps
+                  </p>
+                  <p className="text-xs text-amber-300/60">
+                    Upgrade to see all gaps, learning roadmaps with curated courses, and weekly action plans.
+                  </p>
+                </div>
+              )}
+
               {/* Skill Gaps */}
               <AccordionItem value="gaps">
                 <AccordionTrigger>
@@ -356,7 +518,7 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                     Skill Gaps
                   </span>
                   <Badge className="ml-auto mr-2 bg-red-900/30 border-red-700/30 text-red-300 text-[10px]">
-                    {result.missingSkills.length}
+                    {result.totalMissingSkills ?? result.missingSkills.length}
                   </Badge>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -384,10 +546,13 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                               <p className="text-xs text-slate-400 mt-1">
                                 {s.actionStep}
                               </p>
-                              <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-300/80">
-                                <BookOpen className="h-3 w-3 shrink-0" />
-                                <span>{s.recommendedResource}</span>
-                              </div>
+                              {s.recommendedResources?.length > 0 && (
+                                <div className="space-y-1.5 mt-2 pt-2 border-t border-red-800/20">
+                                  {s.recommendedResources.map((r, ri) => (
+                                    <CourseResourceCard key={ri} resource={r} />
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -416,10 +581,13 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                               <p className="text-xs text-slate-400 mt-1">
                                 {s.actionStep}
                               </p>
-                              <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-300/80">
-                                <BookOpen className="h-3 w-3 shrink-0" />
-                                <span>{s.recommendedResource}</span>
-                              </div>
+                              {s.recommendedResources?.length > 0 && (
+                                <div className="space-y-1.5 mt-2 pt-2 border-t border-amber-800/20">
+                                  {s.recommendedResources.map((r, ri) => (
+                                    <CourseResourceCard key={ri} resource={r} />
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -463,6 +631,17 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                 </AccordionItem>
               )}
 
+              {/* Free tier upgrade CTA */}
+              {result._freeTier && (
+                <div className="py-4">
+                  <UpgradePrompt
+                    feature="gap analysis"
+                    message={`You're seeing ${result.missingSkills.length} of ${result.totalMissingSkills ?? result.missingSkills.length} skill gaps. Upgrade for the full analysis with learning roadmaps, curated courses, and weekly action plans.`}
+                    location="gap_analysis_results"
+                  />
+                </div>
+              )}
+
               {/* Weekly Action Plan */}
               <AccordionItem value="action-plan">
                 <AccordionTrigger>
@@ -504,6 +683,29 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
+              {/* Learning Roadmap */}
+              {result.learningRoadmap?.length > 0 && (
+                <AccordionItem value="learning-roadmap">
+                  <AccordionTrigger>
+                    <span className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-teal-400" />
+                      12-Week Learning Roadmap
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-[10px] text-slate-500 mb-3">
+                      A structured plan to close your skill gaps and become
+                      job-ready
+                    </p>
+                    <div className="space-y-3">
+                      {result.learningRoadmap.map((phase, i) => (
+                        <RoadmapPhaseCard key={i} phase={phase} />
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
               {/* Application Tips */}
               {result.applicationTips.length > 0 && (

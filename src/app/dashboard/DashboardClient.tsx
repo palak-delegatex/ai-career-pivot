@@ -16,11 +16,19 @@ import CompletionBadges from "@/components/CompletionBadges";
 import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
+import AchievementCelebration from "@/components/AchievementCelebration";
+import TransitionStageTracker from "@/components/TransitionStageTracker";
+import WeeklySummaryWidget from "@/components/WeeklySummaryWidget";
 import DocumentsCard from "@/components/DocumentsCard";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
+import SalaryNegotiationTab from "@/components/SalaryNegotiationTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
+import QuickActionsCard from "@/components/QuickActionsCard";
+import ToolsGrid from "@/components/ToolsGrid";
+import UpgradePrompt from "@/components/UpgradePrompt";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import type { UserPlanResponse } from "@/app/api/user-plan/route";
 
 interface Report {
   id: string;
@@ -233,6 +241,39 @@ function computeCurrentPhaseLabel(
   return phases[phases.length - 1]?.label ?? "";
 }
 
+function computeWeeklyStats(
+  statuses: Map<string, MilestoneState>,
+  weekOffset: number
+): { milestonesCompleted: number; streakDays: number; applicationsCount: number; documentsGenerated: number; networkingTouches: number } {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay() - weekOffset * 7);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+
+  let milestonesCompleted = 0;
+  const activeDaysInWeek = new Set<string>();
+
+  for (const [, state] of statuses) {
+    if (state.completed && state.completed_at) {
+      const d = new Date(state.completed_at);
+      if (d >= weekStart && d < weekEnd) {
+        milestonesCompleted++;
+        activeDaysInWeek.add(d.toISOString().slice(0, 10));
+      }
+    }
+  }
+
+  return {
+    milestonesCompleted,
+    streakDays: activeDaysInWeek.size,
+    applicationsCount: 0,
+    documentsGenerated: 0,
+    networkingTouches: 0,
+  };
+}
+
 function computeEarnedBadges(
   phases: PhaseData[],
   statuses: Map<string, MilestoneState>,
@@ -243,6 +284,11 @@ function computeEarnedBadges(
   const earned = new Set<string>();
 
   if (completedMilestones >= 1) earned.add("first_step");
+
+  if (completedMilestones >= 5) earned.add("five_skills");
+
+  if (completionPercent >= 50) earned.add("interview_unlocked");
+  if (completionPercent >= 50) earned.add("halfway_there");
 
   for (const phase of phases) {
     let allDone = phase.milestones.length > 0;
@@ -259,8 +305,10 @@ function computeEarnedBadges(
   }
 
   if (streakDays >= 7) earned.add("streak_master");
-  if (completionPercent >= 50) earned.add("halfway_there");
   if (completionPercent >= 100) earned.add("career_ready");
+
+  const thisWeek = computeWeeklyStats(statuses, 0);
+  if (thisWeek.milestonesCompleted >= 3) earned.add("momentum");
 
   return earned;
 }
@@ -278,6 +326,9 @@ export default function DashboardClient() {
   const [savedBadges, setSavedBadges] = useState<Set<string>>(new Set());
   const [celebratedPhases, setCelebratedPhases] = useState<Set<string>>(new Set());
   const [celebratingPhase, setCelebratingPhase] = useState<{ label: string; color: "emerald" | "teal" | "cyan" } | null>(null);
+  const [celebratingBadge, setCelebratingBadge] = useState<{ label: string; description: string; icon: React.ReactNode } | null>(null);
+  const [celebratedBadges, setCelebratedBadges] = useState<Set<string>>(new Set());
+  const [userPlan, setUserPlan] = useState<UserPlanResponse | null>(null);
 
   useEffect(() => {
     async function loadReports() {
@@ -293,14 +344,21 @@ export default function DashboardClient() {
       }
 
       try {
-        const res = await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: user.email }),
-        });
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
+        const [reportsRes, planRes] = await Promise.all([
+          fetch("/api/dashboard", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email }),
+          }),
+          fetch("/api/user-plan"),
+        ]);
+        if (!reportsRes.ok) throw new Error("Failed to fetch");
+        const data = await reportsRes.json();
         setReports(data.reports);
+        if (planRes.ok) {
+          const planData: UserPlanResponse = await planRes.json();
+          setUserPlan(planData);
+        }
       } catch {
         setError("Something went wrong. Please try again.");
       } finally {
@@ -489,16 +547,28 @@ export default function DashboardClient() {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
-        <p className="text-slate-400 mb-6">No roadmaps found yet.</p>
-        <Link
-          href="/pricing"
-          className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
-        >
-          Get Your Career Pivot Report
-        </Link>
+        <p className="text-slate-400 mb-6">
+          Start your career pivot by telling us about yourself.
+        </p>
+        <div className="flex gap-3 justify-center">
+          <Link
+            href="/intake"
+            className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
+          >
+            Start Free Career Analysis
+          </Link>
+          <Link
+            href="/pricing"
+            className="px-6 py-3 rounded-lg border border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 font-semibold text-sm transition-colors inline-block"
+          >
+            View Plans
+          </Link>
+        </div>
       </main>
     );
   }
+
+  const isFreeTier = userPlan?.plan === "free";
 
   const phases = activePlan ? buildPhases(activePlan) : [];
   const totalMilestones = phases.reduce(
@@ -551,6 +621,9 @@ export default function DashboardClient() {
     }
   }
 
+  const thisWeekStats = computeWeeklyStats(milestoneStatuses, 0);
+  const lastWeekStats = computeWeeklyStats(milestoneStatuses, 1);
+
   // Detect newly completed phases for celebration
   for (const phase of phases) {
     if (phase.milestones.length === 0) continue;
@@ -568,33 +641,30 @@ export default function DashboardClient() {
     }
   }
 
-  const MOTIVATIONAL_QUOTES = [
-    "The only way to do great work is to love what you do. — Steve Jobs",
-    "Every expert was once a beginner.",
-    "Your career is a marathon, not a sprint.",
-    "Small daily improvements lead to stunning results.",
-    "The best time to start was yesterday. The next best time is now.",
-    "Success is the sum of small efforts repeated day in and day out.",
-    "Don't watch the clock; do what it does — keep going.",
-    "The future belongs to those who believe in the beauty of their dreams.",
-    "It does not matter how slowly you go as long as you do not stop.",
-    "Believe you can and you're halfway there.",
-  ];
-
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
-  const dailyQuote = MOTIVATIONAL_QUOTES[dayOfYear % MOTIVATIONAL_QUOTES.length];
+  // Detect newly earned badges for celebration
+  for (const badgeKey of earnedBadges) {
+    if (!celebratedBadges.has(badgeKey) && !savedBadges.has(badgeKey) && !celebratingBadge && !celebratingPhase) {
+      const def = BADGE_DEFINITIONS.find((b) => b.key === badgeKey);
+      if (def) {
+        setCelebratedBadges((prev) => new Set([...prev, badgeKey]));
+        setCelebratingBadge({ label: def.label, description: def.description, icon: def.icon });
+        break;
+      }
+    }
+  }
 
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-4">
         Your Dashboard
       </h1>
-      <p className="text-slate-400 text-center text-sm italic mb-6 sm:mb-8">
-        &ldquo;{dailyQuote}&rdquo;
-      </p>
+      {activeReport && (
+        <QuickActionsCard
+          completionPercent={completionPercent}
+          completedMilestones={completedMilestones}
+          reportId={activeReport.id}
+        />
+      )}
 
       {activeReport && activeReport.plans.length > 1 && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -616,11 +686,12 @@ export default function DashboardClient() {
 
       {activePlan && (
         <Tabs defaultValue="overview">
-          <TabsList className="w-full justify-start mb-6">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="resumes">Resumes</TabsTrigger>
-            <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
-            <TabsTrigger value="network">Network</TabsTrigger>
+          <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap" style={{ scrollbarWidth: "none" }}>
+            <TabsTrigger value="overview" className="shrink-0">Overview</TabsTrigger>
+            <TabsTrigger value="resumes" className="shrink-0">Resumes</TabsTrigger>
+            <TabsTrigger value="gap-analysis" className="shrink-0">Gap Analysis</TabsTrigger>
+            <TabsTrigger value="negotiation" className="shrink-0">Negotiation</TabsTrigger>
+            <TabsTrigger value="network" className="shrink-0">Network</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -639,6 +710,11 @@ export default function DashboardClient() {
 
               {progressLoaded && (
                 <>
+                  {/* Career Transition Stage Progression */}
+                  <TransitionStageTracker
+                    completionPercent={completionPercent}
+                  />
+
                   {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <MomentumCard
@@ -664,8 +740,14 @@ export default function DashboardClient() {
                   {/* My Documents */}
                   <DocumentsCard email={activeReport!.email} />
 
-                  {/* Completion Badges */}
-                  <CompletionBadges earnedBadges={earnedBadges} />
+                  {/* Gamification: Badges + Weekly Summary */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <CompletionBadges earnedBadges={earnedBadges} />
+                    <WeeklySummaryWidget
+                      thisWeek={thisWeekStats}
+                      lastWeek={lastWeekStats}
+                    />
+                  </div>
 
                   {/* Shareable Progress Card */}
                   <ShareableProgressCard
@@ -696,26 +778,7 @@ export default function DashboardClient() {
                 plan={activePlan}
               />
 
-              <div className="pt-4 border-t border-slate-700/50 space-y-3">
-                <Link
-                  href="/chat"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 font-semibold text-sm transition-all shadow-lg shadow-teal-900/30"
-                >
-                  Talk to Career Coach
-                </Link>
-                <Link
-                  href="/mock-interview"
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 font-semibold text-sm transition-all shadow-lg shadow-purple-900/20"
-                >
-                  Practice Mock Interview
-                </Link>
-                <Link
-                  href={`/report/${activeReport!.id}`}
-                  className="block w-full text-center px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
-                >
-                  View Full Report
-                </Link>
-              </div>
+              <ToolsGrid reportId={activeReport!.id} />
             </div>
           </TabsContent>
 
@@ -731,8 +794,28 @@ export default function DashboardClient() {
             <GapAnalysisTab profile={activeReport!.profile} plan={activePlan} />
           </TabsContent>
 
+          <TabsContent value="negotiation">
+            {isFreeTier ? (
+              <UpgradePrompt
+                feature="salary negotiation"
+                message="Salary negotiation prep is a paid feature. Upgrade to get data-driven negotiation scripts, market salary ranges, and counter-offer strategies."
+                location="dashboard_negotiation_tab"
+              />
+            ) : (
+              <SalaryNegotiationTab profile={activeReport!.profile} plan={activePlan} />
+            )}
+          </TabsContent>
+
           <TabsContent value="network">
-            <NetworkingCRM userEmail={activeReport!.email} />
+            {isFreeTier ? (
+              <UpgradePrompt
+                feature="networking tools"
+                message="The Networking CRM is a paid feature. Upgrade to track connections, generate warm intro templates, and manage your professional network."
+                location="dashboard_network_tab"
+              />
+            ) : (
+              <NetworkingCRM userEmail={activeReport!.email} />
+            )}
           </TabsContent>
         </Tabs>
       )}
@@ -742,6 +825,15 @@ export default function DashboardClient() {
           phaseLabel={celebratingPhase.label}
           phaseColor={celebratingPhase.color}
           onDismiss={() => setCelebratingPhase(null)}
+        />
+      )}
+
+      {celebratingBadge && (
+        <AchievementCelebration
+          badgeLabel={celebratingBadge.label}
+          badgeDescription={celebratingBadge.description}
+          icon={celebratingBadge.icon}
+          onDismiss={() => setCelebratingBadge(null)}
         />
       )}
     </main>

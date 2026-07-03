@@ -123,3 +123,28 @@ export function trackPreviewCtaClicked(props: { cta_location: string; destinatio
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");
 }
+
+// Free tier conversion funnel
+export function trackFreeSignup(props: { source: string }) {
+  capture("free_signup", props);
+}
+
+export function trackGateHit(props: { feature: string; plan: string; gate_type: "blocked" | "limit_reached" }) {
+  capture("gate_hit", props);
+}
+
+export function trackUpgradePromptViewed(props: { feature: string; location: string }) {
+  capture("upgrade_prompt_viewed", props);
+}
+
+export function trackUpgradePromptClicked(props: { feature: string; location: string; destination: string }) {
+  capture("upgrade_prompt_clicked", props);
+}
+
+export function trackFreeToPaidConversion(props: { plan: string; source_feature?: string }) {
+  capture("free_to_paid_conversion", props);
+}
+
+export function trackFreeFeatureUsed(props: { feature: string; usage_count: number; limit: number | null }) {
+  capture("free_feature_used", props);
+}

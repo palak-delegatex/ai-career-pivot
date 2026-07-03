@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download, LayoutGrid } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import RoadmapKanban from "@/components/RoadmapKanban";
+import WeeklyProgressStrip from "@/components/WeeklyProgressStrip";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -18,6 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import type { SkillGap, RecommendedResource } from "@/lib/intake";
+import UpgradePrompt from "@/components/UpgradePrompt";
 
 type MilestoneStatus = "not-started" | "in-progress" | "completed";
 
@@ -91,6 +94,8 @@ function nextStatus(current: MilestoneStatus): MilestoneStatus {
   return "not-started";
 }
 
+const FREE_TIER_VISIBLE_MILESTONES = 3;
+
 export default function InteractiveRoadmap({
   sixMonthMilestones,
   oneYearMilestones,
@@ -100,6 +105,7 @@ export default function InteractiveRoadmap({
   skillGaps = [],
   recommendedResources = [],
   pdfButton,
+  isFreeTier = false,
 }: {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
@@ -109,6 +115,7 @@ export default function InteractiveRoadmap({
   skillGaps?: SkillGap[];
   recommendedResources?: RecommendedResource[];
   pdfButton?: React.ReactNode;
+  isFreeTier?: boolean;
 }) {
   const [progress, setProgress] = useState<Map<string, MilestoneProgress>>(new Map());
   const [saving, setSaving] = useState<string | null>(null);
@@ -127,17 +134,27 @@ export default function InteractiveRoadmap({
     phase: Phase;
     index: number;
   } | null>(null);
+  const isMobile = useIsMobile();
 
   function setViewAndPersist(v: "timeline" | "checklist" | "board") {
     setView(v);
     localStorage.setItem("roadmap_view_preference", v);
   }
 
-  const phases: Phase[] = [
+  const allPhases: Phase[] = [
     { key: "6mo", label: "6 Months", milestones: sixMonthMilestones, color: "emerald", deadline: "6 months" },
     { key: "1yr", label: "1 Year", milestones: oneYearMilestones, color: "teal", deadline: "1 year" },
     { key: "2yr", label: "2 Years", milestones: twoYearMilestones, color: "cyan", deadline: "2 years" },
   ];
+
+  const totalAllMilestones = allPhases.reduce((s, p) => s + p.milestones.length, 0);
+
+  const phases: Phase[] = isFreeTier
+    ? allPhases.map((phase, i) => {
+        if (i > 0) return { ...phase, milestones: [] };
+        return { ...phase, milestones: phase.milestones.slice(0, FREE_TIER_VISIBLE_MILESTONES) };
+      }).filter(p => p.milestones.length > 0)
+    : allPhases;
 
   const progressKey = (phase: string, idx: number) => `${phase}:${idx}`;
 
@@ -293,7 +310,7 @@ export default function InteractiveRoadmap({
   return (
     <section aria-label="Interactive career roadmap">
       {/* Overall progress header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -302,18 +319,22 @@ export default function InteractiveRoadmap({
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">
             Your Progress
           </span>
+          {loaded && (
+            <span className="text-xs text-slate-400 sm:hidden">
+              <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {loaded && (
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-400 hidden sm:inline">
               <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones} milestones
             </span>
           )}
-          {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
             <button
               onClick={() => setViewAndPersist("timeline")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "timeline"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -321,11 +342,11 @@ export default function InteractiveRoadmap({
               aria-label="Timeline view"
             >
               <GitBranch className="h-3.5 w-3.5" />
-              Timeline
+              <span className="hidden sm:inline">Timeline</span>
             </button>
             <button
               onClick={() => setViewAndPersist("checklist")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "checklist"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -333,11 +354,11 @@ export default function InteractiveRoadmap({
               aria-label="Checklist view"
             >
               <List className="h-3.5 w-3.5" />
-              Checklist
+              <span className="hidden sm:inline">Checklist</span>
             </button>
             <button
               onClick={() => setViewAndPersist("board")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "board"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -345,7 +366,7 @@ export default function InteractiveRoadmap({
               aria-label="Board view"
             >
               <LayoutGrid className="h-3.5 w-3.5" />
-              Board
+              <span className="hidden sm:inline">Board</span>
             </button>
           </div>
         </div>
@@ -359,6 +380,15 @@ export default function InteractiveRoadmap({
             style={{ width: `${(totalCompleted / totalMilestones) * 100}%` }}
           />
         </div>
+      )}
+
+      {/* Biweekly progress strip for 6-month milestones */}
+      {loaded && sixMonthMilestones.length > 0 && (
+        <WeeklyProgressStrip
+          milestones={sixMonthMilestones}
+          progress={progress}
+          phaseKey="6mo"
+        />
       )}
 
       {/* Secondary action bar */}
@@ -537,12 +567,35 @@ export default function InteractiveRoadmap({
         />
       )}
 
+      {/* Free tier upgrade prompt */}
+      {isFreeTier && totalAllMilestones > FREE_TIER_VISIBLE_MILESTONES && (
+        <div className="mt-6 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/60 to-slate-900 pointer-events-none rounded-xl -top-8 z-0" />
+          <div className="relative z-10">
+            <UpgradePrompt
+              feature="full roadmap"
+              message={`You're seeing ${FREE_TIER_VISIBLE_MILESTONES} of ${totalAllMilestones} milestones. Upgrade to unlock your complete career roadmap with 1-year and 2-year plans.`}
+              location="roadmap"
+              compact
+            />
+          </div>
+        </div>
+      )}
+
       {/* Milestone Detail Sheet */}
       <Sheet
         open={!!selectedMilestone}
         onOpenChange={(open) => { if (!open) setSelectedMilestone(null); }}
       >
-        <SheetContent side="right" className="bg-slate-900 border-slate-700 overflow-y-auto">
+        <SheetContent
+          side={isMobile ? "bottom" : "right"}
+          className={
+            isMobile
+              ? "bg-slate-900 border-slate-700 overflow-y-auto rounded-t-2xl max-h-[85vh]"
+              : "bg-slate-900 border-slate-700 overflow-y-auto"
+          }
+        >
+          {isMobile && <div className="w-10 h-1 rounded-full bg-slate-600 mx-auto mt-2 mb-1 shrink-0" />}
           {selectedMilestone && (() => {
             const { text, phase, index } = selectedMilestone;
             const key = progressKey(phase.key, index);

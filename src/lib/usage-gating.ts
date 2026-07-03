@@ -25,7 +25,7 @@ const FEATURE_LIMITS: Record<Plan, Partial<Record<Feature, FeatureLimit>>> = {
   free: {
     gap_analysis: { maxUses: 1, requiresPlan: ["free", "report", "lifetime"] },
     ats_score: { maxUses: 1, requiresPlan: ["free", "report", "lifetime"] },
-    resume_generator: { maxUses: null, requiresPlan: ["report", "lifetime"] },
+    resume_generator: { maxUses: 1, requiresPlan: ["free", "report", "lifetime"] },
     cover_letter: { maxUses: null, requiresPlan: ["report", "lifetime"] },
     learning_resources: { maxUses: null, requiresPlan: ["report", "lifetime"] },
     resume_pdf: { maxUses: null, requiresPlan: ["report", "lifetime"] },

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseClient, getSupabaseAdmin } from "@/lib/supabase";
+import { PostHog } from "posthog-node";
 
 export async function POST(req: NextRequest) {
   const stripe = getStripeClient();
@@ -40,6 +41,50 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: subscriptionId,
       })
       .eq("stripe_session_id", session.id);
+
+    const email = session.customer_email ?? session.metadata?.email;
+    const planType = session.metadata?.plan ?? "report";
+    if (email) {
+      try {
+        const admin = getSupabaseAdmin();
+
+        const { data: existingPlan } = await admin
+          .from("user_plans")
+          .select("plan")
+          .eq("email", email.toLowerCase())
+          .single();
+
+        const wasFreeTier = !existingPlan || existingPlan.plan === "free";
+
+        await admin.from("user_plans").upsert(
+          {
+            email: email.toLowerCase(),
+            plan: planType,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "email" }
+        );
+
+        if (wasFreeTier && process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) {
+          const ph = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN, {
+            host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+            flushAt: 1,
+          });
+          ph.capture({
+            distinctId: email.toLowerCase(),
+            event: "free_to_paid_conversion",
+            properties: {
+              plan: planType,
+              amount_cents: session.amount_total,
+              source_feature: session.metadata?.source_feature ?? null,
+            },
+          });
+          await ph.shutdown();
+        }
+      } catch (err) {
+        console.error("Failed to update user_plans:", err);
+      }
+    }
   }
 
   return NextResponse.json({ received: true });
