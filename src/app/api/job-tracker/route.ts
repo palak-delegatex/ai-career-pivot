@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
 import type { JobStage, JobSource } from "@/lib/job-tracker";
+import { eventTypeForStageChange } from "@/lib/outcomes";
 
 const VALID_STAGES: JobStage[] = [
   "exploring",
@@ -77,6 +78,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  if (validStage !== "exploring" && data) {
+    await supabase.from("outcome_events").insert({
+      user_email: email,
+      tracked_job_id: data.id,
+      event_type: eventTypeForStageChange(null, validStage),
+      from_stage: null,
+      to_stage: validStage,
+      metadata: { company, role },
+    });
+  }
+
   return NextResponse.json({ job: data }, { status: 201 });
 }
 
@@ -88,8 +100,22 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "id and email required" }, { status: 400 });
   }
 
+  const supabase = getSupabaseClient();
+  const stageChanging = updates.stage && VALID_STAGES.includes(updates.stage);
+
+  let previousStage: JobStage | null = null;
+  if (stageChanging) {
+    const { data: current } = await supabase
+      .from("tracked_jobs")
+      .select("stage")
+      .eq("id", id)
+      .eq("user_email", email)
+      .single();
+    previousStage = current?.stage ?? null;
+  }
+
   const allowed: Record<string, unknown> = {};
-  if (updates.stage && VALID_STAGES.includes(updates.stage)) {
+  if (stageChanging) {
     allowed.stage = updates.stage;
     allowed.stage_changed_at = new Date().toISOString();
     if (updates.stage === "applied" && !updates.applied_at) {
@@ -108,7 +134,6 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "no valid fields to update" }, { status: 400 });
   }
 
-  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("tracked_jobs")
     .update(allowed)
@@ -119,6 +144,17 @@ export async function PATCH(req: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (stageChanging && previousStage !== updates.stage) {
+    await supabase.from("outcome_events").insert({
+      user_email: email,
+      tracked_job_id: id,
+      event_type: eventTypeForStageChange(previousStage, updates.stage),
+      from_stage: previousStage,
+      to_stage: updates.stage,
+      metadata: { company: data.company, role: data.role },
+    });
   }
 
   return NextResponse.json({ job: data });
