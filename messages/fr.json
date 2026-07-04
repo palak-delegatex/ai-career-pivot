@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Votre stratège de carrière personnel",
     "defaultDescription": "Ne restez plus prisonnier. Construisez une feuille de route de reconversion personnalisée selon vos compétences, vos finances et vos contraintes familiales. Des plans concrets à 6 mois, 1 an et 2 ans."
+  },
+  "completionBadges": {
+    "title": "Badges",
+    "locked": "Verrouillé",
+    "badges": {
+      "first_step": {
+        "label": "Premier pas",
+        "description": "Terminez votre premier jalon"
+      },
+      "phase_complete": {
+        "label": "Phase terminée",
+        "description": "Terminez tous les jalons d'une phase"
+      },
+      "streak_master": {
+        "label": "Maître des séries",
+        "description": "Atteignez une série de 7 jours"
+      },
+      "halfway_there": {
+        "label": "À mi-chemin",
+        "description": "Terminez 50 % de tous les jalons"
+      },
+      "career_ready": {
+        "label": "Prêt pour la carrière",
+        "description": "Terminez 100 % de tous les jalons"
+      }
+    }
   }
 }

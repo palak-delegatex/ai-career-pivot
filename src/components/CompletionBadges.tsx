@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   Tooltip,
   TooltipContent,
@@ -18,42 +19,17 @@ import {
 
 export interface BadgeDefinition {
   key: string;
-  label: string;
-  description: string;
   icon: React.ReactNode;
 }
 
+// Labels + descriptions live in the `completionBadges` i18n namespace,
+// resolved per-locale via t(`badges.${key}.label|description`).
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
-  {
-    key: "first_step",
-    label: "First Step",
-    description: "Complete your first milestone",
-    icon: <Footprints className="h-5 w-5" />,
-  },
-  {
-    key: "phase_complete",
-    label: "Phase Complete",
-    description: "Complete all milestones in a phase",
-    icon: <Award className="h-5 w-5" />,
-  },
-  {
-    key: "streak_master",
-    label: "Streak Master",
-    description: "Achieve a 7-day completion streak",
-    icon: <Flame className="h-5 w-5" />,
-  },
-  {
-    key: "halfway_there",
-    label: "Halfway There",
-    description: "Complete 50% of all milestones",
-    icon: <Target className="h-5 w-5" />,
-  },
-  {
-    key: "career_ready",
-    label: "Career Ready",
-    description: "Complete 100% of all milestones",
-    icon: <GraduationCap className="h-5 w-5" />,
-  },
+  { key: "first_step", icon: <Footprints className="h-5 w-5" /> },
+  { key: "phase_complete", icon: <Award className="h-5 w-5" /> },
+  { key: "streak_master", icon: <Flame className="h-5 w-5" /> },
+  { key: "halfway_there", icon: <Target className="h-5 w-5" /> },
+  { key: "career_ready", icon: <GraduationCap className="h-5 w-5" /> },
 ];
 
 const SEEN_BADGES_KEY = "aicareerpivot:badges:seen";
@@ -106,6 +82,7 @@ function ParticleBurst() {
 export default function CompletionBadges({
   earnedBadges,
 }: CompletionBadgesProps) {
+  const t = useTranslations("completionBadges");
   const [animatingBadges, setAnimatingBadges] = useState<Set<string>>(new Set());
   const prevEarnedRef = useRef<Set<string>>(new Set());
 
@@ -147,13 +124,15 @@ export default function CompletionBadges({
         }
       `}</style>
       <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-        <h3 className="text-sm font-bold text-slate-300 mb-4">Badges</h3>
+        <h3 className="text-sm font-bold text-slate-300 mb-4">{t("title")}</h3>
 
         <TooltipProvider delayDuration={100}>
           <div className="flex flex-wrap gap-3">
             {BADGE_DEFINITIONS.map((badge) => {
               const earned = earnedBadges.has(badge.key);
               const isAnimating = animatingBadges.has(badge.key);
+              const label = t(`badges.${badge.key}.label`);
+              const description = t(`badges.${badge.key}.description`);
               return (
                 <Tooltip key={badge.key}>
                   <TooltipTrigger asChild>
@@ -169,17 +148,17 @@ export default function CompletionBadges({
                           ? { animation: "badge-earn 300ms ease-out forwards" }
                           : undefined
                       }
-                      title={`${badge.label}: ${badge.description}${earned ? "" : " (Locked)"}`}
+                      title={`${label}: ${description}${earned ? "" : ` (${t("locked")})`}`}
                     >
                       {isAnimating && <ParticleBurst />}
                       {earned ? badge.icon : <Lock className="h-4 w-4" />}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-xs font-semibold">{badge.label}</p>
-                    <p className="text-xs text-slate-400">{badge.description}</p>
+                    <p className="text-xs font-semibold">{label}</p>
+                    <p className="text-xs text-slate-400">{description}</p>
                     {!earned && (
-                      <p className="text-[10px] text-slate-500 mt-1">Locked</p>
+                      <p className="text-[10px] text-slate-500 mt-1">{t("locked")}</p>
                     )}
                   </TooltipContent>
                 </Tooltip>

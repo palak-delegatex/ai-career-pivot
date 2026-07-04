@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Tu estratega de carrera personal",
     "defaultDescription": "Deja de sentirte atrapado. Crea un plan de transición profesional personalizado según tus habilidades, finanzas y circunstancias familiares. Planes accionables a 6 meses, 1 año y 2 años."
+  },
+  "completionBadges": {
+    "title": "Insignias",
+    "locked": "Bloqueado",
+    "badges": {
+      "first_step": {
+        "label": "Primer paso",
+        "description": "Completa tu primer hito"
+      },
+      "phase_complete": {
+        "label": "Fase completada",
+        "description": "Completa todos los hitos de una fase"
+      },
+      "streak_master": {
+        "label": "Maestro de la racha",
+        "description": "Consigue una racha de 7 días"
+      },
+      "halfway_there": {
+        "label": "A mitad de camino",
+        "description": "Completa el 50 % de todos los hitos"
+      },
+      "career_ready": {
+        "label": "Listo para la carrera",
+        "description": "Completa el 100 % de todos los hitos"
+      }
+    }
   }
 }

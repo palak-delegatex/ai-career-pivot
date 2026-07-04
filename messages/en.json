@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Your Personal Career Strategist",
     "defaultDescription": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+  },
+  "completionBadges": {
+    "title": "Badges",
+    "locked": "Locked",
+    "badges": {
+      "first_step": {
+        "label": "First Step",
+        "description": "Complete your first milestone"
+      },
+      "phase_complete": {
+        "label": "Phase Complete",
+        "description": "Complete all milestones in a phase"
+      },
+      "streak_master": {
+        "label": "Streak Master",
+        "description": "Achieve a 7-day completion streak"
+      },
+      "halfway_there": {
+        "label": "Halfway There",
+        "description": "Complete 50% of all milestones"
+      },
+      "career_ready": {
+        "label": "Career Ready",
+        "description": "Complete 100% of all milestones"
+      }
+    }
   }
 }
