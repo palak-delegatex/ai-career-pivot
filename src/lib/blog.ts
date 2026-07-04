@@ -5,12 +5,18 @@ import readingTime from "reading-time";
 
 const BLOG_DIR = path.join(process.cwd(), "src/content/blog");
 
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
 export interface PostFrontmatter {
   title: string;
   description: string;
   date: string;
   keywords: string[];
   tldr?: string[];
+  faq?: FaqItem[];
   pinned?: boolean;
 }
 
@@ -92,6 +98,7 @@ export function getPost(slug: string): Post | null {
     date: fm.date,
     keywords: fm.keywords ?? [],
     tldr: fm.tldr,
+    faq: fm.faq,
     readingTime: stats.text,
     excerpt,
     content,
