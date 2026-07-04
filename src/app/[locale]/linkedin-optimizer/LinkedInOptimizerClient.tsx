@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
 import {
   Loader2,
@@ -159,6 +160,7 @@ function highlightChanges(original: string, suggested: string) {
 }
 
 export default function LinkedInOptimizerClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("input");
   const [inputTab, setInputTab] = useState<InputTab>("url");
   const [linkedinUrl, setLinkedinUrl] = useState("");
@@ -276,6 +278,7 @@ export default function LinkedInOptimizerClient() {
       const body: Record<string, unknown> = {
         targetRole: targetRole.trim(),
         targetIndustry: targetIndustry.trim() || undefined,
+        locale,
       };
 
       if (inputTab === "url") {

@@ -33,6 +33,7 @@ import {
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import { ScoreRing } from "@/components/ScoreRing";
+import { useLocale } from "next-intl";
 
 interface MatchedSkill {
   skill: string;
@@ -111,6 +112,7 @@ export default function GapAnalysisSheet({
   onOpenCoverLetter,
   onOpenTailor,
 }: GapAnalysisSheetProps) {
+  const locale = useLocale();
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<GapAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -173,6 +175,7 @@ export default function GapAnalysisSheet({
             education: profile.education,
             certifications: profile.certifications,
           },
+          locale,
         }),
       });
 

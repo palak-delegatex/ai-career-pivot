@@ -10,6 +10,7 @@ import { FeatureTour } from "@/components/ui/feature-tour";
 import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
+import { useLocale } from "next-intl";
 
 type PageStep = "form" | "processing" | "error" | "no_payment" | "generating";
 
@@ -114,6 +115,7 @@ function parseInsightsFromStream(text: string): string[] {
 }
 
 export default function OnboardingPage() {
+  const locale = useLocale();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -284,7 +286,7 @@ export default function OnboardingPage() {
       const res = await fetch("/api/intake/insights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile }),
+        body: JSON.stringify({ profile, locale }),
       });
       if (!res.ok || !res.body) return;
 

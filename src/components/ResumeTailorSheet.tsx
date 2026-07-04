@@ -33,6 +33,7 @@ import { ScoreRing } from "@/components/ScoreRing";
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import type { TailorResponse } from "@/app/api/resume/tailor/route";
+import { useLocale } from "next-intl";
 
 type Phase = "input" | "processing" | "results";
 
@@ -240,6 +241,7 @@ export default function ResumeTailorSheet({
   open,
   onOpenChange,
 }: ResumeTailorSheetProps) {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("input");
   const [jdInput, setJdInput] = useState("");
   const [result, setResult] = useState<TailorResponse | null>(null);
@@ -322,6 +324,7 @@ export default function ResumeTailorSheet({
             education: profile.education,
             certifications: profile.certifications,
           },
+          locale,
         }),
       });
 
@@ -342,7 +345,7 @@ export default function ResumeTailorSheet({
       setError(err instanceof Error ? err.message : "Failed to tailor resume. Please try again.");
       setPhase("input");
     }
-  }, [effectiveJD, profile, plan]);
+  }, [effectiveJD, profile, plan, locale]);
 
   function toggleChange(index: number) {
     setAcceptedChanges((prev) => {

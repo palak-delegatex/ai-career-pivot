@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
 import { STAGES } from "@/lib/job-tracker";
+import { useLocale } from "next-intl";
 
 // ─── Types ───
 
@@ -470,6 +471,7 @@ function DocumentsPanel({ jobId }: { jobId: string }) {
 // ─── ResumeTabContent ───
 
 function ResumeTabContent({ job }: { job: TrackedJob }) {
+  const locale = useLocale();
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{
     tailoredResume: string;
@@ -486,6 +488,7 @@ function ResumeTabContent({ job }: { job: TrackedJob }) {
         body: JSON.stringify({
           jobDescription: `${job.role} at ${job.company}`,
           jobUrl: job.url,
+          locale,
         }),
       });
       if (res.ok) {

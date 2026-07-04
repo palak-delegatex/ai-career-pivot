@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 const BENEFITS = [
   "Top career pivots matched to your background",
@@ -11,6 +12,7 @@ const BENEFITS = [
 ];
 
 export default function FreeUploadClient() {
+  const locale = useLocale();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -29,6 +31,7 @@ export default function FreeUploadClient() {
     const formData = new FormData();
     formData.append("resume", resumeFile);
     if (email) formData.append("email", email);
+    formData.append("locale", locale);
 
     try {
       const res = await fetch("/api/intake/free-snapshot", {

@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile, SkillsEngineResult } from "@/lib/intake";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const ExtractedSkillSchema = z.object({
   name: z.string(),
@@ -85,10 +86,11 @@ function buildProfileContext(profile: UserProfile): string {
 }
 
 export async function POST(req: NextRequest) {
-  const { profile, targetRole, targetIndustry } = (await req.json()) as {
+  const { profile, targetRole, targetIndustry, locale } = (await req.json()) as {
     profile: UserProfile;
     targetRole: string;
     targetIndustry?: string;
+    locale?: string;
   };
 
   if (!profile?.skills?.length) {
@@ -148,7 +150,7 @@ Skills the target role requires that the user neither has nor can transfer from 
 - readinessLabel: one of "Ready to Apply", "Strong Foundation", "Moderate Pivot", "Significant Reskilling Needed", "Career Reinvention"
 - topTransferNarrative: 2-3 sentence narrative highlighting the user's strongest transfer story — the most compelling way to frame their background for this role
 
-Be specific and grounded. Reference actual skills and experiences from the profile. Do not fabricate skills the user doesn't have.`,
+Be specific and grounded. Reference actual skills and experiences from the profile. Do not fabricate skills the user doesn't have.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {

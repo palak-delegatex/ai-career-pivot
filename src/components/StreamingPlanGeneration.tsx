@@ -6,6 +6,7 @@ import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillGapChart from "@/components/SkillGapChart";
 import RiskAssessmentCard from "@/components/RiskAssessmentCard";
+import { useLocale } from "next-intl";
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
@@ -260,6 +261,7 @@ export default function StreamingPlanGeneration({
   onComplete: (plans: PivotPlan[], reportId?: string) => void;
   onError: (error: string) => void;
 }) {
+  const locale = useLocale();
   const [partialPlans, setPartialPlans] = useState<PartialPlans>({});
   const [selectedPlan, setSelectedPlan] = useState(0);
   const [done, setDone] = useState(false);
@@ -273,7 +275,7 @@ export default function StreamingPlanGeneration({
       const res = await fetch("/api/intake/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile, paymentSessionId, valuesAssessment }),
+        body: JSON.stringify({ profile, paymentSessionId, valuesAssessment, locale }),
       });
 
       if (!res.ok) {
@@ -312,7 +314,7 @@ export default function StreamingPlanGeneration({
     } catch (err) {
       onError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
-  }, [profile, paymentSessionId, valuesAssessment, onComplete, onError]);
+  }, [profile, paymentSessionId, valuesAssessment, locale, onComplete, onError]);
 
   useEffect(() => {
     startGeneration();

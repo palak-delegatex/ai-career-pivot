@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { createClient } from "@supabase/supabase-js";
+import { localeSystemPrompt } from "@/lib/locale";
 
 function getServiceClient() {
   return createClient(
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
     question,
     email,
     tone,
+    locale,
   }: {
     type: "cover-letter" | "answer";
     jobDescription?: string;
@@ -42,6 +44,7 @@ export async function POST(req: NextRequest) {
     question?: string;
     email: string;
     tone?: "professional" | "conversational" | "bold";
+    locale?: string;
   } = await req.json();
 
   if (!type || !email) {
@@ -144,6 +147,8 @@ REQUIREMENTS:
 - If the question asks about the company, reference details from the job description
 - Output plain text only, no markdown formatting`;
   }
+
+  systemPrompt += localeSystemPrompt(locale);
 
   try {
     const result = await generateText({

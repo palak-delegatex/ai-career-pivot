@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const GapAnalysisSchema = z.object({
   overallFitScore: z.number().min(0).max(100),
@@ -49,7 +50,7 @@ const GapAnalysisSchema = z.object({
 export type JobGapAnalysisResult = z.infer<typeof GapAnalysisSchema>;
 
 export async function POST(req: NextRequest) {
-  const { jobDescription, profile } = await req.json();
+  const { jobDescription, profile, locale } = await req.json();
 
   if (!jobDescription || jobDescription.length < 50) {
     return NextResponse.json(
@@ -104,7 +105,7 @@ Analyze the fit thoroughly:
 5. Create a 4-week action plan to close the most critical gaps, with specific tasks and estimated hours per week.
 6. Give 3-5 concrete application tips for this specific role.
 
-Be specific and actionable. Reference actual skills from both the profile and JD.`,
+Be specific and actionable. Reference actual skills from both the profile and JD.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {
