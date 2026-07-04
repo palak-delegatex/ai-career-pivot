@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import { PostHogProvider } from "./PostHogProvider";
+import {
+  Inter,
+  Source_Serif_4,
+  JetBrains_Mono,
+  Noto_Sans_Devanagari,
+  Noto_Sans_JP,
+} from "next/font/google";
+import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import "../globals.css";
+import { PostHogProvider } from "../PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
 import { HelpPanel } from "@/components/ui/help-panel";
+import { routing } from "@/i18n/routing";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,6 +35,23 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+});
+
+// Script fonts for multilingual support (AIC-662). Not preloaded — the browser
+// only fetches them when Devanagari (Hindi) or CJK (Japanese) glyphs render.
+const notoDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-noto-devanagari",
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoJP = Noto_Sans_JP({
+  variable: "--font-noto-jp",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
 });
 
 const BASE_URL = "https://ai-career-pivot.com";
@@ -82,24 +109,40 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// Statically render all supported locales at build time (AIC-667).
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  // Enables static rendering for this locale (next-intl requirement).
+  setRequestLocale(locale);
+
   return (
     <html
-      lang="en"
-      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      lang={locale}
+      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <NextIntlClientProvider>
           <PostHogProvider>
             <div className="flex-1">{children}</div>
             <Footer />
             <HelpPanel />
           </PostHogProvider>
-          <Analytics />
-        </body>
+        </NextIntlClientProvider>
+        <Analytics />
+      </body>
     </html>
   );
 }

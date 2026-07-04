@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "Kostenlos starten",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "account": "Konto",
+    "loading": "Wird geladen…",
+    "learnMore": "Mehr erfahren",
+    "tagline": "Ihre Karriere, Ihr Tempo."
+  },
+  "nav": {
+    "freeSnapshot": "Kostenlose Analyse",
+    "blog": "Blog",
+    "pricing": "Preise",
+    "howItWorks": "So funktioniert's",
+    "myRoadmaps": "Meine Fahrpläne",
+    "jobTracker": "Job-Tracker",
+    "networking": "Networking",
+    "coverLetter": "Anschreiben",
+    "linkedin": "LinkedIn",
+    "openMenu": "Menü öffnen",
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "languageSwitcher": {
+    "label": "Sprache",
+    "change": "Sprache ändern"
+  },
+  "footer": {
+    "description": "Ihr KI-gestützter Karrierestratege. Personalisierte Übergangs-Fahrpläne basierend auf Ihren Fähigkeiten, Finanzen und Ihrem Zeitplan.",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "Produkt",
+    "resourcesHeading": "Ressourcen",
+    "useCasesHeading": "Anwendungsfälle",
+    "links": {
+      "howItWorks": "So funktioniert's",
+      "pricing": "Preise",
+      "freeAssessment": "Kostenlose Bewertung",
+      "mockInterview": "Probeinterview",
+      "gapAnalysis": "Lückenanalyse",
+      "atsScore": "ATS-Bewertung",
+      "resumeGenerator": "Lebenslauf-Generator",
+      "dashboard": "Dashboard",
+      "blog": "Blog",
+      "faq": "FAQ",
+      "aboutUs": "Über uns",
+      "careerAssessment": "Karrierebewertung",
+      "careerPivotPlanning": "Karrierewechsel-Planung",
+      "salaryGrowthStrategy": "Gehaltswachstums-Strategie",
+      "skillGapAnalysis": "Kompetenzlücken-Analyse",
+      "aiJobSearch": "KI-Jobsuche",
+      "privacy": "Datenschutz",
+      "terms": "AGB",
+      "contact": "Kontakt"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "KI-gestützter Karrierestratege",
+      "title": "Fühlen Sie sich nicht länger in der falschen Karriere gefangen",
+      "subtitle": "Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer tatsächlichen Fähigkeiten, Finanzen und familiären Rahmenbedingungen — mit umsetzbaren Plänen für 6 Monate, 1 Jahr und 2 Jahre.",
+      "ctaPrimary": "Kostenlose Analyse erhalten",
+      "ctaSecondary": "So funktioniert's ansehen",
+      "trustNote": "Keine Kreditkarte erforderlich."
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — Ihr persönlicher Karrierestratege",
+    "defaultDescription": "Fühlen Sie sich nicht länger gefangen. Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer Fähigkeiten, Finanzen und familiären Rahmenbedingungen. Umsetzbare Pläne für 6 Monate, 1 Jahr und 2 Jahre."
+  }
+}

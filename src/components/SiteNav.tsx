@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -22,16 +23,17 @@ import { MenuIcon } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 
+// `key` resolves against the `nav.*` message catalog (messages/*.json).
 const NAV_LINKS = [
-  { href: "/free", label: "Free Snapshot" },
-  { href: "/blog", label: "Blog" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/dashboard", label: "My Roadmaps" },
-  { href: "/job-tracker", label: "Job Tracker" },
-  { href: "/networking", label: "Networking" },
-  { href: "/cover-letter", label: "Cover Letter" },
-  { href: "/linkedin-optimizer", label: "LinkedIn" },
+  { href: "/free", key: "freeSnapshot" },
+  { href: "/blog", key: "blog" },
+  { href: "/pricing", key: "pricing" },
+  { href: "/how-it-works", key: "howItWorks" },
+  { href: "/dashboard", key: "myRoadmaps" },
+  { href: "/job-tracker", key: "jobTracker" },
+  { href: "/networking", key: "networking" },
+  { href: "/cover-letter", key: "coverLetter" },
+  { href: "/linkedin-optimizer", key: "linkedin" },
 ] as const;
 
 const LogoIcon = (
@@ -65,6 +67,8 @@ function Logo() {
 
 export default function SiteNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
@@ -85,7 +89,7 @@ export default function SiteNav() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-teal-600 focus:text-white focus:font-semibold focus:text-sm"
       >
-        Skip to content
+        {t("skipToContent")}
       </a>
     <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
       <Logo />
@@ -94,19 +98,20 @@ export default function SiteNav() {
       <div className="hidden md:flex items-center gap-1">
         <NavigationMenu>
           <NavigationMenuList>
-            {NAV_LINKS.map(({ href, label }) => (
+            {NAV_LINKS.map(({ href, key }) => (
               <NavigationMenuItem key={href}>
                 <NavigationMenuLink
                   href={href}
                   active={pathname === href}
                   className="text-sm font-medium text-slate-400 hover:text-white hover:bg-transparent focus:bg-transparent data-active:text-white"
                 >
-                  {label}
+                  {t(key)}
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
+        <LanguageSwitcher />
         {user ? (
           <div className="flex items-center gap-3 ml-2">
             <Link
@@ -117,13 +122,13 @@ export default function SiteNav() {
             </Link>
             <form action="/api/auth/signout" method="POST">
               <Button type="submit" variant="outline" size="sm">
-                Sign Out
+                {tc("signOut")}
               </Button>
             </form>
           </div>
         ) : (
           <Button render={<Link href="/login" />} size="sm" className="ml-2">
-            Sign In
+            {tc("signIn")}
           </Button>
         )}
       </div>
@@ -133,7 +138,7 @@ export default function SiteNav() {
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="icon" aria-label="Open menu" className="min-w-[44px] min-h-[44px]" />
+              <Button variant="ghost" size="icon" aria-label={t("openMenu")} className="min-w-[44px] min-h-[44px]" />
             }
           >
             <MenuIcon className="size-5" />
@@ -156,13 +161,13 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  Get Started Free
+                  {tc("getStartedFree")}
                 </SheetClose>
               )}
 
               <Separator className="mb-2" />
 
-              {NAV_LINKS.map(({ href, label }) => (
+              {NAV_LINKS.map(({ href, key }) => (
                 <SheetClose
                   key={href}
                   render={
@@ -176,7 +181,7 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  {label}
+                  {t(key)}
                 </SheetClose>
               ))}
               <Separator className="my-2" />
@@ -194,14 +199,14 @@ export default function SiteNav() {
                       />
                     }
                   >
-                    Account
+                    {tc("account")}
                   </SheetClose>
                   <div className="px-3 py-2 text-xs text-slate-400 truncate">
                     {user.user_metadata?.full_name || user.email}
                   </div>
                   <form action="/api/auth/signout" method="POST">
                     <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
-                      Sign Out
+                      {tc("signOut")}
                     </button>
                   </form>
                 </>
@@ -214,9 +219,13 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  Sign In
+                  {tc("signIn")}
                 </SheetClose>
               )}
+              <Separator className="my-2" />
+              <div className="px-1">
+                <LanguageSwitcher />
+              </div>
             </div>
           </SheetContent>
         </Sheet>

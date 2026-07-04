@@ -1,0 +1,71 @@
+{
+  "common": {
+    "brand": "AICareerPivot",
+    "getStartedFree": "मुफ़्त में शुरू करें",
+    "signIn": "साइन इन करें",
+    "signOut": "साइन आउट करें",
+    "account": "खाता",
+    "loading": "लोड हो रहा है…",
+    "learnMore": "और जानें",
+    "tagline": "आपका करियर, आपकी रफ़्तार।"
+  },
+  "nav": {
+    "freeSnapshot": "मुफ़्त स्नैपशॉट",
+    "blog": "ब्लॉग",
+    "pricing": "मूल्य",
+    "howItWorks": "यह कैसे काम करता है",
+    "myRoadmaps": "मेरे रोडमैप",
+    "jobTracker": "जॉब ट्रैकर",
+    "networking": "नेटवर्किंग",
+    "coverLetter": "कवर लेटर",
+    "linkedin": "लिंक्डइन",
+    "openMenu": "मेनू खोलें",
+    "skipToContent": "सामग्री पर जाएँ"
+  },
+  "languageSwitcher": {
+    "label": "भाषा",
+    "change": "भाषा बदलें"
+  },
+  "footer": {
+    "description": "आपका AI-संचालित करियर रणनीतिकार। आपके कौशल, वित्त और समय-सीमा के आधार पर व्यक्तिगत ट्रांज़िशन रोडमैप।",
+    "copyright": "© {year} AICareerPivot",
+    "productHeading": "उत्पाद",
+    "resourcesHeading": "संसाधन",
+    "useCasesHeading": "उपयोग के मामले",
+    "links": {
+      "howItWorks": "यह कैसे काम करता है",
+      "pricing": "मूल्य",
+      "freeAssessment": "मुफ़्त मूल्यांकन",
+      "mockInterview": "मॉक इंटरव्यू",
+      "gapAnalysis": "गैप विश्लेषण",
+      "atsScore": "ATS स्कोर",
+      "resumeGenerator": "रिज़्यूमे जेनरेटर",
+      "dashboard": "डैशबोर्ड",
+      "blog": "ब्लॉग",
+      "faq": "अक्सर पूछे जाने वाले प्रश्न",
+      "aboutUs": "हमारे बारे में",
+      "careerAssessment": "करियर मूल्यांकन",
+      "careerPivotPlanning": "करियर बदलाव योजना",
+      "salaryGrowthStrategy": "वेतन वृद्धि रणनीति",
+      "skillGapAnalysis": "कौशल गैप विश्लेषण",
+      "aiJobSearch": "AI जॉब सर्च",
+      "privacy": "गोपनीयता",
+      "terms": "शर्तें",
+      "contact": "संपर्क"
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "AI-संचालित करियर रणनीतिकार",
+      "title": "गलत करियर में फँसा हुआ महसूस करना बंद करें",
+      "subtitle": "अपने वास्तविक कौशल, वित्त और पारिवारिक ज़िम्मेदारियों के आधार पर एक व्यक्तिगत करियर ट्रांज़िशन रोडमैप बनाएँ — 6 महीने, 1 साल और 2 साल की व्यावहारिक योजनाओं के साथ।",
+      "ctaPrimary": "अपना मुफ़्त स्नैपशॉट पाएँ",
+      "ctaSecondary": "देखें यह कैसे काम करता है",
+      "trustNote": "क्रेडिट कार्ड की आवश्यकता नहीं।"
+    }
+  },
+  "meta": {
+    "defaultTitle": "AICareerPivot — आपका निजी करियर रणनीतिकार",
+    "defaultDescription": "फँसा हुआ महसूस करना बंद करें। अपने कौशल, वित्त और पारिवारिक ज़िम्मेदारियों के आधार पर एक व्यक्तिगत करियर ट्रांज़िशन रोडमैप बनाएँ। 6 महीने, 1 साल और 2 साल की व्यावहारिक योजनाएँ।"
+  }
+}
