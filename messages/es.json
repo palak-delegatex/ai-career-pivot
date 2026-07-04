@@ -688,6 +688,24 @@
     "successHeading": "¡Ya estás dentro!",
     "successMessage": "Analizaremos tu LinkedIn, tu currículum y tu trayectoria para crear una hoja de ruta a partir de tu experiencia real, no de una plantilla. Revisa tu correo electrónico para los siguientes pasos."
   },
+  "checkout": {
+    "verifying": "Confirmando tu pago...",
+    "errorHeading": "Pago no confirmado",
+    "errorMessage": "No pudimos verificar tu pago. Si se te cobró, contáctanos y lo resolveremos.",
+    "errorBackToPricing": "Volver a Precios",
+    "successHeading": "¡Pago confirmado!",
+    "successMessage": "Todo listo. Ahora sube tu currículum y tu perfil de LinkedIn para que podamos crear tu hoja de ruta personalizada de cambio de carrera.",
+    "unlockedHeading": "Lo que has desbloqueado:",
+    "unlocked1": "Hoja de ruta multietapa (6 meses / 1 año / 2 años)",
+    "unlocked2": "Trayectoria salarial y plan de transición financiera",
+    "unlocked3": "Coaching con IA + plan de acción semanal",
+    "unlocked4": "Planificación adaptada a las circunstancias de tu vida",
+    "ctaBuildRoadmap": "Crear mi hoja de ruta",
+    "testimonialQuote": "El plan de 6 meses me dio una forma de mejorar mis habilidades por las noches y los fines de semana.",
+    "testimonialRole": "En transición profesional",
+    "socialProofCount": "Únete a más de 500 profesionales",
+    "receiptNote": "Tu recibo se ha enviado a tu correo electrónico."
+  },
   "dashboard": {
     "currentRoleFallback": "Puesto actual",
     "emptyState": {

@@ -688,6 +688,24 @@
     "successHeading": "Vous y êtes !",
     "successMessage": "Nous analyserons votre LinkedIn, votre CV et votre parcours pour élaborer une feuille de route à partir de votre expérience réelle, et non d'un modèle. Consultez votre e-mail pour les prochaines étapes."
   },
+  "checkout": {
+    "verifying": "Confirmation de votre paiement...",
+    "errorHeading": "Paiement non confirmé",
+    "errorMessage": "Nous n'avons pas pu vérifier votre paiement. Si vous avez été débité, contactez-nous — nous réglerons le problème.",
+    "errorBackToPricing": "Retour aux tarifs",
+    "successHeading": "Paiement confirmé !",
+    "successMessage": "Tout est prêt. Téléchargez maintenant votre CV et votre profil LinkedIn afin que nous puissions élaborer votre feuille de route personnalisée de reconversion.",
+    "unlockedHeading": "Ce que vous avez débloqué :",
+    "unlocked1": "Feuille de route sur plusieurs échéances (6 mois / 1 an / 2 ans)",
+    "unlocked2": "Trajectoire salariale et plan de transition financière",
+    "unlocked3": "Coaching par IA + plan d'action hebdomadaire",
+    "unlocked4": "Planification adaptée à votre situation de vie",
+    "ctaBuildRoadmap": "Créer ma feuille de route",
+    "testimonialQuote": "Le plan de 6 mois m'a donné un moyen de me former le soir et le week-end.",
+    "testimonialRole": "En reconversion professionnelle",
+    "socialProofCount": "Rejoignez plus de 500 professionnels",
+    "receiptNote": "Votre reçu a été envoyé à votre adresse e-mail."
+  },
   "dashboard": {
     "currentRoleFallback": "Poste actuel",
     "emptyState": {

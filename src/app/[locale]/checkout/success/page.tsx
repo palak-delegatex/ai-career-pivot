@@ -2,12 +2,14 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import SocialProofStrip from "@/components/SocialProofStrip";
 
 function CheckoutSuccessInner() {
+  const t = useTranslations("checkout");
   const router = useRouter();
   const params = useSearchParams();
   const sessionId = params.get("session_id");
@@ -50,7 +52,7 @@ function CheckoutSuccessInner() {
       <div className="flex min-h-screen bg-slate-900 items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-          <p className="text-slate-400">Confirming your payment...</p>
+          <p className="text-slate-400">{t("verifying")}</p>
         </div>
       </div>
     );
@@ -61,15 +63,15 @@ function CheckoutSuccessInner() {
       <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
         <div className="max-w-md text-center">
           <div className="text-5xl mb-6">⚠️</div>
-          <h1 className="text-2xl font-bold mb-3">Payment Not Confirmed</h1>
+          <h1 className="text-2xl font-bold mb-3">{t("errorHeading")}</h1>
           <p className="text-slate-400 mb-6">
-            We couldn&apos;t verify your payment. If you were charged, please contact us — we&apos;ll sort it out.
+            {t("errorMessage")}
           </p>
           <Link
             href="/pricing"
             className="inline-block px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors"
           >
-            Back to Pricing
+            {t("errorBackToPricing")}
           </Link>
         </div>
       </div>
@@ -84,19 +86,19 @@ function CheckoutSuccessInner() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-3xl font-extrabold mb-3">Payment Confirmed!</h1>
+        <h1 className="text-3xl font-extrabold mb-3">{t("successHeading")}</h1>
         <p className="text-slate-400 mb-6 leading-relaxed">
-          You&apos;re all set. Now upload your resume and LinkedIn profile so we can build your personalized career pivot roadmap.
+          {t("successMessage")}
         </p>
 
         {/* What You Unlocked */}
         <div className="text-left mb-8 space-y-2">
-          <p className="text-sm font-semibold text-slate-200 mb-3">What You Unlocked:</p>
+          <p className="text-sm font-semibold text-slate-200 mb-3">{t("unlockedHeading")}</p>
           {[
-            "Multi-timeline roadmap (6mo / 1yr / 2yr)",
-            "Salary trajectory & financial bridge plan",
-            "AI coaching + weekly action plan",
-            "Constraint-aware planning for your life",
+            t("unlocked1"),
+            t("unlocked2"),
+            t("unlocked3"),
+            t("unlocked4"),
           ].map((item) => (
             <div key={item} className="flex items-start gap-2">
               <svg className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +114,7 @@ function CheckoutSuccessInner() {
           onClick={() => trackCtaClicked({ cta_text: "Build My Roadmap", cta_location: "checkout_success", destination: "/onboarding" })}
           className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
         >
-          Build My Roadmap →
+          {t("ctaBuildRoadmap")} →
         </Link>
 
         {/* Social proof */}
@@ -120,20 +122,20 @@ function CheckoutSuccessInner() {
           <SocialProofStrip
             variant="minimal"
             testimonial={{
-              quote: "The 6-month plan gave me a way to upskill nights and weekends.",
+              quote: t("testimonialQuote"),
               name: "Priya R.",
-              role: "Career Pivoter",
+              role: t("testimonialRole"),
               initials: "PR",
               gradient: "from-teal-500 to-cyan-500",
             }}
             metrics={[]}
             className="justify-center"
           />
-          <p className="text-xs text-slate-500 mt-1">Join 500+ professionals</p>
+          <p className="text-xs text-slate-500 mt-1">{t("socialProofCount")}</p>
         </div>
 
         <p className="text-slate-500 text-xs">
-          Your receipt has been sent to your email.
+          {t("receiptNote")}
         </p>
       </div>
     </div>

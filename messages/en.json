@@ -688,6 +688,24 @@
     "successHeading": "You're in!",
     "successMessage": "We'll analyze your LinkedIn, resume, and background to build a roadmap from your actual experience — not a template. Check your email for next steps."
   },
+  "checkout": {
+    "verifying": "Confirming your payment...",
+    "errorHeading": "Payment Not Confirmed",
+    "errorMessage": "We couldn't verify your payment. If you were charged, please contact us — we'll sort it out.",
+    "errorBackToPricing": "Back to Pricing",
+    "successHeading": "Payment Confirmed!",
+    "successMessage": "You're all set. Now upload your resume and LinkedIn profile so we can build your personalized career pivot roadmap.",
+    "unlockedHeading": "What You Unlocked:",
+    "unlocked1": "Multi-timeline roadmap (6mo / 1yr / 2yr)",
+    "unlocked2": "Salary trajectory & financial bridge plan",
+    "unlocked3": "AI coaching + weekly action plan",
+    "unlocked4": "Constraint-aware planning for your life",
+    "ctaBuildRoadmap": "Build My Roadmap",
+    "testimonialQuote": "The 6-month plan gave me a way to upskill nights and weekends.",
+    "testimonialRole": "Career Pivoter",
+    "socialProofCount": "Join 500+ professionals",
+    "receiptNote": "Your receipt has been sent to your email."
+  },
   "dashboard": {
     "currentRoleFallback": "Current Role",
     "emptyState": {

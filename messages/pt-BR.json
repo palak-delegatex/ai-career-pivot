@@ -688,6 +688,24 @@
     "successHeading": "Você está dentro!",
     "successMessage": "Vamos analisar seu LinkedIn, seu currículo e sua trajetória para criar uma trilha a partir da sua experiência real — não de um modelo. Verifique seu e-mail para os próximos passos."
   },
+  "checkout": {
+    "verifying": "Confirmando seu pagamento...",
+    "errorHeading": "Pagamento não confirmado",
+    "errorMessage": "Não conseguimos verificar seu pagamento. Se você foi cobrado, entre em contato conosco — vamos resolver.",
+    "errorBackToPricing": "Voltar aos Preços",
+    "successHeading": "Pagamento confirmado!",
+    "successMessage": "Tudo pronto. Agora envie seu currículo e seu perfil do LinkedIn para que possamos montar seu roteiro personalizado de transição de carreira.",
+    "unlockedHeading": "O que você desbloqueou:",
+    "unlocked1": "Roteiro com múltiplos prazos (6 meses / 1 ano / 2 anos)",
+    "unlocked2": "Trajetória salarial e plano de transição financeira",
+    "unlocked3": "Coaching com IA + plano de ação semanal",
+    "unlocked4": "Planejamento adaptado à sua realidade de vida",
+    "ctaBuildRoadmap": "Montar meu roteiro",
+    "testimonialQuote": "O plano de 6 meses me deu um caminho para me qualificar à noite e nos fins de semana.",
+    "testimonialRole": "Em transição de carreira",
+    "socialProofCount": "Junte-se a mais de 500 profissionais",
+    "receiptNote": "Seu recibo foi enviado para o seu e-mail."
+  },
   "dashboard": {
     "currentRoleFallback": "Cargo atual",
     "emptyState": {

@@ -688,6 +688,24 @@
     "successHeading": "登録完了です！",
     "successMessage": "あなたのLinkedIn、履歴書、経歴を分析し、テンプレートではなく実際の経験からロードマップを作成します。次のステップについてはメールをご確認ください。"
   },
+  "checkout": {
+    "verifying": "お支払いを確認しています...",
+    "errorHeading": "お支払いが確認できませんでした",
+    "errorMessage": "お支払いを確認できませんでした。請求が発生している場合は、お問い合わせください。解決いたします。",
+    "errorBackToPricing": "料金ページに戻る",
+    "successHeading": "お支払いが確認できました！",
+    "successMessage": "準備が整いました。履歴書とLinkedInプロフィールをアップロードしていただければ、あなた専用のキャリアチェンジ・ロードマップを作成します。",
+    "unlockedHeading": "利用可能になった内容：",
+    "unlocked1": "複数期間のロードマップ（6か月／1年／2年）",
+    "unlocked2": "給与の推移と資金移行プラン",
+    "unlocked3": "AIコーチング＋週次アクションプラン",
+    "unlocked4": "あなたの生活状況に合わせたプランニング",
+    "ctaBuildRoadmap": "ロードマップを作成",
+    "testimonialQuote": "6か月プランのおかげで、平日の夜や週末にスキルアップする道筋ができました。",
+    "testimonialRole": "キャリアチェンジ中",
+    "socialProofCount": "500人以上のプロフェッショナルに参加",
+    "receiptNote": "領収書はメールで送信されました。"
+  },
   "dashboard": {
     "currentRoleFallback": "現在の役職",
     "emptyState": {

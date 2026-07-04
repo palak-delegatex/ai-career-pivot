@@ -688,6 +688,24 @@
     "successHeading": "Sie sind dabei!",
     "successMessage": "Wir analysieren Ihr LinkedIn-Profil, Ihren Lebenslauf und Ihren Werdegang, um einen Fahrplan aus Ihrer tatsächlichen Erfahrung zu erstellen — nicht aus einer Vorlage. Prüfen Sie Ihre E-Mails für die nächsten Schritte."
   },
+  "checkout": {
+    "verifying": "Ihre Zahlung wird bestätigt...",
+    "errorHeading": "Zahlung nicht bestätigt",
+    "errorMessage": "Wir konnten Ihre Zahlung nicht bestätigen. Falls Ihnen etwas berechnet wurde, kontaktieren Sie uns — wir klären das.",
+    "errorBackToPricing": "Zurück zu den Preisen",
+    "successHeading": "Zahlung bestätigt!",
+    "successMessage": "Alles bereit. Laden Sie jetzt Ihren Lebenslauf und Ihr LinkedIn-Profil hoch, damit wir Ihren persönlichen Fahrplan für den Berufswechsel erstellen können.",
+    "unlockedHeading": "Das haben Sie freigeschaltet:",
+    "unlocked1": "Fahrplan über mehrere Zeithorizonte (6 Monate / 1 Jahr / 2 Jahre)",
+    "unlocked2": "Gehaltsentwicklung und finanzieller Übergangsplan",
+    "unlocked3": "KI-Coaching + wöchentlicher Aktionsplan",
+    "unlocked4": "Planung, die auf Ihre Lebensumstände abgestimmt ist",
+    "ctaBuildRoadmap": "Meinen Fahrplan erstellen",
+    "testimonialQuote": "Der 6-Monats-Plan gab mir einen Weg, mich abends und am Wochenende weiterzubilden.",
+    "testimonialRole": "Beim Berufswechsel",
+    "socialProofCount": "Schließen Sie sich über 500 Fachkräften an",
+    "receiptNote": "Ihre Quittung wurde an Ihre E-Mail-Adresse gesendet."
+  },
   "dashboard": {
     "currentRoleFallback": "Aktuelle Position",
     "emptyState": {
