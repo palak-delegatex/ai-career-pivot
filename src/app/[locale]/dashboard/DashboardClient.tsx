@@ -14,7 +14,6 @@ import MomentumCard from "@/components/MomentumCard";
 import StreakCalendar from "@/components/StreakCalendar";
 import PhaseProgressCards from "@/components/PhaseProgressCards";
 import CompletionBadges from "@/components/CompletionBadges";
-import { BADGE_DEFINITIONS } from "@/components/CompletionBadges";
 import ShareableProgressCard from "@/components/ShareableProgressCard";
 import PhaseCompletionCelebration from "@/components/PhaseCompletionCelebration";
 import DocumentsCard from "@/components/DocumentsCard";

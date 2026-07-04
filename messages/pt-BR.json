@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Seu estrategista de carreira pessoal",
     "defaultDescription": "Pare de se sentir preso. Crie um plano de transição de carreira personalizado com base nas suas habilidades, finanças e responsabilidades familiares. Planos práticos de 6 meses, 1 ano e 2 anos."
+  },
+  "completionBadges": {
+    "title": "Selos",
+    "locked": "Bloqueado",
+    "badges": {
+      "first_step": {
+        "label": "Primeiro passo",
+        "description": "Conclua seu primeiro marco"
+      },
+      "phase_complete": {
+        "label": "Fase concluída",
+        "description": "Conclua todos os marcos de uma fase"
+      },
+      "streak_master": {
+        "label": "Mestre da sequência",
+        "description": "Alcance uma sequência de 7 dias"
+      },
+      "halfway_there": {
+        "label": "Na metade do caminho",
+        "description": "Conclua 50% de todos os marcos"
+      },
+      "career_ready": {
+        "label": "Pronto para a carreira",
+        "description": "Conclua 100% de todos os marcos"
+      }
+    }
   }
 }

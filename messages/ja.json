@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — あなた専属のキャリア戦略パートナー",
     "defaultDescription": "縛られる日々を終わりに。あなたのスキル・資金・家庭の事情に基づいた、パーソナライズされたキャリア転身ロードマップを作成。6か月・1年・2年の実行可能なプラン。"
+  },
+  "completionBadges": {
+    "title": "バッジ",
+    "locked": "ロック中",
+    "badges": {
+      "first_step": {
+        "label": "最初の一歩",
+        "description": "最初のマイルストーンを達成する"
+      },
+      "phase_complete": {
+        "label": "フェーズ完了",
+        "description": "フェーズ内のすべてのマイルストーンを達成する"
+      },
+      "streak_master": {
+        "label": "ストリークマスター",
+        "description": "7日間連続の達成を成し遂げる"
+      },
+      "halfway_there": {
+        "label": "折り返し地点",
+        "description": "すべてのマイルストーンの50%を達成する"
+      },
+      "career_ready": {
+        "label": "キャリア準備完了",
+        "description": "すべてのマイルストーンの100%を達成する"
+      }
+    }
   }
 }

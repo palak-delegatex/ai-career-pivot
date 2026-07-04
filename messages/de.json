@@ -69,5 +69,31 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Ihr persönlicher Karrierestratege",
     "defaultDescription": "Fühlen Sie sich nicht länger gefangen. Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer Fähigkeiten, Finanzen und familiären Rahmenbedingungen. Umsetzbare Pläne für 6 Monate, 1 Jahr und 2 Jahre."
+  },
+  "completionBadges": {
+    "title": "Abzeichen",
+    "locked": "Gesperrt",
+    "badges": {
+      "first_step": {
+        "label": "Erster Schritt",
+        "description": "Schließe deinen ersten Meilenstein ab"
+      },
+      "phase_complete": {
+        "label": "Phase abgeschlossen",
+        "description": "Schließe alle Meilensteine einer Phase ab"
+      },
+      "streak_master": {
+        "label": "Serienmeister",
+        "description": "Erreiche eine Serie von 7 Tagen"
+      },
+      "halfway_there": {
+        "label": "Halbzeit",
+        "description": "Schließe 50 % aller Meilensteine ab"
+      },
+      "career_ready": {
+        "label": "Karrierebereit",
+        "description": "Schließe 100 % aller Meilensteine ab"
+      }
+    }
   }
 }
