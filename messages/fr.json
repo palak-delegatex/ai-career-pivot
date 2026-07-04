@@ -1527,7 +1527,7 @@
     },
     "magicLink": {
       "heading": "Vérifiez votre e-mail",
-      "body": "Nous avons envoyé un lien de connexion à {email}. Cliquez sur le lien pour accéder à votre compte.",
+      "body": "Nous avons envoyé un lien de connexion à <b>{email}</b>. Cliquez sur le lien pour accéder à votre compte.",
       "differentEmail": "Utiliser une autre adresse e-mail"
     },
     "error": {

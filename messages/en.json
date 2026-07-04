@@ -1527,7 +1527,7 @@
     },
     "magicLink": {
       "heading": "Check your email",
-      "body": "We sent a sign-in link to {email}. Click the link to access your account.",
+      "body": "We sent a sign-in link to <b>{email}</b>. Click the link to access your account.",
       "differentEmail": "Use a different email"
     },
     "error": {

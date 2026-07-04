@@ -1527,7 +1527,7 @@
     },
     "magicLink": {
       "heading": "Prüfen Sie Ihre E-Mails",
-      "body": "Wir haben einen Anmeldelink an {email} gesendet. Klicken Sie auf den Link, um auf Ihr Konto zuzugreifen.",
+      "body": "Wir haben einen Anmeldelink an <b>{email}</b> gesendet. Klicken Sie auf den Link, um auf Ihr Konto zuzugreifen.",
       "differentEmail": "Andere E-Mail-Adresse verwenden"
     },
     "error": {

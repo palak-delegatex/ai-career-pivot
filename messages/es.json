@@ -1527,7 +1527,7 @@
     },
     "magicLink": {
       "heading": "Revisa tu correo electrónico",
-      "body": "Enviamos un enlace de inicio de sesión a {email}. Haz clic en el enlace para acceder a tu cuenta.",
+      "body": "Enviamos un enlace de inicio de sesión a <b>{email}</b>. Haz clic en el enlace para acceder a tu cuenta.",
       "differentEmail": "Usar un correo electrónico diferente"
     },
     "error": {
