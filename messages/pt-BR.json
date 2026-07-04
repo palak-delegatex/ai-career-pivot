@@ -692,7 +692,7 @@
     "valueProp3": "Dados salariais e plano de transição financeira"
   },
   "completionBadges": {
-    "title": "Selos",
+    "title": "Emblemas",
     "locked": "Bloqueado",
     "tooltipTitle": "{label}: {description}",
     "tooltipTitleLocked": "{label}: {description} (Bloqueado)",
@@ -703,7 +703,7 @@
       },
       "firstApplication": {
         "label": "Primeira candidatura enviada",
-        "description": "Envie sua primeira candidatura a uma vaga"
+        "description": "Envie sua primeira candidatura a emprego"
       },
       "fiveSkills": {
         "label": "5 habilidades adquiridas",
@@ -715,11 +715,11 @@
       },
       "interviewUnlocked": {
         "label": "Entrevista desbloqueada",
-        "description": "Alcance a etapa de Candidato na sua transição"
+        "description": "Alcance a etapa de Candidato da sua transição"
       },
       "streakMaster": {
         "label": "Mestre da sequência",
-        "description": "Alcance uma sequência de 7 dias concluindo marcos"
+        "description": "Alcance uma sequência de conclusão de 7 dias"
       },
       "phaseComplete": {
         "label": "Fase concluída",
@@ -747,20 +747,12 @@
     "matchedSkills": "Habilidades correspondentes",
     "skillsToAddress": "Habilidades a abordar",
     "tone": "Tom",
-    "tones": {
-      "professional": {
-        "name": "Profissional",
-        "desc": "Formal e polido"
-      },
-      "conversational": {
-        "name": "Conversacional",
-        "desc": "Caloroso e pessoal"
-      },
-      "bold": {
-        "name": "Ousado",
-        "desc": "Confiante e assertivo"
-      }
-    },
+    "toneProfessionalName": "Profissional",
+    "toneProfessionalDesc": "Formal e polido",
+    "toneConversationalName": "Conversacional",
+    "toneConversationalDesc": "Caloroso e acessível",
+    "toneBoldName": "Ousado",
+    "toneBoldDesc": "Confiante e assertivo",
     "keyPointsHeading": "Pontos-chave a destacar",
     "keyPointPlaceholder": "Ponto-chave {index} (opcional)",
     "generated": "Carta de apresentação gerada",
@@ -775,28 +767,28 @@
     "copy": "Copiar",
     "regenerate": "Gerar novamente",
     "upgradeRequired": "Upgrade necessário",
-    "generationError": "Não foi possível gerar a carta de apresentação. Tente novamente."
+    "generationError": "Falha ao gerar a carta de apresentação. Tente novamente."
   },
   "gapAnalysis": {
-    "errorNoProfile": "Conclua primeiro sua avaliação de carreira para que possamos comparar suas habilidades com a vaga.",
-    "errorUpgradeRequired": "É necessário fazer upgrade para executar uma análise de lacunas.",
+    "errorNoProfile": "Nenhum perfil encontrado. Conclua primeiro a avaliação de carreira para carregar suas habilidades.",
+    "errorUpgradeRequired": "Upgrade necessário",
     "errorGeneric": "Algo deu errado. Tente novamente.",
     "upgradeFeature": "análise de lacunas de habilidades",
-    "loadingTitle": "Analisando a compatibilidade com a vaga",
+    "loadingTitle": "Analisando a adequação à vaga",
     "loadingSubtitle": "Comparando suas habilidades com os requisitos da vaga...",
     "resultsTitle": "Resultados da análise de lacunas",
-    "resultsSubtitle": "Com base no seu perfil em relação à vaga",
+    "resultsSubtitle": "Com base no seu perfil versus a vaga",
     "analyzeAnother": "Analisar outra vaga →",
-    "estimatedReadiness": "Preparação estimada:",
-    "matchedSkills": "Habilidades correspondentes ({count})",
+    "estimatedReadiness": "Prontidão estimada:",
+    "matchedSkills": "Habilidades compatíveis ({count})",
     "mustHaveGaps": "Lacunas essenciais ({count})",
     "niceToHaveGaps": "Lacunas desejáveis ({count})",
     "experienceGaps": "Lacunas de experiência",
     "careerPivotAssessment": "Avaliação de transição de carreira",
     "transferableStrengths": "Pontos fortes transferíveis",
     "biggestChallenges": "Maiores desafios",
-    "applicationTips": "Dicas para candidatura",
-    "practiceInterview": "Pratique uma entrevista para esta vaga",
+    "applicationTips": "Dicas de candidatura",
+    "practiceInterview": "Praticar entrevista para esta vaga",
     "backToDashboard": "Voltar ao painel",
     "inputBadge": "Análise de lacunas específica da vaga",
     "inputHeading": "Quão bem você se encaixa?",
@@ -805,20 +797,27 @@
     "profileNotLoadedBody": "Conclua primeiro a <link>avaliação de carreira</link> para que possamos comparar suas habilidades com a vaga.",
     "profileLoadedTitle": "Perfil carregado",
     "skillsLoaded": "{count} habilidades carregadas. Pronto para analisar.",
-    "jobDescriptionPlaceholder": "Cole aqui a vaga completa — cargo, requisitos, qualificações, responsabilidades...",
-    "analyzeButton": "Analisar minha compatibilidade →",
-    "analysisTimeNote": "A análise com IA leva cerca de 10 segundos"
+    "jobDescriptionPlaceholder": "Cole a vaga completa aqui — título, requisitos, qualificações, responsabilidades...",
+    "analyzeButton": "Analisar minha adequação →",
+    "analysisTimeNote": "A análise com IA leva ~10 segundos"
   },
   "jobTracker": {
-    "time": {
-      "today": "Hoje",
-      "dayAgo": "há {count}d",
-      "daysAgo": "há {count}d",
-      "weeksAgo": "há {count}sem"
+    "header": {
+      "title": "Rastreador de vagas",
+      "jobCount": "{count, plural, one {# vaga} other {# vagas}}",
+      "board": "Quadro",
+      "analytics": "Análises",
+      "addJob": "Adicionar vaga"
     },
-    "matchBadge": "{score}% de compatibilidade",
+    "board": {
+      "ariaLabel": "Quadro do rastreador de vagas"
+    },
     "viewGapAnalysis": "Ver análise de lacunas",
+    "matchBadge": "{score}% de compatibilidade",
     "source": {
+      "linkedin": "LinkedIn",
+      "indeed": "Indeed",
+      "glassdoor": "Glassdoor",
       "direct": "Direto",
       "other": "Outro"
     },
@@ -830,6 +829,12 @@
       "offer": "Oferta",
       "rejected": "Rejeitado"
     },
+    "time": {
+      "today": "Hoje",
+      "dayAgo": "há 1 d",
+      "daysAgo": "há {count} d",
+      "weeksAgo": "há {count} sem"
+    },
     "card": {
       "ariaLabel": "{role} na {company}, {score}% de compatibilidade",
       "savedAgo": "Salvo {time}",
@@ -838,35 +843,35 @@
     },
     "column": {
       "avgScore": "{score}% méd.",
+      "oldestDays": "{days} d",
       "avgScoreTitle": "Pontuação média de compatibilidade",
-      "oldestDays": "{days}d",
       "oldestCardTitle": "Cartão mais antigo",
-      "emptyOffer": "Nenhuma oferta ainda — continue!",
-      "emptyDrop": "Solte vagas aqui"
+      "emptyOffer": "Nenhuma oferta ainda -- continue assim!",
+      "emptyDrop": "Solte as vagas aqui"
     },
     "mobile": {
-      "swipeHint": "Deslize para a direita para avançar • para a esquerda para rejeitar",
+      "swipeHint": "Deslize para a direita para avançar • Deslize para a esquerda para rejeitar",
       "reject": "Rejeitar",
       "advance": "Avançar",
       "noJobsInStage": "Nenhuma vaga em {stage}"
     },
     "analytics": {
-      "title": "Análise do funil",
+      "title": "Análises do funil",
       "avgInStage": "Méd. em {stage}",
-      "avgTotalPipeline": "Méd. funil total",
+      "avgTotalPipeline": "Méd. total do funil",
       "insights": {
         "strongScreen": {
           "title": "Ótimo desempenho na triagem por telefone",
-          "body": "Sua taxa de triagem por telefone para entrevista ({rate}%) está bem acima do parâmetro de 55%. Você está causando ótimas primeiras impressões."
+          "body": "Sua taxa de triagem por telefone para entrevista ({rate}%) está bem acima da referência de 55%. Você está causando ótimas primeiras impressões."
         },
         "lowScreen": {
           "title": "Baixa taxa de candidatura para triagem",
-          "body": "Sua taxa de candidatura para triagem por telefone ({rate}%) está abaixo da média de 45%. As candidaturas podem precisar de mais personalização.",
-          "tip": "Experimente: personalize seu currículo para cada descrição de vaga. Use nossa ferramenta de ajuste de currículo com IA para incluir palavras-chave. Faça um follow-up 5 dias após se candidatar."
+          "body": "Sua taxa de candidatura para triagem por telefone ({rate}%) está abaixo da média de 45%. As candidaturas podem precisar de melhor personalização.",
+          "tip": "Tente: Personalize seu currículo para cada descrição de vaga. Use nossa ferramenta de personalização de currículo com IA para combinar palavras-chave. Faça acompanhamento 5 dias após se candidatar."
         },
         "empty": {
           "title": "Adicione vagas para ver insights",
-          "body": "Acompanhe suas candidaturas para desbloquear a análise do funil e insights com IA sobre sua busca por emprego."
+          "body": "Acompanhe suas candidaturas para desbloquear análises do funil e insights baseados em IA sobre sua busca por emprego."
         }
       }
     },
@@ -883,44 +888,36 @@
       "notesPlaceholder": "Adicione notas sobre esta vaga..."
     },
     "modal": {
-      "title": "Adicionar vaga ao painel",
+      "title": "Adicionar vaga ao rastreador",
       "urlPlaceholder": "Cole a URL de uma vaga (LinkedIn, Indeed, Glassdoor...)",
-      "autoFillHint": "Vamos preencher os detalhes da vaga e calcular sua compatibilidade",
+      "autoFillHint": "Vamos preencher automaticamente os detalhes da vaga e calcular sua compatibilidade",
       "orManually": "ou insira manualmente",
       "roleLabel": "Cargo",
       "rolePlaceholder": "ex. Engenheiro de ML",
       "companyLabel": "Empresa",
       "companyPlaceholder": "ex. Google",
       "notesLabel": "Notas",
-      "notesPlaceholder": "Indicação da Sarah, prazo 15 jun...",
+      "notesPlaceholder": "Indicação da Sarah, prazo 15 de jun...",
       "addToStage": "Adicionar à etapa",
       "cancel": "Cancelar",
-      "submit": "Adicionar ao painel"
-    },
-    "header": {
-      "title": "Painel de vagas",
-      "jobCount": "{count, plural, one {# vaga} other {# vagas}}",
-      "board": "Painel",
-      "analytics": "Análises",
-      "addJob": "Adicionar vaga"
-    },
-    "board": {
-      "ariaLabel": "Painel do gerenciador de vagas"
+      "submit": "Adicionar ao rastreador"
     }
   },
   "shareableProgress": {
     "heading": "Minha transição de carreira",
     "stages": {
       "explorer": "Explorador",
-      "skillBuilder": "Desenvolvimento de habilidades",
+      "skillBuilder": "Construção de habilidades",
       "applicant": "Candidato",
-      "offerStage": "Fase de proposta",
+      "offerStage": "Fase de oferta",
       "transitioned": "Transição concluída"
     },
+    "shareText": "Já percorri {percent}% do caminho de {currentRole} até {targetRole}! No momento, estou na fase de {stage}, com {completed} de {total} marcos concluídos.",
+    "shareTitle": "Minha transição de {currentRole} para {targetRole}",
     "milestonesOf": "{completed} de {total} marcos",
     "stats": {
       "milestones": "Marcos",
-      "dayStreak": "Sequência de dias",
+      "dayStreak": "Dias seguidos",
       "badges": "Medalhas"
     },
     "shareToLinkedIn": "Compartilhar no LinkedIn",
@@ -928,14 +925,12 @@
     "postOnX": "Publicar no X",
     "shareVia": "Compartilhar via...",
     "copied": "Copiado!",
-    "copyLink": "Copiar link",
-    "shareTitle": "Progresso da transição de carreira: {currentRole} → {targetRole}",
-    "shareText": "Já concluí {percent}% da minha transição de carreira de {currentRole} para {targetRole}! Atualmente na fase \"{stage}\", com {completed}/{total} marcos concluídos. Construindo meu futuro um passo de cada vez."
+    "copyLink": "Copiar link"
   },
   "successStories": {
     "headerEyebrow": "Prova social",
     "headerTitleLead": "Mudanças de carreira que",
-    "headerTitleHighlight": "realmente deram certo",
+    "headerTitleHighlight": "realmente funcionaram",
     "headerSubtitle": "Histórias reais, dados reais, resultados reais. Veja como profissionais como você deram o salto.",
     "themeLabel": "Tema:",
     "themeDark": "Escuro",
@@ -945,6 +940,6 @@
     "transformationsSubtitle": "Veja a jornada completa — habilidades adquiridas, marcos alcançados e resultados conquistados.",
     "infographicsEyebrow": "Conteúdo orientado por dados",
     "infographicsTitle": "Modelos de infográfico",
-    "infographicsSubtitle": "Modelos com sua marca e incorporáveis, otimizados para compartilhamento em redes sociais e geração de backlinks."
+    "infographicsSubtitle": "Modelos com marca e incorporáveis, otimizados para compartilhamento social e geração de backlinks."
   }
 }

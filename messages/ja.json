@@ -698,28 +698,28 @@
     "tooltipTitleLocked": "{label}：{description}（ロック中）",
     "badges": {
       "firstStep": {
-        "label": "はじめの一歩",
+        "label": "最初の一歩",
         "description": "最初のマイルストーンを達成する"
       },
       "firstApplication": {
         "label": "初めての応募を送信",
-        "description": "初めての求人に応募する"
+        "description": "初めての求人応募を提出する"
       },
       "fiveSkills": {
-        "label": "スキルを5つ習得",
-        "description": "スキル習得のマイルストーンを5つ達成する"
+        "label": "5つのスキルを習得",
+        "description": "スキル構築のマイルストーンを5つ達成する"
       },
       "tenConnections": {
         "label": "10件のつながりを構築",
         "description": "ネットワークに10人の連絡先を追加する"
       },
       "interviewUnlocked": {
-        "label": "面接がアンロック",
-        "description": "転職の応募者ステージに到達する"
+        "label": "面接を解除",
+        "description": "キャリア移行の応募者ステージに到達する"
       },
       "streakMaster": {
-        "label": "ストリークマスター",
-        "description": "7日連続の達成ストリークを実現する"
+        "label": "連続達成マスター",
+        "description": "7日間の連続達成を実現する"
       },
       "phaseComplete": {
         "label": "フェーズ完了",
@@ -727,176 +727,81 @@
       },
       "halfwayThere": {
         "label": "折り返し地点",
-        "description": "すべてのマイルストーンの50%を達成する"
+        "description": "すべてのマイルストーンの50％を達成する"
       },
       "momentum": {
-        "label": "勢いビルダー",
+        "label": "勢いを生む人",
         "description": "1週間で3つのマイルストーンを達成する"
       },
       "careerReady": {
         "label": "キャリア準備完了",
-        "description": "すべてのマイルストーンの100%を達成する"
+        "description": "すべてのマイルストーンの100％を達成する"
       }
     }
   },
   "coverLetter": {
-    "title": "{role} 向けのカバーレター",
+    "title": "{role} のカバーレター",
     "saved": "保存しました",
-    "saveFailed": "保存に失敗しました — 内容をコピーしてください",
+    "saveFailed": "保存に失敗しました — 作業内容をコピーしてください",
     "jobRequirements": "求人要件",
     "matchedSkills": "一致するスキル",
-    "skillsToAddress": "補うべきスキル",
+    "skillsToAddress": "対応すべきスキル",
     "tone": "トーン",
-    "tones": {
-      "professional": {
-        "name": "フォーマル",
-        "desc": "堅実で洗練された印象"
-      },
-      "conversational": {
-        "name": "カジュアル",
-        "desc": "温かく親しみやすい印象"
-      },
-      "bold": {
-        "name": "力強い",
-        "desc": "自信に満ちた明確な印象"
-      }
-    },
-    "keyPointsHeading": "強調したいポイント",
-    "keyPointPlaceholder": "ポイント {index}（任意）",
-    "generated": "カバーレターを作成しました",
+    "toneProfessionalName": "プロフェッショナル",
+    "toneProfessionalDesc": "フォーマルで洗練された",
+    "toneConversationalName": "会話調",
+    "toneConversationalDesc": "温かく親しみやすい",
+    "toneBoldName": "大胆",
+    "toneBoldDesc": "自信に満ち力強い",
+    "keyPointsHeading": "強調する重要ポイント",
+    "keyPointPlaceholder": "重要ポイント {index}（任意）",
+    "generated": "カバーレターを生成しました",
     "edit": "編集",
-    "generating": "作成中...",
-    "generate": "カバーレターを作成",
+    "generating": "生成中...",
+    "generate": "カバーレターを生成",
     "cancel": "キャンセル",
     "saving": "保存中...",
     "saveChanges": "変更を保存",
-    "downloadPdf": "PDF をダウンロード",
+    "downloadPdf": "PDFをダウンロード",
     "copied": "コピーしました",
     "copy": "コピー",
-    "regenerate": "再作成",
+    "regenerate": "再生成",
     "upgradeRequired": "アップグレードが必要です",
-    "generationError": "カバーレターを作成できませんでした。もう一度お試しください。"
+    "generationError": "カバーレターの生成に失敗しました。もう一度お試しください。"
   },
   "gapAnalysis": {
-    "errorNoProfile": "スキルと求人を比較できるよう、まずキャリア診断を完了してください。",
-    "errorUpgradeRequired": "ギャップ分析を実行するにはアップグレードが必要です。",
+    "errorNoProfile": "プロフィールが見つかりません。スキルを読み込むには、まずキャリア診断を完了してください。",
+    "errorUpgradeRequired": "アップグレードが必要です",
     "errorGeneric": "問題が発生しました。もう一度お試しください。",
     "upgradeFeature": "スキルギャップ分析",
-    "loadingTitle": "求人への適合度を分析中",
-    "loadingSubtitle": "あなたのスキルを求人要件と照合しています...",
+    "loadingTitle": "求人との適合度を分析中",
+    "loadingSubtitle": "あなたのスキルを求人要件と比較しています...",
     "resultsTitle": "ギャップ分析の結果",
     "resultsSubtitle": "あなたのプロフィールと求人内容の比較に基づく",
-    "analyzeAnother": "別の求人を分析 →",
-    "estimatedReadiness": "準備までの目安：",
-    "matchedSkills": "一致したスキル（{count}）",
+    "analyzeAnother": "別の求人を分析する →",
+    "estimatedReadiness": "準備完了までの目安:",
+    "matchedSkills": "一致するスキル（{count}）",
     "mustHaveGaps": "必須のギャップ（{count}）",
     "niceToHaveGaps": "あると望ましいギャップ（{count}）",
     "experienceGaps": "経験のギャップ",
     "careerPivotAssessment": "キャリアチェンジの評価",
-    "transferableStrengths": "活かせる強み",
+    "transferableStrengths": "応用できる強み",
     "biggestChallenges": "最大の課題",
     "applicationTips": "応募のヒント",
     "practiceInterview": "この職種の面接を練習する",
     "backToDashboard": "ダッシュボードに戻る",
     "inputBadge": "求人別ギャップ分析",
-    "inputHeading": "あなたはどれくらい適していますか？",
-    "inputDescription": "求人情報を貼り付けると、一致するスキル、不足しているスキル、そしてすべてのギャップを埋める方法を正確にお見せします。",
+    "inputHeading": "あなたの適合度は?",
+    "inputDescription": "求人情報を貼り付けるだけで、あなたが満たしているスキル、不足しているスキル、そして各ギャップの埋め方を正確にお見せします。",
     "profileNotLoadedTitle": "プロフィールが読み込まれていません",
-    "profileNotLoadedBody": "スキルと求人を比較できるよう、まず<link>キャリア診断</link>を完了してください。",
+    "profileNotLoadedBody": "まず<link>キャリア診断</link>を完了してください。そうすればあなたのスキルを求人と比較できます。",
     "profileLoadedTitle": "プロフィールを読み込みました",
-    "skillsLoaded": "{count}件のスキルを読み込みました。分析の準備が整いました。",
-    "jobDescriptionPlaceholder": "求人情報全文をここに貼り付けてください — 職種、要件、応募資格、職務内容...",
+    "skillsLoaded": "{count}件のスキルを読み込みました。分析の準備ができました。",
+    "jobDescriptionPlaceholder": "ここに求人情報全体を貼り付けてください — 職種名、要件、資格、職務内容など...",
     "analyzeButton": "適合度を分析する →",
     "analysisTimeNote": "AIによる分析には約10秒かかります"
   },
   "jobTracker": {
-    "time": {
-      "today": "今日",
-      "dayAgo": "{count}日前",
-      "daysAgo": "{count}日前",
-      "weeksAgo": "{count}週間前"
-    },
-    "matchBadge": "{score}% 一致",
-    "viewGapAnalysis": "ギャップ分析を見る",
-    "source": {
-      "direct": "直接",
-      "other": "その他"
-    },
-    "status": {
-      "saved": "保存済み",
-      "applied": "応募済み",
-      "phone_screen": "電話面談",
-      "interview": "面接",
-      "offer": "オファー",
-      "rejected": "不採用"
-    },
-    "card": {
-      "ariaLabel": "{company}の{role}、{score}% 一致",
-      "savedAgo": "{time}に保存",
-      "rejectedAgo": "{time}に不採用",
-      "appliedAgo": "{time}に応募"
-    },
-    "column": {
-      "avgScore": "平均 {score}%",
-      "avgScoreTitle": "平均一致スコア",
-      "oldestDays": "{days}日",
-      "oldestCardTitle": "最も古いカード",
-      "emptyOffer": "まだオファーはありません — その調子！",
-      "emptyDrop": "ここに求人をドロップ"
-    },
-    "mobile": {
-      "swipeHint": "右スワイプで前進 • 左スワイプで不採用",
-      "reject": "不採用",
-      "advance": "前進",
-      "noJobsInStage": "{stage}に求人はありません"
-    },
-    "analytics": {
-      "title": "パイプライン分析",
-      "avgInStage": "{stage}の平均",
-      "avgTotalPipeline": "パイプライン全体の平均",
-      "insights": {
-        "strongScreen": {
-          "title": "電話面談で好調",
-          "body": "電話面談から面接への通過率（{rate}%）は基準の55%を大きく上回っています。強い第一印象を与えられています。"
-        },
-        "lowScreen": {
-          "title": "応募から電話面談への通過率が低め",
-          "body": "応募から電話面談への通過率（{rate}%）は平均の45%を下回っています。応募内容をより丁寧に調整する必要があるかもしれません。",
-          "tip": "ヒント：求人ごとに履歴書をカスタマイズしましょう。AI履歴書調整ツールでキーワードを合わせ、応募から5日後にフォローアップしましょう。"
-        },
-        "empty": {
-          "title": "求人を追加してインサイトを表示",
-          "body": "応募状況を記録すると、パイプライン分析と求職活動に関するAIインサイトが利用できます。"
-        }
-      }
-    },
-    "detail": {
-      "matchScore": "{score}% 一致",
-      "gapAnalysis": "ギャップ分析",
-      "stage": "ステージ",
-      "interviewDate": "面接日",
-      "notSet": "未設定",
-      "source": "ソース",
-      "added": "追加日",
-      "linkedDocuments": "関連ドキュメント",
-      "notes": "メモ",
-      "notesPlaceholder": "この求人についてのメモを追加..."
-    },
-    "modal": {
-      "title": "トラッカーに求人を追加",
-      "urlPlaceholder": "求人URLを貼り付け（LinkedIn、Indeed、Glassdoor...）",
-      "autoFillHint": "求人詳細を自動入力し、一致スコアを算出します",
-      "orManually": "または手動で入力",
-      "roleLabel": "職種",
-      "rolePlaceholder": "例：MLエンジニア",
-      "companyLabel": "会社",
-      "companyPlaceholder": "例：Google",
-      "notesLabel": "メモ",
-      "notesPlaceholder": "Sarahからの紹介、締切6月15日...",
-      "addToStage": "ステージに追加",
-      "cancel": "キャンセル",
-      "submit": "トラッカーに追加"
-    },
     "header": {
       "title": "求人トラッカー",
       "jobCount": "{count, plural, other {#件の求人}}",
@@ -906,45 +811,135 @@
     },
     "board": {
       "ariaLabel": "求人トラッカーボード"
+    },
+    "viewGapAnalysis": "ギャップ分析を見る",
+    "matchBadge": "マッチ度{score}%",
+    "source": {
+      "linkedin": "LinkedIn",
+      "indeed": "Indeed",
+      "glassdoor": "Glassdoor",
+      "direct": "直接",
+      "other": "その他"
+    },
+    "status": {
+      "saved": "保存済み",
+      "applied": "応募済み",
+      "phone_screen": "電話スクリーニング",
+      "interview": "面接",
+      "offer": "オファー",
+      "rejected": "不採用"
+    },
+    "time": {
+      "today": "今日",
+      "dayAgo": "1日前",
+      "daysAgo": "{count}日前",
+      "weeksAgo": "{count}週間前"
+    },
+    "card": {
+      "ariaLabel": "{company}の{role}、マッチ度{score}%",
+      "savedAgo": "保存 {time}",
+      "rejectedAgo": "不採用 {time}",
+      "appliedAgo": "応募 {time}"
+    },
+    "column": {
+      "avgScore": "平均{score}%",
+      "oldestDays": "{days}日",
+      "avgScoreTitle": "平均マッチスコア",
+      "oldestCardTitle": "最も古いカード",
+      "emptyOffer": "まだオファーはありません -- 頑張りましょう！",
+      "emptyDrop": "ここに求人をドロップ"
+    },
+    "mobile": {
+      "swipeHint": "右にスワイプで進む • 左にスワイプで不採用",
+      "reject": "不採用",
+      "advance": "進む",
+      "noJobsInStage": "{stage}に求人はありません"
+    },
+    "analytics": {
+      "title": "パイプライン分析",
+      "avgInStage": "{stage}の平均",
+      "avgTotalPipeline": "パイプライン全体の平均",
+      "insights": {
+        "strongScreen": {
+          "title": "電話スクリーニングの優れた成果",
+          "body": "電話スクリーニングから面接への移行率（{rate}%）は55%のベンチマークを大きく上回っています。強い第一印象を与えています。"
+        },
+        "lowScreen": {
+          "title": "応募からスクリーニングへの率が低い",
+          "body": "応募から電話スクリーニングへの率（{rate}%）は平均の45%を下回っています。応募内容のより良い調整が必要かもしれません。",
+          "tip": "ヒント：各求人の職務記述に合わせて履歴書をカスタマイズしましょう。AI履歴書最適化ツールでキーワードを合わせましょう。応募から5日後にフォローアップしましょう。"
+        },
+        "empty": {
+          "title": "求人を追加してインサイトを表示",
+          "body": "応募を追跡して、パイプライン分析と転職活動に関するAI活用のインサイトをアンロックしましょう。"
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "マッチ度{score}%",
+      "gapAnalysis": "ギャップ分析",
+      "stage": "ステージ",
+      "interviewDate": "面接日",
+      "notSet": "未設定",
+      "source": "ソース",
+      "added": "追加日",
+      "linkedDocuments": "リンクされたドキュメント",
+      "notes": "メモ",
+      "notesPlaceholder": "この職種についてのメモを追加..."
+    },
+    "modal": {
+      "title": "トラッカーに求人を追加",
+      "urlPlaceholder": "求人 URL を貼り付け（LinkedIn、Indeed、Glassdoor...）",
+      "autoFillHint": "求人の詳細を自動入力し、マッチスコアを計算します",
+      "orManually": "または手動で入力",
+      "roleLabel": "職種",
+      "rolePlaceholder": "例：MLエンジニア",
+      "companyLabel": "会社",
+      "companyPlaceholder": "例：Google",
+      "notesLabel": "メモ",
+      "notesPlaceholder": "Sarahからの紹介、6月15日締切...",
+      "addToStage": "ステージに追加",
+      "cancel": "キャンセル",
+      "submit": "トラッカーに追加"
     }
   },
   "shareableProgress": {
     "heading": "私のキャリアチェンジ",
     "stages": {
-      "explorer": "エクスプローラー",
-      "skillBuilder": "スキルビルダー",
+      "explorer": "探索者",
+      "skillBuilder": "スキル構築",
       "applicant": "応募者",
       "offerStage": "オファー段階",
       "transitioned": "転身完了"
     },
+    "shareText": "{currentRole}から{targetRole}への道のりを{percent}%まで進みました！現在は{stage}の段階で、{total}件中{completed}件のマイルストーンを達成しています。",
+    "shareTitle": "{currentRole}から{targetRole}への私の転身",
     "milestonesOf": "{total}件中{completed}件のマイルストーン",
     "stats": {
       "milestones": "マイルストーン",
       "dayStreak": "連続日数",
       "badges": "バッジ"
     },
-    "shareToLinkedIn": "LinkedInでシェア",
+    "shareToLinkedIn": "LinkedInで共有",
     "moreSharingOptions": "その他の共有オプション",
     "postOnX": "Xに投稿",
-    "shareVia": "共有方法を選択...",
+    "shareVia": "共有方法...",
     "copied": "コピーしました！",
-    "copyLink": "リンクをコピー",
-    "shareTitle": "キャリアチェンジの進捗：{currentRole} → {targetRole}",
-    "shareText": "{currentRole}から{targetRole}へのキャリアチェンジが{percent}%進みました！現在は「{stage}」の段階で、{total}件中{completed}件のマイルストーンを達成しています。一歩ずつ未来を築いています。"
+    "copyLink": "リンクをコピー"
   },
   "successStories": {
-    "headerEyebrow": "実績の証明",
-    "headerTitleLead": "本当に成功した",
-    "headerTitleHighlight": "キャリアチェンジ",
-    "headerSubtitle": "リアルなストーリー、リアルなデータ、リアルな成果。あなたと同じような人たちがどう飛躍したかをご覧ください。",
-    "themeLabel": "テーマ:",
+    "headerEyebrow": "社会的証明",
+    "headerTitleLead": "キャリアの転換で",
+    "headerTitleHighlight": "本当に成功した事例",
+    "headerSubtitle": "本物のストーリー、本物のデータ、本物の成果。あなたのようなプロフェッショナルがどのように飛躍したかをご覧ください。",
+    "themeLabel": "テーマ：",
     "themeDark": "ダーク",
     "themeLight": "ライト",
-    "transformationsEyebrow": "完全な変化の記録",
-    "transformationsTitle": "ビフォー・アフター",
-    "transformationsSubtitle": "全体の道のりをご覧ください — 身につけたスキル、達成したマイルストーン、そして得られた成果。",
-    "infographicsEyebrow": "データに基づくコンテンツ",
+    "transformationsEyebrow": "完全な変革",
+    "transformationsTitle": "ビフォー＆アフター",
+    "transformationsSubtitle": "習得したスキル、達成したマイルストーン、得られた成果まで、すべての道のりをご覧ください。",
+    "infographicsEyebrow": "データ主導のコンテンツ",
     "infographicsTitle": "インフォグラフィックテンプレート",
-    "infographicsSubtitle": "ブランド仕様で埋め込み可能なテンプレート。SNSでのシェアや被リンク獲得に最適化されています。"
+    "infographicsSubtitle": "ブランド付きの埋め込み可能なテンプレート。ソーシャル共有とバックリンク生成に最適化されています。"
   }
 }

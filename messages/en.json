@@ -747,20 +747,12 @@
     "matchedSkills": "Matched Skills",
     "skillsToAddress": "Skills to Address",
     "tone": "Tone",
-    "tones": {
-      "professional": {
-        "name": "Professional",
-        "desc": "Formal and polished"
-      },
-      "conversational": {
-        "name": "Conversational",
-        "desc": "Warm and personable"
-      },
-      "bold": {
-        "name": "Bold",
-        "desc": "Confident and assertive"
-      }
-    },
+    "toneProfessionalName": "Professional",
+    "toneProfessionalDesc": "Formal and polished",
+    "toneConversationalName": "Conversational",
+    "toneConversationalDesc": "Warm and personable",
+    "toneBoldName": "Bold",
+    "toneBoldDesc": "Confident and assertive",
     "keyPointsHeading": "Key Points to Emphasize",
     "keyPointPlaceholder": "Key point {index} (optional)",
     "generated": "Cover Letter Generated",
@@ -778,8 +770,8 @@
     "generationError": "Failed to generate cover letter. Please try again."
   },
   "gapAnalysis": {
-    "errorNoProfile": "Complete your career assessment first so we can compare your skills against the job.",
-    "errorUpgradeRequired": "Upgrade required to run a gap analysis.",
+    "errorNoProfile": "No profile found. Complete the career assessment first to load your skills.",
+    "errorUpgradeRequired": "Upgrade required",
     "errorGeneric": "Something went wrong. Please try again.",
     "upgradeFeature": "skill gap analysis",
     "loadingTitle": "Analyzing Job Fit",
@@ -810,15 +802,22 @@
     "analysisTimeNote": "AI-powered analysis takes ~10 seconds"
   },
   "jobTracker": {
-    "time": {
-      "today": "Today",
-      "dayAgo": "{count}d ago",
-      "daysAgo": "{count}d ago",
-      "weeksAgo": "{count}w ago"
+    "header": {
+      "title": "Job Tracker",
+      "jobCount": "{count, plural, one {# job} other {# jobs}}",
+      "board": "Board",
+      "analytics": "Analytics",
+      "addJob": "Add Job"
     },
-    "matchBadge": "{score}% match",
+    "board": {
+      "ariaLabel": "Job tracker board"
+    },
     "viewGapAnalysis": "View Gap Analysis",
+    "matchBadge": "{score}% match",
     "source": {
+      "linkedin": "LinkedIn",
+      "indeed": "Indeed",
+      "glassdoor": "Glassdoor",
       "direct": "Direct",
       "other": "Other"
     },
@@ -830,6 +829,12 @@
       "offer": "Offer",
       "rejected": "Rejected"
     },
+    "time": {
+      "today": "Today",
+      "dayAgo": "1d ago",
+      "daysAgo": "{count}d ago",
+      "weeksAgo": "{count}w ago"
+    },
     "card": {
       "ariaLabel": "{role} at {company}, {score}% match",
       "savedAgo": "Saved {time}",
@@ -838,10 +843,10 @@
     },
     "column": {
       "avgScore": "{score}% avg",
-      "avgScoreTitle": "Average match score",
       "oldestDays": "{days}d",
+      "avgScoreTitle": "Average match score",
       "oldestCardTitle": "Oldest card",
-      "emptyOffer": "No offers yet — keep going!",
+      "emptyOffer": "No offers yet -- keep going!",
       "emptyDrop": "Drop jobs here"
     },
     "mobile": {
@@ -896,16 +901,6 @@
       "addToStage": "Add to stage",
       "cancel": "Cancel",
       "submit": "Add to Tracker"
-    },
-    "header": {
-      "title": "Job Tracker",
-      "jobCount": "{count, plural, one {# job} other {# jobs}}",
-      "board": "Board",
-      "analytics": "Analytics",
-      "addJob": "Add Job"
-    },
-    "board": {
-      "ariaLabel": "Job tracker board"
     }
   },
   "shareableProgress": {
@@ -917,6 +912,8 @@
       "offerStage": "Offer Stage",
       "transitioned": "Transitioned"
     },
+    "shareText": "I'm {percent}% of the way from {currentRole} to {targetRole}! Currently at the {stage} stage with {completed} of {total} milestones done.",
+    "shareTitle": "My pivot from {currentRole} to {targetRole}",
     "milestonesOf": "{completed} of {total} milestones",
     "stats": {
       "milestones": "Milestones",
@@ -928,9 +925,7 @@
     "postOnX": "Post on X",
     "shareVia": "Share via...",
     "copied": "Copied!",
-    "copyLink": "Copy link",
-    "shareTitle": "Career Pivot Progress: {currentRole} → {targetRole}",
-    "shareText": "I'm {percent}% through my career pivot from {currentRole} to {targetRole}! Currently in the \"{stage}\" stage with {completed}/{total} milestones done. Building my future one step at a time."
+    "copyLink": "Copy link"
   },
   "successStories": {
     "headerEyebrow": "Social Proof",
