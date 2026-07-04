@@ -629,6 +629,67 @@ export async function sendDripEmail(
   return true;
 }
 
+// ---------------------------------------------------------------------------
+// Checkout recovery — for orders that got stuck in 'pending' (the buyer left
+// mid-checkout or hit a transient error). One gentle nudge with a link that
+// pre-fills their email so finishing is a single tap.
+// ---------------------------------------------------------------------------
+
+const PLAN_COPY: Record<string, { label: string; price: string }> = {
+  report: { label: "your personalized career pivot report", price: "$19" },
+  lifetime: { label: "lifetime access", price: "$149" },
+};
+
+export function getCheckoutRecoveryTemplate(
+  email: string,
+  planType: string
+): EmailTemplate {
+  const plan = PLAN_COPY[planType] ?? PLAN_COPY.report;
+  const resumeLink = `${SITE}/pricing?email=${encodeURIComponent(
+    email
+  )}&plan=${encodeURIComponent(planType)}&utm_source=email&utm_medium=recovery&utm_campaign=checkout_recovery`;
+
+  const html = baseHtml(`
+    ${h1("You're one step away from your roadmap")}
+    ${p("You started checking out for " + plan.label + " but it looks like the payment didn't go through. That's usually a quick hiccup — a dropped connection or a closed tab.")}
+    ${p("Your details are saved, so you can pick up right where you left off. It only takes a moment.")}
+    ${cta("Finish checkout — " + plan.price + " →", resumeLink)}
+    <div style="margin-top:32px;">
+      ${p("If something went wrong or you have a question, just reply to this email — we read every one.")}
+      ${sig()}
+    </div>
+  `);
+
+  return {
+    subject: "Your AICareerPivot checkout is waiting — finish in one tap",
+    previewText: "Your details are saved — pick up right where you left off.",
+    html,
+  };
+}
+
+export async function sendCheckoutRecoveryEmail(
+  to: string,
+  planType: string
+): Promise<boolean> {
+  if (!process.env.RESEND_API_KEY) return false;
+  const template = getCheckoutRecoveryTemplate(to, planType);
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    replyTo: REPLY_TO,
+    to,
+    subject: template.subject,
+    html: template.html,
+  });
+
+  if (error) {
+    console.error(`Checkout recovery email error (${to}):`, error);
+    return false;
+  }
+  return true;
+}
+
 const LAUNCH_UTM = "utm_source=email&utm_medium=waitlist&utm_campaign=launch";
 
 function launchUtmLink(path: string) {

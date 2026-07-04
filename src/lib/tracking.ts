@@ -79,7 +79,7 @@ export function trackCheckoutStarted(props: { plan: string; has_discount: boolea
   capture("checkout_started", props);
 }
 
-export function trackCheckoutError(props: { plan: string; error: string }) {
+export function trackCheckoutError(props: { plan: string; error: string; attempt?: number; retrying?: boolean }) {
   capture("checkout_error", props);
 }
 

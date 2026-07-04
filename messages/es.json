@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "¿Tienes un código de descuento?",
     "checkoutEmailPlaceholder": "Tu dirección de correo electrónico",
     "checkoutErrorEmail": "Introduce tu dirección de correo electrónico.",
+    "checkoutErrorRetry": "No pudimos iniciar el pago — suele ser un problema momentáneo. Toca el botón para volver a intentarlo.",
     "checkoutRedirecting": "Redirigiendo al pago...",
     "compAICareerPivotDesc": "Hoja de ruta personalizada en minutos, no en sesiones",
     "compAICareerPivotPrice": "$19",

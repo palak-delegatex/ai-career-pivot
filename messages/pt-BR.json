@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "Tem um código de desconto?",
     "checkoutEmailPlaceholder": "Seu endereço de e-mail",
     "checkoutErrorEmail": "Por favor, insira seu endereço de e-mail.",
+    "checkoutErrorRetry": "Não conseguimos iniciar seu checkout — geralmente é uma falha momentânea. Toque no botão para tentar novamente.",
     "checkoutRedirecting": "Redirecionando para o checkout...",
     "compAICareerPivotDesc": "Roteiro personalizado em minutos, não em sessões",
     "compAICareerPivotPrice": "$19",

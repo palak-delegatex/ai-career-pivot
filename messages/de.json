@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "Rabattcode vorhanden?",
     "checkoutEmailPlaceholder": "Deine E-Mail-Adresse",
     "checkoutErrorEmail": "Bitte gib deine E-Mail-Adresse ein.",
+    "checkoutErrorRetry": "Der Bezahlvorgang konnte nicht gestartet werden — meist nur eine kurze Störung. Bitte tippe erneut auf die Schaltfläche.",
     "checkoutRedirecting": "Weiterleitung zur Kasse...",
     "compAICareerPivotDesc": "Personalisierter Fahrplan in Minuten, nicht in Sitzungen",
     "compAICareerPivotPrice": "$19",

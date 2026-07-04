@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "割引コードをお持ちですか？",
     "checkoutEmailPlaceholder": "メールアドレス",
     "checkoutErrorEmail": "メールアドレスを入力してください。",
+    "checkoutErrorRetry": "チェックアウトを開始できませんでした。通常は一時的な問題です。ボタンをもう一度タップしてお試しください。",
     "checkoutRedirecting": "チェックアウトにリダイレクトしています...",
     "compAICareerPivotDesc": "セッションではなく数分でパーソナライズされたロードマップを",
     "compAICareerPivotPrice": "$19",

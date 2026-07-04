@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "Vous avez un code de réduction ?",
     "checkoutEmailPlaceholder": "Votre adresse e-mail",
     "checkoutErrorEmail": "Veuillez saisir votre adresse e-mail.",
+    "checkoutErrorRetry": "Impossible de démarrer le paiement — il s'agit généralement d'un souci passager. Appuyez à nouveau sur le bouton pour réessayer.",
     "checkoutRedirecting": "Redirection vers le paiement...",
     "compAICareerPivotDesc": "Feuille de route personnalisée en quelques minutes, pas en séances",
     "compAICareerPivotPrice": "$19",

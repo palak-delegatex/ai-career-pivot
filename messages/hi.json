@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "क्या आपके पास डिस्काउंट कोड है?",
     "checkoutEmailPlaceholder": "आपका ईमेल पता",
     "checkoutErrorEmail": "कृपया अपना ईमेल पता दर्ज करें।",
+    "checkoutErrorRetry": "हम आपका चेकआउट शुरू नहीं कर सके — आमतौर पर यह एक अस्थायी समस्या होती है। कृपया फिर से प्रयास करने के लिए बटन दबाएँ।",
     "checkoutRedirecting": "चेकआउट पर रीडायरेक्ट किया जा रहा है...",
     "compAICareerPivotDesc": "मिनटों में व्यक्तिगत रोडमैप, न कि कई सत्रों में",
     "compAICareerPivotPrice": "$19",

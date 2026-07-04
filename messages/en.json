@@ -408,6 +408,7 @@
     "checkoutHasDiscount": "Have a discount code?",
     "checkoutEmailPlaceholder": "Your email address",
     "checkoutErrorEmail": "Please enter your email address.",
+    "checkoutErrorRetry": "We couldn't start your checkout — this is usually a brief hiccup. Please tap the button to try again.",
     "checkoutRedirecting": "Redirecting to checkout...",
     "compAICareerPivotDesc": "Personalized roadmap in minutes, not sessions",
     "compAICareerPivotPrice": "$19",
