@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
-import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import { organizationSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { routing } from "@/i18n/routing";
 import { canonicalFor, ogLocale } from "@/i18n/metadata";
 
@@ -132,12 +132,17 @@ export default async function BlogPost({
     { name: post.title, path: `/blog/${slug}` },
   ]);
 
+  const hasFaq = Array.isArray(post.faq) && post.faq.length > 0;
+  const jsonLd = hasFaq
+    ? [articleSchema, faqSchema(post.faq!), crumbs]
+    : [articleSchema, crumbs];
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([articleSchema, crumbs]),
+          __html: JSON.stringify(jsonLd),
         }}
       />
       <div className="min-h-screen bg-gray-950 text-white">
@@ -187,6 +192,32 @@ export default async function BlogPost({
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
             <MDXRemote source={post.content} components={components} />
           </article>
+
+          {hasFaq && (
+            <section className="mt-14 not-prose">
+              <h2 className="text-2xl font-bold tracking-tight mb-6">
+                Frequently asked questions
+              </h2>
+              <div className="space-y-4">
+                {post.faq!.map((item, i) => (
+                  <details
+                    key={i}
+                    className="group rounded-xl border border-slate-800 bg-slate-900/40 p-5"
+                  >
+                    <summary className="cursor-pointer list-none font-semibold text-slate-100 flex items-start justify-between gap-4">
+                      <span>{item.question}</span>
+                      <span className="text-teal-400 transition-transform group-open:rotate-45 shrink-0">
+                        +
+                      </span>
+                    </summary>
+                    <p className="mt-3 text-sm text-slate-300 leading-relaxed">
+                      {item.answer}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
         </main>
       </div>

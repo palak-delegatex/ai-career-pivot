@@ -18,6 +18,26 @@ export function organizationSchema() {
   };
 }
 
+/**
+ * FAQPage structured data. Emit alongside a visible FAQ section so the rich
+ * result matches on-page content (a Google requirement). Question/answer copy
+ * is supplied per blog post via frontmatter.
+ */
+export function faqSchema(items: { question: string; answer: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+}
+
 export function breadcrumbSchema(
   items: { name: string; path: string }[],
 ) {

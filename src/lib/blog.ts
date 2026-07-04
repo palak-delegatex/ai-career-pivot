@@ -25,6 +25,11 @@ export interface PostFrontmatter {
   date: string;
   keywords: string[];
   tldr?: string[];
+  /**
+   * Answer-first Q&A pairs. Rendered as a visible FAQ section and emitted as
+   * FAQPage JSON-LD for GEO / rich results. CMO supplies copy per post.
+   */
+  faq?: { question: string; answer: string }[];
   pinned?: boolean;
   /** BCP-47 locale of the post; defaults to the site default locale. */
   locale?: string;
@@ -70,6 +75,7 @@ function readPost(dir: string, filename: string, locale: string): Post {
     date: fm.date,
     keywords: fm.keywords ?? [],
     tldr: fm.tldr,
+    faq: fm.faq,
     pinned: fm.pinned ?? false,
     locale: fm.locale ?? locale,
     draft: fm.draft ?? false,

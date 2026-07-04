@@ -124,6 +124,25 @@ export function trackReferralLinkCopied() {
   capture("referral_link_copied");
 }
 
+// Share loop (AIC-688) — measure viral coefficient + channel attribution.
+// PostHog's SDK auto-attaches utm_* params to the manual $pageview events we
+// fire (see instrumentation-client.ts), so landing attribution needs no extra
+// event. These track the outbound share side of the loop.
+export function trackContentShareClicked(props: {
+  channel: "linkedin" | "x" | "copy";
+  content_type: "blog" | "assessment";
+  slug?: string;
+}) {
+  capture("content_share_clicked", props);
+}
+
+export function trackAssessmentShared(props: {
+  channel: "linkedin" | "x" | "copy";
+  score?: number;
+}) {
+  capture("assessment_shared", props);
+}
+
 // AI feature showcase (pre-signup demo of plan generation / insights / PDF)
 export function trackFeatureShowcaseViewed(props: { location: string }) {
   capture("feature_showcase_viewed", props);
