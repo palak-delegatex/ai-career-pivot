@@ -37,6 +37,25 @@ function flatten(obj, prefix = "") {
   return out;
 }
 
+/**
+ * Collect raw object keys that contain a literal "." — these silently break
+ * next-intl. `t("a.b.c")` resolves by NESTED traversal (a -> b -> c), so a flat
+ * key literally named "a.b.c" never matches and throws MISSING_MESSAGE at runtime.
+ * The parity check above can't catch this because flatten() maps both a flat
+ * "a.b.c" key and a nested { a: { b: { c } } } to the same dot-path. Nest instead.
+ */
+function dottedKeys(obj, prefix = "") {
+  const bad = [];
+  for (const [key, value] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (key.includes(".")) bad.push(path);
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      bad.push(...dottedKeys(value, path));
+    }
+  }
+  return bad;
+}
+
 /** Extract ICU argument names ({name}, {count, plural, ...}) from a string. */
 function icuArgs(value) {
   if (typeof value !== "string") return new Set();
@@ -55,6 +74,22 @@ function load(locale) {
 const source = load(DEFAULT_LOCALE);
 const sourceKeys = Object.keys(source);
 const problems = [];
+
+// Flat dotted keys silently break next-intl in every locale (see dottedKeys docs).
+for (const locale of LOCALES) {
+  let rawObj;
+  try {
+    rawObj = JSON.parse(readFileSync(join(MESSAGES_DIR, `${locale}.json`), "utf8"));
+  } catch {
+    continue; // load error surfaced below
+  }
+  const dotted = dottedKeys(rawObj);
+  if (dotted.length) {
+    problems.push(
+      `[${locale}] ${dotted.length} flat dotted key(s) — nest these instead (next-intl won't resolve them):\n    ${dotted.join("\n    ")}`,
+    );
+  }
+}
 
 for (const locale of LOCALES) {
   if (locale === DEFAULT_LOCALE) continue;
