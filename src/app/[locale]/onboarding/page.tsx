@@ -378,6 +378,19 @@ export default function OnboardingPage() {
     setError(message);
   }, []);
 
+  // Recovery path for a failed generation. The profile (and any payment) are
+  // already captured, so retry re-runs generation directly instead of dropping
+  // the user back into the intake form and forcing a re-entry (AIC-438).
+  const handleRetryGeneration = useCallback(() => {
+    if (!generatingProfile) {
+      setPageStep("form");
+      setError("");
+      return;
+    }
+    setError("");
+    setPageStep("generating");
+  }, [generatingProfile]);
+
   async function handleSubmit() {
     const hasCircumstancesData = Object.values(circumstances).some(Boolean);
     trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "form_submitted", page: "onboarding" });
@@ -503,6 +516,47 @@ export default function OnboardingPage() {
           >
             Get Started — $29 &rarr;
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (pageStep === "error") {
+    const isPaid = typeof window !== "undefined" && !!sessionStorage.getItem("payment_session_id");
+    const canRetry = !!generatingProfile;
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
+        <div className="max-w-md text-center">
+          <div className="text-5xl mb-6">&#x1f504;</div>
+          <h1 className="text-2xl font-bold mb-3">We couldn&apos;t finish your roadmaps</h1>
+          <p className="text-slate-400 mb-3 leading-relaxed">
+            {isPaid
+              ? "The plan builder hit a snag after several automatic retries. Your payment is safe and your details are saved — let's give it another go."
+              : "The plan builder hit a snag after several automatic retries. Your details are saved — let's give it another go."}
+          </p>
+          {error && (
+            <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3 mb-8">
+              {error}
+            </p>
+          )}
+          <div className="flex flex-col gap-3">
+            {canRetry && (
+              <button
+                type="button"
+                onClick={handleRetryGeneration}
+                className="w-full px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+              >
+                Try Again
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => { setError(""); setPageStep("form"); }}
+              className="w-full px-10 py-4 rounded-xl border border-slate-600 hover:border-slate-400 text-slate-300 font-medium transition-colors"
+            >
+              Start Over
+            </button>
+          </div>
         </div>
       </div>
     );
