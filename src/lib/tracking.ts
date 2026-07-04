@@ -123,3 +123,20 @@ export function trackPreviewCtaClicked(props: { cta_location: string; destinatio
 export function trackReferralLinkCopied() {
   capture("referral_link_copied");
 }
+
+// Guided tour / coach-marks
+export function trackTourStarted(props: { tour_id: string; total_steps: number }) {
+  capture("tour_started", props);
+}
+
+export function trackTourStepViewed(props: { tour_id: string; step_index: number; step_title: string }) {
+  capture("tour_step_viewed", props);
+}
+
+export function trackTourCompleted(props: { tour_id: string; total_steps: number }) {
+  capture("tour_completed", props);
+}
+
+export function trackTourDismissed(props: { tour_id: string; step_index: number }) {
+  capture("tour_dismissed", props);
+}
