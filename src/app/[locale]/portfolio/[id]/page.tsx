@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import CareerPortfolio from "@/components/CareerPortfolio";
 import SiteNav from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import type { CareerPortfolio as CareerPortfolioType } from "@/lib/portfolio";
 
 interface PortfolioPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; locale: string }>;
 }
 
 // TODO: Replace with Supabase query once portfolio table exists
@@ -76,26 +77,40 @@ async function getPortfolio(id: string): Promise<CareerPortfolioType | null> {
 export async function generateMetadata({
   params,
 }: PortfolioPageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { id, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "portfolio" });
   const portfolio = await getPortfolio(id);
 
   if (!portfolio) {
-    return { title: "Portfolio Not Found | AICareerPivot" };
+    return { title: t("metaNotFoundTitle") };
   }
 
   return {
-    title: `${portfolio.displayName}'s Career Portfolio | AICareerPivot`,
-    description: `${portfolio.displayName} is transitioning from ${portfolio.currentRole} to ${portfolio.targetRole}. ${portfolio.completionPercent}% complete with ${portfolio.projects.length} projects and ${portfolio.certifications.length} certifications.`,
+    title: t("metaTitle", { name: portfolio.displayName }),
+    description: t("metaDescription", {
+      name: portfolio.displayName,
+      currentRole: portfolio.currentRole,
+      targetRole: portfolio.targetRole,
+      percent: portfolio.completionPercent,
+      projects: portfolio.projects.length,
+      certifications: portfolio.certifications.length,
+    }),
     openGraph: {
-      title: `${portfolio.displayName}'s Career Portfolio`,
-      description: `${portfolio.currentRole} → ${portfolio.targetRole} | ${portfolio.completionPercent}% complete`,
+      title: t("ogTitle", { name: portfolio.displayName }),
+      description: t("ogDescription", {
+        currentRole: portfolio.currentRole,
+        targetRole: portfolio.targetRole,
+        percent: portfolio.completionPercent,
+      }),
       type: "profile",
     },
   };
 }
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
-  const { id } = await params;
+  const { id, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("portfolio");
   const portfolio = await getPortfolio(id);
 
   if (!portfolio) {
@@ -104,11 +119,9 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
         <SiteNav />
         <main className="relative z-10 pt-32 pb-16 text-center">
           <h1 className="text-2xl font-bold text-white mb-3">
-            Portfolio not found
+            {t("notFoundHeading")}
           </h1>
-          <p className="text-slate-400">
-            This portfolio may be private or the link may be incorrect.
-          </p>
+          <p className="text-slate-400">{t("notFoundBody")}</p>
         </main>
         <Footer />
       </div>
