@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { getSupabaseClient } from "@/lib/supabase";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
+import { localeSystemPrompt } from "@/lib/locale";
 
 interface MilestoneProgress {
   phase: string;
@@ -143,7 +144,7 @@ INSTRUCTIONS:
 }
 
 export async function POST(req: NextRequest) {
-  const { reportId, planIndex, messages, sessionId } = await req.json();
+  const { reportId, planIndex, messages, sessionId, locale } = await req.json();
 
   if (!reportId || !messages || !Array.isArray(messages)) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -250,14 +251,15 @@ export async function POST(req: NextRequest) {
     recentInteractionCount: recentInteractions.length,
   };
 
-  const systemPrompt = buildSystemPrompt(
-    profile,
-    plan,
-    (progressData ?? []) as MilestoneProgress[],
-    priorMessages,
-    jobStats,
-    networkStats
-  );
+  const systemPrompt =
+    buildSystemPrompt(
+      profile,
+      plan,
+      (progressData ?? []) as MilestoneProgress[],
+      priorMessages,
+      jobStats,
+      networkStats
+    ) + localeSystemPrompt(locale);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),

@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 interface MatchedSkill {
   skill: string;
@@ -106,6 +107,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function GapAnalysisClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("input");
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<GapAnalysisResult | null>(null);
@@ -179,6 +181,7 @@ export default function GapAnalysisClient() {
           transferableSkills,
           userExperience,
           userEducation,
+          locale,
         }),
       });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useLocale } from "next-intl";
 import { Send, ArrowLeft, Sparkles, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import WeeklyCheckIn from "@/components/WeeklyCheckIn";
@@ -134,6 +135,7 @@ function ChatMessage({ msg }: { msg: Message }) {
 }
 
 export default function ChatPage() {
+  const locale = useLocale();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -332,6 +334,7 @@ export default function ChatPage() {
           planIndex: planContext.planIndex,
           messages: updatedMessages,
           sessionId,
+          locale,
         }),
       });
 

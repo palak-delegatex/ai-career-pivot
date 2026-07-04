@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const GapAnalysisSchema = z.object({
   overallFitScore: z.number().min(0).max(100),
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
     currentTitle,
     targetRole,
     transferableSkills,
+    locale,
   }: {
     jobDescription: string;
     userSkills: string[];
@@ -57,6 +59,7 @@ export async function POST(req: NextRequest) {
     currentTitle?: string;
     targetRole?: string;
     transferableSkills?: string[];
+    locale?: string;
   } = await req.json();
 
   if (!jobDescription || !userSkills?.length) {
@@ -101,7 +104,7 @@ Analyze the fit thoroughly:
 5. Assess career pivot fit — how their transferable skills bridge the gap, biggest challenges, and realistic timeline.
 6. Give 3-5 concrete application tips for this specific role.
 
-Be specific and actionable. Reference actual skills from both the profile and JD.`,
+Be specific and actionable. Reference actual skills from both the profile and JD.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {

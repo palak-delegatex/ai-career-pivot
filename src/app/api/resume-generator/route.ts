@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { localeSystemPrompt } from "@/lib/locale";
 
 export async function POST(req: NextRequest) {
   const {
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
     keyPoints,
     profile,
     plan,
+    locale,
   }: {
     mode: "resume" | "cover-letter";
     targetRole: string;
@@ -34,6 +36,7 @@ export async function POST(req: NextRequest) {
       targetIndustry: string;
       skillGaps?: { skill: string; currentLevel: string; requiredLevel: string }[];
     };
+    locale?: string;
   } = await req.json();
 
   if (!targetRole || !profile?.skills?.length) {
@@ -65,9 +68,10 @@ export async function POST(req: NextRequest) {
     : "";
 
   const systemPrompt =
-    mode === "resume"
+    (mode === "resume"
       ? buildResumePrompt(targetRole, profileSection, jdSection, template)
-      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name, tone, keyPoints);
+      : buildCoverLetterPrompt(targetRole, profileSection, jdSection, profile.name, tone, keyPoints)) +
+    localeSystemPrompt(locale);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),
