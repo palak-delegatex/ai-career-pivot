@@ -13,6 +13,16 @@ import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 import PricingCheckout from "@/app/[locale]/pricing/PricingCheckout";
+import SocialProofStrip from "@/components/SocialProofStrip";
+import { testimonials } from "@/lib/testimonials";
+
+// Trust metrics shown beside the inline checkout — same numbers used on
+// /free-results so the social proof reads consistently across the funnel.
+const CHECKOUT_TRUST_METRICS = [
+  { value: "500+", label: "Pivots" },
+  { value: "92%", label: "Progress" },
+  { value: "$15K+", label: "Avg uplift" },
+];
 
 const CHECKOUT_TIERS = [
   { key: "report", name: "Report", price: "$19", summary: "Full roadmap, one-time", popular: false },
@@ -267,6 +277,16 @@ export default function PivotPlanPage() {
           </div>
 
           <div className="max-w-md mx-auto">
+            {/* Social proof beside the buy button — reassurance at the exact
+                moment of the checkout decision, targeting the drop-off where
+                users leave the plan page and never return (AIC-437). */}
+            <SocialProofStrip
+              testimonial={testimonials[0]}
+              metrics={CHECKOUT_TRUST_METRICS}
+              variant="featured"
+              className="mb-5"
+            />
+
             {/* Plan tier toggle — value summary during checkout */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               {CHECKOUT_TIERS.map((tierOption) => {
