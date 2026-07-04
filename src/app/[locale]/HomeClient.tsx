@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
@@ -210,6 +212,8 @@ function ActivityIndicator() {
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
 
   const shuffledTestimonials = useMemo(() => {
     const arr = [...testimonials];
@@ -279,16 +283,17 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
-            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">About</Link>
-            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
-            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
-            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
+            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("howItWorks")}</Link>
+            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("about")}</Link>
+            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("faq")}</Link>
+            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("blog")}</Link>
+            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("pricing")}</Link>
+            <LanguageSwitcher />
             <Link
               href="/pricing"
               className="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
-              Get Started
+              {tc("getStartedFree")}
             </Link>
           </div>
         </motion.nav>
@@ -385,12 +390,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
-              <Link
+              <a
                 href="#how-it-works"
                 className="px-8 py-6 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
               >
-                See How It Works
-              </Link>
+                {t("howItWorks")}
+              </a>
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <Link
