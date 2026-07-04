@@ -389,5 +389,11 @@
       "accessDenied": "アクセスが拒否されました。Google でサインインするには権限を付与する必要がある場合があります。",
       "authFailed": "認証に失敗しました。もう一度お試しください。"
     }
+  },
+  "pricing": {
+    "heroFreeCtaEyebrow": "まだ迷っていますか？",
+    "heroFreeCtaControl": "無料で始める — カード不要",
+    "heroFreeCtaBenefit": "無料のスキルギャップ診断を見る",
+    "heroFreeCtaSub": "2分でお試し。ロードマップが気に入ったらアップグレード。"
   }
 }

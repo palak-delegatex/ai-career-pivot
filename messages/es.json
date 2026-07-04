@@ -389,5 +389,11 @@
       "accessDenied": "Acceso denegado. Es posible que debas conceder permisos para iniciar sesión con Google.",
       "authFailed": "La autenticación falló. Inténtalo de nuevo."
     }
+  },
+  "pricing": {
+    "heroFreeCtaEyebrow": "¿Aún no quieres comprometerte?",
+    "heroFreeCtaControl": "Empieza gratis — sin tarjeta",
+    "heroFreeCtaBenefit": "Ve tu análisis gratuito de brechas de habilidades",
+    "heroFreeCtaSub": "Pruébalo en 2 minutos. Mejora tu plan solo si te encanta."
   }
 }

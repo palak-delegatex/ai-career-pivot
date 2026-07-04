@@ -389,5 +389,11 @@
       "accessDenied": "Accès refusé. Vous devrez peut-être accorder des autorisations pour vous connecter avec Google.",
       "authFailed": "L'authentification a échoué. Veuillez réessayer."
     }
+  },
+  "pricing": {
+    "heroFreeCtaEyebrow": "Pas encore prêt à vous engager ?",
+    "heroFreeCtaControl": "Commencez gratuitement — sans carte",
+    "heroFreeCtaBenefit": "Voir votre bilan de compétences gratuit",
+    "heroFreeCtaSub": "Essayez en 2 minutes. Passez à l’offre payante seulement si votre feuille de route vous plaît."
   }
 }
