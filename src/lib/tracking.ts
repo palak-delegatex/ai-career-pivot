@@ -75,7 +75,7 @@ export function trackPdfDownloadError(props: { source: "onboarding" | "report"; 
 }
 
 // Checkout funnel
-export function trackCheckoutStarted(props: { plan: string; has_discount: boolean }) {
+export function trackCheckoutStarted(props: { plan: string; has_discount: boolean; cta_location?: string }) {
   capture("checkout_started", props);
 }
 

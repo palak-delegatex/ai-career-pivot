@@ -1,15 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackCheckoutStarted, trackCheckoutError } from "@/lib/tracking";
 import { useTranslations } from "next-intl";
 
-export default function PricingCheckout({ plan = "report" }: { plan?: string }) {
+export default function PricingCheckout({
+  plan = "report",
+  prefillEmail = "",
+  ctaLocation = "pricing_page",
+  sourceFeature,
+}: {
+  plan?: string;
+  prefillEmail?: string;
+  ctaLocation?: string;
+  sourceFeature?: string;
+}) {
   const t = useTranslations("pricing");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefillEmail);
   const [discountCode, setDiscountCode] = useState("");
+  const [showDiscount, setShowDiscount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Prefill email from a ?email= deep link (e.g. arriving from the plan page)
+  // so returning buyers don't have to retype what they already gave us.
+  useEffect(() => {
+    if (prefillEmail) return;
+    const fromUrl = new URLSearchParams(window.location.search).get("email");
+    if (fromUrl) setEmail(fromUrl);
+  }, [prefillEmail]);
 
   const labels: Record<string, string> = {
     report: t("checkoutBtnReport"),
@@ -22,7 +41,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
       setError(t("checkoutErrorEmail"));
       return;
     }
-    trackCheckoutStarted({ plan, has_discount: !!discountCode });
+    trackCheckoutStarted({ plan, has_discount: !!discountCode, cta_location: ctaLocation });
     setLoading(true);
     setError("");
 
@@ -30,7 +49,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined }),
+        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
@@ -55,13 +74,24 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
         required
         className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
       />
-      <input
-        type="text"
-        value={discountCode}
-        onChange={(e) => setDiscountCode(e.target.value)}
-        placeholder={t("checkoutDiscountPlaceholder")}
-        className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
-      />
+      {showDiscount ? (
+        <input
+          type="text"
+          value={discountCode}
+          onChange={(e) => setDiscountCode(e.target.value)}
+          placeholder={t("checkoutDiscountPlaceholder")}
+          autoFocus
+          className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowDiscount(true)}
+          className="text-slate-400 hover:text-slate-300 text-xs underline underline-offset-2"
+        >
+          {t("checkoutHasDiscount")}
+        </button>
+      )}
       {error && (
         <p className="text-red-400 text-sm">{error}</p>
       )}

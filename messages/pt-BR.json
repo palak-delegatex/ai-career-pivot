@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "Obtenha acesso vitalício — $149",
     "checkoutBtnReport": "Obtenha meu relatório — $19",
     "checkoutDiscountPlaceholder": "Código de desconto (opcional)",
+    "checkoutHasDiscount": "Tem um código de desconto?",
     "checkoutEmailPlaceholder": "Seu endereço de e-mail",
     "checkoutErrorEmail": "Por favor, insira seu endereço de e-mail.",
     "checkoutRedirecting": "Redirecionando para o checkout...",

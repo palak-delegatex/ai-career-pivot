@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "आजीवन एक्सेस पाएं — $149",
     "checkoutBtnReport": "मेरी रिपोर्ट पाएं — $19",
     "checkoutDiscountPlaceholder": "डिस्काउंट कोड (वैकल्पिक)",
+    "checkoutHasDiscount": "क्या आपके पास डिस्काउंट कोड है?",
     "checkoutEmailPlaceholder": "आपका ईमेल पता",
     "checkoutErrorEmail": "कृपया अपना ईमेल पता दर्ज करें।",
     "checkoutRedirecting": "चेकआउट पर रीडायरेक्ट किया जा रहा है...",

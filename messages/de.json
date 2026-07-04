@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "Lebenslangen Zugang sichern — $149",
     "checkoutBtnReport": "Meinen Bericht erhalten — $19",
     "checkoutDiscountPlaceholder": "Rabattcode (optional)",
+    "checkoutHasDiscount": "Rabattcode vorhanden?",
     "checkoutEmailPlaceholder": "Deine E-Mail-Adresse",
     "checkoutErrorEmail": "Bitte gib deine E-Mail-Adresse ein.",
     "checkoutRedirecting": "Weiterleitung zur Kasse...",

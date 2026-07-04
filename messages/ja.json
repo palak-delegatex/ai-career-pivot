@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "生涯アクセスを取得 — $149",
     "checkoutBtnReport": "レポートを取得 — $19",
     "checkoutDiscountPlaceholder": "割引コード（任意）",
+    "checkoutHasDiscount": "割引コードをお持ちですか？",
     "checkoutEmailPlaceholder": "メールアドレス",
     "checkoutErrorEmail": "メールアドレスを入力してください。",
     "checkoutRedirecting": "チェックアウトにリダイレクトしています...",

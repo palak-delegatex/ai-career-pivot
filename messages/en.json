@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "Get Lifetime Access — $149",
     "checkoutBtnReport": "Get My Report — $19",
     "checkoutDiscountPlaceholder": "Discount code (optional)",
+    "checkoutHasDiscount": "Have a discount code?",
     "checkoutEmailPlaceholder": "Your email address",
     "checkoutErrorEmail": "Please enter your email address.",
     "checkoutRedirecting": "Redirecting to checkout...",

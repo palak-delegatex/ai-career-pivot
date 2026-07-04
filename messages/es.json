@@ -405,6 +405,7 @@
     "checkoutBtnLifetime": "Obtén acceso de por vida — $149",
     "checkoutBtnReport": "Obtén mi informe — $19",
     "checkoutDiscountPlaceholder": "Código de descuento (opcional)",
+    "checkoutHasDiscount": "¿Tienes un código de descuento?",
     "checkoutEmailPlaceholder": "Tu dirección de correo electrónico",
     "checkoutErrorEmail": "Introduce tu dirección de correo electrónico.",
     "checkoutRedirecting": "Redirigiendo al pago...",

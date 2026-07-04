@@ -12,6 +12,12 @@ import SkillGapChart from "@/components/SkillGapChart";
 import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
+import PricingCheckout from "@/app/[locale]/pricing/PricingCheckout";
+
+const CHECKOUT_TIERS = [
+  { key: "report", name: "Report", price: "$19", summary: "Full roadmap, one-time", popular: false },
+  { key: "lifetime", name: "Lifetime", price: "$149", summary: "Everything, forever", popular: true },
+] as const;
 
 export default function PivotPlanPage() {
   const router = useRouter();
@@ -19,6 +25,7 @@ export default function PivotPlanPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [selected, setSelected] = useState(0);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [tier, setTier] = useState<"report" | "lifetime">("lifetime");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_plans");
@@ -247,19 +254,69 @@ export default function PivotPlanPage() {
           ) : null}
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 text-center bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
-          <h3 className="text-xl font-bold mb-3">Want the full detailed roadmap?</h3>
-          <p className="text-slate-400 mb-6">
-            Get a comprehensive week-by-week plan, salary research, and personalized networking scripts.
-          </p>
-          <Link
-            href="/pricing"
-            onClick={() => trackCtaClicked({ cta_text: "Get Full Access", cta_location: "plan_page", destination: "/pricing" })}
-            className="inline-block px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
-          >
-            Get Full Access →
-          </Link>
+        {/* CTA — inline checkout so users can buy in the moment instead of
+            bouncing to /pricing and re-entering the email we already have.
+            Directly targets the plan_selected → checkout_started drop-off. */}
+        <div className="mt-10 bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-bold mb-2">Get your full detailed roadmap</h3>
+            <p className="text-slate-400 max-w-md mx-auto">
+              A comprehensive week-by-week plan, salary research, and personalized networking scripts for{" "}
+              <span className="text-teal-300 font-medium">{plan.targetRole}</span>.
+            </p>
+          </div>
+
+          <div className="max-w-md mx-auto">
+            {/* Plan tier toggle — value summary during checkout */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {CHECKOUT_TIERS.map((tierOption) => {
+                const isActive = tier === tierOption.key;
+                return (
+                  <button
+                    key={tierOption.key}
+                    type="button"
+                    onClick={() => setTier(tierOption.key)}
+                    aria-pressed={isActive}
+                    className={`relative rounded-xl border-2 p-4 text-left transition-colors ${
+                      isActive
+                        ? "border-teal-500 bg-teal-950/30"
+                        : "border-slate-700 bg-slate-800/50 hover:border-slate-600"
+                    }`}
+                  >
+                    {tierOption.popular && (
+                      <span className="absolute -top-2.5 right-3 bg-teal-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Best value
+                      </span>
+                    )}
+                    <div className="font-bold text-white">{tierOption.name}</div>
+                    <div className="text-2xl font-extrabold text-white font-serif">{tierOption.price}</div>
+                    <div className="text-xs text-slate-400">{tierOption.summary}</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <PricingCheckout
+              key={tier}
+              plan={tier}
+              prefillEmail={profile?.email ?? ""}
+              ctaLocation="plan_page_inline"
+              sourceFeature="onboarding_plan"
+            />
+
+            <p className="text-center text-slate-500 text-xs mt-3">
+              30-day money-back guarantee · Secure checkout via Stripe
+            </p>
+            <div className="text-center mt-4">
+              <Link
+                href={profile?.email ? `/pricing?email=${encodeURIComponent(profile.email)}` : "/pricing"}
+                onClick={() => trackCtaClicked({ cta_text: "Compare plans", cta_location: "plan_page", destination: "/pricing" })}
+                className="text-teal-400 text-sm hover:text-teal-300 underline underline-offset-2"
+              >
+                Compare plans &amp; read FAQ →
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
