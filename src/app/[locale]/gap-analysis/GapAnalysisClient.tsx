@@ -14,6 +14,8 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import UpgradePrompt from "@/components/UpgradePrompt";
 
 interface MatchedSkill {
   skill: string;
@@ -50,7 +52,7 @@ interface GapAnalysisResult {
   applicationTips: string[];
 }
 
-type Phase = "input" | "loading" | "results";
+type Phase = "input" | "loading" | "results" | "upgrade";
 
 const STRENGTH_COLORS = {
   strong: "text-emerald-400 bg-emerald-900/30 border-emerald-700/40",
@@ -104,6 +106,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function GapAnalysisClient() {
+  const t = useTranslations('gapAnalysis');
   const [phase, setPhase] = useState<Phase>("input");
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<GapAnalysisResult | null>(null);
@@ -157,9 +160,7 @@ export default function GapAnalysisClient() {
   async function analyze() {
     if (!jobDescription.trim()) return;
     if (!userSkills.length) {
-      setError(
-        "No profile found. Complete the career assessment first to load your skills."
-      );
+      setError(t('errorNoProfile'));
       return;
     }
 
@@ -180,25 +181,42 @@ export default function GapAnalysisClient() {
         }),
       });
 
+      if (res.status === 401 || res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? t('errorUpgradeRequired'));
+        setPhase("upgrade");
+        return;
+      }
+
       if (!res.ok) throw new Error("Analysis failed");
+      // note: thrown message is not user-visible; caught below
 
       const data: GapAnalysisResult = await res.json();
       setResult(data);
       setPhase("results");
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t('errorGeneric'));
       setPhase("input");
     }
+  }
+
+  if (phase === "upgrade") {
+    return (
+      <main className="max-w-lg mx-auto px-6 py-24">
+        <UpgradePrompt
+          feature={t('upgradeFeature')}
+          message={error || undefined}
+        />
+      </main>
+    );
   }
 
   if (phase === "loading") {
     return (
       <main className="max-w-2xl mx-auto px-6 py-24 text-center">
         <Loader2 className="w-10 h-10 text-teal-400 animate-spin mx-auto mb-4" />
-        <h2 className="text-xl font-bold mb-2">Analyzing Job Fit</h2>
-        <p className="text-slate-400 text-sm">
-          Comparing your skills against the job requirements...
-        </p>
+        <h2 className="text-xl font-bold mb-2">{t('loadingTitle')}</h2>
+        <p className="text-slate-400 text-sm">{t('loadingSubtitle')}</p>
       </main>
     );
   }
@@ -216,11 +234,9 @@ export default function GapAnalysisClient() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight mb-1">
-              Gap Analysis Results
+              {t('resultsTitle')}
             </h1>
-            <p className="text-slate-400 text-sm">
-              Based on your profile vs. the job posting
-            </p>
+            <p className="text-slate-400 text-sm">{t('resultsSubtitle')}</p>
           </div>
           <button
             onClick={() => {
@@ -229,7 +245,7 @@ export default function GapAnalysisClient() {
             }}
             className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
           >
-            Analyze another job →
+            {t('analyzeAnother')}
           </button>
         </div>
 
@@ -243,7 +259,7 @@ export default function GapAnalysisClient() {
             </p>
             <div className="flex items-center gap-2 mt-3 text-sm text-slate-300">
               <Clock className="w-4 h-4 text-teal-400" />
-              Estimated readiness:{" "}
+              {t('estimatedReadiness')}{" "}
               {result.careerPivotFit.estimatedReadinessTimeline}
             </div>
           </div>
@@ -253,7 +269,7 @@ export default function GapAnalysisClient() {
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            Matched Skills ({result.matchedSkills.length})
+            {t('matchedSkills', { count: result.matchedSkills.length })}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {result.matchedSkills.map((s, i) => (
@@ -280,7 +296,7 @@ export default function GapAnalysisClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-400" />
-              Must-Have Gaps ({mustHaves.length})
+              {t('mustHaveGaps', { count: mustHaves.length })}
             </h2>
             <div className="space-y-3">
               {mustHaves.map((s, i) => (
@@ -312,7 +328,7 @@ export default function GapAnalysisClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
-              Nice-to-Have Gaps ({niceToHaves.length})
+              {t('niceToHaveGaps', { count: niceToHaves.length })}
             </h2>
             <div className="space-y-3">
               {niceToHaves.map((s, i) => (
@@ -344,7 +360,7 @@ export default function GapAnalysisClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Target className="w-5 h-5 text-purple-400" />
-              Experience Gaps
+              {t('experienceGaps')}
             </h2>
             <div className="space-y-3">
               {result.experienceGaps.map((g, i) => (
@@ -365,13 +381,13 @@ export default function GapAnalysisClient() {
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-teal-400" />
-            Career Pivot Assessment
+            {t('careerPivotAssessment')}
           </h2>
           <div className="bg-teal-950/20 border border-teal-900/30 rounded-2xl p-5 space-y-4">
             {result.careerPivotFit.transferableHighlights.length > 0 && (
               <div>
                 <div className="text-sm font-semibold text-emerald-400 mb-2">
-                  Transferable Strengths
+                  {t('transferableStrengths')}
                 </div>
                 <ul className="space-y-1">
                   {result.careerPivotFit.transferableHighlights.map((h, i) => (
@@ -389,7 +405,7 @@ export default function GapAnalysisClient() {
             {result.careerPivotFit.biggestChallenges.length > 0 && (
               <div>
                 <div className="text-sm font-semibold text-amber-400 mb-2">
-                  Biggest Challenges
+                  {t('biggestChallenges')}
                 </div>
                 <ul className="space-y-1">
                   {result.careerPivotFit.biggestChallenges.map((c, i) => (
@@ -410,7 +426,7 @@ export default function GapAnalysisClient() {
         {/* Application Tips */}
         {result.applicationTips.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-lg font-bold mb-4">Application Tips</h2>
+            <h2 className="text-lg font-bold mb-4">{t('applicationTips')}</h2>
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
               <ol className="space-y-2">
                 {result.applicationTips.map((tip, i) => (
@@ -434,13 +450,13 @@ export default function GapAnalysisClient() {
             href="/mock-interview"
             className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
           >
-            Practice Interview for This Role
+            {t('practiceInterview')}
           </Link>
           <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
           >
-            Back to Dashboard
+            {t('backToDashboard')}
           </Link>
         </div>
       </main>
@@ -453,31 +469,30 @@ export default function GapAnalysisClient() {
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
           <Search className="w-3.5 h-3.5" />
-          Job-Specific Gap Analysis
+          {t('inputBadge')}
         </div>
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-          How Well Do You Fit?
+          {t('inputHeading')}
         </h1>
-        <p className="text-slate-400 leading-relaxed">
-          Paste any job posting and we&apos;ll show exactly which skills you
-          match, which you&apos;re missing, and how to close every gap.
-        </p>
+        <p className="text-slate-400 leading-relaxed">{t('inputDescription')}</p>
       </div>
 
       {!profileLoaded && (
         <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">
           <p className="text-amber-300 font-semibold mb-1">
-            Profile not loaded
+            {t('profileNotLoadedTitle')}
           </p>
           <p className="text-slate-400">
-            Complete the{" "}
-            <Link
-              href="/onboarding"
-              className="text-teal-400 hover:text-teal-300 underline"
-            >
-              career assessment
-            </Link>{" "}
-            first so we can compare your skills against the job.
+            {t.rich('profileNotLoadedBody', {
+              link: (chunks) => (
+                <Link
+                  href="/onboarding"
+                  className="text-teal-400 hover:text-teal-300 underline"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -485,7 +500,7 @@ export default function GapAnalysisClient() {
       {profileLoaded && (
         <div className="bg-teal-950/20 border border-teal-800/30 rounded-xl p-4 mb-6 text-sm">
           <p className="text-teal-300 font-semibold mb-1">
-            Profile loaded
+            {t("profileLoadedTitle")}
             {currentTitle && (
               <span className="font-normal text-slate-400">
                 {" "}
@@ -494,7 +509,7 @@ export default function GapAnalysisClient() {
             )}
           </p>
           <p className="text-slate-400">
-            {userSkills.length} skills loaded. Ready to analyze.
+            {t("skillsLoaded", { count: userSkills.length })}
           </p>
         </div>
       )}
@@ -503,7 +518,7 @@ export default function GapAnalysisClient() {
         <textarea
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
-          placeholder="Paste the full job posting here — title, requirements, qualifications, responsibilities..."
+          placeholder={t("jobDescriptionPlaceholder")}
           rows={10}
           className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-y"
         />
@@ -515,11 +530,11 @@ export default function GapAnalysisClient() {
           disabled={!jobDescription.trim() || !profileLoaded}
           className="w-full px-6 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Analyze My Fit →
+          {t("analyzeButton")}
         </button>
 
         <p className="text-slate-500 text-xs text-center">
-          AI-powered analysis takes ~10 seconds
+          {t("analysisTimeNote")}
         </p>
       </div>
     </main>

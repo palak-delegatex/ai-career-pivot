@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import {
   Sheet,
   SheetContent,
@@ -15,13 +17,14 @@ import { FileSignature, Download, Copy, RefreshCw, CheckCircle2, Save, Pencil } 
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import { saveDocument } from "@/lib/document-store";
+import UpgradePrompt from "@/components/UpgradePrompt";
 
 type Tone = "professional" | "conversational" | "bold";
 
-const TONES: { key: Tone; name: string; desc: string }[] = [
-  { key: "professional", name: "Professional", desc: "Formal and polished" },
-  { key: "conversational", name: "Conversational", desc: "Warm and personable" },
-  { key: "bold", name: "Bold", desc: "Confident and assertive" },
+const TONES: { key: Tone; nameKey: string; descKey: string }[] = [
+  { key: "professional", nameKey: "toneProfessionalName", descKey: "toneProfessionalDesc" },
+  { key: "conversational", nameKey: "toneConversationalName", descKey: "toneConversationalDesc" },
+  { key: "bold", nameKey: "toneBoldName", descKey: "toneBoldDesc" },
 ];
 
 interface CoverLetterSheetProps {
@@ -39,6 +42,8 @@ export default function CoverLetterSheet({
   open,
   onOpenChange,
 }: CoverLetterSheetProps) {
+  const t = useTranslations("coverLetter");
+  const isMobile = useIsMobile();
   const [tone, setTone] = useState<Tone>("professional");
   const [keyPoints, setKeyPoints] = useState<string[]>(() => {
     const prefill = job.matchedSkills.slice(0, 3);
@@ -49,6 +54,7 @@ export default function CoverLetterSheet({
   const [result, setResult] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [upgradeNeeded, setUpgradeNeeded] = useState<{ message: string; url: string } | null>(null);
   const [editContent, setEditContent] = useState("");
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -134,6 +140,13 @@ export default function CoverLetterSheet({
         }),
       });
 
+      if (res.status === 401 || res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setUpgradeNeeded({ message: data.error ?? t("upgradeRequired"), url: data.upgradeUrl ?? "/pricing" });
+        setGenerating(false);
+        return;
+      }
+
       if (!res.ok) throw new Error("Generation failed");
 
       const reader = res.body?.getReader();
@@ -158,7 +171,7 @@ export default function CoverLetterSheet({
 
       await persistToSupabase(text);
     } catch {
-      setResult("Failed to generate cover letter. Please try again.");
+      setResult(t("generationError"));
     } finally {
       setGenerating(false);
     }
@@ -219,23 +232,28 @@ export default function CoverLetterSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="right"
-        className="w-[540px] md:w-[640px] max-w-full md:max-w-[640px] bg-slate-900 border-slate-700 p-0 flex flex-col h-screen md:h-full"
+        side={isMobile ? "bottom" : "right"}
+        className={
+          isMobile
+            ? "max-w-full bg-slate-900 border-slate-700 p-0 flex flex-col max-h-[90vh] rounded-t-2xl"
+            : "w-[540px] md:w-[640px] max-w-full md:max-w-[640px] bg-slate-900 border-slate-700 p-0 flex flex-col h-screen md:h-full"
+        }
       >
+        {isMobile && <div className="w-10 h-1 rounded-full bg-slate-600 mx-auto mt-2 mb-1 shrink-0" />}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-slate-700/60 shrink-0">
           <div className="flex items-center gap-2">
             <FileSignature className="h-5 w-5 text-teal-400" />
             <SheetTitle className="text-white">
-              Cover Letter for {job.title}
+              {t("title", { role: job.title })}
             </SheetTitle>
           </div>
           <SheetDescription>
             <span className="text-slate-400">{job.company_name}</span>
             {saveStatus === "saved" && (
-              <span className="ml-2 text-emerald-400 text-xs">Saved</span>
+              <span className="ml-2 text-emerald-400 text-xs">{t("saved")}</span>
             )}
             {saveStatus === "error" && (
-              <span className="ml-2 text-amber-400 text-xs">Save failed — copy your work</span>
+              <span className="ml-2 text-amber-400 text-xs">{t("saveFailed")}</span>
             )}
           </SheetDescription>
         </SheetHeader>
@@ -247,12 +265,12 @@ export default function CoverLetterSheet({
                 {/* Job Requirements */}
                 <div>
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                    Job Requirements
+                    {t("jobRequirements")}
                   </h4>
                   <div className="space-y-2">
                     {job.matchedSkills.length > 0 && (
                       <div>
-                        <p className="text-[10px] text-emerald-400 font-medium mb-1.5">Matched Skills</p>
+                        <p className="text-[10px] text-emerald-400 font-medium mb-1.5">{t("matchedSkills")}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {job.matchedSkills.map((s) => (
                             <Badge
@@ -267,7 +285,7 @@ export default function CoverLetterSheet({
                     )}
                     {missingSkills.length > 0 && (
                       <div className="mt-2">
-                        <p className="text-[10px] text-amber-400 font-medium mb-1.5">Skills to Address</p>
+                        <p className="text-[10px] text-amber-400 font-medium mb-1.5">{t("skillsToAddress")}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {missingSkills.map((s) => (
                             <Badge
@@ -286,23 +304,23 @@ export default function CoverLetterSheet({
                 {/* Tone Selector */}
                 <div>
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                    Tone
+                    {t("tone")}
                   </h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {TONES.map((t) => (
+                    {TONES.map((option) => (
                       <button
-                        key={t.key}
-                        onClick={() => setTone(t.key)}
+                        key={option.key}
+                        onClick={() => setTone(option.key)}
                         className={`p-3 rounded-lg border text-center transition-all ${
-                          tone === t.key
+                          tone === option.key
                             ? "border-teal-500 bg-teal-900/20"
                             : "border-slate-700 bg-slate-800/40 hover:border-slate-600"
                         }`}
                       >
-                        <p className={`text-sm font-medium ${tone === t.key ? "text-teal-300" : "text-slate-400"}`}>
-                          {t.name}
+                        <p className={`text-sm font-medium ${tone === option.key ? "text-teal-300" : "text-slate-400"}`}>
+                          {t(option.nameKey)}
                         </p>
-                        <p className="text-[10px] text-slate-500 mt-0.5">{t.desc}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{t(option.descKey)}</p>
                       </button>
                     ))}
                   </div>
@@ -311,7 +329,7 @@ export default function CoverLetterSheet({
                 {/* Key Points */}
                 <div>
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                    Key Points to Emphasize
+                    {t("keyPointsHeading")}
                   </h4>
                   <div className="space-y-2">
                     {keyPoints.map((point, i) => (
@@ -324,7 +342,7 @@ export default function CoverLetterSheet({
                           next[i] = e.target.value;
                           setKeyPoints(next);
                         }}
-                        placeholder={`Key point ${i + 1} (optional)`}
+                        placeholder={t("keyPointPlaceholder", { index: i + 1 })}
                         className="w-full px-3 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
                       />
                     ))}
@@ -337,7 +355,7 @@ export default function CoverLetterSheet({
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                     <span className="text-sm font-medium text-emerald-300">
-                      Cover Letter Generated
+                      {t("generated")}
                     </span>
                   </div>
                   {!editing && (
@@ -346,7 +364,7 @@ export default function CoverLetterSheet({
                       className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-teal-300 transition-colors"
                     >
                       <Pencil className="h-3 w-3" />
-                      Edit
+                      {t("edit")}
                     </button>
                   )}
                 </div>
@@ -368,6 +386,12 @@ export default function CoverLetterSheet({
           </div>
         </ScrollArea>
 
+        {upgradeNeeded && (
+          <div className="px-6 pb-4">
+            <UpgradePrompt feature="cover letter" message={upgradeNeeded.message} upgradeUrl={upgradeNeeded.url} />
+          </div>
+        )}
+
         <SheetFooter className="px-6 py-4 border-t border-slate-700/60 shrink-0">
           {!result ? (
             <div className="flex gap-3 w-full">
@@ -379,12 +403,12 @@ export default function CoverLetterSheet({
                 {generating ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Generating...
+                    {t("generating")}
                   </>
                 ) : (
                   <>
                     <FileSignature className="h-4 w-4" />
-                    Generate Cover Letter
+                    {t("generate")}
                   </>
                 )}
               </button>
@@ -392,7 +416,7 @@ export default function CoverLetterSheet({
                 onClick={() => onOpenChange(false)}
                 className="px-4 py-2.5 text-slate-400 hover:text-white text-sm font-medium rounded-lg transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           ) : (
@@ -404,7 +428,7 @@ export default function CoverLetterSheet({
                   className="flex-1 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <Save className="h-4 w-4" />
-                  {saving ? "Saving..." : "Save Changes"}
+                  {saving ? t("saving") : t("saveChanges")}
                 </button>
               ) : (
                 <button
@@ -412,7 +436,7 @@ export default function CoverLetterSheet({
                   className="flex-1 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <Download className="h-4 w-4" />
-                  Download PDF
+                  {t("downloadPdf")}
                 </button>
               )}
               <button
@@ -420,7 +444,7 @@ export default function CoverLetterSheet({
                 className="px-4 py-2.5 border border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
               >
                 {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-                {copied ? "Copied" : "Copy"}
+                {copied ? t("copied") : t("copy")}
               </button>
               {!editing && (
                 <button
@@ -432,7 +456,7 @@ export default function CoverLetterSheet({
                   className="px-4 py-2.5 text-slate-400 hover:text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
                 >
                   <RefreshCw className="h-4 w-4" />
-                  Regenerate
+                  {t("regenerate")}
                 </button>
               )}
             </div>

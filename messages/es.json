@@ -690,5 +690,261 @@
     "valueProp1": "Personalizado a tu experiencia exacta",
     "valueProp2": "Hitos prácticos, no consejos genéricos",
     "valueProp3": "Datos salariales y plan de transición financiera"
+  },
+  "completionBadges": {
+    "title": "Insignias",
+    "locked": "Bloqueada",
+    "tooltipTitle": "{label}: {description}",
+    "tooltipTitleLocked": "{label}: {description} (Bloqueada)",
+    "badges": {
+      "firstStep": {
+        "label": "Primer paso",
+        "description": "Completa tu primer hito"
+      },
+      "firstApplication": {
+        "label": "Primera solicitud enviada",
+        "description": "Envía tu primera solicitud de empleo"
+      },
+      "fiveSkills": {
+        "label": "5 habilidades adquiridas",
+        "description": "Completa 5 hitos de desarrollo de habilidades"
+      },
+      "tenConnections": {
+        "label": "10 contactos hechos",
+        "description": "Añade 10 contactos a tu red"
+      },
+      "interviewUnlocked": {
+        "label": "Entrevista desbloqueada",
+        "description": "Alcanza la etapa de Candidato en tu transición"
+      },
+      "streakMaster": {
+        "label": "Maestro de rachas",
+        "description": "Logra una racha de 7 días completando hitos"
+      },
+      "phaseComplete": {
+        "label": "Fase completada",
+        "description": "Completa todos los hitos de una fase"
+      },
+      "halfwayThere": {
+        "label": "A mitad de camino",
+        "description": "Completa el 50 % de todos los hitos"
+      },
+      "momentum": {
+        "label": "Constructor de impulso",
+        "description": "Completa 3 hitos en una sola semana"
+      },
+      "careerReady": {
+        "label": "Listo para tu carrera",
+        "description": "Completa el 100 % de todos los hitos"
+      }
+    }
+  },
+  "coverLetter": {
+    "title": "Carta de presentación para {role}",
+    "saved": "Guardado",
+    "saveFailed": "Error al guardar: copia tu trabajo",
+    "jobRequirements": "Requisitos del puesto",
+    "matchedSkills": "Habilidades coincidentes",
+    "skillsToAddress": "Habilidades por abordar",
+    "tone": "Tono",
+    "tones": {
+      "professional": {
+        "name": "Profesional",
+        "desc": "Formal y pulido"
+      },
+      "conversational": {
+        "name": "Cercano",
+        "desc": "Cálido y personal"
+      },
+      "bold": {
+        "name": "Audaz",
+        "desc": "Seguro y firme"
+      }
+    },
+    "keyPointsHeading": "Puntos clave a destacar",
+    "keyPointPlaceholder": "Punto clave {index} (opcional)",
+    "generated": "Carta de presentación generada",
+    "edit": "Editar",
+    "generating": "Generando...",
+    "generate": "Generar carta de presentación",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar cambios",
+    "downloadPdf": "Descargar PDF",
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "regenerate": "Regenerar",
+    "upgradeRequired": "Se requiere una mejora de plan",
+    "generationError": "No se pudo generar la carta de presentación. Inténtalo de nuevo."
+  },
+  "gapAnalysis": {
+    "errorNoProfile": "Completa primero tu evaluación profesional para que podamos comparar tus habilidades con el puesto.",
+    "errorUpgradeRequired": "Necesitas mejorar tu plan para ejecutar un análisis de brechas.",
+    "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+    "upgradeFeature": "análisis de brechas de habilidades",
+    "loadingTitle": "Analizando la compatibilidad con el puesto",
+    "loadingSubtitle": "Comparando tus habilidades con los requisitos del puesto...",
+    "resultsTitle": "Resultados del análisis de brechas",
+    "resultsSubtitle": "Según tu perfil frente a la oferta de empleo",
+    "analyzeAnother": "Analizar otro puesto →",
+    "estimatedReadiness": "Preparación estimada:",
+    "matchedSkills": "Habilidades coincidentes ({count})",
+    "mustHaveGaps": "Brechas imprescindibles ({count})",
+    "niceToHaveGaps": "Brechas recomendables ({count})",
+    "experienceGaps": "Brechas de experiencia",
+    "careerPivotAssessment": "Evaluación del cambio profesional",
+    "transferableStrengths": "Fortalezas transferibles",
+    "biggestChallenges": "Mayores desafíos",
+    "applicationTips": "Consejos para postular",
+    "practiceInterview": "Practica una entrevista para este puesto",
+    "backToDashboard": "Volver al panel",
+    "inputBadge": "Análisis de brechas específico del puesto",
+    "inputHeading": "¿Qué tan bien encajas?",
+    "inputDescription": "Pega cualquier oferta de empleo y te mostraremos exactamente qué habilidades coinciden, cuáles te faltan y cómo cerrar cada brecha.",
+    "profileNotLoadedTitle": "Perfil no cargado",
+    "profileNotLoadedBody": "Completa primero la <link>evaluación profesional</link> para que podamos comparar tus habilidades con el puesto.",
+    "profileLoadedTitle": "Perfil cargado",
+    "skillsLoaded": "{count} habilidades cargadas. Listo para analizar.",
+    "jobDescriptionPlaceholder": "Pega aquí la oferta de empleo completa: puesto, requisitos, cualificaciones, responsabilidades...",
+    "analyzeButton": "Analizar mi compatibilidad →",
+    "analysisTimeNote": "El análisis con IA tarda unos 10 segundos"
+  },
+  "jobTracker": {
+    "time": {
+      "today": "Hoy",
+      "dayAgo": "hace {count}d",
+      "daysAgo": "hace {count}d",
+      "weeksAgo": "hace {count}sem"
+    },
+    "matchBadge": "{score}% de coincidencia",
+    "viewGapAnalysis": "Ver análisis de brechas",
+    "source": {
+      "direct": "Directo",
+      "other": "Otro"
+    },
+    "status": {
+      "saved": "Guardado",
+      "applied": "Postulado",
+      "phone_screen": "Entrevista telefónica",
+      "interview": "Entrevista",
+      "offer": "Oferta",
+      "rejected": "Rechazado"
+    },
+    "card": {
+      "ariaLabel": "{role} en {company}, {score}% de coincidencia",
+      "savedAgo": "Guardado {time}",
+      "rejectedAgo": "Rechazado {time}",
+      "appliedAgo": "Postulado {time}"
+    },
+    "column": {
+      "avgScore": "{score}% prom.",
+      "avgScoreTitle": "Puntuación media de coincidencia",
+      "oldestDays": "{days}d",
+      "oldestCardTitle": "Tarjeta más antigua",
+      "emptyOffer": "Aún no hay ofertas: ¡sigue así!",
+      "emptyDrop": "Arrastra empleos aquí"
+    },
+    "mobile": {
+      "swipeHint": "Desliza a la derecha para avanzar • a la izquierda para rechazar",
+      "reject": "Rechazar",
+      "advance": "Avanzar",
+      "noJobsInStage": "No hay empleos en {stage}"
+    },
+    "analytics": {
+      "title": "Análisis del embudo",
+      "avgInStage": "Prom. en {stage}",
+      "avgTotalPipeline": "Prom. embudo total",
+      "insights": {
+        "strongScreen": {
+          "title": "Buen rendimiento en entrevistas telefónicas",
+          "body": "Tu tasa de entrevista telefónica a entrevista ({rate}%) supera con creces el punto de referencia del 55%. Estás causando una excelente primera impresión."
+        },
+        "lowScreen": {
+          "title": "Baja tasa de postulación a entrevista telefónica",
+          "body": "Tu tasa de postulación a entrevista telefónica ({rate}%) está por debajo del promedio del 45%. Puede que tus postulaciones necesiten más personalización.",
+          "tip": "Prueba: personaliza tu currículum para cada oferta. Usa nuestra herramienta de adaptación de currículum con IA para incluir palabras clave. Haz seguimiento 5 días después de postularte."
+        },
+        "empty": {
+          "title": "Agrega empleos para ver estadísticas",
+          "body": "Registra tus postulaciones para desbloquear el análisis del embudo e ideas basadas en IA sobre tu búsqueda de empleo."
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "{score}% de coincidencia",
+      "gapAnalysis": "Análisis de brechas",
+      "stage": "Etapa",
+      "interviewDate": "Fecha de entrevista",
+      "notSet": "Sin definir",
+      "source": "Origen",
+      "added": "Agregado",
+      "linkedDocuments": "Documentos vinculados",
+      "notes": "Notas",
+      "notesPlaceholder": "Añade notas sobre este puesto..."
+    },
+    "modal": {
+      "title": "Agregar empleo al panel",
+      "urlPlaceholder": "Pega una URL de empleo (LinkedIn, Indeed, Glassdoor...)",
+      "autoFillHint": "Completaremos los detalles del empleo y calcularemos tu coincidencia",
+      "orManually": "o ingresa manualmente",
+      "roleLabel": "Puesto",
+      "rolePlaceholder": "p. ej. Ingeniero de ML",
+      "companyLabel": "Empresa",
+      "companyPlaceholder": "p. ej. Google",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Recomendación de Sarah, fecha límite 15 jun...",
+      "addToStage": "Agregar a la etapa",
+      "cancel": "Cancelar",
+      "submit": "Agregar al panel"
+    },
+    "header": {
+      "title": "Panel de empleos",
+      "jobCount": "{count, plural, one {# empleo} other {# empleos}}",
+      "board": "Panel",
+      "analytics": "Estadísticas",
+      "addJob": "Agregar empleo"
+    },
+    "board": {
+      "ariaLabel": "Panel del gestor de empleos"
+    }
+  },
+  "shareableProgress": {
+    "heading": "Mi cambio de carrera",
+    "stages": {
+      "explorer": "Explorador",
+      "skillBuilder": "Desarrollo de habilidades",
+      "applicant": "Candidato",
+      "offerStage": "Fase de oferta",
+      "transitioned": "Transición completa"
+    },
+    "milestonesOf": "{completed} de {total} hitos",
+    "stats": {
+      "milestones": "Hitos",
+      "dayStreak": "Racha de días",
+      "badges": "Insignias"
+    },
+    "shareToLinkedIn": "Compartir en LinkedIn",
+    "moreSharingOptions": "Más opciones para compartir",
+    "postOnX": "Publicar en X",
+    "shareVia": "Compartir con...",
+    "copied": "¡Copiado!",
+    "copyLink": "Copiar enlace",
+    "shareTitle": "Progreso del cambio de carrera: {currentRole} → {targetRole}",
+    "shareText": "¡Llevo un {percent}% de mi cambio de carrera de {currentRole} a {targetRole}! Actualmente en la fase \"{stage}\" con {completed}/{total} hitos completados. Construyendo mi futuro paso a paso."
+  },
+  "successStories": {
+    "headerEyebrow": "Prueba social",
+    "headerTitleLead": "Cambios de carrera que",
+    "headerTitleHighlight": "de verdad funcionaron",
+    "headerSubtitle": "Historias reales, datos reales, resultados reales. Descubre cómo profesionales como tú dieron el salto.",
+    "themeLabel": "Tema:",
+    "themeDark": "Oscuro",
+    "themeLight": "Claro",
+    "transformationsEyebrow": "Transformaciones completas",
+    "transformationsTitle": "Antes y después",
+    "transformationsSubtitle": "Mira el recorrido completo: habilidades adquiridas, hitos alcanzados y resultados logrados.",
+    "infographicsEyebrow": "Contenido basado en datos",
+    "infographicsTitle": "Plantillas de infografía",
+    "infographicsSubtitle": "Plantillas de marca e integrables, optimizadas para compartir en redes y generar enlaces entrantes."
   }
 }

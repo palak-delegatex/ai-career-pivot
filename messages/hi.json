@@ -690,5 +690,261 @@
     "valueProp1": "आपकी सटीक पृष्ठभूमि के अनुरूप",
     "valueProp2": "कार्रवाई योग्य मील के पत्थर, सामान्य सलाह नहीं",
     "valueProp3": "वेतन डेटा और वित्तीय ब्रिज योजना"
+  },
+  "completionBadges": {
+    "title": "बैज",
+    "locked": "लॉक",
+    "tooltipTitle": "{label}: {description}",
+    "tooltipTitleLocked": "{label}: {description} (लॉक)",
+    "badges": {
+      "firstStep": {
+        "label": "पहला कदम",
+        "description": "अपना पहला माइलस्टोन पूरा करें"
+      },
+      "firstApplication": {
+        "label": "पहला आवेदन भेजा गया",
+        "description": "अपना पहला नौकरी आवेदन जमा करें"
+      },
+      "fiveSkills": {
+        "label": "5 कौशल हासिल किए",
+        "description": "कौशल-निर्माण के 5 माइलस्टोन पूरे करें"
+      },
+      "tenConnections": {
+        "label": "10 संपर्क बनाए",
+        "description": "अपने नेटवर्क में 10 संपर्क जोड़ें"
+      },
+      "interviewUnlocked": {
+        "label": "इंटरव्यू अनलॉक",
+        "description": "अपने बदलाव के आवेदक चरण तक पहुँचें"
+      },
+      "streakMaster": {
+        "label": "स्ट्रीक मास्टर",
+        "description": "लगातार 7 दिन की पूर्णता स्ट्रीक हासिल करें"
+      },
+      "phaseComplete": {
+        "label": "चरण पूरा",
+        "description": "किसी चरण के सभी माइलस्टोन पूरे करें"
+      },
+      "halfwayThere": {
+        "label": "आधा रास्ता तय",
+        "description": "सभी माइलस्टोन का 50% पूरा करें"
+      },
+      "momentum": {
+        "label": "मोमेंटम बिल्डर",
+        "description": "एक ही सप्ताह में 3 माइलस्टोन पूरे करें"
+      },
+      "careerReady": {
+        "label": "करियर के लिए तैयार",
+        "description": "सभी माइलस्टोन का 100% पूरा करें"
+      }
+    }
+  },
+  "coverLetter": {
+    "title": "{role} के लिए कवर लेटर",
+    "saved": "सहेजा गया",
+    "saveFailed": "सहेजना विफल — अपना काम कॉपी करें",
+    "jobRequirements": "नौकरी की आवश्यकताएँ",
+    "matchedSkills": "मेल खाने वाले कौशल",
+    "skillsToAddress": "संबोधित करने योग्य कौशल",
+    "tone": "टोन",
+    "tones": {
+      "professional": {
+        "name": "पेशेवर",
+        "desc": "औपचारिक और परिष्कृत"
+      },
+      "conversational": {
+        "name": "संवादात्मक",
+        "desc": "गर्मजोशी भरा और व्यक्तिगत"
+      },
+      "bold": {
+        "name": "आत्मविश्वासी",
+        "desc": "आश्वस्त और दृढ़"
+      }
+    },
+    "keyPointsHeading": "उजागर करने योग्य मुख्य बिंदु",
+    "keyPointPlaceholder": "मुख्य बिंदु {index} (वैकल्पिक)",
+    "generated": "कवर लेटर तैयार हुआ",
+    "edit": "संपादित करें",
+    "generating": "तैयार हो रहा है...",
+    "generate": "कवर लेटर तैयार करें",
+    "cancel": "रद्द करें",
+    "saving": "सहेजा जा रहा है...",
+    "saveChanges": "परिवर्तन सहेजें",
+    "downloadPdf": "PDF डाउनलोड करें",
+    "copied": "कॉपी हो गया",
+    "copy": "कॉपी करें",
+    "regenerate": "फिर से तैयार करें",
+    "upgradeRequired": "अपग्रेड आवश्यक है",
+    "generationError": "कवर लेटर तैयार नहीं हो सका। कृपया पुनः प्रयास करें।"
+  },
+  "gapAnalysis": {
+    "errorNoProfile": "पहले अपना करियर मूल्यांकन पूरा करें ताकि हम आपके कौशल की तुलना नौकरी से कर सकें।",
+    "errorUpgradeRequired": "गैप विश्लेषण चलाने के लिए अपग्रेड आवश्यक है।",
+    "errorGeneric": "कुछ गलत हो गया। कृपया फिर से प्रयास करें।",
+    "upgradeFeature": "कौशल गैप विश्लेषण",
+    "loadingTitle": "नौकरी की उपयुक्तता का विश्लेषण",
+    "loadingSubtitle": "आपके कौशल की तुलना नौकरी की आवश्यकताओं से की जा रही है...",
+    "resultsTitle": "गैप विश्लेषण परिणाम",
+    "resultsSubtitle": "आपकी प्रोफ़ाइल बनाम नौकरी पोस्टिंग के आधार पर",
+    "analyzeAnother": "कोई अन्य नौकरी विश्लेषण करें →",
+    "estimatedReadiness": "अनुमानित तैयारी:",
+    "matchedSkills": "मेल खाते कौशल ({count})",
+    "mustHaveGaps": "अनिवार्य कमियाँ ({count})",
+    "niceToHaveGaps": "वांछनीय कमियाँ ({count})",
+    "experienceGaps": "अनुभव की कमियाँ",
+    "careerPivotAssessment": "करियर बदलाव का आकलन",
+    "transferableStrengths": "हस्तांतरणीय क्षमताएँ",
+    "biggestChallenges": "सबसे बड़ी चुनौतियाँ",
+    "applicationTips": "आवेदन के सुझाव",
+    "practiceInterview": "इस भूमिका के लिए साक्षात्कार का अभ्यास करें",
+    "backToDashboard": "डैशबोर्ड पर वापस जाएँ",
+    "inputBadge": "नौकरी-विशिष्ट गैप विश्लेषण",
+    "inputHeading": "आप कितने उपयुक्त हैं?",
+    "inputDescription": "कोई भी नौकरी पोस्टिंग पेस्ट करें और हम आपको ठीक-ठीक दिखाएँगे कि कौन से कौशल मेल खाते हैं, कौन से आपमें नहीं हैं और हर कमी को कैसे पूरा करें।",
+    "profileNotLoadedTitle": "प्रोफ़ाइल लोड नहीं हुई",
+    "profileNotLoadedBody": "पहले <link>करियर मूल्यांकन</link> पूरा करें ताकि हम आपके कौशल की तुलना नौकरी से कर सकें।",
+    "profileLoadedTitle": "प्रोफ़ाइल लोड हो गई",
+    "skillsLoaded": "{count} कौशल लोड हुए। विश्लेषण के लिए तैयार।",
+    "jobDescriptionPlaceholder": "पूरी नौकरी पोस्टिंग यहाँ पेस्ट करें — पद, आवश्यकताएँ, योग्यताएँ, ज़िम्मेदारियाँ...",
+    "analyzeButton": "मेरी उपयुक्तता का विश्लेषण करें →",
+    "analysisTimeNote": "AI-आधारित विश्लेषण में लगभग 10 सेकंड लगते हैं"
+  },
+  "jobTracker": {
+    "time": {
+      "today": "आज",
+      "dayAgo": "{count} दिन पहले",
+      "daysAgo": "{count} दिन पहले",
+      "weeksAgo": "{count} सप्ताह पहले"
+    },
+    "matchBadge": "{score}% मैच",
+    "viewGapAnalysis": "गैप विश्लेषण देखें",
+    "source": {
+      "direct": "प्रत्यक्ष",
+      "other": "अन्य"
+    },
+    "status": {
+      "saved": "सहेजा गया",
+      "applied": "आवेदन किया",
+      "phone_screen": "फ़ोन स्क्रीन",
+      "interview": "इंटरव्यू",
+      "offer": "ऑफ़र",
+      "rejected": "अस्वीकृत"
+    },
+    "card": {
+      "ariaLabel": "{company} में {role}, {score}% मैच",
+      "savedAgo": "{time} सहेजा गया",
+      "rejectedAgo": "{time} अस्वीकृत",
+      "appliedAgo": "{time} आवेदन किया"
+    },
+    "column": {
+      "avgScore": "{score}% औसत",
+      "avgScoreTitle": "औसत मैच स्कोर",
+      "oldestDays": "{days} दिन",
+      "oldestCardTitle": "सबसे पुराना कार्ड",
+      "emptyOffer": "अभी कोई ऑफ़र नहीं — लगे रहें!",
+      "emptyDrop": "नौकरियाँ यहाँ छोड़ें"
+    },
+    "mobile": {
+      "swipeHint": "आगे बढ़ने के लिए दाएँ स्वाइप करें • अस्वीकार करने के लिए बाएँ स्वाइप करें",
+      "reject": "अस्वीकारें",
+      "advance": "आगे बढ़ाएँ",
+      "noJobsInStage": "{stage} में कोई नौकरी नहीं"
+    },
+    "analytics": {
+      "title": "पाइपलाइन विश्लेषण",
+      "avgInStage": "{stage} में औसत",
+      "avgTotalPipeline": "औसत कुल पाइपलाइन",
+      "insights": {
+        "strongScreen": {
+          "title": "मज़बूत फ़ोन स्क्रीन प्रदर्शन",
+          "body": "आपकी फ़ोन स्क्रीन से इंटरव्यू दर ({rate}%) 55% बेंचमार्क से काफ़ी ऊपर है। आप बेहतरीन पहली छाप छोड़ रहे हैं।"
+        },
+        "lowScreen": {
+          "title": "आवेदन से स्क्रीन दर कम",
+          "body": "आपकी आवेदन से फ़ोन स्क्रीन दर ({rate}%) 45% औसत से कम है। आवेदनों को और बेहतर ढंग से अनुकूलित करने की ज़रूरत हो सकती है।",
+          "tip": "आज़माएँ: हर नौकरी के विवरण के लिए अपना रिज़्यूमे अनुकूलित करें। कीवर्ड मिलाने के लिए हमारे AI रिज़्यूमे टेलरिंग टूल का उपयोग करें। आवेदन के 5 दिन बाद फ़ॉलो-अप करें।"
+        },
+        "empty": {
+          "title": "जानकारी देखने के लिए नौकरियाँ जोड़ें",
+          "body": "पाइपलाइन विश्लेषण और अपनी नौकरी खोज पर AI-आधारित जानकारी अनलॉक करने के लिए अपने आवेदनों को ट्रैक करें।"
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "{score}% मैच",
+      "gapAnalysis": "गैप विश्लेषण",
+      "stage": "चरण",
+      "interviewDate": "इंटरव्यू की तारीख",
+      "notSet": "निर्धारित नहीं",
+      "source": "स्रोत",
+      "added": "जोड़ा गया",
+      "linkedDocuments": "संबद्ध दस्तावेज़",
+      "notes": "नोट्स",
+      "notesPlaceholder": "इस भूमिका के बारे में नोट्स जोड़ें..."
+    },
+    "modal": {
+      "title": "ट्रैकर में नौकरी जोड़ें",
+      "urlPlaceholder": "नौकरी का URL पेस्ट करें (LinkedIn, Indeed, Glassdoor...)",
+      "autoFillHint": "हम नौकरी का विवरण अपने आप भर देंगे और आपका मैच स्कोर निकालेंगे",
+      "orManually": "या मैन्युअल रूप से दर्ज करें",
+      "roleLabel": "भूमिका",
+      "rolePlaceholder": "जैसे ML इंजीनियर",
+      "companyLabel": "कंपनी",
+      "companyPlaceholder": "जैसे Google",
+      "notesLabel": "नोट्स",
+      "notesPlaceholder": "Sarah का रेफ़रल, अंतिम तिथि 15 जून...",
+      "addToStage": "चरण में जोड़ें",
+      "cancel": "रद्द करें",
+      "submit": "ट्रैकर में जोड़ें"
+    },
+    "header": {
+      "title": "जॉब ट्रैकर",
+      "jobCount": "{count, plural, one {# नौकरी} other {# नौकरियाँ}}",
+      "board": "बोर्ड",
+      "analytics": "विश्लेषण",
+      "addJob": "नौकरी जोड़ें"
+    },
+    "board": {
+      "ariaLabel": "जॉब ट्रैकर बोर्ड"
+    }
+  },
+  "shareableProgress": {
+    "heading": "मेरा करियर बदलाव",
+    "stages": {
+      "explorer": "एक्सप्लोरर",
+      "skillBuilder": "स्किल बिल्डर",
+      "applicant": "आवेदक",
+      "offerStage": "ऑफ़र चरण",
+      "transitioned": "बदलाव पूर्ण"
+    },
+    "milestonesOf": "{total} में से {completed} मील के पत्थर",
+    "stats": {
+      "milestones": "मील के पत्थर",
+      "dayStreak": "दिनों की श्रृंखला",
+      "badges": "बैज"
+    },
+    "shareToLinkedIn": "LinkedIn पर साझा करें",
+    "moreSharingOptions": "साझा करने के अन्य विकल्प",
+    "postOnX": "X पर पोस्ट करें",
+    "shareVia": "इसके ज़रिए साझा करें...",
+    "copied": "कॉपी हो गया!",
+    "copyLink": "लिंक कॉपी करें",
+    "shareTitle": "करियर बदलाव की प्रगति: {currentRole} → {targetRole}",
+    "shareText": "मैं {currentRole} से {targetRole} तक अपने करियर बदलाव में {percent}% पूरा कर चुका/चुकी हूँ! फ़िलहाल \"{stage}\" चरण में हूँ और {total} में से {completed} मील के पत्थर पूरे हो चुके हैं। एक-एक कदम से अपना भविष्य बना रहा/रही हूँ।"
+  },
+  "successStories": {
+    "headerEyebrow": "सामाजिक प्रमाण",
+    "headerTitleLead": "करियर बदलाव जो",
+    "headerTitleHighlight": "सच में कारगर रहे",
+    "headerSubtitle": "असली कहानियाँ, असली डेटा, असली नतीजे। देखिए आपके जैसे पेशेवरों ने यह छलांग कैसे लगाई।",
+    "themeLabel": "थीम:",
+    "themeDark": "डार्क",
+    "themeLight": "लाइट",
+    "transformationsEyebrow": "संपूर्ण बदलाव",
+    "transformationsTitle": "पहले और बाद में",
+    "transformationsSubtitle": "पूरी यात्रा देखिए — हासिल किए गए कौशल, पूरे किए गए पड़ाव और मिले नतीजे।",
+    "infographicsEyebrow": "डेटा-आधारित सामग्री",
+    "infographicsTitle": "इन्फोग्राफिक टेम्पलेट",
+    "infographicsSubtitle": "ब्रांडेड, एम्बेड करने योग्य टेम्पलेट, जो सोशल शेयरिंग और बैकलिंक बनाने के लिए अनुकूलित हैं।"
   }
 }

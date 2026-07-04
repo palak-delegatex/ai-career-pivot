@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Briefcase,
   Plus,
@@ -13,11 +14,25 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronDown,
+  ChevronRight,
   GripVertical,
   Trash2,
+  Calendar,
+  BarChart3,
+  ExternalLink,
 } from "lucide-react";
 import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
 import { STAGES, pickCompanyColor, detectSource } from "@/lib/job-tracker";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { motion, AnimatePresence } from "framer-motion";
+import type { PanInfo } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface JobTrackerKanbanProps {
   jobs: TrackedJob[];
@@ -27,14 +42,16 @@ interface JobTrackerKanbanProps {
 
 // ─── Helpers ───
 
-function timeAgo(dateStr: string | undefined): string {
+type Translator = ReturnType<typeof useTranslations>;
+
+function timeAgo(t: Translator, dateStr: string | undefined): string {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return "Today";
-  if (days === 1) return "1d ago";
-  if (days < 30) return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
+  if (days === 0) return t("time.today");
+  if (days === 1) return t("time.dayAgo", { count: 1 });
+  if (days < 30) return t("time.daysAgo", { count: days });
+  return t("time.weeksAgo", { count: Math.floor(days / 7) });
 }
 
 function matchTier(score: number): "high" | "mid" | "low" {
@@ -57,17 +74,36 @@ const SOURCE_STYLES: Record<JobSource, string> = {
   other: "bg-slate-400/10 border-slate-400/25 text-slate-400",
 };
 
-const SOURCE_LABELS: Record<JobSource, string> = {
+// Brand names stay untranslated; generic labels are looked up in SourceBadge.
+const SOURCE_BRAND_LABELS: Partial<Record<JobSource, string>> = {
   linkedin: "LinkedIn",
   indeed: "Indeed",
   glassdoor: "Glassdoor",
-  direct: "Direct",
-  other: "Other",
 };
+
+const STAGE_ORDER: JobStage[] = ["saved", "applied", "phone_screen", "interview", "offer"];
+
+function getNextStage(current: JobStage): JobStage | null {
+  const idx = STAGE_ORDER.indexOf(current);
+  if (idx < 0 || idx >= STAGE_ORDER.length - 1) return null;
+  return STAGE_ORDER[idx + 1];
+}
+
+function columnStats(jobs: TrackedJob[]): { avgScore: number; oldestDays: number } {
+  if (jobs.length === 0) return { avgScore: 0, oldestDays: 0 };
+  const totalScore = jobs.reduce((sum, j) => sum + j.match_score, 0);
+  const avgScore = Math.round(totalScore / jobs.length);
+  const now = Date.now();
+  const oldestDays = Math.max(
+    ...jobs.map((j) => Math.floor((now - new Date(j.created_at).getTime()) / (1000 * 60 * 60 * 24)))
+  );
+  return { avgScore, oldestDays };
+}
 
 // ─── MatchBadge ───
 
 function MatchBadge({ score }: { score: number }) {
+  const t = useTranslations("jobTracker");
   if (score === 0) return null;
   const tier = matchTier(score);
   return (
@@ -75,7 +111,7 @@ function MatchBadge({ score }: { score: number }) {
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${MATCH_STYLES[tier]}`}
     >
       <TrendingUp className="h-2.5 w-2.5" />
-      {score}% match
+      {t("matchBadge", { score })}
     </span>
   );
 }
@@ -83,11 +119,13 @@ function MatchBadge({ score }: { score: number }) {
 // ─── SourceBadge ───
 
 function SourceBadge({ source }: { source: JobSource }) {
+  const t = useTranslations("jobTracker");
+  const label = SOURCE_BRAND_LABELS[source] ?? t(`source.${source}`);
   return (
     <span
       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${SOURCE_STYLES[source]}`}
     >
-      {SOURCE_LABELS[source]}
+      {label}
     </span>
   );
 }
@@ -98,18 +136,42 @@ function JobCard({
   job,
   onDragStart,
   onDelete,
+  onExpand,
+  onMoveStage,
   isRejected,
 }: {
   job: TrackedJob;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDelete: (id: string) => void;
+  onExpand?: (job: TrackedJob) => void;
+  onMoveStage?: (id: string) => void;
   isRejected?: boolean;
 }) {
+  const t = useTranslations("jobTracker");
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onExpand?.(job);
+    } else if (e.key === "m" || e.key === "M") {
+      e.preventDefault();
+      onMoveStage?.(job.id);
+    }
+  };
+
   return (
     <div
       draggable
+      tabIndex={0}
+      role="button"
+      aria-label={t("card.ariaLabel", {
+        role: job.role,
+        company: job.company,
+        score: job.match_score,
+      })}
       onDragStart={(e) => onDragStart(e, job.id)}
-      className={`group relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-teal-500/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 ${isRejected ? "opacity-60" : ""}`}
+      onClick={() => onExpand?.(job)}
+      onKeyDown={handleKeyDown}
+      className={`group relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all hover:border-teal-500/50 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-950 ${isRejected ? "opacity-60" : ""}`}
     >
       <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-40 md:opacity-0 md:group-hover:opacity-40 transition-opacity min-w-[44px] min-h-[44px] flex items-center justify-center">
         <GripVertical className="h-3.5 w-3.5 text-slate-500" />
@@ -147,6 +209,19 @@ function JobCard({
         {job.source !== "other" && <SourceBadge source={job.source} />}
       </div>
 
+      {job.match_score > 0 && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            window.location.hash = "gap-analysis";
+          }}
+          className="flex items-center gap-1 mt-2 text-[11px] text-teal-400 hover:text-teal-300 transition-colors"
+        >
+          <BarChart3 className="h-3 w-3" />
+          {t("viewGapAnalysis")}
+        </button>
+      )}
+
       {job.next_action && (
         <div className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1.5 bg-teal-500/[0.08] border border-teal-500/15 rounded-lg text-[11px] text-teal-300">
           <Clock className="h-3 w-3 shrink-0" />
@@ -156,10 +231,12 @@ function JobCard({
 
       <div className="text-[10px] text-slate-600 mt-1.5">
         {job.stage === "saved"
-          ? `Saved ${timeAgo(job.created_at)}`
+          ? t("card.savedAgo", { time: timeAgo(t, job.created_at) })
           : job.stage === "rejected"
-            ? `Rejected ${timeAgo(job.stage_changed_at)}`
-            : `Applied ${timeAgo(job.applied_at || job.created_at)}`}
+            ? t("card.rejectedAgo", { time: timeAgo(t, job.stage_changed_at) })
+            : t("card.appliedAgo", {
+                time: timeAgo(t, job.applied_at || job.created_at),
+              })}
       </div>
     </div>
   );
@@ -169,35 +246,57 @@ function JobCard({
 
 function KanbanColumn({
   stageKey,
-  label,
   dotColor,
   jobs,
   onDragStart,
   onDrop,
   onDelete,
+  onExpand,
+  onMoveStage,
 }: {
   stageKey: JobStage;
-  label: string;
   dotColor: string;
   jobs: TrackedJob[];
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDrop: (stage: JobStage) => void;
   onDelete: (id: string) => void;
+  onExpand: (job: TrackedJob) => void;
+  onMoveStage: (id: string) => void;
 }) {
+  const t = useTranslations("jobTracker");
   const [dragOver, setDragOver] = useState(false);
 
   return (
     <div className="min-w-[200px] scroll-snap-start">
-      <div className="flex items-center justify-between px-1 mb-2.5">
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${dotColor}`} />
-          <span className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
-            {label}
+      <div className="px-1 mb-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${dotColor}`} />
+            <span className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
+              {t(`status.${stageKey}`)}
+            </span>
+          </div>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-500">
+            {jobs.length}
           </span>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-500">
-          {jobs.length}
-        </span>
+        {jobs.length > 0 && (() => {
+          const stats = columnStats(jobs);
+          return (
+            <div className="flex items-center gap-2.5 mt-1.5 px-0.5">
+              {stats.avgScore > 0 && (
+                <span className="text-[10px] text-slate-500" title={t("column.avgScoreTitle")}>
+                  <TrendingUp className="inline h-2.5 w-2.5 mr-0.5" />
+                  {t("column.avgScore", { score: stats.avgScore })}
+                </span>
+              )}
+              <span className="text-[10px] text-slate-600" title={t("column.oldestCardTitle")}>
+                <Clock className="inline h-2.5 w-2.5 mr-0.5" />
+                {t("column.oldestDays", { days: stats.oldestDays })}
+              </span>
+            </div>
+          );
+        })()}
       </div>
       <div
         onDragOver={(e) => {
@@ -219,8 +318,8 @@ function KanbanColumn({
         {jobs.length === 0 && (
           <div className="text-center py-10 text-slate-600 text-[12px] italic">
             {stageKey === "offer"
-              ? "No offers yet -- keep going!"
-              : "Drop jobs here"}
+              ? t("column.emptyOffer")
+              : t("column.emptyDrop")}
           </div>
         )}
         {jobs.map((job) => (
@@ -229,6 +328,8 @@ function KanbanColumn({
             job={job}
             onDragStart={onDragStart}
             onDelete={onDelete}
+            onExpand={onExpand}
+            onMoveStage={onMoveStage}
             isRejected={stageKey === "rejected"}
           />
         ))}
@@ -237,80 +338,148 @@ function KanbanColumn({
   );
 }
 
-// ─── MobileAccordion ───
+// ─── MobileCardStack ───
 
-function MobileAccordion({
+function MobileCardStack({
   jobs,
-  onDragStart,
-  onDrop,
+  onStageChange,
   onDelete,
+  onExpand,
 }: {
   jobs: TrackedJob[];
-  onDragStart: (e: React.DragEvent, id: string) => void;
-  onDrop: (stage: JobStage) => void;
+  onStageChange: (id: string, newStage: JobStage) => void;
   onDelete: (id: string) => void;
+  onExpand: (job: TrackedJob) => void;
 }) {
-  const [open, setOpen] = useState<JobStage | null>(null);
-  const grouped = useMemo(() => {
-    const map = new Map<JobStage, TrackedJob[]>();
-    for (const s of STAGES) map.set(s.key, []);
-    for (const j of jobs) map.get(j.stage)?.push(j);
-    return map;
-  }, [jobs]);
+  const t = useTranslations("jobTracker");
+  const [activeStage, setActiveStage] = useState<JobStage>("saved");
+  const stageJobs = useMemo(
+    () => jobs.filter((j) => j.stage === activeStage),
+    [jobs, activeStage]
+  );
+
+  const SWIPE_THRESHOLD = 100;
+
+  const handleDragEnd = (job: TrackedJob, info: PanInfo) => {
+    if (info.offset.x > SWIPE_THRESHOLD) {
+      const next = getNextStage(job.stage);
+      if (next) onStageChange(job.id, next);
+    } else if (info.offset.x < -SWIPE_THRESHOLD) {
+      onStageChange(job.id, "rejected");
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-2 md:hidden">
-      {STAGES.map((s) => {
-        const stageJobs = grouped.get(s.key) ?? [];
-        const isOpen = open === s.key;
-        return (
-          <div
-            key={s.key}
-            className="border border-slate-800 rounded-xl overflow-hidden"
-          >
+    <div className="flex flex-col gap-3 md:hidden">
+      <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+        {STAGES.map((s) => {
+          const count = jobs.filter((j) => j.stage === s.key).length;
+          return (
             <button
-              onClick={() => setOpen(isOpen ? null : s.key)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-slate-900 text-[13px] font-semibold text-gray-50 hover:bg-slate-800/80 transition-colors"
+              key={s.key}
+              onClick={() => setActiveStage(s.key)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium whitespace-nowrap transition-all ${
+                activeStage === s.key
+                  ? "bg-teal-500/15 border border-teal-500/30 text-teal-300"
+                  : "border border-slate-800 text-slate-500 hover:text-slate-300"
+              }`}
             >
-              <span className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full inline-block ${s.dotColor}`} />
-                {s.label}
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-500">
-                  {stageJobs.length}
-                </span>
-                <ChevronDown
-                  className={`h-3.5 w-3.5 text-slate-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
-                />
-              </span>
+              <span className={`w-1.5 h-1.5 rounded-full ${s.dotColor}`} />
+              {t(`status.${s.key}`)}
+              <span className="text-[10px] opacity-60">{count}</span>
             </button>
-            {isOpen && (
-              <div
-                className="p-3 bg-slate-900/30 flex flex-col gap-2"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  onDrop(s.key);
-                }}
-              >
-                {stageJobs.length === 0 && (
-                  <p className="text-[12px] text-slate-600 py-2 px-2">No jobs in this stage</p>
-                )}
-                {stageJobs.map((job) => (
-                  <JobCard
-                    key={job.id}
-                    job={job}
-                    onDragStart={onDragStart}
-                    onDelete={onDelete}
-                    isRejected={s.key === "rejected"}
-                  />
-                ))}
+          );
+        })}
+      </div>
+
+      {stageJobs.length > 0 && activeStage !== "rejected" && (
+        <p className="text-[10px] text-slate-600 text-center">
+          {t("mobile.swipeHint")}
+        </p>
+      )}
+
+      <div className="flex flex-col gap-2">
+        <AnimatePresence mode="popLayout">
+          {stageJobs.map((job) => (
+            <motion.div
+              key={job.id}
+              layout
+              initial={{ opacity: 0, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -200, transition: { duration: 0.2 } }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.5}
+              onDragEnd={(_, info) => handleDragEnd(job, info)}
+              whileDrag={{ scale: 1.02 }}
+              style={{ touchAction: "pan-y" }}
+              className="relative"
+            >
+              <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none rounded-xl bg-slate-800/50">
+                <div className="flex items-center gap-1 text-red-400">
+                  <X className="h-4 w-4" />
+                  <span className="text-[11px] font-medium">{t("mobile.reject")}</span>
+                </div>
+                <div className="flex items-center gap-1 text-emerald-400">
+                  <span className="text-[11px] font-medium">{t("mobile.advance")}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </div>
               </div>
-            )}
-          </div>
-        );
-      })}
+              <div
+                onClick={() => onExpand(job)}
+                className="relative bg-slate-900 border border-slate-700 rounded-xl p-3.5 cursor-pointer"
+              >
+                <div className="flex items-start gap-2.5 mb-2">
+                  <div
+                    className={`w-8 h-8 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[13px] font-bold text-white shrink-0`}
+                  >
+                    {job.company.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
+                      {job.role}
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">{job.company}</div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(job.id);
+                    }}
+                    className="text-slate-700 hover:text-red-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="flex items-center flex-wrap gap-1.5">
+                  <MatchBadge score={job.match_score} />
+                  {job.source !== "other" && <SourceBadge source={job.source} />}
+                </div>
+                {job.match_score > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.hash = "gap-analysis";
+                    }}
+                    className="flex items-center gap-1 mt-2 text-[11px] text-teal-400 hover:text-teal-300 transition-colors"
+                  >
+                    <BarChart3 className="h-3 w-3" />
+                    {t("viewGapAnalysis")}
+                  </button>
+                )}
+                <div className="text-[10px] text-slate-600 mt-1.5">
+                  {timeAgo(t, job.created_at)}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {stageJobs.length === 0 && (
+          <p className="text-center py-8 text-[12px] text-slate-600 italic">
+            {t("mobile.noJobsInStage", { stage: t(`status.${activeStage}`) })}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -324,15 +493,8 @@ const FUNNEL_STAGES: JobStage[] = [
   "interview",
   "offer",
 ];
-const FUNNEL_LABELS: Record<string, string> = {
-  saved: "Saved",
-  applied: "Applied",
-  phone_screen: "Phone Screen",
-  interview: "Interview",
-  offer: "Offer",
-};
-
 function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
+  const t = useTranslations("jobTracker");
 
   const cumulativeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -434,7 +596,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
       <div className="flex items-center gap-2.5 mb-5">
         <Activity className="h-5 w-5 text-teal-500" />
         <h2 className="font-serif text-xl font-bold text-gray-50">
-          Pipeline Analytics
+          {t("analytics.title")}
         </h2>
       </div>
 
@@ -456,7 +618,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
                     </span>
                   </div>
                   <span className="text-[11px] font-semibold text-slate-400 text-center">
-                    {FUNNEL_LABELS[s]}
+                    {t(`status.${s}`)}
                   </span>
                 </div>
 
@@ -492,7 +654,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
                     </span>
                   </div>
                   <span className="text-[11px] font-semibold text-slate-400">
-                    {FUNNEL_LABELS[s]}
+                    {t(`status.${s}`)}
                   </span>
                 </div>
                 {i < FUNNEL_STAGES.length - 1 && (
@@ -518,7 +680,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
                 {timeInStage[i]}
               </div>
               <div className="text-[10px] text-slate-600 mt-0.5">
-                Avg. in {FUNNEL_LABELS[s]}
+                {t("analytics.avgInStage", { stage: t(`status.${s}`) })}
               </div>
             </div>
           ))}
@@ -527,7 +689,7 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
               {totalPipelineAvg}
             </div>
             <div className="text-[10px] text-slate-600 mt-0.5">
-              Avg. Total Pipeline
+              {t("analytics.avgTotalPipeline")}
             </div>
           </div>
         </div>
@@ -542,12 +704,12 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
             </div>
             <div>
               <div className="text-[13px] font-semibold text-gray-50 mb-1">
-                Strong Phone Screen Performance
+                {t("analytics.insights.strongScreen.title")}
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
-                Your Phone Screen to Interview rate ({screenToInterviewRate}%) is
-                well above the 55% benchmark. You&apos;re making strong first
-                impressions.
+                {t("analytics.insights.strongScreen.body", {
+                  rate: screenToInterviewRate,
+                })}
               </div>
             </div>
           </div>
@@ -560,16 +722,15 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
             </div>
             <div>
               <div className="text-[13px] font-semibold text-gray-50 mb-1">
-                Low Applied to Screen Rate
+                {t("analytics.insights.lowScreen.title")}
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
-                Your Applied to Phone Screen rate ({appliedToScreenRate}%) is
-                below the 45% average. Applications may need stronger tailoring.
+                {t("analytics.insights.lowScreen.body", {
+                  rate: appliedToScreenRate,
+                })}
               </div>
               <div className="mt-2 px-2.5 py-2 bg-teal-500/[0.08] rounded-lg text-[11px] text-teal-300 leading-snug">
-                Try: Customize your resume for each job description. Use our AI
-                Resume Tailoring tool to match keywords. Follow up 5 days after
-                applying.
+                {t("analytics.insights.lowScreen.tip")}
               </div>
             </div>
           </div>
@@ -582,17 +743,171 @@ function FunnelAnalytics({ jobs }: { jobs: TrackedJob[] }) {
             </div>
             <div>
               <div className="text-[13px] font-semibold text-gray-50 mb-1">
-                Add Jobs to See Insights
+                {t("analytics.insights.empty.title")}
               </div>
               <div className="text-[12px] text-slate-400 leading-relaxed">
-                Track your applications to unlock pipeline analytics and
-                AI-powered insights about your job search.
+                {t("analytics.insights.empty.body")}
               </div>
             </div>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+// ─── JobDetailSheet ───
+
+function JobDetailSheet({
+  job,
+  open,
+  onOpenChange,
+  onNotesChange,
+}: {
+  job: TrackedJob | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onNotesChange: (id: string, notes: string) => void;
+}) {
+  const t = useTranslations("jobTracker");
+  const [editNotes, setEditNotes] = useState(job?.notes ?? "");
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setEditNotes(job?.notes ?? "");
+  }, [job]);
+
+  if (!job) return null;
+
+  const tier = matchTier(job.match_score);
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side={isMobile ? "bottom" : "right"}
+        className={
+          isMobile
+            ? "bg-slate-950 border-slate-800 overflow-y-auto rounded-t-2xl max-h-[85vh]"
+            : "bg-slate-950 border-slate-800 overflow-y-auto"
+        }
+      >
+        {isMobile && <div className="w-10 h-1 rounded-full bg-slate-600 mx-auto mt-2 mb-1 shrink-0" />}
+        <SheetHeader className="pb-0">
+          <div className="flex items-start gap-3">
+            <div
+              className={`w-10 h-10 rounded-lg bg-gradient-to-br ${job.company_color || "from-slate-600 to-slate-800"} flex items-center justify-center text-[15px] font-bold text-white shrink-0`}
+            >
+              {job.company.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <SheetTitle className="text-gray-50 text-base leading-tight">
+                {job.role}
+              </SheetTitle>
+              <SheetDescription className="text-slate-400 text-[13px] mt-0.5">
+                {job.company}
+              </SheetDescription>
+            </div>
+          </div>
+        </SheetHeader>
+
+        <div className="px-4 pb-6 flex flex-col gap-5">
+          {job.match_score > 0 && (
+            <div className={`p-3 rounded-xl border ${MATCH_STYLES[tier]}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="text-sm font-bold">{t("detail.matchScore", { score: job.match_score })}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    onOpenChange(false);
+                    window.location.hash = "gap-analysis";
+                  }}
+                  className="flex items-center gap-1 text-[11px] text-teal-400 hover:text-teal-300"
+                >
+                  <BarChart3 className="h-3 w-3" />
+                  {t("detail.gapAnalysis")}
+                  <ExternalLink className="h-2.5 w-2.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1">{t("detail.stage")}</div>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${STAGES.find((s) => s.key === job.stage)?.dotColor ?? "bg-slate-500"}`} />
+                <span className="text-[13px] font-semibold text-gray-50">
+                  {t(`status.${job.stage}`)}
+                </span>
+              </div>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1">
+                <Calendar className="inline h-2.5 w-2.5 mr-0.5" />
+                {t("detail.interviewDate")}
+              </div>
+              <div className="text-[13px] text-gray-50">
+                {job.stage === "interview" || job.stage === "phone_screen"
+                  ? timeAgo(t, job.stage_changed_at) || t("detail.notSet")
+                  : "—"}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1">{t("detail.source")}</div>
+              <SourceBadge source={job.source} />
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1">{t("detail.added")}</div>
+              <div className="text-[13px] text-gray-50">{timeAgo(t, job.created_at)}</div>
+            </div>
+          </div>
+
+          {job.url && (
+            <div>
+              <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-2">
+                {t("detail.linkedDocuments")}
+              </div>
+              <a
+                href={job.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl text-[13px] text-teal-400 hover:text-teal-300 hover:border-teal-500/30 transition-colors"
+              >
+                <Link2 className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{job.url}</span>
+                <ExternalLink className="h-3 w-3 shrink-0 ml-auto" />
+              </a>
+            </div>
+          )}
+
+          <div>
+            <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-2">
+              {t("detail.notes")}
+            </div>
+            <textarea
+              value={editNotes}
+              onChange={(e) => setEditNotes(e.target.value)}
+              onBlur={() => onNotesChange(job.id, editNotes)}
+              rows={4}
+              placeholder={t("detail.notesPlaceholder")}
+              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors resize-none"
+            />
+          </div>
+
+          {job.next_action && (
+            <div className="flex items-center gap-1.5 px-3 py-2 bg-teal-500/[0.08] border border-teal-500/15 rounded-xl text-[12px] text-teal-300">
+              <Clock className="h-3.5 w-3.5 shrink-0" />
+              <span>{job.next_action}</span>
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -614,6 +929,7 @@ function QuickAddModal({
     notes: string;
   }) => void;
 }) {
+  const t = useTranslations("jobTracker");
   const [url, setUrl] = useState("");
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
@@ -641,7 +957,7 @@ function QuickAddModal({
     >
       <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800">
-          <span className="text-base font-bold text-gray-50">Add Job to Tracker</span>
+          <span className="text-base font-bold text-gray-50">{t("modal.title")}</span>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center border border-slate-800 rounded-lg text-slate-400 hover:bg-white/5 hover:text-gray-50 transition-colors"
@@ -658,18 +974,18 @@ function QuickAddModal({
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Paste a job URL (LinkedIn, Indeed, Glassdoor...)"
+              placeholder={t("modal.urlPlaceholder")}
               className="w-full pl-11 pr-4 py-3.5 bg-white/[0.04] border border-slate-700 rounded-xl text-sm text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors"
             />
           </div>
           <p className="text-[11px] text-slate-600 text-center mb-5">
-            We&apos;ll auto-fill the job details and compute your match score
+            {t("modal.autoFillHint")}
           </p>
 
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-slate-800" />
             <span className="text-[11px] font-medium text-slate-600 uppercase tracking-wider">
-              or enter manually
+              {t("modal.orManually")}
             </span>
             <div className="flex-1 h-px bg-slate-800" />
           </div>
@@ -678,23 +994,23 @@ function QuickAddModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
             <div>
               <label className="block text-[12px] font-medium text-slate-400 mb-1.5">
-                Role
+                {t("modal.roleLabel")}
               </label>
               <input
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                placeholder="e.g. ML Engineer"
+                placeholder={t("modal.rolePlaceholder")}
                 className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors"
               />
             </div>
             <div>
               <label className="block text-[12px] font-medium text-slate-400 mb-1.5">
-                Company
+                {t("modal.companyLabel")}
               </label>
               <input
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                placeholder="e.g. Google"
+                placeholder={t("modal.companyPlaceholder")}
                 className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors"
               />
             </div>
@@ -702,12 +1018,12 @@ function QuickAddModal({
 
           <div className="mb-3.5">
             <label className="block text-[12px] font-medium text-slate-400 mb-1.5">
-              Notes
+              {t("modal.notesLabel")}
             </label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Referral from Sarah, deadline Jun 15..."
+              placeholder={t("modal.notesPlaceholder")}
               className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors"
             />
           </div>
@@ -715,7 +1031,7 @@ function QuickAddModal({
           {/* Stage selector */}
           <div className="mb-5">
             <label className="block text-[12px] font-medium text-slate-400 mb-2">
-              Add to stage
+              {t("modal.addToStage")}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {STAGES.filter((s) => s.key !== "rejected").map((s) => (
@@ -728,7 +1044,7 @@ function QuickAddModal({
                       : "border-slate-800 text-slate-600 hover:border-slate-700 hover:text-slate-400"
                   }`}
                 >
-                  {s.label}
+                  {t(`status.${s.key}`)}
                 </button>
               ))}
             </div>
@@ -740,7 +1056,7 @@ function QuickAddModal({
             onClick={onClose}
             className="px-4 py-2 border border-slate-800 rounded-lg text-[13px] font-medium text-slate-400 hover:border-slate-700 hover:text-gray-50 transition-colors"
           >
-            Cancel
+            {t("modal.cancel")}
           </button>
           <button
             onClick={handleSubmit}
@@ -748,7 +1064,7 @@ function QuickAddModal({
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-[13px] font-semibold text-white transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
-            Add to Tracker
+            {t("modal.submit")}
           </button>
         </div>
       </div>
@@ -763,9 +1079,11 @@ export default function JobTrackerKanban({
   email,
   onJobsChange,
 }: JobTrackerKanbanProps) {
+  const t = useTranslations("jobTracker");
   const [jobs, setJobs] = useState(initialJobs);
   const [view, setView] = useState<"board" | "analytics">("board");
   const [modalOpen, setModalOpen] = useState(false);
+  const [expandedJob, setExpandedJob] = useState<TrackedJob | null>(null);
   const dragIdRef = useRef<string | null>(null);
 
   const updateJobs = useCallback(
@@ -854,6 +1172,61 @@ export default function JobTrackerKanban({
     [jobs, email, updateJobs]
   );
 
+  const changeStage = useCallback(
+    async (id: string, newStage: JobStage) => {
+      const job = jobs.find((j) => j.id === id);
+      if (!job || job.stage === newStage) return;
+      const updated = jobs.map((j) =>
+        j.id === id ? { ...j, stage: newStage, stage_changed_at: new Date().toISOString() } : j
+      );
+      updateJobs(updated);
+      await fetch("/api/job-tracker", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, email, stage: newStage }),
+      });
+    },
+    [jobs, email, updateJobs]
+  );
+
+  const handleMoveStage = useCallback(
+    (id: string) => {
+      const job = jobs.find((j) => j.id === id);
+      if (!job) return;
+      const next = getNextStage(job.stage);
+      if (next) changeStage(id, next);
+    },
+    [jobs, changeStage]
+  );
+
+  const handleNotesChange = useCallback(
+    async (id: string, notes: string) => {
+      const updated = jobs.map((j) => (j.id === id ? { ...j, notes } : j));
+      updateJobs(updated);
+      await fetch("/api/job-tracker", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, email, notes }),
+      });
+    },
+    [jobs, email, updateJobs]
+  );
+
+  const handleBoardKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const cards = Array.from(
+      (e.currentTarget as HTMLElement).querySelectorAll<HTMLElement>('[role="button"][tabindex="0"]')
+    );
+    const idx = cards.indexOf(document.activeElement as HTMLElement);
+    if (idx < 0) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      e.preventDefault();
+      cards[Math.min(idx + 1, cards.length - 1)]?.focus();
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      cards[Math.max(idx - 1, 0)]?.focus();
+    }
+  }, []);
+
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
@@ -861,10 +1234,10 @@ export default function JobTrackerKanban({
         <div className="flex items-center gap-3">
           <Briefcase className="h-7 w-7 text-teal-500" />
           <h1 className="font-serif text-2xl font-bold text-gray-50">
-            Job Tracker
+            {t("header.title")}
           </h1>
           <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300">
-            {jobs.length} job{jobs.length !== 1 ? "s" : ""}
+            {t("header.jobCount", { count: jobs.length })}
           </span>
         </div>
 
@@ -878,7 +1251,7 @@ export default function JobTrackerKanban({
                   : "text-slate-400 hover:text-gray-50 hover:bg-white/[0.04]"
               }`}
             >
-              Board
+              {t("header.board")}
             </button>
             <button
               onClick={() => setView("analytics")}
@@ -888,7 +1261,7 @@ export default function JobTrackerKanban({
                   : "text-slate-400 hover:text-gray-50 hover:bg-white/[0.04]"
               }`}
             >
-              Analytics
+              {t("header.analytics")}
             </button>
           </div>
           <button
@@ -896,7 +1269,7 @@ export default function JobTrackerKanban({
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-[13px] font-semibold text-white transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
-            Add Job
+            {t("header.addJob")}
           </button>
         </div>
       </div>
@@ -905,26 +1278,32 @@ export default function JobTrackerKanban({
       {view === "board" && (
         <>
           {/* Desktop Kanban */}
-          <div className="hidden md:grid grid-cols-6 gap-3 overflow-x-auto pb-2 scroll-snap-x-mandatory -webkit-overflow-scrolling-touch kanban-grid">
+          <div
+            className="hidden md:grid grid-cols-6 gap-3 overflow-x-auto pb-2 scroll-snap-x-mandatory -webkit-overflow-scrolling-touch kanban-grid"
+            onKeyDown={handleBoardKeyDown}
+            role="region"
+            aria-label={t("board.ariaLabel")}
+          >
             {STAGES.map((s) => (
               <KanbanColumn
                 key={s.key}
                 stageKey={s.key}
-                label={s.label}
                 dotColor={s.dotColor}
                 jobs={grouped.get(s.key) ?? []}
                 onDragStart={handleDragStart}
                 onDrop={handleDrop}
                 onDelete={handleDelete}
+                onExpand={setExpandedJob}
+                onMoveStage={handleMoveStage}
               />
             ))}
           </div>
-          {/* Mobile accordion */}
-          <MobileAccordion
+          {/* Mobile card stack with swipe */}
+          <MobileCardStack
             jobs={jobs}
-            onDragStart={handleDragStart}
-            onDrop={handleDrop}
+            onStageChange={changeStage}
             onDelete={handleDelete}
+            onExpand={setExpandedJob}
           />
         </>
       )}
@@ -937,6 +1316,14 @@ export default function JobTrackerKanban({
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onAdd={handleAdd}
+      />
+
+      {/* Job detail sheet */}
+      <JobDetailSheet
+        job={expandedJob}
+        open={expandedJob !== null}
+        onOpenChange={(open) => { if (!open) setExpandedJob(null); }}
+        onNotesChange={handleNotesChange}
       />
     </div>
   );

@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import SuccessStoryGrid from "@/components/SuccessStoryGrid";
+import TransformationCard from "@/components/TransformationCard";
+import PeerDirectory from "@/components/PeerDirectory";
 import CareerTransitionStats from "@/components/infographics/CareerTransitionStats";
 import ToolComparisonMatrix from "@/components/infographics/ToolComparisonMatrix";
 import TimelineRoadmap from "@/components/infographics/TimelineRoadmap";
@@ -11,10 +14,12 @@ import {
   toolComparisonData,
   sampleRoadmap,
 } from "@/lib/success-stories";
+import { sampleTransformations, samplePeers } from "@/lib/portfolio";
 import SiteNav from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 
 export default function SuccessStoriesClient() {
+  const t = useTranslations('successStories');
   const [themeVariant, setThemeVariant] = useState<"dark" | "light">("dark");
   const isDark = themeVariant === "dark";
 
@@ -31,16 +36,16 @@ export default function SuccessStoriesClient() {
               isDark ? "text-teal-400" : "text-teal-600"
             }`}
           >
-            Social Proof
+            {t('headerEyebrow')}
           </p>
           <h1
             className={`text-4xl sm:text-5xl font-extrabold mb-4 ${
               isDark ? "text-white" : "text-slate-900"
             }`}
           >
-            Career pivots that{" "}
+            {t('headerTitleLead')}{" "}
             <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-              actually worked
+              {t('headerTitleHighlight')}
             </span>
           </h1>
           <p
@@ -48,14 +53,13 @@ export default function SuccessStoriesClient() {
               isDark ? "text-slate-400" : "text-slate-600"
             }`}
           >
-            Real stories, real data, real outcomes. See how professionals like
-            you made the leap.
+            {t('headerSubtitle')}
           </p>
 
           {/* Theme toggle */}
           <div className="flex items-center justify-center gap-2">
             <span className={`text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-              Theme:
+              {t('themeLabel')}
             </span>
             <button
               onClick={() => setThemeVariant("dark")}
@@ -65,7 +69,7 @@ export default function SuccessStoriesClient() {
                   : "text-slate-500 hover:bg-slate-200"
               }`}
             >
-              Dark
+              {t('themeDark')}
             </button>
             <button
               onClick={() => setThemeVariant("light")}
@@ -75,7 +79,7 @@ export default function SuccessStoriesClient() {
                   : "text-slate-500 hover:bg-slate-800"
               }`}
             >
-              Light
+              {t('themeLight')}
             </button>
           </div>
         </div>
@@ -87,25 +91,53 @@ export default function SuccessStoriesClient() {
           layout="grid"
         />
 
-        {/* Success Story Cards - Carousel */}
-        <div className="max-w-6xl mx-auto px-6 mb-8">
-          <h2
-            className={`text-2xl font-bold mb-2 ${
-              isDark ? "text-white" : "text-slate-900"
-            }`}
-          >
-            Carousel Layout
-          </h2>
-          <p className={`text-sm mb-6 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-            Swipeable on mobile, navigable with arrows on desktop.
-          </p>
-        </div>
-        <SuccessStoryGrid
-          stories={successStories}
-          variant={themeVariant}
-          layout="carousel"
-          showHeader={false}
-        />
+        {/* Before → After Transformations */}
+        <section className="py-16 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10">
+              <p
+                className={`text-sm font-semibold tracking-widest uppercase mb-3 ${
+                  isDark ? "text-teal-400" : "text-teal-600"
+                }`}
+              >
+                {t('transformationsEyebrow')}
+              </p>
+              <h2
+                className={`text-3xl sm:text-4xl font-extrabold mb-4 ${
+                  isDark ? "text-white" : "text-slate-900"
+                }`}
+              >
+                {t('transformationsTitle')}
+              </h2>
+              <p
+                className={`text-base max-w-2xl mx-auto ${
+                  isDark ? "text-slate-400" : "text-slate-600"
+                }`}
+              >
+                {t('transformationsSubtitle')}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sampleTransformations.map((story) => (
+                <TransformationCard
+                  key={story.id}
+                  story={story}
+                  variant={themeVariant}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Peers on Similar Paths */}
+        <section className="py-16 px-6">
+          <div className="max-w-6xl mx-auto">
+            <PeerDirectory
+              peers={samplePeers}
+              variant={themeVariant}
+            />
+          </div>
+        </section>
 
         {/* Infographic Templates */}
         <section className="py-20 px-6">
@@ -116,22 +148,21 @@ export default function SuccessStoriesClient() {
                   isDark ? "text-teal-400" : "text-teal-600"
                 }`}
               >
-                Data-Driven Content
+                {t('infographicsEyebrow')}
               </p>
               <h2
                 className={`text-3xl sm:text-4xl font-extrabold mb-4 ${
                   isDark ? "text-white" : "text-slate-900"
                 }`}
               >
-                Infographic Templates
+                {t('infographicsTitle')}
               </h2>
               <p
                 className={`text-base max-w-2xl mx-auto ${
                   isDark ? "text-slate-400" : "text-slate-600"
                 }`}
               >
-                Branded, embeddable templates optimized for social sharing and
-                backlink generation.
+                {t('infographicsSubtitle')}
               </p>
             </div>
 

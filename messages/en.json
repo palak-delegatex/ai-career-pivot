@@ -690,5 +690,261 @@
     "valueProp1": "Personalized to your exact background",
     "valueProp2": "Actionable milestones, not generic advice",
     "valueProp3": "Salary data & financial bridge plan"
+  },
+  "completionBadges": {
+    "title": "Badges",
+    "locked": "Locked",
+    "tooltipTitle": "{label}: {description}",
+    "tooltipTitleLocked": "{label}: {description} (Locked)",
+    "badges": {
+      "firstStep": {
+        "label": "First Step",
+        "description": "Complete your first milestone"
+      },
+      "firstApplication": {
+        "label": "First Application Sent",
+        "description": "Submit your first job application"
+      },
+      "fiveSkills": {
+        "label": "5 Skills Acquired",
+        "description": "Complete 5 skill-building milestones"
+      },
+      "tenConnections": {
+        "label": "10 Connections Made",
+        "description": "Add 10 contacts to your network"
+      },
+      "interviewUnlocked": {
+        "label": "Interview Unlocked",
+        "description": "Reach the Applicant stage of your transition"
+      },
+      "streakMaster": {
+        "label": "Streak Master",
+        "description": "Achieve a 7-day completion streak"
+      },
+      "phaseComplete": {
+        "label": "Phase Complete",
+        "description": "Complete all milestones in a phase"
+      },
+      "halfwayThere": {
+        "label": "Halfway There",
+        "description": "Complete 50% of all milestones"
+      },
+      "momentum": {
+        "label": "Momentum Builder",
+        "description": "Complete 3 milestones in a single week"
+      },
+      "careerReady": {
+        "label": "Career Ready",
+        "description": "Complete 100% of all milestones"
+      }
+    }
+  },
+  "coverLetter": {
+    "title": "Cover Letter for {role}",
+    "saved": "Saved",
+    "saveFailed": "Save failed — copy your work",
+    "jobRequirements": "Job Requirements",
+    "matchedSkills": "Matched Skills",
+    "skillsToAddress": "Skills to Address",
+    "tone": "Tone",
+    "tones": {
+      "professional": {
+        "name": "Professional",
+        "desc": "Formal and polished"
+      },
+      "conversational": {
+        "name": "Conversational",
+        "desc": "Warm and personable"
+      },
+      "bold": {
+        "name": "Bold",
+        "desc": "Confident and assertive"
+      }
+    },
+    "keyPointsHeading": "Key Points to Emphasize",
+    "keyPointPlaceholder": "Key point {index} (optional)",
+    "generated": "Cover Letter Generated",
+    "edit": "Edit",
+    "generating": "Generating...",
+    "generate": "Generate Cover Letter",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "downloadPdf": "Download PDF",
+    "copied": "Copied",
+    "copy": "Copy",
+    "regenerate": "Regenerate",
+    "upgradeRequired": "Upgrade required",
+    "generationError": "Failed to generate cover letter. Please try again."
+  },
+  "gapAnalysis": {
+    "errorNoProfile": "Complete your career assessment first so we can compare your skills against the job.",
+    "errorUpgradeRequired": "Upgrade required to run a gap analysis.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "upgradeFeature": "skill gap analysis",
+    "loadingTitle": "Analyzing Job Fit",
+    "loadingSubtitle": "Comparing your skills against the job requirements...",
+    "resultsTitle": "Gap Analysis Results",
+    "resultsSubtitle": "Based on your profile vs. the job posting",
+    "analyzeAnother": "Analyze another job →",
+    "estimatedReadiness": "Estimated readiness:",
+    "matchedSkills": "Matched Skills ({count})",
+    "mustHaveGaps": "Must-Have Gaps ({count})",
+    "niceToHaveGaps": "Nice-to-Have Gaps ({count})",
+    "experienceGaps": "Experience Gaps",
+    "careerPivotAssessment": "Career Pivot Assessment",
+    "transferableStrengths": "Transferable Strengths",
+    "biggestChallenges": "Biggest Challenges",
+    "applicationTips": "Application Tips",
+    "practiceInterview": "Practice Interview for This Role",
+    "backToDashboard": "Back to Dashboard",
+    "inputBadge": "Job-Specific Gap Analysis",
+    "inputHeading": "How Well Do You Fit?",
+    "inputDescription": "Paste any job posting and we'll show exactly which skills you match, which you're missing, and how to close every gap.",
+    "profileNotLoadedTitle": "Profile not loaded",
+    "profileNotLoadedBody": "Complete the <link>career assessment</link> first so we can compare your skills against the job.",
+    "profileLoadedTitle": "Profile loaded",
+    "skillsLoaded": "{count} skills loaded. Ready to analyze.",
+    "jobDescriptionPlaceholder": "Paste the full job posting here — title, requirements, qualifications, responsibilities...",
+    "analyzeButton": "Analyze My Fit →",
+    "analysisTimeNote": "AI-powered analysis takes ~10 seconds"
+  },
+  "jobTracker": {
+    "time": {
+      "today": "Today",
+      "dayAgo": "{count}d ago",
+      "daysAgo": "{count}d ago",
+      "weeksAgo": "{count}w ago"
+    },
+    "matchBadge": "{score}% match",
+    "viewGapAnalysis": "View Gap Analysis",
+    "source": {
+      "direct": "Direct",
+      "other": "Other"
+    },
+    "status": {
+      "saved": "Saved",
+      "applied": "Applied",
+      "phone_screen": "Phone Screen",
+      "interview": "Interview",
+      "offer": "Offer",
+      "rejected": "Rejected"
+    },
+    "card": {
+      "ariaLabel": "{role} at {company}, {score}% match",
+      "savedAgo": "Saved {time}",
+      "rejectedAgo": "Rejected {time}",
+      "appliedAgo": "Applied {time}"
+    },
+    "column": {
+      "avgScore": "{score}% avg",
+      "avgScoreTitle": "Average match score",
+      "oldestDays": "{days}d",
+      "oldestCardTitle": "Oldest card",
+      "emptyOffer": "No offers yet — keep going!",
+      "emptyDrop": "Drop jobs here"
+    },
+    "mobile": {
+      "swipeHint": "Swipe right to advance • Swipe left to reject",
+      "reject": "Reject",
+      "advance": "Advance",
+      "noJobsInStage": "No jobs in {stage}"
+    },
+    "analytics": {
+      "title": "Pipeline Analytics",
+      "avgInStage": "Avg. in {stage}",
+      "avgTotalPipeline": "Avg. Total Pipeline",
+      "insights": {
+        "strongScreen": {
+          "title": "Strong Phone Screen Performance",
+          "body": "Your Phone Screen to Interview rate ({rate}%) is well above the 55% benchmark. You're making strong first impressions."
+        },
+        "lowScreen": {
+          "title": "Low Applied to Screen Rate",
+          "body": "Your Applied to Phone Screen rate ({rate}%) is below the 45% average. Applications may need stronger tailoring.",
+          "tip": "Try: Customize your resume for each job description. Use our AI Resume Tailoring tool to match keywords. Follow up 5 days after applying."
+        },
+        "empty": {
+          "title": "Add Jobs to See Insights",
+          "body": "Track your applications to unlock pipeline analytics and AI-powered insights about your job search."
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "{score}% Match",
+      "gapAnalysis": "Gap Analysis",
+      "stage": "Stage",
+      "interviewDate": "Interview Date",
+      "notSet": "Not set",
+      "source": "Source",
+      "added": "Added",
+      "linkedDocuments": "Linked Documents",
+      "notes": "Notes",
+      "notesPlaceholder": "Add notes about this role..."
+    },
+    "modal": {
+      "title": "Add Job to Tracker",
+      "urlPlaceholder": "Paste a job URL (LinkedIn, Indeed, Glassdoor...)",
+      "autoFillHint": "We'll auto-fill the job details and compute your match score",
+      "orManually": "or enter manually",
+      "roleLabel": "Role",
+      "rolePlaceholder": "e.g. ML Engineer",
+      "companyLabel": "Company",
+      "companyPlaceholder": "e.g. Google",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Referral from Sarah, deadline Jun 15...",
+      "addToStage": "Add to stage",
+      "cancel": "Cancel",
+      "submit": "Add to Tracker"
+    },
+    "header": {
+      "title": "Job Tracker",
+      "jobCount": "{count, plural, one {# job} other {# jobs}}",
+      "board": "Board",
+      "analytics": "Analytics",
+      "addJob": "Add Job"
+    },
+    "board": {
+      "ariaLabel": "Job tracker board"
+    }
+  },
+  "shareableProgress": {
+    "heading": "My Career Pivot",
+    "stages": {
+      "explorer": "Explorer",
+      "skillBuilder": "Skill Builder",
+      "applicant": "Applicant",
+      "offerStage": "Offer Stage",
+      "transitioned": "Transitioned"
+    },
+    "milestonesOf": "{completed} of {total} milestones",
+    "stats": {
+      "milestones": "Milestones",
+      "dayStreak": "Day Streak",
+      "badges": "Badges"
+    },
+    "shareToLinkedIn": "Share to LinkedIn",
+    "moreSharingOptions": "More sharing options",
+    "postOnX": "Post on X",
+    "shareVia": "Share via...",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "shareTitle": "Career Pivot Progress: {currentRole} → {targetRole}",
+    "shareText": "I'm {percent}% through my career pivot from {currentRole} to {targetRole}! Currently in the \"{stage}\" stage with {completed}/{total} milestones done. Building my future one step at a time."
+  },
+  "successStories": {
+    "headerEyebrow": "Social Proof",
+    "headerTitleLead": "Career pivots that",
+    "headerTitleHighlight": "actually worked",
+    "headerSubtitle": "Real stories, real data, real outcomes. See how professionals like you made the leap.",
+    "themeLabel": "Theme:",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "transformationsEyebrow": "Full Transformations",
+    "transformationsTitle": "Before & After",
+    "transformationsSubtitle": "See the complete journey — skills gained, milestones hit, and outcomes achieved.",
+    "infographicsEyebrow": "Data-Driven Content",
+    "infographicsTitle": "Infographic Templates",
+    "infographicsSubtitle": "Branded, embeddable templates optimized for social sharing and backlink generation."
   }
 }

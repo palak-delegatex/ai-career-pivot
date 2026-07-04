@@ -690,5 +690,261 @@
     "valueProp1": "Auf Ihren genauen Werdegang zugeschnitten",
     "valueProp2": "Umsetzbare Meilensteine statt allgemeiner Ratschläge",
     "valueProp3": "Gehaltsdaten und finanzieller Überbrückungsplan"
+  },
+  "completionBadges": {
+    "title": "Abzeichen",
+    "locked": "Gesperrt",
+    "tooltipTitle": "{label}: {description}",
+    "tooltipTitleLocked": "{label}: {description} (Gesperrt)",
+    "badges": {
+      "firstStep": {
+        "label": "Erster Schritt",
+        "description": "Schließe deinen ersten Meilenstein ab"
+      },
+      "firstApplication": {
+        "label": "Erste Bewerbung gesendet",
+        "description": "Reiche deine erste Bewerbung ein"
+      },
+      "fiveSkills": {
+        "label": "5 Fähigkeiten erworben",
+        "description": "Schließe 5 Meilensteine zum Kompetenzaufbau ab"
+      },
+      "tenConnections": {
+        "label": "10 Kontakte geknüpft",
+        "description": "Füge 10 Kontakte zu deinem Netzwerk hinzu"
+      },
+      "interviewUnlocked": {
+        "label": "Interview freigeschaltet",
+        "description": "Erreiche die Bewerberphase deines Wechsels"
+      },
+      "streakMaster": {
+        "label": "Serienmeister",
+        "description": "Erreiche eine 7-tägige Erfolgsserie"
+      },
+      "phaseComplete": {
+        "label": "Phase abgeschlossen",
+        "description": "Schließe alle Meilensteine einer Phase ab"
+      },
+      "halfwayThere": {
+        "label": "Halbzeit erreicht",
+        "description": "Schließe 50 % aller Meilensteine ab"
+      },
+      "momentum": {
+        "label": "Schwung-Macher",
+        "description": "Schließe 3 Meilensteine in einer Woche ab"
+      },
+      "careerReady": {
+        "label": "Karrierebereit",
+        "description": "Schließe 100 % aller Meilensteine ab"
+      }
+    }
+  },
+  "coverLetter": {
+    "title": "Anschreiben für {role}",
+    "saved": "Gespeichert",
+    "saveFailed": "Speichern fehlgeschlagen — kopiere deinen Text",
+    "jobRequirements": "Stellenanforderungen",
+    "matchedSkills": "Passende Fähigkeiten",
+    "skillsToAddress": "Zu adressierende Fähigkeiten",
+    "tone": "Tonfall",
+    "tones": {
+      "professional": {
+        "name": "Professionell",
+        "desc": "Formell und gepflegt"
+      },
+      "conversational": {
+        "name": "Locker",
+        "desc": "Warm und persönlich"
+      },
+      "bold": {
+        "name": "Selbstbewusst",
+        "desc": "Sicher und bestimmt"
+      }
+    },
+    "keyPointsHeading": "Wichtige Punkte hervorheben",
+    "keyPointPlaceholder": "Wichtiger Punkt {index} (optional)",
+    "generated": "Anschreiben erstellt",
+    "edit": "Bearbeiten",
+    "generating": "Wird erstellt...",
+    "generate": "Anschreiben erstellen",
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert...",
+    "saveChanges": "Änderungen speichern",
+    "downloadPdf": "PDF herunterladen",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "regenerate": "Neu erstellen",
+    "upgradeRequired": "Upgrade erforderlich",
+    "generationError": "Anschreiben konnte nicht erstellt werden. Bitte versuche es erneut."
+  },
+  "gapAnalysis": {
+    "errorNoProfile": "Schließe zuerst deine Karriereanalyse ab, damit wir deine Fähigkeiten mit der Stelle vergleichen können.",
+    "errorUpgradeRequired": "Für eine Lückenanalyse ist ein Upgrade erforderlich.",
+    "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "upgradeFeature": "Kompetenzlücken-Analyse",
+    "loadingTitle": "Passung zur Stelle wird analysiert",
+    "loadingSubtitle": "Deine Fähigkeiten werden mit den Stellenanforderungen verglichen...",
+    "resultsTitle": "Ergebnisse der Lückenanalyse",
+    "resultsSubtitle": "Basierend auf deinem Profil im Vergleich zur Stellenanzeige",
+    "analyzeAnother": "Weitere Stelle analysieren →",
+    "estimatedReadiness": "Geschätzte Bereitschaft:",
+    "matchedSkills": "Übereinstimmende Fähigkeiten ({count})",
+    "mustHaveGaps": "Unverzichtbare Lücken ({count})",
+    "niceToHaveGaps": "Wünschenswerte Lücken ({count})",
+    "experienceGaps": "Erfahrungslücken",
+    "careerPivotAssessment": "Bewertung des Berufswechsels",
+    "transferableStrengths": "Übertragbare Stärken",
+    "biggestChallenges": "Größte Herausforderungen",
+    "applicationTips": "Bewerbungstipps",
+    "practiceInterview": "Interview für diese Stelle üben",
+    "backToDashboard": "Zurück zum Dashboard",
+    "inputBadge": "Stellenspezifische Lückenanalyse",
+    "inputHeading": "Wie gut passt du?",
+    "inputDescription": "Füge eine beliebige Stellenanzeige ein, und wir zeigen dir genau, welche Fähigkeiten passen, welche fehlen und wie du jede Lücke schließt.",
+    "profileNotLoadedTitle": "Profil nicht geladen",
+    "profileNotLoadedBody": "Schließe zuerst die <link>Karriereanalyse</link> ab, damit wir deine Fähigkeiten mit der Stelle vergleichen können.",
+    "profileLoadedTitle": "Profil geladen",
+    "skillsLoaded": "{count} Fähigkeiten geladen. Bereit zur Analyse.",
+    "jobDescriptionPlaceholder": "Füge hier die vollständige Stellenanzeige ein – Titel, Anforderungen, Qualifikationen, Aufgaben...",
+    "analyzeButton": "Meine Passung analysieren →",
+    "analysisTimeNote": "Die KI-Analyse dauert etwa 10 Sekunden"
+  },
+  "jobTracker": {
+    "time": {
+      "today": "Heute",
+      "dayAgo": "vor {count} T",
+      "daysAgo": "vor {count} T",
+      "weeksAgo": "vor {count} Wo"
+    },
+    "matchBadge": "{score}% Übereinstimmung",
+    "viewGapAnalysis": "Lückenanalyse anzeigen",
+    "source": {
+      "direct": "Direkt",
+      "other": "Sonstige"
+    },
+    "status": {
+      "saved": "Gespeichert",
+      "applied": "Beworben",
+      "phone_screen": "Telefoninterview",
+      "interview": "Interview",
+      "offer": "Angebot",
+      "rejected": "Abgelehnt"
+    },
+    "card": {
+      "ariaLabel": "{role} bei {company}, {score}% Übereinstimmung",
+      "savedAgo": "Gespeichert {time}",
+      "rejectedAgo": "Abgelehnt {time}",
+      "appliedAgo": "Beworben {time}"
+    },
+    "column": {
+      "avgScore": "{score}% Ø",
+      "avgScoreTitle": "Durchschnittliche Übereinstimmung",
+      "oldestDays": "{days} T",
+      "oldestCardTitle": "Älteste Karte",
+      "emptyOffer": "Noch keine Angebote – weiter so!",
+      "emptyDrop": "Jobs hierher ziehen"
+    },
+    "mobile": {
+      "swipeHint": "Nach rechts wischen zum Weiterrücken • nach links zum Ablehnen",
+      "reject": "Ablehnen",
+      "advance": "Weiterrücken",
+      "noJobsInStage": "Keine Jobs in {stage}"
+    },
+    "analytics": {
+      "title": "Pipeline-Analyse",
+      "avgInStage": "Ø in {stage}",
+      "avgTotalPipeline": "Ø Gesamtpipeline",
+      "insights": {
+        "strongScreen": {
+          "title": "Starke Leistung im Telefoninterview",
+          "body": "Deine Quote vom Telefoninterview zum Interview ({rate}%) liegt deutlich über dem Richtwert von 55%. Du hinterlässt einen starken ersten Eindruck."
+        },
+        "lowScreen": {
+          "title": "Niedrige Quote von Bewerbung zu Telefoninterview",
+          "body": "Deine Quote von Bewerbung zu Telefoninterview ({rate}%) liegt unter dem Durchschnitt von 45%. Deine Bewerbungen sollten gezielter angepasst werden.",
+          "tip": "Tipp: Passe deinen Lebenslauf an jede Stellenbeschreibung an. Nutze unser KI-Tool zur Lebenslauf-Anpassung, um Schlüsselwörter einzubauen. Melde dich 5 Tage nach der Bewerbung nach."
+        },
+        "empty": {
+          "title": "Jobs hinzufügen, um Einblicke zu sehen",
+          "body": "Verfolge deine Bewerbungen, um Pipeline-Analysen und KI-gestützte Einblicke in deine Jobsuche freizuschalten."
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "{score}% Übereinstimmung",
+      "gapAnalysis": "Lückenanalyse",
+      "stage": "Phase",
+      "interviewDate": "Interviewtermin",
+      "notSet": "Nicht festgelegt",
+      "source": "Quelle",
+      "added": "Hinzugefügt",
+      "linkedDocuments": "Verknüpfte Dokumente",
+      "notes": "Notizen",
+      "notesPlaceholder": "Notizen zu dieser Stelle hinzufügen..."
+    },
+    "modal": {
+      "title": "Job zum Tracker hinzufügen",
+      "urlPlaceholder": "Job-URL einfügen (LinkedIn, Indeed, Glassdoor...)",
+      "autoFillHint": "Wir füllen die Jobdetails automatisch aus und berechnen deine Übereinstimmung",
+      "orManually": "oder manuell eingeben",
+      "roleLabel": "Position",
+      "rolePlaceholder": "z. B. ML-Ingenieur",
+      "companyLabel": "Unternehmen",
+      "companyPlaceholder": "z. B. Google",
+      "notesLabel": "Notizen",
+      "notesPlaceholder": "Empfehlung von Sarah, Frist 15. Juni...",
+      "addToStage": "Zur Phase hinzufügen",
+      "cancel": "Abbrechen",
+      "submit": "Zum Tracker hinzufügen"
+    },
+    "header": {
+      "title": "Job-Tracker",
+      "jobCount": "{count, plural, one {# Job} other {# Jobs}}",
+      "board": "Board",
+      "analytics": "Analysen",
+      "addJob": "Job hinzufügen"
+    },
+    "board": {
+      "ariaLabel": "Job-Tracker-Board"
+    }
+  },
+  "shareableProgress": {
+    "heading": "Mein Karrierewechsel",
+    "stages": {
+      "explorer": "Entdecker",
+      "skillBuilder": "Kompetenzaufbau",
+      "applicant": "Bewerber",
+      "offerStage": "Angebotsphase",
+      "transitioned": "Wechsel abgeschlossen"
+    },
+    "milestonesOf": "{completed} von {total} Meilensteinen",
+    "stats": {
+      "milestones": "Meilensteine",
+      "dayStreak": "Tage-Serie",
+      "badges": "Abzeichen"
+    },
+    "shareToLinkedIn": "Auf LinkedIn teilen",
+    "moreSharingOptions": "Weitere Optionen zum Teilen",
+    "postOnX": "Auf X posten",
+    "shareVia": "Teilen über...",
+    "copied": "Kopiert!",
+    "copyLink": "Link kopieren",
+    "shareTitle": "Fortschritt des Karrierewechsels: {currentRole} → {targetRole}",
+    "shareText": "Ich habe {percent}% meines Karrierewechsels von {currentRole} zu {targetRole} geschafft! Aktuell in der Phase „{stage}\" mit {completed}/{total} erreichten Meilensteinen. Ich baue meine Zukunft Schritt für Schritt auf."
+  },
+  "successStories": {
+    "headerEyebrow": "Social Proof",
+    "headerTitleLead": "Berufliche Neuanfänge, die",
+    "headerTitleHighlight": "wirklich funktioniert haben",
+    "headerSubtitle": "Echte Geschichten, echte Daten, echte Ergebnisse. Sieh, wie Fachleute wie du den Sprung gewagt haben.",
+    "themeLabel": "Design:",
+    "themeDark": "Dunkel",
+    "themeLight": "Hell",
+    "transformationsEyebrow": "Vollständige Transformationen",
+    "transformationsTitle": "Vorher & Nachher",
+    "transformationsSubtitle": "Sieh dir den kompletten Weg an — erworbene Fähigkeiten, erreichte Meilensteine und erzielte Ergebnisse.",
+    "infographicsEyebrow": "Datenbasierte Inhalte",
+    "infographicsTitle": "Infografik-Vorlagen",
+    "infographicsSubtitle": "Gebrandete, einbettbare Vorlagen, optimiert für das Teilen in sozialen Netzwerken und die Generierung von Backlinks."
   }
 }

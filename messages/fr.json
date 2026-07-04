@@ -690,5 +690,261 @@
     "valueProp1": "Personnalisé selon votre parcours exact",
     "valueProp2": "Des jalons concrets, pas des conseils génériques",
     "valueProp3": "Données salariales et plan de transition financière"
+  },
+  "completionBadges": {
+    "title": "Badges",
+    "locked": "Verrouillé",
+    "tooltipTitle": "{label} : {description}",
+    "tooltipTitleLocked": "{label} : {description} (Verrouillé)",
+    "badges": {
+      "firstStep": {
+        "label": "Premier pas",
+        "description": "Franchissez votre première étape"
+      },
+      "firstApplication": {
+        "label": "Première candidature envoyée",
+        "description": "Envoyez votre première candidature"
+      },
+      "fiveSkills": {
+        "label": "5 compétences acquises",
+        "description": "Franchissez 5 étapes de développement des compétences"
+      },
+      "tenConnections": {
+        "label": "10 contacts établis",
+        "description": "Ajoutez 10 contacts à votre réseau"
+      },
+      "interviewUnlocked": {
+        "label": "Entretien débloqué",
+        "description": "Atteignez l’étape Candidat de votre transition"
+      },
+      "streakMaster": {
+        "label": "Maître des séries",
+        "description": "Réalisez une série de 7 jours consécutifs"
+      },
+      "phaseComplete": {
+        "label": "Phase terminée",
+        "description": "Franchissez toutes les étapes d’une phase"
+      },
+      "halfwayThere": {
+        "label": "À mi-chemin",
+        "description": "Franchissez 50 % de toutes les étapes"
+      },
+      "momentum": {
+        "label": "Créateur d’élan",
+        "description": "Franchissez 3 étapes en une seule semaine"
+      },
+      "careerReady": {
+        "label": "Prêt pour la carrière",
+        "description": "Franchissez 100 % de toutes les étapes"
+      }
+    }
+  },
+  "coverLetter": {
+    "title": "Lettre de motivation pour {role}",
+    "saved": "Enregistré",
+    "saveFailed": "Échec de l'enregistrement — copiez votre travail",
+    "jobRequirements": "Exigences du poste",
+    "matchedSkills": "Compétences correspondantes",
+    "skillsToAddress": "Compétences à aborder",
+    "tone": "Ton",
+    "tones": {
+      "professional": {
+        "name": "Professionnel",
+        "desc": "Formel et soigné"
+      },
+      "conversational": {
+        "name": "Convivial",
+        "desc": "Chaleureux et personnel"
+      },
+      "bold": {
+        "name": "Affirmé",
+        "desc": "Confiant et assuré"
+      }
+    },
+    "keyPointsHeading": "Points clés à mettre en avant",
+    "keyPointPlaceholder": "Point clé {index} (facultatif)",
+    "generated": "Lettre de motivation générée",
+    "edit": "Modifier",
+    "generating": "Génération...",
+    "generate": "Générer la lettre de motivation",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "saveChanges": "Enregistrer les modifications",
+    "downloadPdf": "Télécharger le PDF",
+    "copied": "Copié",
+    "copy": "Copier",
+    "regenerate": "Régénérer",
+    "upgradeRequired": "Mise à niveau requise",
+    "generationError": "Échec de la génération de la lettre de motivation. Veuillez réessayer."
+  },
+  "gapAnalysis": {
+    "errorNoProfile": "Terminez d'abord votre bilan de carrière pour que nous puissions comparer vos compétences au poste.",
+    "errorUpgradeRequired": "Une mise à niveau est requise pour lancer une analyse des écarts.",
+    "errorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+    "upgradeFeature": "analyse des écarts de compétences",
+    "loadingTitle": "Analyse de l'adéquation au poste",
+    "loadingSubtitle": "Comparaison de vos compétences aux exigences du poste...",
+    "resultsTitle": "Résultats de l'analyse des écarts",
+    "resultsSubtitle": "D'après votre profil comparé à l'offre d'emploi",
+    "analyzeAnother": "Analyser un autre poste →",
+    "estimatedReadiness": "Disponibilité estimée :",
+    "matchedSkills": "Compétences correspondantes ({count})",
+    "mustHaveGaps": "Écarts indispensables ({count})",
+    "niceToHaveGaps": "Écarts appréciables ({count})",
+    "experienceGaps": "Écarts d'expérience",
+    "careerPivotAssessment": "Évaluation de la reconversion",
+    "transferableStrengths": "Atouts transférables",
+    "biggestChallenges": "Principaux défis",
+    "applicationTips": "Conseils de candidature",
+    "practiceInterview": "S'entraîner à un entretien pour ce poste",
+    "backToDashboard": "Retour au tableau de bord",
+    "inputBadge": "Analyse des écarts propre au poste",
+    "inputHeading": "Êtes-vous fait pour ce poste ?",
+    "inputDescription": "Collez n'importe quelle offre d'emploi et nous vous montrerons précisément quelles compétences correspondent, lesquelles vous manquent et comment combler chaque écart.",
+    "profileNotLoadedTitle": "Profil non chargé",
+    "profileNotLoadedBody": "Terminez d'abord le <link>bilan de carrière</link> pour que nous puissions comparer vos compétences au poste.",
+    "profileLoadedTitle": "Profil chargé",
+    "skillsLoaded": "{count} compétences chargées. Prêt à analyser.",
+    "jobDescriptionPlaceholder": "Collez ici l'intégralité de l'offre d'emploi — intitulé, exigences, qualifications, responsabilités...",
+    "analyzeButton": "Analyser mon adéquation →",
+    "analysisTimeNote": "L'analyse par IA prend environ 10 secondes"
+  },
+  "jobTracker": {
+    "time": {
+      "today": "Aujourd'hui",
+      "dayAgo": "il y a {count} j",
+      "daysAgo": "il y a {count} j",
+      "weeksAgo": "il y a {count} sem"
+    },
+    "matchBadge": "{score}% de correspondance",
+    "viewGapAnalysis": "Voir l'analyse des écarts",
+    "source": {
+      "direct": "Direct",
+      "other": "Autre"
+    },
+    "status": {
+      "saved": "Enregistré",
+      "applied": "Candidature envoyée",
+      "phone_screen": "Entretien téléphonique",
+      "interview": "Entretien",
+      "offer": "Offre",
+      "rejected": "Refusé"
+    },
+    "card": {
+      "ariaLabel": "{role} chez {company}, {score}% de correspondance",
+      "savedAgo": "Enregistré {time}",
+      "rejectedAgo": "Refusé {time}",
+      "appliedAgo": "Candidature envoyée {time}"
+    },
+    "column": {
+      "avgScore": "{score}% moy.",
+      "avgScoreTitle": "Score de correspondance moyen",
+      "oldestDays": "{days} j",
+      "oldestCardTitle": "Carte la plus ancienne",
+      "emptyOffer": "Pas encore d'offres — continuez !",
+      "emptyDrop": "Déposez des offres ici"
+    },
+    "mobile": {
+      "swipeHint": "Glissez à droite pour avancer • à gauche pour refuser",
+      "reject": "Refuser",
+      "advance": "Avancer",
+      "noJobsInStage": "Aucune offre dans {stage}"
+    },
+    "analytics": {
+      "title": "Analyse du pipeline",
+      "avgInStage": "Moy. dans {stage}",
+      "avgTotalPipeline": "Moy. pipeline total",
+      "insights": {
+        "strongScreen": {
+          "title": "Excellente performance aux entretiens téléphoniques",
+          "body": "Votre taux d'entretien téléphonique vers entretien ({rate}%) dépasse largement le seuil de 55%. Vous faites une excellente première impression."
+        },
+        "lowScreen": {
+          "title": "Faible taux de candidature vers entretien téléphonique",
+          "body": "Votre taux de candidature vers entretien téléphonique ({rate}%) est inférieur à la moyenne de 45%. Vos candidatures pourraient nécessiter une meilleure personnalisation.",
+          "tip": "Essayez : adaptez votre CV à chaque offre. Utilisez notre outil d'adaptation de CV par IA pour intégrer les mots-clés. Relancez 5 jours après votre candidature."
+        },
+        "empty": {
+          "title": "Ajoutez des offres pour voir les analyses",
+          "body": "Suivez vos candidatures pour débloquer l'analyse du pipeline et des insights par IA sur votre recherche d'emploi."
+        }
+      }
+    },
+    "detail": {
+      "matchScore": "{score}% de correspondance",
+      "gapAnalysis": "Analyse des écarts",
+      "stage": "Étape",
+      "interviewDate": "Date d'entretien",
+      "notSet": "Non défini",
+      "source": "Source",
+      "added": "Ajouté",
+      "linkedDocuments": "Documents liés",
+      "notes": "Notes",
+      "notesPlaceholder": "Ajoutez des notes sur ce poste..."
+    },
+    "modal": {
+      "title": "Ajouter une offre au suivi",
+      "urlPlaceholder": "Collez l'URL d'une offre (LinkedIn, Indeed, Glassdoor...)",
+      "autoFillHint": "Nous remplirons les détails de l'offre et calculerons votre correspondance",
+      "orManually": "ou saisissez manuellement",
+      "roleLabel": "Poste",
+      "rolePlaceholder": "ex. Ingénieur ML",
+      "companyLabel": "Entreprise",
+      "companyPlaceholder": "ex. Google",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Recommandation de Sarah, échéance 15 juin...",
+      "addToStage": "Ajouter à l'étape",
+      "cancel": "Annuler",
+      "submit": "Ajouter au suivi"
+    },
+    "header": {
+      "title": "Suivi des candidatures",
+      "jobCount": "{count, plural, one {# offre} other {# offres}}",
+      "board": "Tableau",
+      "analytics": "Analyses",
+      "addJob": "Ajouter une offre"
+    },
+    "board": {
+      "ariaLabel": "Tableau de suivi des candidatures"
+    }
+  },
+  "shareableProgress": {
+    "heading": "Ma reconversion professionnelle",
+    "stages": {
+      "explorer": "Explorateur",
+      "skillBuilder": "Développement des compétences",
+      "applicant": "Candidat",
+      "offerStage": "Phase d'offre",
+      "transitioned": "Reconversion terminée"
+    },
+    "milestonesOf": "{completed} sur {total} étapes",
+    "stats": {
+      "milestones": "Étapes",
+      "dayStreak": "Jours consécutifs",
+      "badges": "Badges"
+    },
+    "shareToLinkedIn": "Partager sur LinkedIn",
+    "moreSharingOptions": "Plus d'options de partage",
+    "postOnX": "Publier sur X",
+    "shareVia": "Partager via...",
+    "copied": "Copié !",
+    "copyLink": "Copier le lien",
+    "shareTitle": "Progression de la reconversion : {currentRole} → {targetRole}",
+    "shareText": "J'ai accompli {percent}% de ma reconversion de {currentRole} à {targetRole} ! Actuellement à l'étape « {stage} » avec {completed}/{total} étapes franchies. Je construis mon avenir pas à pas."
+  },
+  "successStories": {
+    "headerEyebrow": "Preuve sociale",
+    "headerTitleLead": "Des reconversions qui",
+    "headerTitleHighlight": "ont vraiment marché",
+    "headerSubtitle": "Des histoires réelles, des données réelles, des résultats réels. Découvrez comment des professionnels comme vous ont franchi le pas.",
+    "themeLabel": "Thème :",
+    "themeDark": "Sombre",
+    "themeLight": "Clair",
+    "transformationsEyebrow": "Transformations complètes",
+    "transformationsTitle": "Avant / Après",
+    "transformationsSubtitle": "Découvrez le parcours complet — compétences acquises, jalons franchis et résultats obtenus.",
+    "infographicsEyebrow": "Contenu axé sur les données",
+    "infographicsTitle": "Modèles d'infographie",
+    "infographicsSubtitle": "Des modèles personnalisables et intégrables, optimisés pour le partage sur les réseaux sociaux et la génération de backlinks."
   }
 }
