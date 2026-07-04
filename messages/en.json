@@ -1663,7 +1663,8 @@
       "backToBlog": "← Back to blog",
       "tldr": "TL;DR",
       "faqHeading": "Frequently asked questions",
-      "team": "AICareerPivot Team"
+      "team": "AICareerPivot Team",
+      "lastUpdatedLabel": "Last updated:"
     },
     "cta": {
       "waitlist": {

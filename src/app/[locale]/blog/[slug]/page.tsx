@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { getTranslations } from "next-intl/server";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
 import { organizationSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
@@ -76,26 +77,32 @@ function WaitlistCTA({
   );
 }
 
-function PricingCTA() {
+function PricingCTA({
+  heading = "Get your career pivot roadmap for $29",
+  subheading = "One-time payment. AI-powered analysis of your resume and LinkedIn. 30-day money-back guarantee.",
+  buttonText = "See Pricing →",
+}: {
+  heading?: string;
+  subheading?: string;
+  buttonText?: string;
+} = {}) {
   return (
     <div className="my-10 p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40 text-center not-prose">
       <p className="text-white font-semibold text-lg mb-2">
-        Get your career pivot roadmap for $29
+        {heading}
       </p>
       <p className="text-slate-400 text-sm mb-5">
-        One-time payment. AI-powered analysis of your resume and LinkedIn. 30-day money-back guarantee.
+        {subheading}
       </p>
       <Link
         href="/pricing"
         className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all"
       >
-        See Pricing →
+        {buttonText}
       </Link>
     </div>
   );
 }
-
-const components = { WaitlistCTA, PricingCTA };
 
 export default async function BlogPost({
   params,
@@ -105,6 +112,29 @@ export default async function BlogPost({
   const { locale, slug } = await params;
   const post = getPost(slug, locale);
   if (!post) notFound();
+
+  const t = await getTranslations("blog");
+
+  // MDX CTA components with localized default copy; MDX-supplied props (if any)
+  // still override these defaults.
+  const components = {
+    WaitlistCTA: (props: Record<string, unknown>) => (
+      <WaitlistCTA
+        heading={t("cta.waitlist.heading")}
+        subheading={t("cta.waitlist.subheading")}
+        buttonText={t("cta.waitlist.button")}
+        {...props}
+      />
+    ),
+    PricingCTA: (props: Record<string, unknown>) => (
+      <PricingCTA
+        heading={t("cta.pricing.heading")}
+        subheading={t("cta.pricing.subheading")}
+        buttonText={t("cta.pricing.button")}
+        {...props}
+      />
+    ),
+  };
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -153,31 +183,32 @@ export default async function BlogPost({
             href="/blog"
             className="text-slate-500 hover:text-teal-400 text-sm transition-colors mb-8 inline-block"
           >
-            ← Back to blog
+            {t("post.backToBlog")}
           </Link>
 
           <header className="mb-10">
             <time className="text-sm text-slate-500 block mb-3">
-              {new Date(post.date).toLocaleDateString("en-US", {
+              {new Date(post.date).toLocaleDateString(locale, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
               {" · "}
               {post.readingTime}
-              {" · AICareerPivot Team"}
+              {" · "}
+              {t("post.team")}
             </time>
             <h1 className="text-4xl font-extrabold tracking-tight leading-tight">
               {post.title}
             </h1>
             <p className="text-xs text-slate-600 mt-2">
-              Last updated: {new Date(post.lastModified).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              {t("post.lastUpdatedLabel")} {new Date(post.lastModified).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" })}
             </p>
           </header>
 
           {post.tldr && post.tldr.length > 0 && (
             <section className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
-              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("post.tldr")}</h2>
               <ul className="space-y-2">
                 {post.tldr.map((point, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -196,7 +227,7 @@ export default async function BlogPost({
           {hasFaq && (
             <section className="mt-14 not-prose">
               <h2 className="text-2xl font-bold tracking-tight mb-6">
-                Frequently asked questions
+                {t("post.faqHeading")}
               </h2>
               <div className="space-y-4">
                 {post.faq!.map((item, i) => (

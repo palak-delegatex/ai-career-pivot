@@ -1663,7 +1663,8 @@
       "backToBlog": "← ブログに戻る",
       "tldr": "要約",
       "faqHeading": "よくある質問",
-      "team": "AICareerPivot チーム"
+      "team": "AICareerPivot チーム",
+      "lastUpdatedLabel": "最終更新日："
     },
     "cta": {
       "waitlist": {
