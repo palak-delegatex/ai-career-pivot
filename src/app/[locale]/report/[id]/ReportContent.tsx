@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { PivotPlan, MarketData, UserLocation } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import InteractiveRoadmap from "@/components/InteractiveRoadmap";
@@ -18,6 +19,7 @@ import SalaryTrajectory from "@/components/SalaryTrajectory";
 import JobBoard from "@/components/JobBoard";
 
 export default function ReportContent({ plans, reportId, location, profile }: { plans: PivotPlan[]; reportId: string; location?: UserLocation; profile?: import("@/lib/intake").UserProfile }) {
+  const t = useTranslations('report');
   const [selected, setSelected] = useState(0);
   const plan = plans[selected];
   const roles = plans.map((p) => p.targetRole);
@@ -43,7 +45,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
           planIndex={selected}
           skillGaps={plan.skillGaps}
           recommendedResources={plan.recommendedResources}
-          pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label="Download Static Report (PDF)" />}
+          pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label={t('downloadPdfLabel')} />}
         />
 
         {(plan.skillGaps ?? []).length > 0 && (
@@ -66,7 +68,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
           <WeekOneActionCards actions={plan.weekOneActions!} />
         ) : (plan.keyActions ?? []).length > 0 ? (
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-teal-400 mb-3">Key Actions This Week</h3>
+            <h3 className="text-sm font-bold text-teal-400 mb-3">{t('keyActionsHeading')}</h3>
             <ul className="space-y-2">
               {plan.keyActions!.map((action, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -80,7 +82,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
 
         {(plan.aiToolkit ?? []).length > 0 && (
           <div className="bg-slate-800/60 border border-violet-700/40 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-violet-400 mb-3">AI Toolkit for This Role</h3>
+            <h3 className="text-sm font-bold text-violet-400 mb-3">{t('aiToolkitHeading')}</h3>
             <div className="grid sm:grid-cols-2 gap-3">
               {plan.aiToolkit!.map((item, i) => (
                 <div key={i} className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
@@ -99,23 +101,23 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
         {plan.financialSummary ? (
           <>
           <div className="bg-slate-800/60 border border-emerald-700/30 rounded-2xl p-6">
-            <h3 className="text-sm font-bold text-emerald-400 mb-5">Salary & Financial Bridge</h3>
+            <h3 className="text-sm font-bold text-emerald-400 mb-5">{t('salaryHeading')}</h3>
 
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 text-center">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Current Range</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{t('currentRange')}</p>
                 <p className="text-xl font-bold text-slate-200">{plan.financialSummary.currentSalaryRange}</p>
               </div>
 
               <div className="flex flex-col items-center shrink-0">
                 <span className="text-emerald-400 font-bold text-sm">+{plan.financialSummary.salaryUpliftPercent}%</span>
-                <svg width="48" height="20" viewBox="0 0 48 20" fill="none" aria-label={`${plan.financialSummary.salaryUpliftPercent}% salary uplift`}>
+                <svg width="48" height="20" viewBox="0 0 48 20" fill="none" aria-label={t('salaryUpliftAriaLabel', { percent: plan.financialSummary.salaryUpliftPercent })}>
                   <path d="M0 10H40M40 10L32 4M40 10L32 16" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
 
               <div className="flex-1 bg-slate-900/60 border border-emerald-700/40 rounded-xl p-4 text-center">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Target Range</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{t('targetRange')}</p>
                 <p className="text-xl font-bold text-emerald-300">{plan.financialSummary.targetSalaryRange}</p>
               </div>
             </div>
@@ -132,7 +134,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
 
             {plan.financialSummary.transitionCosts.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Transition Costs</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{t('transitionCosts')}</p>
                 <div className="grid sm:grid-cols-2 gap-2">
                   {plan.financialSummary.transitionCosts.map((cost, i) => (
                     <div key={i} className="flex items-center gap-2 bg-slate-900/40 border border-slate-700/40 rounded-lg px-3 py-2">
@@ -145,7 +147,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
             )}
 
             <div className="flex items-center gap-2 bg-teal-900/20 border border-teal-700/30 rounded-lg px-4 py-2.5">
-              <span className="text-teal-400 text-sm">ROI Timeframe:</span>
+              <span className="text-teal-400 text-sm">{t('roiTimeframe')}</span>
               <span className="text-white font-medium text-sm">{plan.financialSummary.roiTimeframe}</span>
             </div>
           </div>
@@ -160,7 +162,7 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
           </>
         ) : plan.financialConsiderations ? (
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-slate-300 mb-2">Financial Considerations</h3>
+            <h3 className="text-sm font-bold text-slate-300 mb-2">{t('financialConsiderations')}</h3>
             <p className="text-slate-400 text-sm leading-relaxed">{plan.financialConsiderations}</p>
           </div>
         ) : null}

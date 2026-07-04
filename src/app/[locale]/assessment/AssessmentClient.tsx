@@ -3,44 +3,33 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { ValuesAssessment } from "@/lib/intake";
 
-const WORK_STYLES = [
-  { id: "independent", label: "Independent", desc: "I do my best work solo with autonomy" },
-  { id: "collaborative", label: "Collaborative", desc: "I thrive in team-based environments" },
-  { id: "leading", label: "Leading", desc: "I naturally take charge and guide others" },
-  { id: "supporting", label: "Supporting", desc: "I excel at enabling others to succeed" },
+const WORK_STYLE_IDS = ["independent", "collaborative", "leading", "supporting"] as const;
+
+const VALUE_IDS = [
+  { id: "compensation", icon: "💰" },
+  { id: "balance", icon: "⚖️" },
+  { id: "creativity", icon: "🎨" },
+  { id: "impact", icon: "🌍" },
+  { id: "learning", icon: "📚" },
+  { id: "status", icon: "⭐" },
+  { id: "autonomy", icon: "🔓" },
+  { id: "stability", icon: "🏠" },
 ] as const;
 
-const VALUES = [
-  { id: "compensation", label: "Compensation", icon: "💰" },
-  { id: "balance", label: "Work-Life Balance", icon: "⚖️" },
-  { id: "creativity", label: "Creativity", icon: "🎨" },
-  { id: "impact", label: "Social Impact", icon: "🌍" },
-  { id: "learning", label: "Continuous Learning", icon: "📚" },
-  { id: "status", label: "Status & Recognition", icon: "⭐" },
-  { id: "autonomy", label: "Autonomy", icon: "🔓" },
-  { id: "stability", label: "Job Stability", icon: "🏠" },
-] as const;
+const ENERGY_SPECTRUM_IDS = ["social", "scope", "risk", "focus"] as const;
 
-const ENERGY_SPECTRUMS = [
-  { id: "social", left: "Introvert", right: "Extrovert" },
-  { id: "scope", left: "Specialist", right: "Generalist" },
-  { id: "risk", left: "Risk-Averse", right: "Risk-Seeking" },
-  { id: "focus", left: "Process-Oriented", right: "Outcome-Oriented" },
+const DEALBREAKER_IDS = [
+  "pay-cut",
+  "overtime",
+  "remote-only",
+  "in-office",
+  "travel",
+  "pressure",
+  "limited-growth",
 ] as const;
-
-const DEALBREAKERS = [
-  { id: "pay-cut", label: "Significant pay cut" },
-  { id: "overtime", label: "Frequent overtime" },
-  { id: "remote-only", label: "Remote-only work" },
-  { id: "in-office", label: "In-office requirement" },
-  { id: "travel", label: "Frequent travel" },
-  { id: "pressure", label: "High-pressure environment" },
-  { id: "limited-growth", label: "Limited growth opportunities" },
-] as const;
-
-const STEP_LABELS = ["Work Style", "Values", "Energy", "Dealbreakers"];
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -55,6 +44,7 @@ const slideVariants = {
 };
 
 export default function AssessmentClient() {
+  const t = useTranslations("assessment");
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -72,6 +62,13 @@ export default function AssessmentClient() {
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+
+  const STEP_LABELS = [
+    t("stepWorkStyle"),
+    t("stepValues"),
+    t("stepEnergy"),
+    t("stepDealbreakers"),
+  ];
 
   useEffect(() => {
     const stored = sessionStorage.getItem("intake_profile");
@@ -212,7 +209,7 @@ export default function AssessmentClient() {
               onClick={step === 0 ? handleSkip : goBack}
               className="px-6 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white transition-colors"
             >
-              {step === 0 ? "Skip assessment" : "Back"}
+              {step === 0 ? t("skipAssessment") : t("back")}
             </button>
 
             {step < 3 ? (
@@ -221,7 +218,7 @@ export default function AssessmentClient() {
                 disabled={step === 0 && !workStyle}
                 className="px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-sm transition-colors shadow-lg shadow-teal-900/50"
               >
-                Continue
+                {t("continue")}
               </button>
             ) : (
               <button
@@ -229,14 +226,14 @@ export default function AssessmentClient() {
                 disabled={saving}
                 className="px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-40 font-bold text-sm transition-colors shadow-lg shadow-teal-900/50"
               >
-                {saving ? "Saving..." : "Generate my roadmap"}
+                {saving ? t("saving") : t("generateRoadmap")}
               </button>
             )}
           </div>
 
           {step === 0 && (
             <p className="text-center text-slate-600 text-xs mt-6">
-              Optional &middot; 5-8 min &middot; Makes your roadmap more personalized
+              {t("optionalHint")}
             </p>
           )}
         </div>
@@ -252,34 +249,35 @@ function StepWorkStyle({
   selected: string | null;
   onSelect: (id: string) => void;
 }) {
+  const t = useTranslations("assessment");
   return (
     <div>
       <h2 className="font-serif text-xl font-bold text-center mb-2">
-        How do you prefer to work?
+        {t("step1Title")}
       </h2>
       <p className="text-slate-400 text-sm text-center mb-8">
-        Select the style that best describes you
+        {t("step1Body")}
       </p>
       <div className="grid grid-cols-1 gap-3">
-        {WORK_STYLES.map((style) => (
+        {WORK_STYLE_IDS.map((id) => (
           <button
-            key={style.id}
-            onClick={() => onSelect(style.id)}
+            key={id}
+            onClick={() => onSelect(id)}
             className="flex flex-col items-start p-5 rounded-xl border-2 transition-all text-left"
             style={{
-              backgroundColor: selected === style.id ? "var(--primary)" : "var(--muted)",
-              borderColor: selected === style.id ? "var(--primary)" : "transparent",
-              color: selected === style.id ? "#fff" : "var(--foreground)",
+              backgroundColor: selected === id ? "var(--primary)" : "var(--muted)",
+              borderColor: selected === id ? "var(--primary)" : "transparent",
+              color: selected === id ? "#fff" : "var(--foreground)",
             }}
           >
-            <span className="font-bold text-sm">{style.label}</span>
+            <span className="font-bold text-sm">{t(`workStyle.${id}.label`)}</span>
             <span
               className="text-xs mt-1"
               style={{
-                color: selected === style.id ? "rgba(255,255,255,0.8)" : "var(--muted-foreground)",
+                color: selected === id ? "rgba(255,255,255,0.8)" : "var(--muted-foreground)",
               }}
             >
-              {style.desc}
+              {t(`workStyle.${id}.desc`)}
             </span>
           </button>
         ))}
@@ -301,23 +299,24 @@ function StepValuesRanking({
   onDragEnter: (i: number) => void;
   onDragEnd: () => void;
 }) {
+  const t = useTranslations("assessment");
   return (
     <div>
       <h2 className="font-serif text-xl font-bold text-center mb-2">
-        What matters most to you?
+        {t("step2Title")}
       </h2>
       <p className="text-slate-400 text-sm text-center mb-8">
-        Select your top 5 values, then drag to rank them
+        {t("step2Body")}
       </p>
 
       {ranked.length > 0 && (
         <div className="mb-6">
           <p className="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">
-            Your ranking ({ranked.length}/5)
+            {t("rankingLabel", { count: ranked.length })}
           </p>
           <div className="space-y-2">
             {ranked.map((id, i) => {
-              const val = VALUES.find((v) => v.id === id)!;
+              const val = VALUE_IDS.find((v) => v.id === id)!;
               return (
                 <div
                   key={id}
@@ -344,7 +343,7 @@ function StepValuesRanking({
                     <line x1="16" y1="18" x2="16" y2="18.01" />
                   </svg>
                   <span className="text-sm font-medium">
-                    {i + 1}. {val.icon} {val.label}
+                    {i + 1}. {val.icon} {t(`value.${id}.label`)}
                   </span>
                   <button
                     onClick={() => onToggle(id)}
@@ -360,7 +359,7 @@ function StepValuesRanking({
       )}
 
       <div className="grid grid-cols-2 gap-2">
-        {VALUES.filter((v) => !ranked.includes(v.id)).map((val) => (
+        {VALUE_IDS.filter((v) => !ranked.includes(v.id)).map((val) => (
           <button
             key={val.id}
             onClick={() => onToggle(val.id)}
@@ -369,7 +368,7 @@ function StepValuesRanking({
             style={{ backgroundColor: "var(--muted)", color: "var(--foreground)" }}
           >
             <span>{val.icon}</span>
-            <span>{val.label}</span>
+            <span>{t(`value.${val.id}.label`)}</span>
           </button>
         ))}
       </div>
@@ -384,31 +383,32 @@ function StepEnergyMapping({
   values: Record<string, number>;
   onChange: (id: string, val: number) => void;
 }) {
+  const t = useTranslations("assessment");
   return (
     <div>
       <h2 className="font-serif text-xl font-bold text-center mb-2">
-        Map your energy
+        {t("step3Title")}
       </h2>
       <p className="text-slate-400 text-sm text-center mb-8">
-        Where do you fall on each spectrum?
+        {t("step3Body")}
       </p>
       <div className="space-y-8">
-        {ENERGY_SPECTRUMS.map((spectrum) => (
-          <div key={spectrum.id}>
+        {ENERGY_SPECTRUM_IDS.map((id) => (
+          <div key={id}>
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-slate-300 font-medium">{spectrum.left}</span>
-              <span className="text-slate-300 font-medium">{spectrum.right}</span>
+              <span className="text-slate-300 font-medium">{t(`spectrum.${id}.left`)}</span>
+              <span className="text-slate-300 font-medium">{t(`spectrum.${id}.right`)}</span>
             </div>
             <input
               type="range"
               min={0}
               max={100}
-              value={values[spectrum.id]}
-              onChange={(e) => onChange(spectrum.id, Number(e.target.value))}
+              value={values[id]}
+              onChange={(e) => onChange(id, Number(e.target.value))}
               className="w-full h-2 rounded-full appearance-none cursor-pointer"
               style={
                 {
-                  background: `linear-gradient(to right, var(--primary) ${values[spectrum.id]}%, var(--muted) ${values[spectrum.id]}%)`,
+                  background: `linear-gradient(to right, var(--primary) ${values[id]}%, var(--muted) ${values[id]}%)`,
                   "--thumb-size": "24px",
                 } as React.CSSProperties
               }
@@ -427,21 +427,22 @@ function StepDealbreakers({
   selected: Set<string>;
   onToggle: (id: string) => void;
 }) {
+  const t = useTranslations("assessment");
   return (
     <div>
       <h2 className="font-serif text-xl font-bold text-center mb-2">
-        What are your dealbreakers?
+        {t("step4Title")}
       </h2>
       <p className="text-slate-400 text-sm text-center mb-8">
-        Select anything you absolutely want to avoid
+        {t("step4Body")}
       </p>
       <div className="grid grid-cols-1 gap-3">
-        {DEALBREAKERS.map((item) => {
-          const isSelected = selected.has(item.id);
+        {DEALBREAKER_IDS.map((id) => {
+          const isSelected = selected.has(id);
           return (
             <button
-              key={item.id}
-              onClick={() => onToggle(item.id)}
+              key={id}
+              onClick={() => onToggle(id)}
               className="flex items-center gap-3 px-5 py-4 rounded-xl border-2 transition-all text-left min-h-[48px]"
               style={{
                 backgroundColor: isSelected ? "var(--primary)" : "var(--muted)",
@@ -462,7 +463,7 @@ function StepDealbreakers({
                   </svg>
                 )}
               </div>
-              <span className="text-sm font-medium">{item.label}</span>
+              <span className="text-sm font-medium">{t(`dealbreaker.${id}.label`)}</span>
             </button>
           );
         })}

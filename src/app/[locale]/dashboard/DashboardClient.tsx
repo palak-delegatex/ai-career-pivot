@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import DashboardHero from "@/components/DashboardHero";
@@ -52,28 +53,6 @@ function progressKey(phase: string, idx: number) {
   return `${phase}:${idx}`;
 }
 
-function buildPhases(plan: PivotPlan): PhaseData[] {
-  return [
-    {
-      key: "6mo",
-      label: "6 Months",
-      milestones: plan.sixMonthMilestones ?? [],
-      color: "emerald",
-    },
-    {
-      key: "1yr",
-      label: "1 Year",
-      milestones: plan.oneYearMilestones ?? [],
-      color: "teal",
-    },
-    {
-      key: "2yr",
-      label: "2 Years",
-      milestones: plan.twoYearMilestones ?? [],
-      color: "cyan",
-    },
-  ];
-}
 
 function computeScheduleStatus(
   phases: PhaseData[],
@@ -316,6 +295,7 @@ function computeEarnedBadges(
 }
 
 export default function DashboardClient() {
+  const t = useTranslations('dashboard');
   const [reports, setReports] = useState<Report[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -340,7 +320,7 @@ export default function DashboardClient() {
       } = await supabase.auth.getUser();
 
       if (!user?.email) {
-        setError("Unable to determine your email. Please sign in again.");
+        setError(t('errorNoEmail'));
         setLoading(false);
         return;
       }
@@ -362,7 +342,7 @@ export default function DashboardClient() {
           setUserPlan(planData);
         }
       } catch {
-        setError("Something went wrong. Please try again.");
+        setError(t('errorGeneric'));
       } finally {
         setLoading(false);
       }
@@ -532,7 +512,7 @@ export default function DashboardClient() {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
         <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-400">Loading your dashboard...</p>
+        <p className="text-slate-400">{t('loading')}</p>
       </main>
     );
   }
@@ -548,22 +528,22 @@ export default function DashboardClient() {
   if (!reports || reports.length === 0) {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-center">
-        <h1 className="text-3xl font-extrabold mb-2">Your Dashboard</h1>
+        <h1 className="text-3xl font-extrabold mb-2">{t('title')}</h1>
         <p className="text-slate-400 mb-6">
-          Start your career pivot by telling us about yourself.
+          {t('emptyState.subtitle')}
         </p>
         <div className="flex gap-3 justify-center">
           <Link
             href="/intake"
             className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
           >
-            Start Free Career Analysis
+            {t('emptyState.startCta')}
           </Link>
           <Link
             href="/pricing"
             className="px-6 py-3 rounded-lg border border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 font-semibold text-sm transition-colors inline-block"
           >
-            View Plans
+            {t('emptyState.viewPlans')}
           </Link>
         </div>
       </main>
@@ -572,7 +552,11 @@ export default function DashboardClient() {
 
   const isFreeTier = userPlan?.plan === "free";
 
-  const phases = activePlan ? buildPhases(activePlan) : [];
+  const phases: PhaseData[] = activePlan ? [
+    { key: "6mo", label: t('phase6mo'), milestones: activePlan.sixMonthMilestones ?? [], color: "emerald" },
+    { key: "1yr", label: t('phase1yr'), milestones: activePlan.oneYearMilestones ?? [], color: "teal" },
+    { key: "2yr", label: t('phase2yr'), milestones: activePlan.twoYearMilestones ?? [], color: "cyan" },
+  ] : [];
   const totalMilestones = phases.reduce(
     (s, p) => s + p.milestones.length,
     0
@@ -659,7 +643,7 @@ export default function DashboardClient() {
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
       <div className="flex items-center justify-center gap-3 mb-4">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-center">
-          Your Dashboard
+          {t('title')}
         </h1>
         {userPlan && <PlanBadge plan={userPlan.plan} />}
       </div>
@@ -692,11 +676,11 @@ export default function DashboardClient() {
       {activePlan && (
         <Tabs defaultValue="overview">
           <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap" style={{ scrollbarWidth: "none" }}>
-            <TabsTrigger value="overview" className="shrink-0">Overview</TabsTrigger>
-            <TabsTrigger value="resumes" className="shrink-0">Resumes</TabsTrigger>
-            <TabsTrigger value="gap-analysis" className="shrink-0">Gap Analysis</TabsTrigger>
-            <TabsTrigger value="negotiation" className="shrink-0">Negotiation</TabsTrigger>
-            <TabsTrigger value="network" className="shrink-0">Network</TabsTrigger>
+            <TabsTrigger value="overview" className="shrink-0">{t('tabs.overview')}</TabsTrigger>
+            <TabsTrigger value="resumes" className="shrink-0">{t('tabs.resumes')}</TabsTrigger>
+            <TabsTrigger value="gap-analysis" className="shrink-0">{t('tabs.gapAnalysis')}</TabsTrigger>
+            <TabsTrigger value="negotiation" className="shrink-0">{t('tabs.negotiation')}</TabsTrigger>
+            <TabsTrigger value="network" className="shrink-0">{t('tabs.network')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -758,7 +742,7 @@ export default function DashboardClient() {
 
                   {/* Shareable Progress Card */}
                   <ShareableProgressCard
-                    currentRole={activeReport!.profile.currentTitle || "Current Role"}
+                    currentRole={activeReport!.profile.currentTitle || t('currentRoleFallback')}
                     targetRole={activePlan.targetRole}
                     completionPercent={completionPercent}
                     completedMilestones={completedMilestones}
@@ -789,7 +773,7 @@ export default function DashboardClient() {
 
               {isFreeTier && (
                 <UpgradePrompt
-                  feature="all premium tools"
+                  feature={t('featurePremiumTools')}
                   variant="banner"
                   price="$19"
                   location="dashboard_bottom"
@@ -813,10 +797,10 @@ export default function DashboardClient() {
           <TabsContent value="negotiation">
             {isFreeTier ? (
               <UpgradePrompt
-                feature="salary negotiation"
+                feature={t('featureSalaryNegotiation')}
                 variant="gate"
                 price="$19"
-                message="Upgrade to get data-driven negotiation scripts, market salary ranges, and counter-offer strategies."
+                message={t('upgradeNegotiation')}
                 location="dashboard_negotiation_tab"
               />
             ) : (
@@ -827,10 +811,10 @@ export default function DashboardClient() {
           <TabsContent value="network">
             {isFreeTier ? (
               <UpgradePrompt
-                feature="networking tools"
+                feature={t('featureNetworkingTools')}
                 variant="gate"
                 price="$19"
-                message="Upgrade to track connections, generate warm intro templates, and manage your professional network."
+                message={t('upgradeNetworking')}
                 location="dashboard_network_tab"
               />
             ) : (

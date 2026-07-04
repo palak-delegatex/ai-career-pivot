@@ -1,12 +1,17 @@
+import type { Metadata } from "next";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import AccountClient from "./AccountClient";
+import { getTranslations } from "next-intl/server";
 
-export const metadata = {
-  title: "Account — AICareerPivot",
-  description: "Manage your account settings and view saved reports.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("account");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
-export default function AccountPage() {
+export default async function AccountPage() {
   return (
     <AuthenticatedLayout>
       <AccountClient />

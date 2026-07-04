@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
 import { trackReferralLinkCopied } from "@/lib/tracking";
+import { useTranslations } from "next-intl";
 
 type FormState = "idle" | "loading" | "success" | "already" | "error";
 
 const BASE_URL = "https://ai-career-pivot.com";
 
 export default function WaitlistForm() {
+  const t = useTranslations("waitlist");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [persona, setPersona] = useState("");
@@ -61,7 +63,7 @@ export default function WaitlistForm() {
 
       if (!res.ok) {
         setState("error");
-        setErrorMsg(data.error || "Something went wrong. Please try again.");
+        setErrorMsg(data.error || t("errorGeneric"));
         return;
       }
 
@@ -73,7 +75,7 @@ export default function WaitlistForm() {
       }
     } catch {
       setState("error");
-      setErrorMsg("Network error. Please try again.");
+      setErrorMsg(t("errorNetwork"));
     }
   }
 
@@ -82,7 +84,7 @@ export default function WaitlistForm() {
       ? `${BASE_URL}/waitlist?ref=${referralCode}`
       : null;
     const shareText = referralLink
-      ? `I just joined the waitlist for AICareerPivot — an AI tool that builds career change roadmaps around your real constraints (mortgage, kids, finances). Way more useful than generic advice. If this sounds like you: ${referralLink}`
+      ? t("shareText", { referralLink })
       : null;
 
     function copyLink() {
@@ -100,20 +102,20 @@ export default function WaitlistForm() {
           <div className="text-center mb-10">
             <div className="text-5xl mb-6">{state === "success" ? "🎉" : "✅"}</div>
             <h1 className="text-4xl font-extrabold mb-4 tracking-tight text-teal-400">
-              {state === "success" ? "You're in!" : "Already on the list!"}
+              {state === "success" ? t("successHeading") : t("alreadyHeading")}
             </h1>
             <p className="text-slate-300 text-lg leading-relaxed">
               {state === "success"
-                ? "We'll analyze your LinkedIn, resume, and background to build a roadmap from your actual experience — not a template. Check your email for next steps."
-                : "You're already on the waitlist. Check your email for your personal referral link and next steps."}
+                ? t("successMessage")
+                : t("alreadyMessage")}
             </p>
           </div>
 
           {referralLink && (
             <div className="bg-slate-800 border border-teal-800 rounded-2xl p-6 mb-6">
-              <p className="text-teal-400 font-bold text-sm mb-1">Move up the waitlist</p>
+              <p className="text-teal-400 font-bold text-sm mb-1">{t("referralMoveUp")}</p>
               <p className="text-slate-300 text-sm mb-4 leading-relaxed">
-                Share your link below. Every referral moves you higher — 1 referral skips 50 people, 10 referrals unlocks founding member pricing ($49/mo forever).
+                {t("referralDesc")}
               </p>
               <div className="flex items-center gap-3 mb-4">
                 <code className="flex-1 bg-slate-900 text-teal-300 text-sm px-3 py-2 rounded-lg truncate">
@@ -123,12 +125,12 @@ export default function WaitlistForm() {
                   onClick={copyLink}
                   className="shrink-0 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors"
                 >
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? t("btnCopied") : t("btnCopy")}
                 </button>
               </div>
               {shareText && (
                 <>
-                  <p className="text-slate-500 text-xs font-semibold mb-2">Ready-to-share message:</p>
+                  <p className="text-slate-500 text-xs font-semibold mb-2">{t("shareLabel")}</p>
                   <p className="text-slate-400 text-xs leading-relaxed italic bg-slate-900 rounded-lg px-3 py-2">
                     &ldquo;{shareText}&rdquo;
                   </p>
@@ -139,7 +141,7 @@ export default function WaitlistForm() {
 
           <div className="bg-slate-800 border border-slate-700 rounded-2xl p-5 text-center">
             <p className="text-slate-400 text-sm leading-relaxed">
-              Your personal referral dashboard link is in your confirmation email.
+              {t("referralEmailNote")}
             </p>
           </div>
         </div>
@@ -152,17 +154,16 @@ export default function WaitlistForm() {
       <div className="max-w-lg w-full text-center">
         <div className="text-5xl mb-6">🧭</div>
         <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
-          Join the Waitlist
+          {t("formHeading")}
         </h1>
         <p className="text-slate-300 text-lg mb-10 leading-relaxed">
-          Be first to get your AI-powered career pivot roadmap. We&apos;re
-          onboarding early users now.
+          {t("formSubheading")}
         </p>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Your name"
+            placeholder={t("placeholderName")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -170,7 +171,7 @@ export default function WaitlistForm() {
           />
           <input
             type="email"
-            placeholder="Your email address"
+            placeholder={t("placeholderEmail")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -181,12 +182,12 @@ export default function WaitlistForm() {
             onChange={(e) => setPersona(e.target.value)}
             className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-slate-300 text-lg"
           >
-            <option value="">What best describes you?</option>
-            <option value="burnout">Burned out and ready for change</option>
-            <option value="parent">Parent needing income continuity</option>
-            <option value="career-change">Switching industries</option>
-            <option value="growth">Wanting faster career growth</option>
-            <option value="other">Other</option>
+            <option value="">{t("selectDefault")}</option>
+            <option value="burnout">{t("personaBurnout")}</option>
+            <option value="parent">{t("personaParent")}</option>
+            <option value="career-change">{t("personaCareerChange")}</option>
+            <option value="growth">{t("personaGrowth")}</option>
+            <option value="other">{t("personaOther")}</option>
           </select>
 
           {state === "error" && (

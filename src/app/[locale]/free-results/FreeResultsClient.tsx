@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Share2, Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import { testimonials } from "@/lib/testimonials";
@@ -39,6 +40,7 @@ function MatchScoreRing({ score }: { score: number }) {
 }
 
 function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: number }) {
+  const t = useTranslations('freeResults');
   if (jobCount === 0) return null;
   return (
     <div className="rounded-xl bg-gradient-to-r from-teal-950/40 to-emerald-950/30 border border-teal-800/30 p-4 flex items-center gap-3">
@@ -47,11 +49,11 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
       </div>
       <div className="flex-1">
         <p className="text-sm font-semibold text-white">
-          {jobCount} job{jobCount > 1 ? "s" : ""} hiring for {targetRole}
+          {t('jobsHiring', { count: jobCount, role: targetRole })}
         </p>
         <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
           <TrendingUp className="h-3 w-3 text-emerald-400" />
-          Personalized match scores available in full report
+          {t('matchScoresTeaser')}
         </p>
       </div>
     </div>
@@ -59,6 +61,7 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
 }
 
 function GatedSection({ label, variant }: { label: string; variant: "milestones" | "financial" | "coaching" }) {
+  const t = useTranslations('freeResults');
   const variantContent: Record<string, { lines: string[]; icon: string }> = {
     milestones: {
       lines: ["Month 1-2: Complete foundational cert...", "Month 3-4: Build portfolio project in...", "Month 6: Apply to target roles with..."],
@@ -94,13 +97,14 @@ function GatedSection({ label, variant }: { label: string; variant: "milestones"
         <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <span className="text-xs text-slate-300 font-medium">{label} — Unlock for $19</span>
+        <span className="text-xs text-slate-300 font-medium">{t('gatedUnlock', { label })}</span>
       </div>
     </div>
   );
 }
 
 function SalaryInsightTeaser({ uplift }: { uplift: number }) {
+  const t = useTranslations('freeResults');
   return (
     <Link
       href="/pricing"
@@ -112,10 +116,10 @@ function SalaryInsightTeaser({ uplift }: { uplift: number }) {
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">
-            Estimated +${uplift}K salary uplift
+            {t('salaryUplift', { uplift })}
           </p>
           <p className="text-xs text-slate-400 mt-0.5">
-            Based on market data for your target role. Full salary trajectory in report →
+            {t('salaryUpliftSub')}
           </p>
         </div>
         <TrendingUp className="h-4 w-4 text-emerald-400 shrink-0" />
@@ -125,19 +129,21 @@ function SalaryInsightTeaser({ uplift }: { uplift: number }) {
 }
 
 function ReportCounterBadge() {
+  const t = useTranslations('freeResults');
   return (
     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/40 text-[11px] text-slate-400">
       <Users className="w-3 h-3 text-teal-400" />
-      <span><strong className="text-slate-300">547</strong> reports generated this week</span>
+      <span>{t('reportsGenerated', { count: 547 })}</span>
     </div>
   );
 }
 
 function ValuePropCallout() {
+  const t = useTranslations('freeResults');
   const props = [
-    { icon: Target, text: "Personalized to your exact background" },
-    { icon: Award, text: "Actionable milestones, not generic advice" },
-    { icon: DollarSign, text: "Salary data & financial bridge plan" },
+    { icon: Target, text: t('valueProp1') },
+    { icon: Award, text: t('valueProp2') },
+    { icon: DollarSign, text: t('valueProp3') },
   ];
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-4">
@@ -165,6 +171,7 @@ function buildShareUrl(snapshot: FreeSnapshot) {
 }
 
 export default function FreeResultsClient() {
+  const t = useTranslations('freeResults');
   const [snapshot, setSnapshot] = useState<FreeSnapshot | null>(null);
   const [selectedPath, setSelectedPath] = useState(0);
   const [notFound, setNotFound] = useState(false);
@@ -184,7 +191,7 @@ export default function FreeResultsClient() {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: "My Career Snapshot", text, url });
+        await navigator.share({ title: t('shareTitle'), text, url });
         return;
       } catch {}
     }
@@ -213,9 +220,9 @@ export default function FreeResultsClient() {
   if (notFound) {
     return (
       <main className="max-w-2xl mx-auto px-6 py-16 text-center">
-        <p className="text-slate-400 mb-4">No snapshot found. Please upload your resume first.</p>
+        <p className="text-slate-400 mb-4">{t('notFoundMsg')}</p>
         <Link href="/free" className="px-5 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block">
-          Get Free Snapshot
+          {t('getSnapshotCta')}
         </Link>
       </main>
     );
@@ -225,7 +232,7 @@ export default function FreeResultsClient() {
     return (
       <main className="max-w-2xl mx-auto px-6 py-16 text-center">
         <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-400">Loading your snapshot...</p>
+        <p className="text-slate-400">{t('loading')}</p>
       </main>
     );
   }
@@ -240,11 +247,11 @@ export default function FreeResultsClient() {
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-2 mb-3">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold">
-            Free Skill-Gap Snapshot
+            {t('badge')}
           </div>
           <ReportCounterBadge />
         </div>
-        <h1 className="text-3xl font-extrabold mb-2">Your Career Pivot Matches</h1>
+        <h1 className="text-3xl font-extrabold mb-2">{t('heading')}</h1>
         {snapshot.profileSummary && (
           <p className="text-slate-400 text-sm">{snapshot.profileSummary}</p>
         )}
@@ -259,12 +266,12 @@ export default function FreeResultsClient() {
           {copied ? (
             <>
               <Check className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400">Copied!</span>
+              <span className="text-emerald-400">{t('copied')}</span>
             </>
           ) : (
             <>
               <LinkIcon className="w-4 h-4" />
-              Copy Link
+              {t('copyLink')}
             </>
           )}
         </button>
@@ -275,7 +282,7 @@ export default function FreeResultsClient() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          Share on X
+          {t('shareOnX')}
         </a>
         <a
           href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}

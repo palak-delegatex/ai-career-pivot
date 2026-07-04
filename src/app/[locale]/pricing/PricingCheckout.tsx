@@ -2,22 +2,24 @@
 
 import { useState } from "react";
 import { trackCheckoutStarted, trackCheckoutError } from "@/lib/tracking";
+import { useTranslations } from "next-intl";
 
 export default function PricingCheckout({ plan = "report" }: { plan?: string }) {
+  const t = useTranslations("pricing");
   const [email, setEmail] = useState("");
   const [discountCode, setDiscountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const labels: Record<string, string> = {
-    report: "Get My Report — $19",
-    lifetime: "Get Lifetime Access — $149",
+    report: t("checkoutBtnReport"),
+    lifetime: t("checkoutBtnLifetime"),
   };
 
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
     if (!email) {
-      setError("Please enter your email address.");
+      setError(t("checkoutErrorEmail"));
       return;
     }
     trackCheckoutStarted({ plan, has_discount: !!discountCode });
@@ -49,7 +51,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Your email address"
+        placeholder={t("checkoutEmailPlaceholder")}
         required
         className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
       />
@@ -57,7 +59,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
         type="text"
         value={discountCode}
         onChange={(e) => setDiscountCode(e.target.value)}
-        placeholder="Discount code (optional)"
+        placeholder={t("checkoutDiscountPlaceholder")}
         className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
       />
       {error && (
@@ -68,7 +70,7 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
         disabled={loading}
         className="block w-full text-center px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:cursor-not-allowed font-bold transition-colors shadow-lg shadow-teal-900/50"
       >
-        {loading ? "Redirecting to checkout..." : labels[plan] ?? labels.report}
+        {loading ? t("checkoutRedirecting") : labels[plan] ?? labels.report}
       </button>
     </form>
   );

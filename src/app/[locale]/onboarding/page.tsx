@@ -8,6 +8,7 @@ import { StepIndicator } from "@/components/StepIndicator";
 import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
+import { useTranslations } from "next-intl";
 
 type PageStep = "form" | "processing" | "error" | "no_payment" | "generating";
 
@@ -38,54 +39,15 @@ function extractLinkedinUsername(url: string): string | null {
   return match ? decodeURIComponent(match[1]).replace(/-/g, " ") : null;
 }
 
-const WIZARD_STEPS = ["Your Background", "Additional Sources", "Life Circumstances"];
-
-const ANALYSIS_STEPS = [
-  "Parsing document structure",
-  "Extracting work history",
-  "Identifying key skills",
-  "Mapping to job market trends",
-  "Generating personalized insights",
-] as const;
-
-const FUN_FACTS = [
-  "Recruiters spend an average of 7 seconds on a first resume scan.",
-  "Tailoring your resume to each role increases callback rates by 40%.",
-  "Your skills section is often scanned before your experience.",
-  "ATS systems filter out ~75% of resumes before a human sees them.",
-  "Action verbs like 'spearheaded' and 'orchestrated' outperform passive language.",
-] as const;
-
-const SALARY_RANGES = [
-  { value: "", label: "Prefer not to say" },
-  { value: "Under $30,000", label: "Under $30,000" },
-  { value: "$30,000 – $50,000", label: "$30,000 – $50,000" },
-  { value: "$50,000 – $75,000", label: "$50,000 – $75,000" },
-  { value: "$75,000 – $100,000", label: "$75,000 – $100,000" },
-  { value: "$100,000 – $150,000", label: "$100,000 – $150,000" },
-  { value: "$150,000 – $200,000", label: "$150,000 – $200,000" },
-  { value: "Over $200,000", label: "Over $200,000" },
-] as const;
-
-function getUserTeasers(name: string): string[] {
-  return [
-    `${name}, your transferable skills may unlock more roles than you think.`,
-    `${name}, AI is mapping your experience to the latest market trends.`,
-    `We're identifying ${name}'s strongest career pivot angles.`,
-    `${name}, your background is being analyzed across 50+ industries.`,
-    `Personalized insights are being generated just for ${name}.`,
-  ];
-}
-
-function validateEmail(value: string): string {
+function validateEmail(value: string, t: (key: string) => string): string {
   if (!value) return "";
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "" : "Please enter a valid email address";
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "" : t("errorInvalidEmail");
 }
 
-function validateResumeFile(file: File): string {
+function validateResumeFile(file: File, t: (key: string) => string): string {
   const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
-  if (![".pdf", ".docx", ".doc", ".txt"].includes(ext)) return "Please upload a PDF, DOCX, or TXT file";
-  if (file.size > 10 * 1024 * 1024) return "File must be under 10 MB";
+  if (![".pdf", ".docx", ".doc", ".txt"].includes(ext)) return t("errorInvalidFileType");
+  if (file.size > 10 * 1024 * 1024) return t("errorFileTooLarge");
   return "";
 }
 
@@ -112,8 +74,48 @@ function parseInsightsFromStream(text: string): string[] {
 }
 
 export default function OnboardingPage() {
+  const t = useTranslations("onboarding");
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const WIZARD_STEPS = [t("wizardStep1"), t("wizardStep2"), t("wizardStep3")];
+
+  const ANALYSIS_STEPS = [
+    t("analysisParsing"),
+    t("analysisWorkHistory"),
+    t("analysisSkills"),
+    t("analysisMarketTrends"),
+    t("analysisInsights"),
+  ];
+
+  const FUN_FACTS = [
+    t("funFact1"),
+    t("funFact2"),
+    t("funFact3"),
+    t("funFact4"),
+    t("funFact5"),
+  ];
+
+  const SALARY_RANGES = [
+    { value: "", label: t("optionPreferNotToSay") },
+    { value: "Under $30,000", label: t("salaryUnder30k") },
+    { value: "$30,000 – $50,000", label: t("salary30to50k") },
+    { value: "$50,000 – $75,000", label: t("salary50to75k") },
+    { value: "$75,000 – $100,000", label: t("salary75to100k") },
+    { value: "$100,000 – $150,000", label: t("salary100to150k") },
+    { value: "$150,000 – $200,000", label: t("salary150to200k") },
+    { value: "Over $200,000", label: t("salaryOver200k") },
+  ];
+
+  function getUserTeasers(name: string): string[] {
+    return [
+      t("teaser1", { name }),
+      t("teaser2", { name }),
+      t("teaser3", { name }),
+      t("teaser4", { name }),
+      t("teaser5", { name }),
+    ];
+  }
 
   const [pageStep, setPageStep] = useState<PageStep>("form");
   const [wizardStep, setWizardStep] = useState(0);
@@ -259,22 +261,22 @@ export default function OnboardingPage() {
 
   function handleStep1Next() {
     setEmailTouched(true);
-    const emailErr = validateEmail(email);
+    const emailErr = validateEmail(email, t);
     if (emailErr) {
       setEmailError(emailErr);
       return;
     }
     if (!canAdvanceStep1()) {
-      setError("Please provide your email and at least one source (LinkedIn URL or resume).");
+      setError(t("errorEmailAndSource"));
       return;
     }
     setError("");
     setEmailError("");
-    celebrateThenAdvance("Background info saved");
+    celebrateThenAdvance(t("celebrateBackground"));
   }
 
   function handleStep2Next() {
-    celebrateThenAdvance("Sources added");
+    celebrateThenAdvance(t("celebrateSources"));
   }
 
   async function fetchInsights(profile: UserProfile) {
@@ -398,7 +400,7 @@ export default function OnboardingPage() {
         fd.append("resume", resumeFile);
         fd.append("email", email);
         const res = await fetch("/api/intake/resume", { method: "POST", body: fd });
-        if (!res.ok) throw new Error((await res.json()).error ?? "Resume parsing failed");
+        if (!res.ok) throw new Error((await res.json()).error ?? t("errorResumeParseFailed"));
         const data = await res.json();
         profile = { ...data.profile, email };
         setActiveStep(1);
@@ -429,7 +431,7 @@ export default function OnboardingPage() {
         } else if (!profile) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(
-            errData.error ?? "LinkedIn fetch failed. Make sure your profile is public, or upload your resume instead."
+            errData.error ?? t("errorLinkedinFetch")
           );
         }
       }
@@ -457,7 +459,7 @@ export default function OnboardingPage() {
         }
       }
 
-      if (!profile) throw new Error("Could not extract a profile. Please upload your resume.");
+      if (!profile) throw new Error(t("errorNoProfile"));
 
       const hasCircumstances = Object.values(circumstances).some(Boolean);
       if (hasCircumstances) profile.circumstances = circumstances;
@@ -477,7 +479,7 @@ export default function OnboardingPage() {
       setGeneratingProfile(profile);
       setPageStep("generating");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      const message = err instanceof Error ? err.message : t("errorGeneric");
       trackOnboardingError({ error: message, stage: "form_submission" });
       setPageStep("error");
       setError(message);
@@ -489,15 +491,15 @@ export default function OnboardingPage() {
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white items-center justify-center px-6">
         <div className="max-w-md text-center">
           <div className="text-5xl mb-6">&#x1f512;</div>
-          <h1 className="text-2xl font-bold mb-3">Purchase Required</h1>
+          <h1 className="text-2xl font-bold mb-3">{t("noPaymentTitle")}</h1>
           <p className="text-slate-400 mb-8 leading-relaxed">
-            Get your personalized career pivot roadmap for $19. After payment, you&apos;ll upload your resume and we&apos;ll build your plan.
+            {t("noPaymentDesc")}
           </p>
           <Link
             href="/pricing"
             className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
           >
-            Get Started — $29 &rarr;
+            {t("noPaymentCta")}
           </Link>
         </div>
       </div>
@@ -524,8 +526,8 @@ export default function OnboardingPage() {
   if (pageStep === "processing") {
     const displayName = linkedinPreview?.username ?? userName ?? (email ? email.split("@")[0] : null);
     const headline = displayName
-      ? `Analyzing ${displayName}'s background...`
-      : "Our AI is reading between the lines";
+      ? t("processingHeadline", { name: displayName })
+      : t("processingHeadlineFallback");
 
     const teasers = displayName ? getUserTeasers(displayName) : null;
     const displayInsight = insightsReady ? aiInsights[insightIndex] : null;
@@ -631,7 +633,7 @@ export default function OnboardingPage() {
           </div>
 
           <h2 className="text-2xl font-bold mb-1 text-center">{headline}</h2>
-          <p className="text-slate-500 text-sm mb-8">Usually done in under 30 seconds</p>
+          <p className="text-slate-500 text-sm mb-8">{t("processingSubtitle")}</p>
 
           <div className="w-full mb-8">
             {ANALYSIS_STEPS.map((label, i) => {
@@ -677,7 +679,7 @@ export default function OnboardingPage() {
                   <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zm4.95 2.05a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM14.25 7.25a.75.75 0 010 1.5h-1.5a.75.75 0 010-1.5h1.5zM12.89 11.83a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 011.06-1.06l1.06 1.06zM8.75 12.75a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5zM4.17 12.89a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 111.06 1.06l-1.06 1.06zM3.25 8.75a.75.75 0 010-1.5h-1.5a.75.75 0 010 1.5h1.5zM4.17 3.11a.75.75 0 011.06 1.06L4.17 5.23a.75.75 0 01-1.06-1.06l1.06-1.06z" />
                   </svg>
-                  AI Insight — based on your profile
+                  {t("insightLabel")}
                 </span>
               </div>
               <p
@@ -725,10 +727,10 @@ export default function OnboardingPage() {
       <div className="max-w-lg w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-            Let&apos;s Build Your Roadmap
+            {t("formTitle")}
           </h1>
           <p className="text-slate-300 text-lg leading-relaxed">
-            Share your background and we&apos;ll generate a personalized career pivot plan.
+            {t("formSubtitle")}
           </p>
         </div>
 
@@ -764,14 +766,14 @@ export default function OnboardingPage() {
               >
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Email address <span className="text-teal-400">*</span>
+                    {t("fieldEmailLabel")} <span className="text-teal-400">*</span>
                   </label>
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); if (emailTouched) setEmailError(validateEmail(e.target.value)); }}
-                    onBlur={() => { setEmailTouched(true); setEmailError(validateEmail(email)); }}
-                    placeholder="you@example.com"
+                    onChange={(e) => { setEmail(e.target.value); if (emailTouched) setEmailError(validateEmail(e.target.value, t)); }}
+                    onBlur={() => { setEmailTouched(true); setEmailError(validateEmail(email, t)); }}
+                    placeholder={t("fieldEmailPlaceholder")}
                     required
                     className={`w-full px-4 py-3 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
                       emailTouched && emailError
@@ -785,14 +787,14 @@ export default function OnboardingPage() {
                     <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{emailError}</p>
                   )}
                   {emailTouched && email && !emailError && (
-                    <p className="mt-1.5 text-xs" style={{ color: "var(--chart-3)" }}>&#10003; Valid email</p>
+                    <p className="mt-1.5 text-xs" style={{ color: "var(--chart-3)" }}>{t("validEmail")}</p>
                   )}
                 </div>
 
                 <div>
                   <span className="block text-sm font-medium text-slate-300 mb-2">
-                    Resume upload <span className="text-teal-400">*</span>
-                    <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
+                    {t("fieldResumeLabel")} <span className="text-teal-400">*</span>
+                    <span className="text-slate-500 font-normal ml-2">{t("fieldResumeHint")}</span>
                   </span>
                   <label
                     className={`block w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
@@ -809,7 +811,7 @@ export default function OnboardingPage() {
                       setDropActive(false);
                       const file = e.dataTransfer.files?.[0];
                       if (file) {
-                        const err = validateResumeFile(file);
+                        const err = validateResumeFile(file, t);
                         if (err) { setResumeError(err); return; }
                         setResumeError("");
                         setResumeFile(file);
@@ -820,7 +822,7 @@ export default function OnboardingPage() {
                       <span className="text-teal-400 font-medium">{resumeFile.name}</span>
                     ) : (
                       <span className="text-slate-400">
-                        {dropActive ? "Drop your resume here" : "Click or drag to upload resume"}
+                        {dropActive ? t("resumeDropActive") : t("resumeDropIdle")}
                       </span>
                     )}
                     <input
@@ -831,7 +833,7 @@ export default function OnboardingPage() {
                       onChange={(e) => {
                         const file = e.target.files?.[0] ?? null;
                         if (file) {
-                          const err = validateResumeFile(file);
+                          const err = validateResumeFile(file, t);
                           if (err) { setResumeError(err); return; }
                           setResumeError("");
                         }
@@ -846,8 +848,8 @@ export default function OnboardingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    LinkedIn URL
-                    <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
+                    {t("fieldLinkedinLabel")}
+                    <span className="text-slate-500 font-normal ml-2">{t("fieldLinkedinHint")}</span>
                   </label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -867,7 +869,7 @@ export default function OnboardingPage() {
                             setLinkedinUrl(normalized);
                           }
                         }}
-                        placeholder="linkedin.com/in/yourname"
+                        placeholder={t("fieldLinkedinPlaceholder")}
                         className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
                           linkedinUrlStatus(linkedinUrl) === "valid"
                             ? "border-teal-500/70 focus:border-teal-400"
@@ -906,7 +908,7 @@ export default function OnboardingPage() {
                   </div>
                   {linkedinUrlStatus(linkedinUrl) === "invalid" && (
                     <p className="mt-1.5 text-xs text-amber-400/80">
-                      Should look like linkedin.com/in/yourname &#8212; paste your full profile URL from the browser address bar.
+                      {t("linkedinInvalidHint")}
                     </p>
                   )}
                   {linkedinPreview && linkedinUrlStatus(linkedinUrl) === "valid" && (
@@ -933,7 +935,7 @@ export default function OnboardingPage() {
                     onClick={handleStep1Next}
                     className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Next &rarr;
+                    {t("btnNext")}
                   </button>
                 </div>
               </motion.div>
@@ -952,29 +954,29 @@ export default function OnboardingPage() {
               >
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Portfolio or personal site
-                    <span className="text-slate-500 font-normal ml-2">(optional)</span>
+                    {t("fieldWebsiteLabel")}
+                    <span className="text-slate-500 font-normal ml-2">{t("labelOptional")}</span>
                   </label>
                   <input
                     type="url"
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
-                    placeholder="https://yoursite.com"
+                    placeholder={t("fieldWebsitePlaceholder")}
                     className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Your location
-                    <span className="text-slate-500 font-normal ml-2">(improves job market accuracy)</span>
+                    {t("fieldLocationLabel")}
+                    <span className="text-slate-500 font-normal ml-2">{t("fieldLocationHint")}</span>
                   </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={locationText}
                       onChange={(e) => handleLocationManualChange(e.target.value)}
-                      placeholder="City, State, Country"
+                      placeholder={t("fieldLocationPlaceholder")}
                       className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
                     />
                     <button
@@ -988,7 +990,7 @@ export default function OnboardingPage() {
                           <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4 31.4" strokeLinecap="round" />
                           </svg>
-                          Detecting
+                          {t("btnDetecting")}
                         </span>
                       ) : gpsResolved ? (
                         <motion.span
@@ -997,15 +999,15 @@ export default function OnboardingPage() {
                           transition={{ duration: 0.4 }}
                           className="text-teal-400"
                         >
-                          &#10003; Found
+                          {t("locationFound")}
                         </motion.span>
                       ) : (
-                        "Use GPS"
+                        t("btnUseGps")
                       )}
                     </button>
                   </div>
                   {location?.source === "gps" && !gpsResolved && (
-                    <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+                    <p className="text-teal-500 text-xs mt-1.5">{t("locationGpsDetected")}</p>
                   )}
                 </div>
 
@@ -1016,14 +1018,14 @@ export default function OnboardingPage() {
                       onClick={goBack}
                       className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
                     >
-                      &larr; Back
+                      {t("btnBack")}
                     </button>
                     <button
                       type="button"
                       onClick={handleStep2Next}
                       className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
                     >
-                      Next &rarr;
+                      {t("btnNext")}
                     </button>
                   </div>
                   <button
@@ -1031,7 +1033,7 @@ export default function OnboardingPage() {
                     onClick={goNext}
                     className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
                   >
-                    Skip this step
+                    {t("btnSkipStep")}
                   </button>
                 </div>
               </motion.div>
@@ -1049,15 +1051,15 @@ export default function OnboardingPage() {
                 className="flex flex-col gap-4"
               >
                 <p className="text-slate-400 text-sm mb-1">
-                  Fine-tune your plan with real-life constraints. Smart defaults are pre-selected.
+                  {t("step3Intro")}
                 </p>
 
                 {/* Financial cluster */}
                 <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Financial</h3>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t("sectionFinancial")}</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
+                      <label className="block text-sm text-slate-400 mb-1.5">{t("fieldSalaryLabel")}</label>
                       <select
                         value={circumstances.salaryFloor ?? ""}
                         onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
@@ -1070,17 +1072,17 @@ export default function OnboardingPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
+                      <label className="block text-sm text-slate-400 mb-1.5">{t("fieldDependentsLabel")}</label>
                       <select
                         value={circumstances.dependents ?? ""}
                         onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
                       >
-                        <option value="">Prefer not to say</option>
-                        <option value="none">No dependents</option>
-                        <option value="partner">Partner</option>
-                        <option value="children">Children</option>
-                        <option value="caretaker">Caretaker for family</option>
+                        <option value="">{t("optionPreferNotToSay")}</option>
+                        <option value="none">{t("optionNoDependents")}</option>
+                        <option value="partner">{t("optionPartner")}</option>
+                        <option value="children">{t("optionChildren")}</option>
+                        <option value="caretaker">{t("optionCaretaker")}</option>
                       </select>
                     </div>
                   </div>
@@ -1088,48 +1090,48 @@ export default function OnboardingPage() {
 
                 {/* Preferences cluster */}
                 <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Preferences</h3>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t("sectionPreferences")}</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Transition timeline</label>
+                      <label className="block text-sm text-slate-400 mb-1.5">{t("fieldTimelineLabel")}</label>
                       <select
                         value={circumstances.timeline ?? ""}
                         onChange={(e) => setCircumstances({ ...circumstances, timeline: (e.target.value || undefined) as UserCircumstances["timeline"] })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
                       >
-                        <option value="">No preference</option>
-                        <option value="asap">As soon as possible</option>
-                        <option value="3-6 months">3-6 months</option>
-                        <option value="6-12 months">6-12 months</option>
-                        <option value="1-2 years">1-2 years</option>
+                        <option value="">{t("optionNoPreference")}</option>
+                        <option value="asap">{t("optionAsap")}</option>
+                        <option value="3-6 months">{t("option3to6Months")}</option>
+                        <option value="6-12 months">{t("option6to12Months")}</option>
+                        <option value="1-2 years">{t("option1to2Years")}</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Risk tolerance</label>
+                      <label className="block text-sm text-slate-400 mb-1.5">{t("fieldRiskLabel")}</label>
                       <select
                         value={circumstances.riskTolerance ?? ""}
                         onChange={(e) => setCircumstances({ ...circumstances, riskTolerance: (e.target.value || undefined) as UserCircumstances["riskTolerance"] })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
                       >
-                        <option value="">No preference</option>
-                        <option value="conservative">Conservative — keep income stable</option>
-                        <option value="moderate">Moderate — some income gap OK</option>
-                        <option value="aggressive">Aggressive — willing to take a leap</option>
+                        <option value="">{t("optionNoPreference")}</option>
+                        <option value="conservative">{t("optionConservative")}</option>
+                        <option value="moderate">{t("optionModerate")}</option>
+                        <option value="aggressive">{t("optionAggressive")}</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Willingness to relocate</label>
+                      <label className="block text-sm text-slate-400 mb-1.5">{t("fieldRelocateLabel")}</label>
                       <select
                         value={circumstances.willingnessToRelocate ?? ""}
                         onChange={(e) => setCircumstances({ ...circumstances, willingnessToRelocate: (e.target.value || undefined) as UserCircumstances["willingnessToRelocate"] })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
                       >
-                        <option value="">No preference</option>
-                        <option value="yes">Yes, open to relocating</option>
-                        <option value="no">No, staying in current area</option>
-                        <option value="remote-preferred">Remote work preferred</option>
+                        <option value="">{t("optionNoPreference")}</option>
+                        <option value="yes">{t("optionRelocateYes")}</option>
+                        <option value="no">{t("optionRelocateNo")}</option>
+                        <option value="remote-preferred">{t("optionRemotePreferred")}</option>
                       </select>
                     </div>
                   </div>
@@ -1142,7 +1144,7 @@ export default function OnboardingPage() {
                       onClick={goBack}
                       className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
                     >
-                      &larr; Back
+                      {t("btnBack")}
                     </button>
                     <button
                       type="button"
@@ -1150,11 +1152,10 @@ export default function OnboardingPage() {
                       className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
                     >
                       {ctaVariant === "urgency"
-                        ? "Reveal My Plan"
+                        ? t("btnRevealPlan")
                         : ctaVariant === "benefit"
-                          ? "Show My Best Move"
-                          : "Analyze My Background"}
-                      {" "}&rarr;
+                          ? t("btnShowBestMove")
+                          : t("btnAnalyze")}
                     </button>
                   </div>
                   <button
@@ -1163,7 +1164,7 @@ export default function OnboardingPage() {
                     className="w-full min-h-[44px] text-sm font-medium transition-colors text-center mt-1 underline"
                     style={{ color: "var(--muted-foreground)" }}
                   >
-                    Skip &mdash; I&apos;ll let the AI decide
+                    {t("btnSkipAiDecide")}
                   </button>
                 </div>
               </motion.div>

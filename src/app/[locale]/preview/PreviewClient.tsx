@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import PreviewScoreRing from "@/components/PreviewScoreRing";
 import {
   trackPreviewStarted,
@@ -76,6 +77,7 @@ function SkeletonResults() {
 }
 
 export default function PreviewClient() {
+  const t = useTranslations("preview");
   const [currentRole, setCurrentRole] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [loading, setLoading] = useState(false);
@@ -139,11 +141,11 @@ export default function PreviewClient() {
           resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 200);
       } catch {
-        setError("Something went wrong. Please try again.");
+        setError(t("errorGeneric"));
         setLoading(false);
       }
     },
-    [currentRole, targetRole],
+    [currentRole, targetRole, t],
   );
 
   return (
@@ -152,13 +154,13 @@ export default function PreviewClient() {
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-900/30 border border-teal-700/30 text-teal-300 text-xs font-medium mb-4">
           <Sparkles className="w-3 h-3" />
-          Free — no signup required
+          {t("badge")}
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold font-serif tracking-tight mb-3">
-          Skill-Gap Preview
+          {t("heading")}
         </h1>
         <p className="text-slate-400 text-base max-w-md mx-auto">
-          See how your current skills stack up against your dream role in seconds.
+          {t("subheading")}
         </p>
       </div>
 
@@ -173,14 +175,14 @@ export default function PreviewClient() {
               htmlFor="current-role"
               className="block text-sm font-medium text-slate-300 mb-1.5"
             >
-              Current Role
+              {t("currentRoleLabel")}
             </label>
             <input
               id="current-role"
               type="text"
               value={currentRole}
               onChange={(e) => setCurrentRole(e.target.value)}
-              placeholder="e.g. Marketing Manager"
+              placeholder={t("currentRolePlaceholder")}
               className="w-full h-10 px-3 rounded-lg bg-slate-900/60 border border-slate-600 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-colors"
               required
             />
@@ -190,14 +192,14 @@ export default function PreviewClient() {
               htmlFor="target-role"
               className="block text-sm font-medium text-slate-300 mb-1.5"
             >
-              Target Role
+              {t("targetRoleLabel")}
             </label>
             <input
               id="target-role"
               type="text"
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
-              placeholder="e.g. Product Manager"
+              placeholder={t("targetRolePlaceholder")}
               className="w-full h-10 px-3 rounded-lg bg-slate-900/60 border border-slate-600 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-colors"
               required
             />
@@ -216,12 +218,12 @@ export default function PreviewClient() {
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Analyzing...
+              {t("analyzing")}
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              Analyze My Skill Gap
+              {t("analyzeButton")}
             </span>
           )}
         </Button>
@@ -239,7 +241,7 @@ export default function PreviewClient() {
         <div ref={resultsRef} className="space-y-6">
           {/* Score Ring + Summary */}
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 text-center">
-            <h2 className="text-lg font-bold text-teal-400 mb-4">Your Career Match</h2>
+            <h2 className="text-lg font-bold text-teal-400 mb-4">{t("careerMatchHeading")}</h2>
             <PreviewScoreRing score={result.matchScore} animated={animated} />
             <p className="text-slate-300 text-sm mt-4 max-w-md mx-auto">
               {result.summary}
@@ -263,7 +265,7 @@ export default function PreviewClient() {
           {/* Skill Gap Chart */}
           <div className="bg-slate-800/60 border border-amber-700/40 rounded-2xl p-5">
             <h3 className="text-sm font-bold text-amber-400 mb-4">
-              Skill Gap Analysis
+              {t("skillGapHeading")}
             </h3>
             <div className="space-y-4">
               {result.skillGaps.map((gap, i) => {
@@ -279,7 +281,7 @@ export default function PreviewClient() {
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${colors.badge}`}
                       >
-                        {sev}
+                        {t(`severity.${sev}`)}
                       </span>
                     </div>
                     <div className="relative h-5 bg-slate-700/60 rounded-full overflow-hidden">
@@ -295,10 +297,10 @@ export default function PreviewClient() {
                       />
                       <div className="absolute inset-0 flex items-center justify-between px-2">
                         <span className="text-[10px] font-medium text-white/80">
-                          You: {gap.currentLevel}%
+                          {t("youLabel", { value: gap.currentLevel })}
                         </span>
                         <span className="text-[10px] font-medium text-slate-400">
-                          Needed: {gap.requiredLevel}%
+                          {t("neededLabel", { value: gap.requiredLevel })}
                         </span>
                       </div>
                     </div>
@@ -311,7 +313,7 @@ export default function PreviewClient() {
           {/* Blurred Top Actions + CTA */}
           <div className="relative bg-slate-800/60 border border-slate-700 rounded-2xl p-6 overflow-hidden">
             <h3 className="text-sm font-bold text-teal-400 mb-3">
-              Top 3 Actions to Close the Gap
+              {t("topActionsHeading")}
             </h3>
             <div className="relative">
               <ol className="space-y-2.5 select-none" aria-hidden="true">
@@ -332,7 +334,7 @@ export default function PreviewClient() {
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-[2px] rounded-xl">
                 <Lock className="w-5 h-5 text-slate-400 mb-2" />
                 <p className="text-sm text-slate-300 mb-3 text-center px-4">
-                  Unlock your personalized action plan
+                  {t("unlockText")}
                 </p>
                 <Link
                   href="/pricing"
@@ -344,7 +346,7 @@ export default function PreviewClient() {
                   }
                 >
                   <Button className="h-9 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-sm px-5">
-                    Get Full Plan
+                    {t("getFullPlan")}
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
@@ -355,7 +357,7 @@ export default function PreviewClient() {
           {/* Bottom CTA */}
           <div className="text-center pt-2 pb-4">
             <p className="text-slate-400 text-sm mb-4">
-              Want a complete career pivot roadmap with weekly milestones?
+              {t("bottomCtaText")}
             </p>
             <Link
               href="/pricing"
@@ -367,7 +369,7 @@ export default function PreviewClient() {
               }
             >
               <Button className="h-11 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-sm px-8">
-                Start Your Full Career Pivot
+                {t("startFullPivot")}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
