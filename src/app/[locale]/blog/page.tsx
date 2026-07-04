@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Blog — Career Pivot Guides & Resources",
   description:
     "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/blog",
-  },
+  alternates: alternatesFor("/blog", locale),
   openGraph: {
-    url: "https://ai-career-pivot.com/blog",
+    locale: ogLocaleFor(locale),
+    url: localizedPath("/blog", locale),
     title: "Blog — Career Pivot Guides & Resources",
     description:
       "Actionable guides for professionals ready to change careers.",
   },
 };
+}
 
 export default function BlogIndex() {
   const posts = getAllPosts();

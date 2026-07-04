@@ -1,20 +1,28 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Privacy Policy — AICareerPivot",
   description:
     "AICareerPivot privacy policy. Learn what data we collect, how we use it, and your choices regarding the Chrome extension and web application.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/privacy",
-  },
+  alternates: alternatesFor("/privacy", locale),
   openGraph: {
+    locale: ogLocaleFor(locale),
     title: "Privacy Policy — AICareerPivot",
     description:
       "AICareerPivot privacy policy. Learn what data we collect, how we use it, and your choices.",
-    url: "https://ai-career-pivot.com/privacy",
+    url: localizedPath("/privacy", locale),
   },
 };
+}
 
 export default function PrivacyPage() {
   return (

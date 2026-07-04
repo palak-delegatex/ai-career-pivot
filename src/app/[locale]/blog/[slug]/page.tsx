@@ -5,6 +5,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -13,21 +15,22 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
 
-  const url = `https://ai-career-pivot.com/blog/${slug}`;
+  const postPath = `/blog/${slug}`;
   return {
     title: post.title,
     description: post.description,
     keywords: post.keywords,
-    alternates: { canonical: url },
+    alternates: alternatesFor(postPath, locale as Locale),
     openGraph: {
       type: "article",
-      url,
+      locale: ogLocaleFor(locale),
+      url: localizedPath(postPath, locale as Locale),
       title: post.title,
       description: post.description,
       publishedTime: post.date,

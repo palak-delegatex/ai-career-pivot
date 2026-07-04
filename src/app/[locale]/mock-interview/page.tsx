@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import MockInterviewClient from "./MockInterviewClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Mock Interview — AICareerPivot",
   description: "Practice AI-powered mock interviews for your target role. Get real-time feedback and a scorecard.",
-  alternates: { canonical: "https://ai-career-pivot.com/mock-interview" },
+  alternates: alternatesFor("/mock-interview", locale),
 };
+}
 
 export default function MockInterviewPage() {
   const crumbs = breadcrumbSchema([{ name: "Mock Interview", path: "/mock-interview" }]);

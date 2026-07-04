@@ -1,21 +1,29 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import Link from "next/link";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "FAQ — AICareerPivot",
   description:
     "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AICareerPivot builds your personalized roadmap.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/faq",
-  },
+  alternates: alternatesFor("/faq", locale),
   openGraph: {
+    locale: ogLocaleFor(locale),
     title: "FAQ — AICareerPivot",
     description:
       "Common questions about career pivots answered: timelines, finances, skills gaps, and how AICareerPivot creates personalized transition roadmaps.",
-    url: "https://ai-career-pivot.com/faq",
+    url: localizedPath("/faq", locale),
   },
 };
+}
 
 const faqs = [
   {

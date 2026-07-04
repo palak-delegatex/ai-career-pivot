@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,20 +8,26 @@ import StickyCtaBar from "@/components/StickyCtaBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "How It Works — AICareerPivot",
   description:
     "See how AICareerPivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/how-it-works",
-  },
+  alternates: alternatesFor("/how-it-works", locale),
   openGraph: {
+    locale: ogLocaleFor(locale),
     title: "How It Works — AICareerPivot",
     description:
       "AICareerPivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
-    url: "https://ai-career-pivot.com/how-it-works",
+    url: localizedPath("/how-it-works", locale),
   },
 };
+}
 
 const howItWorksSchema = {
   "@context": "https://schema.org",

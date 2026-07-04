@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import NetworkingClient from "./NetworkingClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Networking CRM — AICareerPivot",
   description: "Track your professional contacts, follow-ups, and networking relationships.",
-  alternates: { canonical: "https://ai-career-pivot.com/networking" },
+  alternates: alternatesFor("/networking", locale),
 };
+}
 
 export default function NetworkingPage() {
   const crumbs = breadcrumbSchema([{ name: "Networking", path: "/networking" }]);

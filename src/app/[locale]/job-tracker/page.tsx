@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import JobTrackerClient from "./JobTrackerClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Job Tracker — AICareerPivot",
   description: "Track your job applications with a visual Kanban board and pipeline analytics.",
-  alternates: { canonical: "https://ai-career-pivot.com/job-tracker" },
+  alternates: alternatesFor("/job-tracker", locale),
 };
+}
 
 export default function JobTrackerPage() {
   const crumbs = breadcrumbSchema([{ name: "Job Tracker", path: "/job-tracker" }]);

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
@@ -8,18 +10,26 @@ import { Building2, Rocket, Briefcase } from "lucide-react";
 import { testimonials } from "@/lib/testimonials";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "Pricing — AICareerPivot",
   description:
     "Get a personalized career pivot roadmap with AI certifications starting at just $19 intro pricing. AI-powered analysis of your resume and LinkedIn profile.",
-  alternates: { canonical: "https://ai-career-pivot.com/pricing" },
+  alternates: alternatesFor("/pricing", locale),
   openGraph: {
+    locale: ogLocaleFor(locale),
     title: "Pricing — AICareerPivot",
     description:
       "Personalized career pivot roadmap with AI certifications starting at just $19 intro pricing. Lifetime access for $149.",
-    url: "https://ai-career-pivot.com/pricing",
+    url: localizedPath("/pricing", locale),
   },
 };
+}
 
 const FAQ_ITEMS = [
   {
