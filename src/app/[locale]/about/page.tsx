@@ -1,42 +1,31 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-
-export const metadata: Metadata = {
-  title: "About AICareerPivot — Our Methodology & Mission",
-  description:
-    "AICareerPivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/about",
-  },
-  openGraph: {
-    title: "About AICareerPivot — Our Methodology & Mission",
-    description:
-      "Learn how AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
-    url: "https://ai-career-pivot.com/about",
-  },
-};
-
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
-const aboutPageSchema = {
-  "@context": "https://schema.org",
-  "@type": "AboutPage",
-  name: "About AICareerPivot",
-  url: "https://ai-career-pivot.com/about",
-  dateModified: "2026-06-12",
-  description:
-    "AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps by analyzing skills, financial constraints, and family circumstances.",
-  mainEntity: {
-    ...organizationSchema(),
-    foundingDate: "2026",
-    mission:
-      "To help professionals make confident, well-planned career transitions that account for skills, income continuity, and family responsibilities.",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "about" });
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+    alternates: {
+      canonical: "https://ai-career-pivot.com/about",
+    },
+    openGraph: {
+      title: t("meta.ogTitle"),
+      description: t("meta.ogDescription"),
+      url: "https://ai-career-pivot.com/about",
+    },
+  };
+}
 
 // Principle copy lives in the `about` catalog; keys are enumerated here so the
 // number badge / tooltip logic stays index-based while text is translated.
@@ -48,9 +37,29 @@ const PRINCIPLE_KEYS = [
   "evidenceBasedRecommendations",
 ] as const;
 
-export default async function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("about");
-  const crumbs = breadcrumbSchema([{ name: "About", path: "/about" }]);
+  const crumbs = breadcrumbSchema([{ name: t("meta.breadcrumb"), path: "/about" }]);
+
+  const aboutPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: t("schema.name"),
+    url: "https://ai-career-pivot.com/about",
+    dateModified: "2026-06-12",
+    description: t("schema.description"),
+    mainEntity: {
+      ...organizationSchema(),
+      foundingDate: "2026",
+      mission: t("schema.mission"),
+    },
+  };
   return (
     <>
       <script

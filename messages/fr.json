@@ -192,7 +192,14 @@
     "ctaHeading": "Prêt à découvrir votre feuille de route ?",
     "ctaSubtitle": "Obtenez dès aujourd'hui votre plan de reconversion personnalisé — pour seulement 19 $ en tarif de lancement.",
     "ctaButton": "Obtenir ma feuille de route — 19 $ →",
-    "ctaFaqLink": "Des questions ? Consultez la FAQ →"
+    "ctaFaqLink": "Des questions ? Consultez la FAQ →",
+    "metaTitle": "Comment ça marche — AICareerPivot",
+    "metaDescription": "Découvrez comment AICareerPivot construit votre feuille de route personnalisée de reconversion professionnelle en trois étapes : partagez votre situation, obtenez votre stratégie générée par l'IA et passez à l'action avec un plan concret à 6 mois, 1 an et 2 ans.",
+    "ogTitle": "Comment ça marche — AICareerPivot",
+    "ogDescription": "AICareerPivot élabore des feuilles de route personnalisées de reconversion en trois étapes. Partagez vos compétences, votre situation financière et vos contraintes familiales — et obtenez un plan d'action concret sur plusieurs années.",
+    "breadcrumb": "Comment ça marche",
+    "schemaName": "Comment AICareerPivot construit votre feuille de route de reconversion professionnelle",
+    "schemaDescription": "AICareerPivot utilise l'IA pour analyser vos compétences, votre situation financière et vos contraintes familiales afin de construire une feuille de route de reconversion personnalisée avec des jalons concrets à 6 mois, 1 an et 2 ans."
   },
   "about": {
     "nav": {
@@ -256,6 +263,18 @@
       "heading": "Prêt à bâtir votre véritable plan d'évasion ?",
       "subtitle": "Obtenez dès aujourd'hui votre feuille de route de reconversion personnalisée — pour seulement 19 $ en tarif de lancement.",
       "button": "Obtenir ma feuille de route — 19 $ →"
+    },
+    "meta": {
+      "title": "À propos d'AICareerPivot — Notre méthodologie et notre mission",
+      "description": "AICareerPivot élabore des feuilles de route personnalisées de reconversion professionnelle grâce à l'IA. Découvrez notre méthodologie : comment nous prenons en compte vos compétences, vos finances et vos contraintes familiales pour créer des plans concrets et applicables.",
+      "ogTitle": "À propos d'AICareerPivot — Notre méthodologie et notre mission",
+      "ogDescription": "Découvrez comment AICareerPivot élabore des feuilles de route personnalisées de reconversion en analysant vos compétences, votre marge financière et vos contraintes familiales.",
+      "breadcrumb": "À propos"
+    },
+    "schema": {
+      "name": "À propos d'AICareerPivot",
+      "description": "AICareerPivot est un stratège de carrière propulsé par l'IA qui élabore des feuilles de route de reconversion personnalisées en analysant les compétences, les contraintes financières et la situation familiale.",
+      "mission": "Aider les professionnels à réussir des reconversions sereines et bien planifiées, qui tiennent compte des compétences, de la continuité des revenus et des responsabilités familiales."
     }
   },
   "assessment": {

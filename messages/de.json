@@ -192,7 +192,14 @@
     "ctaHeading": "Bereit, Ihre Roadmap zu sehen?",
     "ctaSubtitle": "Sichern Sie sich noch heute Ihren persönlichen Plan für den beruflichen Wechsel — für nur 19 $ Einführungspreis.",
     "ctaButton": "Meine Roadmap erhalten — 19 $ →",
-    "ctaFaqLink": "Noch Fragen? Lesen Sie die FAQ →"
+    "ctaFaqLink": "Noch Fragen? Lesen Sie die FAQ →",
+    "metaTitle": "So funktioniert's — AICareerPivot",
+    "metaDescription": "Sehen Sie, wie AICareerPivot Ihren persönlichen Fahrplan für den beruflichen Wechsel in drei Schritten erstellt: Situation schildern, KI-generierte Strategie erhalten und mit einem konkreten Plan für 6 Monate, 1 Jahr und 2 Jahre umsetzen.",
+    "ogTitle": "So funktioniert's — AICareerPivot",
+    "ogDescription": "AICareerPivot erstellt personalisierte Fahrpläne für den Berufswechsel in drei Schritten. Teilen Sie Ihre Fähigkeiten, Finanzen und familiären Rahmenbedingungen — und erhalten Sie einen konkreten, mehrjährigen Aktionsplan.",
+    "breadcrumb": "So funktioniert's",
+    "schemaName": "Wie AICareerPivot Ihren Fahrplan für den beruflichen Wechsel erstellt",
+    "schemaDescription": "AICareerPivot analysiert mit KI Ihre Fähigkeiten, Ihre finanzielle Situation und Ihre familiären Rahmenbedingungen und erstellt einen personalisierten Fahrplan für den Berufswechsel mit konkreten Meilensteinen nach 6 Monaten, 1 Jahr und 2 Jahren."
   },
   "about": {
     "nav": {
@@ -256,6 +263,18 @@
       "heading": "Bereit, deinen echten Ausstiegsplan zu erstellen?",
       "subtitle": "Hol dir noch heute deinen personalisierten Karriere-Fahrplan – zum Einführungspreis von nur 19 $.",
       "button": "Meinen Fahrplan holen — 19 $ →"
+    },
+    "meta": {
+      "title": "Über AICareerPivot — Unsere Methodik und Mission",
+      "description": "AICareerPivot erstellt personalisierte, KI-gestützte Fahrpläne für den beruflichen Wechsel. Erfahren Sie mehr über unsere Methodik: Wie wir Ihre Fähigkeiten, Finanzen und familiären Rahmenbedingungen berücksichtigen, um echte, umsetzbare Pläne zu erstellen.",
+      "ogTitle": "Über AICareerPivot — Unsere Methodik und Mission",
+      "ogDescription": "Erfahren Sie, wie AICareerPivot personalisierte Fahrpläne für den beruflichen Wechsel erstellt, indem es Ihre Fähigkeiten, Ihren finanziellen Spielraum und Ihre familiären Rahmenbedingungen analysiert.",
+      "breadcrumb": "Über uns"
+    },
+    "schema": {
+      "name": "Über AICareerPivot",
+      "description": "AICareerPivot ist ein KI-gestützter Karrierestratege, der personalisierte Fahrpläne für den beruflichen Wechsel erstellt, indem er Fähigkeiten, finanzielle Rahmenbedingungen und familiäre Umstände analysiert.",
+      "mission": "Fachkräften dabei zu helfen, selbstbewusste, gut geplante berufliche Veränderungen zu vollziehen, die Fähigkeiten, Einkommenssicherheit und familiäre Verpflichtungen berücksichtigen."
     }
   },
   "assessment": {

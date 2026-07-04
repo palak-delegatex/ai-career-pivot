@@ -192,7 +192,14 @@
     "ctaHeading": "Pronto para ver o seu roteiro?",
     "ctaSubtitle": "Receba hoje o seu plano personalizado de transição de carreira — por apenas $19 de preço de lançamento.",
     "ctaButton": "Obter meu roteiro — $19 →",
-    "ctaFaqLink": "Tem dúvidas? Leia as perguntas frequentes →"
+    "ctaFaqLink": "Tem dúvidas? Leia as perguntas frequentes →",
+    "metaTitle": "Como funciona — AICareerPivot",
+    "metaDescription": "Veja como o AICareerPivot cria seu roteiro personalizado de transição de carreira em três etapas: compartilhe sua situação, receba sua estratégia gerada por IA e execute com um plano concreto de 6 meses, 1 ano e 2 anos.",
+    "ogTitle": "Como funciona — AICareerPivot",
+    "ogDescription": "O AICareerPivot cria roteiros personalizados de mudança de carreira em três etapas. Compartilhe suas habilidades, finanças e responsabilidades familiares — e receba um plano de ação concreto de vários anos.",
+    "breadcrumb": "Como funciona",
+    "schemaName": "Como o AICareerPivot cria seu roteiro de transição de carreira",
+    "schemaDescription": "O AICareerPivot usa IA para analisar suas habilidades, sua situação financeira e suas responsabilidades familiares e criar um roteiro personalizado de mudança de carreira com marcos concretos em 6 meses, 1 ano e 2 anos."
   },
   "about": {
     "nav": {
@@ -256,6 +263,18 @@
       "heading": "Pronto para construir seu verdadeiro plano de saída?",
       "subtitle": "Receba hoje seu plano personalizado de transição de carreira — por apenas US$ 19 de preço de lançamento.",
       "button": "Receber meu plano — US$ 19 →"
+    },
+    "meta": {
+      "title": "Sobre o AICareerPivot — Nossa metodologia e missão",
+      "description": "O AICareerPivot cria roteiros personalizados de transição de carreira com tecnologia de IA. Conheça nossa metodologia: como consideramos suas habilidades, suas finanças e suas responsabilidades familiares para criar planos reais e viáveis.",
+      "ogTitle": "Sobre o AICareerPivot — Nossa metodologia e missão",
+      "ogDescription": "Descubra como o AICareerPivot cria roteiros personalizados de transição de carreira analisando suas habilidades, sua reserva financeira e suas responsabilidades familiares.",
+      "breadcrumb": "Sobre"
+    },
+    "schema": {
+      "name": "Sobre o AICareerPivot",
+      "description": "O AICareerPivot é um estrategista de carreira com tecnologia de IA que cria roteiros de transição personalizados analisando habilidades, restrições financeiras e circunstâncias familiares.",
+      "mission": "Ajudar profissionais a fazer transições de carreira seguras e bem planejadas, que considerem habilidades, continuidade de renda e responsabilidades familiares."
     }
   },
   "assessment": {

@@ -192,7 +192,14 @@
     "ctaHeading": "Ready to see your roadmap?",
     "ctaSubtitle": "Get your personalized career pivot plan today — just $19 intro pricing.",
     "ctaButton": "Get My Roadmap — $19 →",
-    "ctaFaqLink": "Have questions? Read the FAQ →"
+    "ctaFaqLink": "Have questions? Read the FAQ →",
+    "metaTitle": "How It Works — AICareerPivot",
+    "metaDescription": "See how AICareerPivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
+    "ogTitle": "How It Works — AICareerPivot",
+    "ogDescription": "AICareerPivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
+    "breadcrumb": "How It Works",
+    "schemaName": "How AICareerPivot Builds Your Career Transition Roadmap",
+    "schemaDescription": "AICareerPivot uses AI to analyze your skills, financial situation, and family constraints to build a personalized career pivot roadmap with concrete milestones at 6 months, 1 year, and 2 years."
   },
   "about": {
     "nav": {
@@ -256,6 +263,18 @@
       "heading": "Ready to build your real escape plan?",
       "subtitle": "Get your personalized career pivot roadmap today — just $19 intro pricing.",
       "button": "Get My Roadmap — $19 →"
+    },
+    "meta": {
+      "title": "About AICareerPivot — Our Methodology & Mission",
+      "description": "AICareerPivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
+      "ogTitle": "About AICareerPivot — Our Methodology & Mission",
+      "ogDescription": "Learn how AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
+      "breadcrumb": "About"
+    },
+    "schema": {
+      "name": "About AICareerPivot",
+      "description": "AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps by analyzing skills, financial constraints, and family circumstances.",
+      "mission": "To help professionals make confident, well-planned career transitions that account for skills, income continuity, and family responsibilities."
     }
   },
   "assessment": {

@@ -192,7 +192,14 @@
     "ctaHeading": "¿Listo para ver tu hoja de ruta?",
     "ctaSubtitle": "Consigue hoy tu plan personalizado de transición profesional — por solo $19 de precio de lanzamiento.",
     "ctaButton": "Obtener mi hoja de ruta — $19 →",
-    "ctaFaqLink": "¿Tienes preguntas? Lee las preguntas frecuentes →"
+    "ctaFaqLink": "¿Tienes preguntas? Lee las preguntas frecuentes →",
+    "metaTitle": "Cómo funciona — AICareerPivot",
+    "metaDescription": "Descubre cómo AICareerPivot crea tu hoja de ruta personalizada de transición profesional en tres pasos: comparte tu situación, recibe tu estrategia generada por IA y ejecuta con un plan concreto a 6 meses, 1 año y 2 años.",
+    "ogTitle": "Cómo funciona — AICareerPivot",
+    "ogDescription": "AICareerPivot crea hojas de ruta personalizadas de cambio profesional en tres pasos. Comparte tus habilidades, tus finanzas y tus responsabilidades familiares — y obtén un plan de acción concreto de varios años.",
+    "breadcrumb": "Cómo funciona",
+    "schemaName": "Cómo AICareerPivot crea tu hoja de ruta de transición profesional",
+    "schemaDescription": "AICareerPivot usa IA para analizar tus habilidades, tu situación financiera y tus responsabilidades familiares, y crear una hoja de ruta de cambio profesional personalizada con hitos concretos a los 6 meses, 1 año y 2 años."
   },
   "about": {
     "nav": {
@@ -256,6 +263,18 @@
       "heading": "¿List@ para crear tu verdadero plan de salida?",
       "subtitle": "Consigue hoy tu hoja de ruta de cambio profesional personalizada, por solo 19 $ de precio de lanzamiento.",
       "button": "Consigue mi hoja de ruta — 19 $ →"
+    },
+    "meta": {
+      "title": "Acerca de AICareerPivot — Nuestra metodología y misión",
+      "description": "AICareerPivot crea hojas de ruta personalizadas de transición profesional impulsadas por IA. Conoce nuestra metodología: cómo tenemos en cuenta tus habilidades, tus finanzas y tus responsabilidades familiares para crear planes reales y accionables.",
+      "ogTitle": "Acerca de AICareerPivot — Nuestra metodología y misión",
+      "ogDescription": "Descubre cómo AICareerPivot crea hojas de ruta personalizadas de transición profesional analizando tus habilidades, tu margen financiero y tus responsabilidades familiares.",
+      "breadcrumb": "Acerca de"
+    },
+    "schema": {
+      "name": "Acerca de AICareerPivot",
+      "description": "AICareerPivot es un estratega de carrera impulsado por IA que crea hojas de ruta de transición personalizadas analizando habilidades, limitaciones financieras y circunstancias familiares.",
+      "mission": "Ayudar a los profesionales a realizar transiciones profesionales seguras y bien planificadas que tengan en cuenta las habilidades, la continuidad de los ingresos y las responsabilidades familiares."
     }
   },
   "assessment": {

@@ -1,56 +1,32 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardContent } from "@/components/ui/card";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "How It Works — AICareerPivot",
-  description:
-    "See how AICareerPivot builds your personalized career transition roadmap in three steps: share your situation, get your AI-generated strategy, and execute with a concrete 6-month, 1-year, and 2-year plan.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/how-it-works",
-  },
-  openGraph: {
-    title: "How It Works — AICareerPivot",
-    description:
-      "AICareerPivot builds personalized career pivot roadmaps in three steps. Share your skills, finances, and family constraints — get a concrete multi-year action plan.",
-    url: "https://ai-career-pivot.com/how-it-works",
-  },
-};
-
-const howItWorksSchema = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How AICareerPivot Builds Your Career Transition Roadmap",
-  description:
-    "AICareerPivot uses AI to analyze your skills, financial situation, and family constraints to build a personalized career pivot roadmap with concrete milestones at 6 months, 1 year, and 2 years.",
-  url: "https://ai-career-pivot.com/how-it-works",
-  dateModified: "2026-06-12",
-  step: [
-    {
-      "@type": "HowToStep",
-      position: 1,
-      name: "Share Your Situation",
-      text: "Tell us your current role, skills, financial runway, and what matters most to your family. The more context you provide, the more specific your roadmap will be.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "howItWorks" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: {
+      canonical: "https://ai-career-pivot.com/how-it-works",
     },
-    {
-      "@type": "HowToStep",
-      position: 2,
-      name: "AI Builds Your Strategy",
-      text: "Our AI analyzes your profile against labor market data, identifies transferable skills, maps gaps, and creates a custom transition roadmap — not generic advice.",
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://ai-career-pivot.com/how-it-works",
     },
-    {
-      "@type": "HowToStep",
-      position: 3,
-      name: "Execute with Confidence",
-      text: "Get concrete milestones for 6 months, 1 year, and 2 years with skill gaps, income continuity planning, and specific actions laid out clearly.",
-    },
-  ],
-};
+  };
+}
 
 // Non-translatable presentation metadata for each step. User-facing copy
 // (title/subtitle/description/details) is resolved via next-intl below.
@@ -60,9 +36,30 @@ const stepMeta = [
   { number: "03", accent: "from-cyan-500 to-teal-500" },
 ] as const;
 
-export default async function HowItWorksPage() {
+export default async function HowItWorksPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("howItWorks");
-  const crumbs = breadcrumbSchema([{ name: "How It Works", path: "/how-it-works" }]);
+  const crumbs = breadcrumbSchema([{ name: t("breadcrumb"), path: "/how-it-works" }]);
+
+  const howItWorksSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: t("schemaName"),
+    description: t("schemaDescription"),
+    url: "https://ai-career-pivot.com/how-it-works",
+    dateModified: "2026-06-12",
+    step: [1, 2, 3].map((n) => ({
+      "@type": "HowToStep",
+      position: n,
+      name: t(`step${n}Title`),
+      text: t(`step${n}Description`),
+    })),
+  };
 
   const steps = stepMeta.map((meta, i) => {
     const n = i + 1;
