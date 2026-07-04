@@ -128,12 +128,32 @@ export default async function BlogPost({
     { name: post.title, path: `/blog/${slug}` },
   ]);
 
+  const faqSchema =
+    post.faq && post.faq.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: post.faq.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
+  const jsonLd = faqSchema
+    ? [articleSchema, crumbs, faqSchema]
+    : [articleSchema, crumbs];
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([articleSchema, crumbs]),
+          __html: JSON.stringify(jsonLd),
         }}
       />
       <div className="min-h-screen bg-gray-950 text-white">
@@ -183,6 +203,26 @@ export default async function BlogPost({
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
             <MDXRemote source={post.content} components={components} />
           </article>
+
+          {post.faq && post.faq.length > 0 && (
+            <section className="mt-14 not-prose">
+              <h2 className="text-2xl font-bold tracking-tight mb-6">
+                Frequently asked questions
+              </h2>
+              <div className="divide-y divide-slate-800 border-t border-slate-800">
+                {post.faq.map((item, i) => (
+                  <div key={i} className="py-5">
+                    <h3 className="text-base font-semibold text-white mb-2">
+                      {item.question}
+                    </h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {item.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
         </main>
       </div>
