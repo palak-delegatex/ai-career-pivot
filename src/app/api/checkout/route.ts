@@ -1,7 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
-import { getSupabaseClient, getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
+import { PostHog } from "posthog-node";
 import { randomUUID } from "crypto";
+
+// Make order-persistence failures observable in PostHog rather than only in
+// server logs, so a missing/rotated-invalid SUPABASE_SERVICE_ROLE_KEY (the
+// AIC-436 class of bug) surfaces as a metric, not a silent gap. Best-effort:
+// never let telemetry failure affect the checkout response.
+async function trackOrderPersistFailed(props: {
+  email: string;
+  plan: string;
+  reason: "missing_service_role_key" | "insert_error";
+  error: string;
+  stripeSessionId?: string;
+}) {
+  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
+  if (!token) return;
+  try {
+    const ph = new PostHog(token, {
+      host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+      flushAt: 1,
+    });
+    ph.capture({
+      distinctId: props.email.toLowerCase(),
+      event: "order_persist_failed",
+      properties: {
+        plan: props.plan,
+        reason: props.reason,
+        error: props.error,
+        stripe_session_id: props.stripeSessionId ?? null,
+      },
+    });
+    await ph.shutdown();
+  } catch (err) {
+    console.error("Failed to capture order_persist_failed event:", err);
+  }
+}
 
 export async function POST(req: NextRequest) {
   const { email, discountCode, plan: planKey = "report" } = await req.json();
@@ -24,6 +59,12 @@ export async function POST(req: NextRequest) {
         supabase = getSupabaseAdmin();
       } catch {
         console.error("Bypass order blocked: SUPABASE_SERVICE_ROLE_KEY is not configured");
+        await trackOrderPersistFailed({
+          email,
+          plan: planKey,
+          reason: "missing_service_role_key",
+          error: "SUPABASE_SERVICE_ROLE_KEY is not configured",
+        });
         return NextResponse.json(
           { error: "Server configuration error — please contact support" },
           { status: 500 }
@@ -41,6 +82,13 @@ export async function POST(req: NextRequest) {
       });
       if (insertError) {
         console.error("Bypass order insert failed:", JSON.stringify(insertError));
+        await trackOrderPersistFailed({
+          email,
+          plan: planKey,
+          reason: "insert_error",
+          error: JSON.stringify(insertError),
+          stripeSessionId: bypassSessionId,
+        });
         return NextResponse.json(
           { error: "Failed to create order — please try again or contact support" },
           { status: 500 }
@@ -52,6 +100,27 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = getStripeClient();
+
+    // Acquire the service-role client up front so a missing/invalid
+    // SUPABASE_SERVICE_ROLE_KEY fails loud *before* we create a Stripe session
+    // (avoids charging a customer whose order — and entitlement — we can't
+    // persist). Mirrors the bypass path above.
+    let supabase;
+    try {
+      supabase = getSupabaseAdmin();
+    } catch {
+      console.error("Paid order blocked: SUPABASE_SERVICE_ROLE_KEY is not configured");
+      await trackOrderPersistFailed({
+        email,
+        plan: planKey,
+        reason: "missing_service_role_key",
+        error: "SUPABASE_SERVICE_ROLE_KEY is not configured",
+      });
+      return NextResponse.json(
+        { error: "Server configuration error — please contact support" },
+        { status: 500 }
+      );
+    }
 
     const priceData: Record<string, unknown> = {
       currency: "usd",
@@ -91,7 +160,6 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
-    const supabase = getSupabaseClient();
     const { error: orderError } = await supabase.from("orders").insert({
       email,
       stripe_session_id: session.id,
@@ -101,7 +169,17 @@ export async function POST(req: NextRequest) {
       plan_type: planKey,
     });
     if (orderError) {
+      // Don't block the paying customer: the Stripe webhook grants entitlement
+      // via the user_plans upsert independently of this pending-order row. But
+      // make the failure observable so it can't recur silently.
       console.error("Order insert failed (Stripe session created):", orderError);
+      await trackOrderPersistFailed({
+        email,
+        plan: planKey,
+        reason: "insert_error",
+        error: JSON.stringify(orderError),
+        stripeSessionId: session.id,
+      });
     }
 
     return NextResponse.json({ url: session.url });
