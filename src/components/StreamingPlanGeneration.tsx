@@ -13,6 +13,18 @@ type DeepPartial<T> = T extends object
 
 type PartialPlans = { plans?: DeepPartial<PivotPlan>[] };
 
+// Reliability tuning (AIC-371). Retry the whole generation on transient
+// failures (network drops, 5xx, 429, timeouts, truncated streams) with
+// exponential backoff. Non-transient failures (402 payment, 400 bad request)
+// are surfaced immediately without retrying.
+const MAX_GENERATION_ATTEMPTS = 3;
+const CLIENT_TIMEOUT_MS = 120_000;
+const BACKOFF_BASE_MS = 1_000;
+
+class TransientGenerationError extends Error {}
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const GENERATION_STEPS = [
   "Analyzing your background",
   "Identifying career paths",
@@ -263,22 +275,41 @@ export default function StreamingPlanGeneration({
   const [partialPlans, setPartialPlans] = useState<PartialPlans>({});
   const [selectedPlan, setSelectedPlan] = useState(0);
   const [done, setDone] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const startedRef = useRef(false);
 
-  const startGeneration = useCallback(async () => {
-    if (startedRef.current) return;
-    startedRef.current = true;
+  // One generation attempt. Throws TransientGenerationError for anything worth
+  // retrying (network/timeout/5xx/429/truncated stream), and a plain Error for
+  // terminal failures (402/400 etc.) that a retry won't fix.
+  const runAttempt = useCallback(async (): Promise<{ plans: PivotPlan[]; reportId?: string }> => {
+    setPartialPlans({});
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
 
     try {
-      const res = await fetch("/api/intake/plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile, paymentSessionId, valuesAssessment }),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/intake/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profile, paymentSessionId, valuesAssessment }),
+          signal: controller.signal,
+        });
+      } catch {
+        // Network failure or client-side timeout abort — always transient.
+        throw new TransientGenerationError(
+          controller.signal.aborted ? "Plan generation timed out." : "Network error during plan generation."
+        );
+      }
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Plan generation failed");
+        const message = data.error ?? "Plan generation failed";
+        // 5xx and 429 are transient; 4xx (payment/validation) are terminal.
+        if (res.status >= 500 || res.status === 429) {
+          throw new TransientGenerationError(message);
+        }
+        throw new Error(message);
       }
 
       const reportId = res.headers.get("x-report-id") ?? undefined;
@@ -301,18 +332,53 @@ export default function StreamingPlanGeneration({
         }
       }
 
+      let finalParsed: { plans?: PivotPlan[] };
       try {
-        const finalParsed = JSON.parse(accumulated) as { plans: PivotPlan[] };
-        setPartialPlans(finalParsed);
-        setDone(true);
-        onComplete(finalParsed.plans, reportId);
+        finalParsed = JSON.parse(accumulated) as { plans?: PivotPlan[] };
       } catch {
-        onError("Failed to parse the generated plans.");
+        // The stream ended mid-JSON — the server call errored or was cut off
+        // after headers flushed. Retry rather than failing the user.
+        throw new TransientGenerationError("The plan stream ended unexpectedly.");
       }
-    } catch (err) {
-      onError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+
+      if (!finalParsed.plans?.length) {
+        throw new TransientGenerationError("No plans were generated.");
+      }
+
+      return { plans: finalParsed.plans, reportId };
+    } finally {
+      clearTimeout(timeout);
     }
-  }, [profile, paymentSessionId, valuesAssessment, onComplete, onError]);
+  }, [profile, paymentSessionId, valuesAssessment]);
+
+  const startGeneration = useCallback(async () => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt++) {
+      try {
+        const { plans, reportId } = await runAttempt();
+        setPartialPlans({ plans });
+        setDone(true);
+        onComplete(plans, reportId);
+        return;
+      } catch (err) {
+        const isTransient = err instanceof TransientGenerationError;
+        const hasAttemptsLeft = attempt < MAX_GENERATION_ATTEMPTS;
+
+        if (isTransient && hasAttemptsLeft) {
+          setRetryAttempt(attempt);
+          // Exponential backoff: 1s, 2s, ... before the next attempt.
+          await delay(BACKOFF_BASE_MS * 2 ** (attempt - 1));
+          setRetryAttempt(0);
+          continue;
+        }
+
+        onError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        return;
+      }
+    }
+  }, [runAttempt, onComplete, onError]);
 
   useEffect(() => {
     startGeneration();
@@ -332,6 +398,15 @@ export default function StreamingPlanGeneration({
             : "Watch your personalized plans take shape in real time"}
         </p>
       </div>
+
+      {retryAttempt > 0 && (
+        <div className="bg-amber-900/30 border border-amber-700/40 rounded-2xl p-4 mb-6 flex items-center gap-3">
+          <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin shrink-0" />
+          <p className="text-sm text-amber-200">
+            Generation hit a snag — retrying (attempt {retryAttempt + 1} of {MAX_GENERATION_ATTEMPTS})…
+          </p>
+        </div>
+      )}
 
       {!done && <ProgressIndicator partialPlans={partialPlans} />}
 

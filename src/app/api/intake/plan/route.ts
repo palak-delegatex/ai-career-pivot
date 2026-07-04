@@ -8,6 +8,30 @@ import { getStripeClient } from "@/lib/stripe";
 import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
 import { fetchMarketContext } from "@/lib/market-data";
 
+// Plan generation is the core value prop — allow generous compute headroom on
+// Fluid Compute so the model has time to stream 2-3 full plans.
+export const maxDuration = 300;
+
+// Reliability tuning (AIC-371). streamObject's maxRetries applies exponential
+// backoff to transient failures (429 / 5xx / network) before streaming starts;
+// timeout caps the total model call so a stalled generation fails fast instead
+// of hanging until the platform limit.
+const PLAN_AI_TIMEOUT_MS = 90_000;
+const PLAN_AI_MAX_RETRIES = 3;
+// Market data is enrichment, not a hard dependency — never let a slow BLS/O*NET
+// lookup stall or fail the whole plan generation.
+const MARKET_DATA_TIMEOUT_MS = 6_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      () => { clearTimeout(timer); resolve(fallback); }
+    );
+  });
+}
+
 const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   type: "object",
   additionalProperties: false,
@@ -197,8 +221,13 @@ function inferPivotTargets(profile: UserProfile): string[] {
 
 async function fetchMarketDataForPlan(profile: UserProfile): Promise<Map<string, MarketContext>> {
   const targets = inferPivotTargets(profile);
+  // Each lookup is individually timeout-guarded and null-safe so one slow or
+  // failing role can't reject Promise.all and take down plan generation.
   const results = await Promise.all(
-    targets.map(async (role) => ({ role, ctx: await fetchMarketContext(role) }))
+    targets.map(async (role) => ({
+      role,
+      ctx: await withTimeout(fetchMarketContext(role), MARKET_DATA_TIMEOUT_MS, null),
+    }))
   );
   const map = new Map<string, MarketContext>();
   for (const { role, ctx } of results) {
@@ -322,6 +351,17 @@ export async function POST(req: NextRequest) {
   const result = streamObject({
     model: anthropic("claude-sonnet-4-6"),
     schema: pivotPlanJsonSchema,
+    // Retry transient upstream failures (429 / 5xx / network) with exponential
+    // backoff before streaming begins; cap total model time so a stalled call
+    // fails fast instead of hanging (AIC-371).
+    maxRetries: PLAN_AI_MAX_RETRIES,
+    timeout: PLAN_AI_TIMEOUT_MS,
+    // Streaming errors surface here rather than the outer try/catch, since the
+    // 200 response headers are already flushed. Log for observability; the
+    // client detects the truncated stream and retries.
+    onError: ({ error }) => {
+      console.error("Plan generation stream error:", error);
+    },
     onFinish: async ({ object }) => {
       if (reportId && object) {
         await supabase
