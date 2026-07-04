@@ -23,6 +23,7 @@ import {
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import ResumeGeneratorSheet from "@/components/ResumeGeneratorSheet";
 import LearningResources from "@/components/LearningResources";
+import { useLocale } from "next-intl";
 
 interface MatchedSkill {
   skill: string;
@@ -141,6 +142,7 @@ function StrengthBar({ strength }: { strength: "strong" | "moderate" | "basic" }
 }
 
 export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
+  const locale = useLocale();
   const [jobDesc, setJobDesc] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<GapAnalysisResult | null>(null);
@@ -177,6 +179,7 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
             education: profile.education,
             certifications: profile.certifications,
           },
+          locale,
         }),
       });
 

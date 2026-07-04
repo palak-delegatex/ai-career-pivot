@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
 import { sendDripEmail } from "@/lib/email-drip";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const FreeSnapshotSchema = z.object({
   paths: z.array(z.object({
@@ -30,12 +31,14 @@ export type FreeSnapshot = z.infer<typeof FreeSnapshotSchema>;
 
 export async function POST(req: NextRequest) {
   let profile: UserProfile;
+  let locale: string | undefined;
 
   const contentType = req.headers.get("content-type") ?? "";
   if (contentType.includes("multipart/form-data")) {
     const formData = await req.formData();
     const resumeFile = formData.get("resume") as File | null;
     const email = (formData.get("email") as string | null)?.toLowerCase().trim() ?? "";
+    locale = (formData.get("locale") as string | null) ?? undefined;
 
     if (!resumeFile) {
       return NextResponse.json({ error: "Resume file required" }, { status: 400 });
@@ -56,6 +59,7 @@ export async function POST(req: NextRequest) {
   } else {
     const body = await req.json();
     profile = body.profile;
+    locale = body.locale;
   }
 
   if (!profile?.skills?.length) {
@@ -88,7 +92,7 @@ USER PROFILE:
 - Transferable skills: ${profile.transferableSkills.slice(0, 8).join(", ")}
 - Education: ${profile.education.map(e => `${e.degree} in ${e.field}`).join("; ") || "Not specified"}
 
-Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.`,
+Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.${localeSystemPrompt(locale)}`,
   });
 
   if (profile.email && output?.paths?.length) {

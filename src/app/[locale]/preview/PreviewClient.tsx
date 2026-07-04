@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PreviewScoreRing from "@/components/PreviewScoreRing";
+import { useLocale } from "next-intl";
 import {
   trackPreviewStarted,
   trackPreviewCompleted,
@@ -76,6 +77,7 @@ function SkeletonResults() {
 }
 
 export default function PreviewClient() {
+  const locale = useLocale();
   const [currentRole, setCurrentRole] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [loading, setLoading] = useState(false);
@@ -103,7 +105,7 @@ export default function PreviewClient() {
         const res = await fetch("/api/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ currentRole, targetRole }),
+          body: JSON.stringify({ currentRole, targetRole, locale }),
         });
 
         if (!res.ok) throw new Error("Analysis failed");
@@ -143,7 +145,7 @@ export default function PreviewClient() {
         setLoading(false);
       }
     },
-    [currentRole, targetRole],
+    [currentRole, targetRole, locale],
   );
 
   return (

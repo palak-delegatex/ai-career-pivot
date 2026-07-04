@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { localeSystemPrompt } from "@/lib/locale";
 
 export async function POST(req: NextRequest) {
-  const { currentRole, targetRole } = await req.json();
+  const { currentRole, targetRole, locale } = await req.json();
 
   if (!currentRole?.trim() || !targetRole?.trim()) {
     return Response.json(
@@ -41,7 +42,7 @@ Analyze their skill gap and return ONLY valid JSON (no markdown, no code fences)
   ]
 }
 
-Generate exactly 5 skill gaps ordered by priority (high first). The matchScore should reflect realistic market alignment. topActions should be specific, actionable next steps. transferableStrengths should highlight what carries over from the current role. Return ONLY the JSON object.`,
+Generate exactly 5 skill gaps ordered by priority (high first). The matchScore should reflect realistic market alignment. topActions should be specific, actionable next steps. transferableStrengths should highlight what carries over from the current role. Return ONLY the JSON object.${localeSystemPrompt(locale)}`,
   });
 
   return result.toTextStreamResponse();

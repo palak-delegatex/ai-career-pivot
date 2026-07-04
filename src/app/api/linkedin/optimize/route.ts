@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const SectionRewriteSchema = z.object({
   section: z.enum([
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
     linkedinUrl,
     targetRole,
     targetIndustry,
+    locale,
   }: {
     profileData?: {
       headline?: string;
@@ -61,6 +63,7 @@ export async function POST(req: NextRequest) {
     linkedinUrl?: string;
     targetRole: string;
     targetIndustry?: string;
+    locale?: string;
   } = await req.json();
 
   if (!targetRole) {
@@ -210,7 +213,7 @@ Analyze and optimize this LinkedIn profile for the career pivot. For each sectio
 
 If a section has no content in the current profile, mark it as "Missing" and write what it should say.
 
-Be specific, actionable, and grounded in real recruiter behavior. Every suggestion should help this person show up in recruiter searches and tell a convincing pivot story.`,
+Be specific, actionable, and grounded in real recruiter behavior. Every suggestion should help this person show up in recruiter searches and tell a convincing pivot story.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {

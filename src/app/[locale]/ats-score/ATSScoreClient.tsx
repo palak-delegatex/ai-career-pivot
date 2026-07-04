@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
 import {
   Upload,
@@ -230,6 +231,7 @@ function MatchBreakdownBadges({ summary }: { summary: MatchSummary }) {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function ATSScoreClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -265,6 +267,7 @@ export default function ATSScoreClient() {
 
     const formData = new FormData();
     formData.append("resume", file);
+    formData.append("locale", locale);
     if (jobDescription.trim()) {
       formData.append("jobDescription", jobDescription.trim());
     }

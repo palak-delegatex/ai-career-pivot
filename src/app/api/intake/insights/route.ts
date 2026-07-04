@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import type { UserProfile } from "@/lib/intake";
+import { localeSystemPrompt } from "@/lib/locale";
 
 export async function POST(req: NextRequest) {
-  const { profile } = (await req.json()) as { profile: UserProfile };
+  const { profile, locale } = (await req.json()) as { profile: UserProfile; locale?: string };
 
   if (!profile || !profile.skills?.length) {
     return new Response(JSON.stringify({ error: "profile required" }), {
@@ -38,7 +39,7 @@ Rules:
 - Frame AI as a career multiplier — their domain expertise + AI fluency = a powerful combination
 - Use an encouraging but data-informed tone
 - Output ONLY the 5 insights, one per line, numbered 1-5
-- No headers, no introductions, no conclusions`,
+- No headers, no introductions, no conclusions${localeSystemPrompt(locale)}`,
     prompt: `Generate 5 personalized career insights for this professional:\n\n${profileSummary}`,
     maxOutputTokens: 500,
   });

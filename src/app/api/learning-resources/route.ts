@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const ResourceSchema = z.object({
   recommendations: z.array(
@@ -36,10 +37,12 @@ export async function POST(req: NextRequest) {
     skillGaps,
     targetRole,
     currentLevel,
+    locale,
   }: {
     skillGaps: { skill: string; currentLevel: string; requiredLevel: string; priority: string }[];
     targetRole?: string;
     currentLevel?: string;
+    locale?: string;
   } = await req.json();
 
   if (!skillGaps?.length) {
@@ -76,7 +79,7 @@ Also provide:
 - Quick wins — skills or resources that can show results within 1-2 weeks
 - Total estimated time to close all gaps
 
-Prioritize free and low-cost resources. Include at least one free option per skill when possible.`,
+Prioritize free and low-cost resources. Include at least one free option per skill when possible.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {

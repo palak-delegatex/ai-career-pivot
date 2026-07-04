@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Zap,
 } from "lucide-react";
+import { useLocale } from "next-intl";
 
 interface SkillGapInput {
   skill: string;
@@ -66,6 +67,7 @@ export default function LearningResources({
   skillGaps,
   targetRole,
 }: LearningResourcesProps) {
+  const locale = useLocale();
   const [data, setData] = useState<LearningResourceResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export default function LearningResources({
       const res = await fetch("/api/learning-resources", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skillGaps, targetRole }),
+        body: JSON.stringify({ skillGaps, targetRole, locale }),
       });
       if (!res.ok) throw new Error("Failed to load recommendations");
       const result = await res.json();

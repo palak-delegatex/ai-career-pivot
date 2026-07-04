@@ -6,6 +6,7 @@ import type { UserProfile, ValuesAssessment } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
 import { getStripeClient } from "@/lib/stripe";
 import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
   type: "object",
@@ -175,7 +176,7 @@ type PivotPlan = {
 };
 
 export async function POST(req: NextRequest) {
-  const { profile, paymentSessionId, valuesAssessment }: { profile: UserProfile; paymentSessionId?: string; valuesAssessment?: ValuesAssessment } = await req.json();
+  const { profile, paymentSessionId, valuesAssessment, locale }: { profile: UserProfile; paymentSessionId?: string; valuesAssessment?: ValuesAssessment; locale?: string } = await req.json();
 
   if (!profile) {
     return NextResponse.json({ error: "profile required" }, { status: 400 });
@@ -321,7 +322,7 @@ VALUES & PERSONALITY PROFILE:
 - Dealbreakers: ${valuesAssessment.dealbreakers.length > 0 ? valuesAssessment.dealbreakers.join(", ") : "None specified"}
 
 VALUES-AWARE PLANNING: Factor the user's values, work style, and energy profile into every plan. Prioritize career paths that align with their top values. Avoid recommending roles that conflict with their dealbreakers. Match work environments to their energy profile (e.g. introvert-leaning users should see remote-friendly or small-team roles). Reference their specific values in rationale.` : ""}
-Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.`,
+Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.${localeSystemPrompt(locale)}`,
   });
 
   return result.toTextStreamResponse({

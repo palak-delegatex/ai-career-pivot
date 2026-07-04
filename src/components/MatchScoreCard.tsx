@@ -8,6 +8,7 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import type { UserProfile } from "@/lib/intake";
+import { useLocale } from "next-intl";
 
 interface MatchScoreData {
   overallScore: number;
@@ -93,6 +94,7 @@ function SkeletonCard() {
 }
 
 export function MatchScoreCard({ profile }: { profile: UserProfile }) {
+  const locale = useLocale();
   const [data, setData] = useState<MatchScoreData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -104,7 +106,7 @@ export function MatchScoreCard({ profile }: { profile: UserProfile }) {
     fetch("/api/intake/match-score", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ profile }),
+      body: JSON.stringify({ profile, locale }),
     })
       .then((res) => {
         if (!res.ok) throw new Error("fetch failed");
@@ -127,7 +129,7 @@ export function MatchScoreCard({ profile }: { profile: UserProfile }) {
     return () => {
       cancelled = true;
     };
-  }, [profile]);
+  }, [profile, locale]);
 
   if (loading) return <SkeletonCard />;
   if (error || !data) return null;

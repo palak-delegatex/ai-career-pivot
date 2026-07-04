@@ -7,6 +7,7 @@ import {
   type MatchRateBreakdown,
   type JDKeywords,
 } from "@/lib/ats-scoring";
+import { localeSystemPrompt } from "@/lib/locale";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -87,6 +88,7 @@ interface TailorInput {
   resumeContent: string;
   jobDescription: string;
   profile: ResumeProfile;
+  locale?: string;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -225,7 +227,8 @@ async function tailorResume(
   resumeContent: string,
   profileStr: string,
   jdAnalysis: JDAnalysis,
-  originalScore: ATSMatch
+  originalScore: ATSMatch,
+  locale?: string
 ): Promise<TailoredResume> {
   const { output } = await generateText({
     model,
@@ -273,7 +276,7 @@ Return:
 - tailoredContent: the full rewritten resume in Markdown
 - changes: an array of every change made, with section, changeType (rewrite/reorder/add/keyword), original text, tailored text, and reason for the change.
 
-Be thorough — capture every meaningful change in the diff.`,
+Be thorough — capture every meaningful change in the diff.${localeSystemPrompt(locale)}`,
       },
     ],
   });
@@ -292,7 +295,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { resumeContent, jobDescription, profile } = body;
+  const { resumeContent, jobDescription, profile, locale } = body;
 
   if (!resumeContent?.trim()) {
     return NextResponse.json(
@@ -324,7 +327,8 @@ export async function POST(req: NextRequest) {
       resumeContent,
       profileStr,
       jdAnalysis,
-      originalScore
+      originalScore,
+      locale
     );
 
     const tailoredSemanticMatches = await getSemanticMatches(

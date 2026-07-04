@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateObject } from "ai";
 import { jsonSchema } from "ai";
 import type { UserProfile } from "@/lib/intake";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const matchScoreSchema = jsonSchema<MatchScoreResult>({
   type: "object",
@@ -36,7 +37,7 @@ type MatchScoreResult = {
 };
 
 export async function POST(req: NextRequest) {
-  const { profile }: { profile: UserProfile } = await req.json();
+  const { profile, locale }: { profile: UserProfile; locale?: string } = await req.json();
 
   if (!profile) {
     return NextResponse.json({ error: "profile required" }, { status: 400 });
@@ -70,7 +71,7 @@ PROFILE:
 - Certifications: ${profile.certifications.join(", ") || "None"}
 ${profile.location ? `- Location: ${[profile.location.city, profile.location.region, profile.location.country].filter(Boolean).join(", ")}` : ""}
 
-Evaluate honestly and specifically. Reference their actual skills and background.`,
+Evaluate honestly and specifically. Reference their actual skills and background.${localeSystemPrompt(locale)}`,
     });
 
     return NextResponse.json(object);

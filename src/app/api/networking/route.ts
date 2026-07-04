@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { localeSystemPrompt } from "@/lib/locale";
 
 const NetworkingSchema = z.object({
   communities: z.array(
@@ -55,11 +56,13 @@ export async function POST(req: NextRequest) {
     targetIndustry,
     location,
     currentRole,
+    locale,
   }: {
     targetRole: string;
     targetIndustry?: string;
     location?: string;
     currentRole?: string;
+    locale?: string;
   } = await req.json();
 
   if (!targetRole) {
@@ -91,7 +94,7 @@ Provide REAL, specific recommendations:
 
 5. ACTION PLAN: Specific networking actions for week 1 (quick wins), month 1 (building presence), and quarter 1 (establishing credibility).
 
-Focus on resources that are particularly valuable for CAREER PIVOTERS — communities that welcome newcomers, events with learning tracks, mentors who specialize in transitions.`,
+Focus on resources that are particularly valuable for CAREER PIVOTERS — communities that welcome newcomers, events with learning tracks, mentors who specialize in transitions.${localeSystemPrompt(locale)}`,
     });
 
     if (!output) {

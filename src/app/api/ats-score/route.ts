@@ -15,6 +15,7 @@ import {
   type CategoryScore,
   type EnrichedJDKeywords,
 } from "@/lib/ats-scoring";
+import { localeSystemPrompt } from "@/lib/locale";
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -164,6 +165,7 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("resume") as File | null;
   const jobDescription = formData.get("jobDescription") as string | null;
+  const locale = formData.get("locale") as string | null;
 
   if (!file) {
     return NextResponse.json(
@@ -198,9 +200,9 @@ export async function POST(req: NextRequest) {
 
   try {
     if (jobDescription?.trim()) {
-      return await scoreWithJD(file, base64, bytes, jobDescription);
+      return await scoreWithJD(file, base64, bytes, jobDescription, locale);
     } else {
-      return await scoreStandalone(file, base64, bytes);
+      return await scoreStandalone(file, base64, bytes, locale);
     }
   } catch (err) {
     console.error("ATS scoring error:", err);
@@ -215,7 +217,8 @@ async function scoreWithJD(
   file: File,
   base64: string,
   bytes: ArrayBuffer,
-  jobDescription: string
+  jobDescription: string,
+  locale?: string | null
 ): Promise<NextResponse> {
   const resumeText = file.type === "application/pdf"
     ? await extractTextForAnalysis(file.type, base64, bytes)
@@ -254,7 +257,7 @@ ${jobDescription.slice(0, 4000)}
 Provide:
 1. semanticKeywordMatches: keywords from the JD that are SEMANTICALLY present but not exact text matches (e.g. "team leadership" matching "managed a team of 8", "data visualization" matching "built dashboards and reports")
 2. contentSuggestions: 3-5 bullet points that could be improved with better action verbs, specificity, or keyword integration. Show current vs improved.
-3. topPriorityFixes: the 3-5 most impactful changes, considering both formatting issues and keyword gaps.`;
+3. topPriorityFixes: the 3-5 most impactful changes, considering both formatting issues and keyword gaps.${localeSystemPrompt(locale)}`;
 
       if (file.type === "application/pdf") {
         return generateText({
@@ -301,7 +304,8 @@ Provide:
 async function scoreStandalone(
   file: File,
   base64: string,
-  bytes: ArrayBuffer
+  bytes: ArrayBuffer,
+  locale?: string | null
 ): Promise<NextResponse> {
   const resumeText = file.type === "application/pdf"
     ? await extractTextForAnalysis(file.type, base64, bytes)
@@ -317,7 +321,7 @@ Provide:
 3. hardSkills: technical/domain-specific skills expected for this role
 4. softSkills: interpersonal/behavioral skills expected for this role
 5. contentSuggestions: 3-5 bullet points that could be improved
-6. topPriorityFixes: 3-5 most impactful changes`;
+6. topPriorityFixes: 3-5 most impactful changes${localeSystemPrompt(locale)}`;
 
   let output: z.infer<typeof StandaloneAnalysisSchema> | undefined;
 
