@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import {
   FileSignature,
@@ -48,17 +49,17 @@ interface JobPreview {
   matchScore: number;
 }
 
-const TONES: { key: Tone; label: string; desc: string }[] = [
-  { key: "professional", label: "Professional", desc: "Formal & polished" },
-  { key: "conversational", label: "Conversational", desc: "Warm & personable" },
-  { key: "bold", label: "Bold", desc: "Confident & direct" },
+const TONES: { key: Tone; labelKey: string; descKey: string }[] = [
+  { key: "professional", labelKey: "toneProfessionalName", descKey: "toneProfessionalDesc" },
+  { key: "conversational", labelKey: "toneConversationalName", descKey: "toneConversationalDesc" },
+  { key: "bold", labelKey: "toneBoldName", descKey: "toneBoldDesc" },
 ];
 
-const GENERATION_STEPS = [
-  "Analyzing job requirements",
-  "Mapping your skills",
-  "Crafting narrative",
-  "Polishing output",
+const GENERATION_STEP_KEYS = [
+  "genStepAnalyzing",
+  "genStepMapping",
+  "genStepCrafting",
+  "genStepPolishing",
 ];
 
 function extractJobPreview(
@@ -92,7 +93,7 @@ function extractJobPreview(
   }
 
   if (!role) {
-    role = lines[0]?.slice(0, 80) || "Unknown Role";
+    role = lines[0]?.slice(0, 80) || "";
   }
 
   const skillKeywords = text
@@ -125,16 +126,23 @@ function countWords(text: string): number {
     .filter(Boolean).length;
 }
 
-function getSections(text: string): { title: string; wordCount: number }[] {
+function getSections(text: string): { index: number; wordCount: number }[] {
   const paragraphs = text.split(/\n\n+/).filter((p) => p.trim());
-  const labels = ["Opening Hook", "Skills & Experience", "Pivot Narrative", "Closing"];
   return paragraphs.map((p, i) => ({
-    title: labels[i] || `Paragraph ${i + 1}`,
+    index: i,
     wordCount: countWords(p),
   }));
 }
 
+const SECTION_LABEL_KEYS = [
+  "sectionOpeningHook",
+  "sectionSkillsExperience",
+  "sectionPivotNarrative",
+  "sectionClosing",
+];
+
 export default function CoverLetterClient() {
+  const t = useTranslations("coverLetter");
   const [phase, setPhase] = useState<Phase>("setup");
   const [jobSource, setJobSource] = useState<JobSource>("paste");
   const [jobUrl, setJobUrl] = useState("");
@@ -194,7 +202,7 @@ export default function CoverLetterClient() {
 
   useEffect(() => {
     if (phase !== "generating") return;
-    const steps = GENERATION_STEPS.length;
+    const steps = GENERATION_STEP_KEYS.length;
     let step = 0;
     const interval = setInterval(() => {
       step++;
@@ -237,7 +245,7 @@ export default function CoverLetterClient() {
     setSavedId(null);
 
     const preview = extractJobPreview(jd, (profile.skills as string[]) || []);
-    const targetRole = preview?.role || "the role";
+    const targetRole = preview?.role || t("theRole");
 
     try {
       const res = await fetch("/api/resume-generator", {
@@ -281,7 +289,7 @@ export default function CoverLetterClient() {
 
       await persistToSupabase(content, targetRole, preview?.company);
     } catch {
-      setOutput("Sorry, something went wrong. Please try again.");
+      setOutput(t("generationFailed"));
       setPhase("done");
     }
   }
@@ -432,18 +440,26 @@ export default function CoverLetterClient() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">
-                  Generating Cover Letter
+                  {t("generatingCoverLetter")}
                 </h2>
                 <p className="text-xs text-slate-400">
-                  {jobPreview?.role && `For ${jobPreview.role}`}
-                  {jobPreview?.company && ` at ${jobPreview.company}`}
+                  {jobPreview?.role && jobPreview?.company
+                    ? t("generatingForRoleAtCompany", {
+                        role: jobPreview.role,
+                        company: jobPreview.company,
+                      })
+                    : jobPreview?.role
+                      ? t("generatingForRole", { role: jobPreview.role })
+                      : jobPreview?.company
+                        ? t("generatingAtCompany", { company: jobPreview.company })
+                        : null}
                 </p>
               </div>
             </div>
 
             <div className="space-y-3 mb-6">
-              {GENERATION_STEPS.map((step, i) => (
-                <div key={step} className="flex items-center gap-3">
+              {GENERATION_STEP_KEYS.map((stepKey, i) => (
+                <div key={stepKey} className="flex items-center gap-3">
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
                       i < genStep
@@ -464,7 +480,7 @@ export default function CoverLetterClient() {
                       i <= genStep ? "text-white" : "text-slate-500"
                     }`}
                   >
-                    {step}
+                    {t(stepKey)}
                   </span>
                 </div>
               ))}
@@ -495,7 +511,7 @@ export default function CoverLetterClient() {
           <aside className="hidden lg:flex flex-col w-56 border-r border-slate-700/60 bg-slate-900/80 shrink-0">
             <div className="p-4 border-b border-slate-700/40">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Sections
+                {t("sections")}
               </h3>
               <div className="space-y-1.5">
                 {sections.map((s, i) => (
@@ -504,10 +520,12 @@ export default function CoverLetterClient() {
                     className="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-slate-800 transition-colors group"
                   >
                     <span className="text-slate-300 group-hover:text-white">
-                      {s.title}
+                      {SECTION_LABEL_KEYS[s.index]
+                        ? t(SECTION_LABEL_KEYS[s.index])
+                        : t("paragraphLabel", { index: s.index + 1 })}
                     </span>
                     <span className="block text-[10px] text-slate-500">
-                      {s.wordCount} words
+                      {t("wordCount", { count: s.wordCount })}
                     </span>
                   </button>
                 ))}
@@ -515,10 +533,10 @@ export default function CoverLetterClient() {
             </div>
             <div className="p-4 flex-1 overflow-y-auto">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Version History
+                {t("versionHistory")}
               </h3>
               {versions.length === 0 ? (
-                <p className="text-xs text-slate-500">Current draft</p>
+                <p className="text-xs text-slate-500">{t("currentDraft")}</p>
               ) : (
                 <div className="space-y-1.5">
                   {versions.map((v, i) => (
@@ -550,21 +568,21 @@ export default function CoverLetterClient() {
                 <button
                   onClick={() => execCommand("bold")}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                  title="Bold"
+                  title={t("boldTitle")}
                 >
                   <Bold className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => execCommand("italic")}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                  title="Italic"
+                  title={t("italicTitle")}
                 >
                   <Italic className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => execCommand("underline")}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                  title="Underline"
+                  title={t("underlineTitle")}
                 >
                   <Underline className="w-4 h-4" />
                 </button>
@@ -572,14 +590,14 @@ export default function CoverLetterClient() {
                 <button
                   onClick={() => execCommand("undo")}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                  title="Undo"
+                  title={t("undoTitle")}
                 >
                   <Undo2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => execCommand("redo")}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                  title="Redo"
+                  title={t("redoTitle")}
                 >
                   <Redo2 className="w-4 h-4" />
                 </button>
@@ -589,7 +607,7 @@ export default function CoverLetterClient() {
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-emerald-400 hover:text-white bg-emerald-900/20 hover:bg-emerald-900/40 rounded-lg transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  Done Editing
+                  {t("doneEditing")}
                 </button>
               </div>
             )}
@@ -621,12 +639,12 @@ export default function CoverLetterClient() {
             <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/40 bg-slate-900/60">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500">
-                  {totalWords} words
+                  {t("wordCount", { count: totalWords })}
                 </span>
                 {saving && (
                   <span className="text-xs text-slate-500 flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" />
-                    Saving…
+                    {t("saving_ellipsis")}
                   </span>
                 )}
               </div>
@@ -640,14 +658,14 @@ export default function CoverLetterClient() {
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? t("copiedExclaim") : t("copy")}
                 </button>
                 <button
                   onClick={handleDownloadPdf}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  PDF
+                  {t("pdf")}
                 </button>
                 {!editing && (
                   <button
@@ -655,7 +673,7 @@ export default function CoverLetterClient() {
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
                   >
                     <Pencil className="w-3.5 h-3.5" />
-                    Edit
+                    {t("edit")}
                   </button>
                 )}
                 {savedId && (
@@ -665,7 +683,7 @@ export default function CoverLetterClient() {
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    Save Version
+                    {t("saveVersion")}
                   </button>
                 )}
                 <button
@@ -673,7 +691,7 @@ export default function CoverLetterClient() {
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Regenerate
+                  {t("regenerate")}
                 </button>
               </div>
             </div>
@@ -686,22 +704,22 @@ export default function CoverLetterClient() {
                 <ScoreRing
                   score={jobPreview.matchScore}
                   animated={true}
-                  label="Match Score"
+                  label={t("matchScore")}
                   size={96}
                 />
               )}
             </div>
             <div className="p-4 border-b border-slate-700/40">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Quality Checklist
+                {t("qualityChecklist")}
               </h3>
               <div className="space-y-2">
                 {[
-                  { label: "Opening hook", ok: totalWords > 30 },
-                  { label: "Skills highlighted", ok: matchedKeywords.length > 0 },
-                  { label: "Pivot narrative", ok: totalWords > 150 },
-                  { label: "Call to action", ok: totalWords > 250 },
-                  { label: "Word count 300-400", ok: totalWords >= 250 && totalWords <= 450 },
+                  { label: t("checkOpeningHook"), ok: totalWords > 30 },
+                  { label: t("checkSkillsHighlighted"), ok: matchedKeywords.length > 0 },
+                  { label: t("checkPivotNarrative"), ok: totalWords > 150 },
+                  { label: t("checkCallToAction"), ok: totalWords > 250 },
+                  { label: t("checkWordCount"), ok: totalWords >= 250 && totalWords <= 450 },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2">
                     <div
@@ -724,7 +742,7 @@ export default function CoverLetterClient() {
             </div>
             <div className="p-4 border-b border-slate-700/40">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Keywords Used
+                {t("keywordsUsed")}
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {matchedKeywords.map((kw) => (
@@ -737,14 +755,14 @@ export default function CoverLetterClient() {
                 ))}
                 {matchedKeywords.length === 0 && (
                   <span className="text-xs text-slate-500">
-                    No job keywords detected
+                    {t("noKeywordsDetected")}
                   </span>
                 )}
               </div>
             </div>
             <div className="p-4">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Missing Keywords
+                {t("missingKeywords")}
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {missingKeywords.map((kw) => (
@@ -766,7 +784,7 @@ export default function CoverLetterClient() {
                 ))}
                 {missingKeywords.length === 0 && (
                   <span className="text-xs text-slate-500">
-                    All keywords covered
+                    {t("allKeywordsCovered")}
                   </span>
                 )}
               </div>
@@ -783,31 +801,32 @@ export default function CoverLetterClient() {
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-600/20 border border-purple-600/30 text-purple-400 text-xs font-semibold mb-4">
           <FileSignature className="w-3.5 h-3.5" />
-          AI Cover Letter Generator
+          {t("badge")}
         </div>
         <h1 className="text-3xl lg:text-4xl font-extrabold mb-3 tracking-tight">
-          Create Your Cover Letter
+          {t("createHeading")}
         </h1>
         <p className="text-slate-400 leading-relaxed max-w-lg mx-auto">
-          Tailored to the job, powered by your profile. Generate a compelling
-          cover letter that highlights your pivot story.
+          {t("createSubtitle")}
         </p>
       </div>
 
       {!profileLoaded && (
         <div className="max-w-lg mx-auto bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">
           <p className="text-amber-300 font-semibold mb-1">
-            Profile not loaded
+            {t("profileNotLoaded")}
           </p>
           <p className="text-slate-400">
-            Complete the{" "}
-            <Link
-              href="/onboarding"
-              className="text-teal-400 hover:text-teal-300 underline"
-            >
-              career assessment
-            </Link>{" "}
-            first to generate personalized cover letters.
+            {t.rich("profileNotLoadedBody", {
+              link: (chunks) => (
+                <Link
+                  href="/onboarding"
+                  className="text-teal-400 hover:text-teal-300 underline"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -819,7 +838,7 @@ export default function CoverLetterClient() {
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
             <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
               <FileText className="w-4 h-4 text-purple-400" />
-              Job Description
+              {t("jobDescriptionSection")}
             </h2>
 
             <div className="flex gap-2 mb-4">
@@ -832,7 +851,7 @@ export default function CoverLetterClient() {
                 }`}
               >
                 <FileText className="w-3.5 h-3.5 inline mr-1.5" />
-                Paste Description
+                {t("pasteDescription")}
               </button>
               <button
                 onClick={() => setJobSource("url")}
@@ -843,7 +862,7 @@ export default function CoverLetterClient() {
                 }`}
               >
                 <LinkIcon className="w-3.5 h-3.5 inline mr-1.5" />
-                Job URL
+                {t("jobUrlTab")}
               </button>
             </div>
 
@@ -853,7 +872,7 @@ export default function CoverLetterClient() {
                   type="url"
                   value={jobUrl}
                   onChange={(e) => setJobUrl(e.target.value)}
-                  placeholder="https://linkedin.com/jobs/..."
+                  placeholder={t("jobUrlPlaceholder")}
                   className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
                 <button
@@ -866,14 +885,14 @@ export default function CoverLetterClient() {
                   ) : (
                     <ChevronRight className="w-4 h-4" />
                   )}
-                  Extract
+                  {t("extract")}
                 </button>
               </div>
             ) : (
               <textarea
                 value={jobText}
                 onChange={(e) => setJobText(e.target.value)}
-                placeholder="Paste the full job posting — we'll extract requirements and tailor your letter..."
+                placeholder={t("pasteJobPlaceholder")}
                 rows={6}
                 className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
               />
@@ -882,7 +901,7 @@ export default function CoverLetterClient() {
             {jobText.trim() && jobSource === "url" && (
               <div className="mt-3 flex items-center gap-2 text-xs text-emerald-400">
                 <Check className="w-3 h-3" />
-                Job description extracted
+                {t("jobDescriptionExtracted")}
               </div>
             )}
           </div>
@@ -891,19 +910,19 @@ export default function CoverLetterClient() {
           {resumes.length > 0 && (
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
               <h2 className="text-sm font-semibold text-white mb-3">
-                Resume Version
+                {t("resumeVersion")}
               </h2>
               <select
                 value={selectedResumeId}
                 onChange={(e) => setSelectedResumeId(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
               >
-                <option value="">Use profile data (default)</option>
+                <option value="">{t("useProfileData")}</option>
                 {resumes.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
                     {r.target_role ? ` — ${r.target_role}` : ""}
-                    {r.match_score ? ` (${r.match_score}% match)` : ""}
+                    {r.match_score ? ` (${t("resumeMatchSuffix", { score: r.match_score })})` : ""}
                   </option>
                 ))}
               </select>
@@ -912,25 +931,25 @@ export default function CoverLetterClient() {
 
           {/* Tone */}
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
-            <h2 className="text-sm font-semibold text-white mb-3">Tone</h2>
+            <h2 className="text-sm font-semibold text-white mb-3">{t("tone")}</h2>
             <div className="grid grid-cols-3 gap-2">
-              {TONES.map((t) => (
+              {TONES.map((option) => (
                 <button
-                  key={t.key}
-                  onClick={() => setTone(t.key)}
+                  key={option.key}
+                  onClick={() => setTone(option.key)}
                   className={`px-3 py-3 rounded-xl border text-center transition-all ${
-                    tone === t.key
+                    tone === option.key
                       ? "border-purple-500 bg-purple-900/20"
                       : "border-slate-700 bg-slate-800/40 hover:border-slate-600"
                   }`}
                 >
                   <p
-                    className={`text-sm font-medium ${tone === t.key ? "text-purple-300" : "text-slate-400"}`}
+                    className={`text-sm font-medium ${tone === option.key ? "text-purple-300" : "text-slate-400"}`}
                   >
-                    {t.label}
+                    {t(option.labelKey)}
                   </p>
                   <p className="text-[10px] text-slate-500 mt-0.5">
-                    {t.desc}
+                    {t(option.descKey)}
                   </p>
                 </button>
               ))}
@@ -940,8 +959,8 @@ export default function CoverLetterClient() {
           {/* Key emphasis points */}
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
             <h2 className="text-sm font-semibold text-white mb-3">
-              Key Emphasis Points{" "}
-              <span className="text-slate-500 font-normal">(optional)</span>
+              {t("keyEmphasisPoints")}{" "}
+              <span className="text-slate-500 font-normal">{t("optional")}</span>
             </h2>
             <div className="space-y-2">
               {keyPoints.map((point, i) => (
@@ -956,10 +975,10 @@ export default function CoverLetterClient() {
                     }}
                     placeholder={
                       i === 0
-                        ? "e.g. 5 years leading cross-functional teams"
+                        ? t("keyPointExample1")
                         : i === 1
-                          ? "e.g. Passionate about data-driven decisions"
-                          : "e.g. Built tools used by 10K+ users"
+                          ? t("keyPointExample2")
+                          : t("keyPointExample3")
                     }
                     className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
@@ -986,10 +1005,10 @@ export default function CoverLetterClient() {
             disabled={!jobText.trim() || !profileLoaded}
             className="w-full px-6 py-4 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg transition-colors shadow-lg shadow-purple-900/30"
           >
-            Generate Cover Letter →
+            {t("generateCta")}
           </button>
           <p className="text-slate-500 text-xs text-center">
-            Streams in real time · Edit, copy, or download PDF when done
+            {t("generateHelp")}
           </p>
         </div>
 
@@ -999,7 +1018,7 @@ export default function CoverLetterClient() {
             <>
               <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Job Preview
+                  {t("jobPreview")}
                 </h3>
                 <div className="space-y-2">
                   {jobPreview.role && (
@@ -1022,7 +1041,7 @@ export default function CoverLetterClient() {
                     .length > 0 && (
                     <div>
                       <p className="text-[10px] text-emerald-400 font-medium mb-1.5">
-                        Matched Skills
+                        {t("matchedSkills")}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {jobPreview.requirements
@@ -1042,7 +1061,7 @@ export default function CoverLetterClient() {
                     .length > 0 && (
                     <div>
                       <p className="text-[10px] text-amber-400 font-medium mb-1.5">
-                        Skills to Address
+                        {t("skillsToAddress")}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {jobPreview.requirements
@@ -1065,7 +1084,7 @@ export default function CoverLetterClient() {
                 <ScoreRing
                   score={jobPreview.matchScore}
                   animated={true}
-                  label="Match Score"
+                  label={t("matchScore")}
                   size={112}
                 />
               </div>
@@ -1074,7 +1093,7 @@ export default function CoverLetterClient() {
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-8 text-center">
               <FileText className="w-10 h-10 text-slate-600 mx-auto mb-3" />
               <p className="text-sm text-slate-500">
-                Paste a job description to see the match preview
+                {t("emptyPreview")}
               </p>
             </div>
           )}
@@ -1082,7 +1101,7 @@ export default function CoverLetterClient() {
           {/* Quick links */}
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Related Tools
+              {t("relatedTools")}
             </h3>
             <div className="space-y-2">
               <Link
@@ -1090,14 +1109,14 @@ export default function CoverLetterClient() {
                 className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
               >
                 <FileText className="w-4 h-4" />
-                Resume Generator
+                {t("resumeGenerator")}
               </Link>
               <Link
                 href="/ats-score"
                 className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
               >
                 <Sparkles className="w-4 h-4" />
-                ATS Score Checker
+                {t("atsScoreChecker")}
               </Link>
             </div>
           </div>

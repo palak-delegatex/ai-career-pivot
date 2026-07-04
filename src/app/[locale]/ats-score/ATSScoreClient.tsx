@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -148,12 +149,6 @@ const MATCH_TYPE_STYLE = {
   semantic: "bg-purple-900/30 border-purple-700/40 text-purple-300",
 };
 
-const MATCH_TYPE_LABEL = {
-  exact: "Exact",
-  variant: "Variant",
-  semantic: "Semantic",
-};
-
 const CATEGORY_COLOR: Record<string, { bar: string; text: string; bg: string; border: string }> = {
   hard_skills: { bar: "bg-blue-500", text: "text-blue-400", bg: "bg-blue-900/20", border: "border-blue-700/30" },
   soft_skills: { bar: "bg-violet-500", text: "text-violet-400", bg: "bg-violet-900/20", border: "border-violet-700/30" },
@@ -161,12 +156,6 @@ const CATEGORY_COLOR: Record<string, { bar: string; text: string; bg: string; bo
   searchability: { bar: "bg-amber-500", text: "text-amber-400", bg: "bg-amber-900/20", border: "border-amber-700/30" },
   formatting: { bar: "bg-emerald-500", text: "text-emerald-400", bg: "bg-emerald-900/20", border: "border-emerald-700/30" },
   recruiter_tips: { bar: "bg-rose-500", text: "text-rose-400", bg: "bg-rose-900/20", border: "border-rose-700/30" },
-};
-
-const SKILL_TYPE_LABEL: Record<string, string> = {
-  hard: "Hard Skill",
-  soft: "Soft Skill",
-  other: "Keyword",
 };
 
 // ── Components ───────────────────────────────────────────────────────────────
@@ -207,20 +196,26 @@ function MiniBar({ value, max = 100, color = "bg-blue-500" }: { value: number; m
   );
 }
 
-function MatchBreakdownBadges({ summary }: { summary: MatchSummary }) {
+function MatchBreakdownBadges({
+  summary,
+  labels,
+}: {
+  summary: MatchSummary;
+  labels: { exact: string; variant: string; semantic: string };
+}) {
   return (
     <div className="grid grid-cols-3 gap-2 text-center">
       <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-lg p-2">
         <div className="text-lg font-bold text-emerald-400">{summary.exactMatches}</div>
-        <div className="text-[10px] text-emerald-300/70">Exact</div>
+        <div className="text-[10px] text-emerald-300/70">{labels.exact}</div>
       </div>
       <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-2">
         <div className="text-lg font-bold text-blue-400">{summary.variantMatches}</div>
-        <div className="text-[10px] text-blue-300/70">Variant</div>
+        <div className="text-[10px] text-blue-300/70">{labels.variant}</div>
       </div>
       <div className="bg-purple-900/20 border border-purple-700/30 rounded-lg p-2">
         <div className="text-lg font-bold text-purple-400">{summary.semanticMatches}</div>
-        <div className="text-[10px] text-purple-300/70">Semantic</div>
+        <div className="text-[10px] text-purple-300/70">{labels.semantic}</div>
       </div>
     </div>
   );
@@ -229,6 +224,11 @@ function MatchBreakdownBadges({ summary }: { summary: MatchSummary }) {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function ATSScoreClient() {
+  const t = useTranslations("atsScore");
+  const matchTypeLabel = (mt: "exact" | "variant" | "semantic") =>
+    t(`matchType.${mt}`);
+  const skillTypeLabel = (st: string) =>
+    st === "hard" ? t("skillType.hard") : st === "soft" ? t("skillType.soft") : t("skillType.other");
   const [phase, setPhase] = useState<Phase>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -246,11 +246,11 @@ export default function ATSScoreClient() {
       "text/plain",
     ];
     if (!allowed.includes(f.type)) {
-      setError("Only PDF, DOCX, DOC, and TXT files are supported");
+      setError(t("errors.fileType"));
       return;
     }
     if (f.size > 5 * 1024 * 1024) {
-      setError("File must be under 5MB");
+      setError(t("errors.fileSize"));
       return;
     }
     setFile(f);
@@ -275,13 +275,13 @@ export default function ATSScoreClient() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Analysis failed");
+        throw new Error(data.error || t("errors.analysisFailed"));
       }
       const data: ATSResult = await res.json();
       setResult(data);
       setPhase("results");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("errors.generic"));
       setPhase("upload");
     }
   }
@@ -290,9 +290,9 @@ export default function ATSScoreClient() {
     return (
       <main className="max-w-2xl mx-auto px-6 py-24 text-center">
         <Loader2 className="w-10 h-10 text-blue-400 animate-spin mx-auto mb-4" />
-        <h2 className="text-xl font-bold mb-2">Scanning Your Resume</h2>
+        <h2 className="text-xl font-bold mb-2">{t("loading.title")}</h2>
         <p className="text-slate-400 text-sm">
-          Running formatting checks, keyword matching, and content analysis...
+          {t("loading.subtitle")}
         </p>
       </main>
     );
@@ -308,18 +308,18 @@ export default function ATSScoreClient() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight mb-1">
-              ATS Score Results
+              {t("results.title")}
             </h1>
             <p className="text-slate-400 text-sm">
               {file?.name}
-              {jobDescription.trim() && " · Compared against job description"}
+              {jobDescription.trim() && ` · ${t("results.comparedAgainstJd")}`}
             </p>
           </div>
           <button
             onClick={() => { setPhase("upload"); setResult(null); setFile(null); }}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
           >
-            Scan another resume
+            {t("results.scanAnother")}
           </button>
         </div>
 
@@ -330,12 +330,12 @@ export default function ATSScoreClient() {
             <div className="text-2xl font-bold mb-1">{result.scoreLabel}</div>
             <p className="text-slate-400 text-sm mb-4">
               {result.overallScore >= 80
-                ? "Your resume is well-optimized for ATS systems."
+                ? t("results.scoreExplanation.high")
                 : result.overallScore >= 60
-                  ? "Your resume passes most ATS filters but has room for improvement."
-                  : "Your resume may get filtered out by ATS systems. Priority fixes below."}
+                  ? t("results.scoreExplanation.medium")
+                  : t("results.scoreExplanation.low")}
             </p>
-            <div className="text-sm font-semibold text-white mb-2">Top Priority Fixes</div>
+            <div className="text-sm font-semibold text-white mb-2">{t("results.topPriorityFixes")}</div>
             <ol className="space-y-1.5">
               {result.topPriorityFixes.map((fix, i) => (
                 <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
@@ -352,7 +352,7 @@ export default function ATSScoreClient() {
         {/* Category Breakdown */}
         {result.categoryScores && result.categoryScores.length > 0 && (
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5 mb-8">
-            <h2 className="text-sm font-bold text-slate-300 mb-4 uppercase tracking-wider">Score Breakdown</h2>
+            <h2 className="text-sm font-bold text-slate-300 mb-4 uppercase tracking-wider">{t("results.scoreBreakdown")}</h2>
             <div className="space-y-3">
               {result.categoryScores.map((cat) => {
                 const colors = CATEGORY_COLOR[cat.key] || CATEGORY_COLOR.hard_skills;
@@ -361,7 +361,7 @@ export default function ATSScoreClient() {
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-white">{cat.name}</span>
-                        <span className="text-[10px] text-slate-500">{Math.round(cat.weight * 100)}% weight</span>
+                        <span className="text-[10px] text-slate-500">{t("results.weight", { pct: Math.round(cat.weight * 100) })}</span>
                       </div>
                       <span className={`text-sm font-bold ${colors.text}`}>{cat.score}/100</span>
                     </div>
@@ -378,13 +378,13 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Target className="w-5 h-5 text-blue-400" />
-              Match Rate Breakdown
+              {t("matchRate.title")}
             </h2>
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
               <div className="grid grid-cols-2 gap-6 mb-5">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-slate-300">Required Skills</span>
+                    <span className="text-sm text-slate-300">{t("matchRate.requiredSkills")}</span>
                     <span className="text-sm font-bold text-white">{summary.requiredHit}/{summary.requiredTotal}</span>
                   </div>
                   <MiniBar
@@ -395,7 +395,7 @@ export default function ATSScoreClient() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-slate-300">Preferred Skills</span>
+                    <span className="text-sm text-slate-300">{t("matchRate.preferredSkills")}</span>
                     <span className="text-sm font-bold text-white">{summary.preferredHit}/{summary.preferredTotal}</span>
                   </div>
                   <MiniBar
@@ -406,8 +406,8 @@ export default function ATSScoreClient() {
                 </div>
               </div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-slate-300">Overall Keywords</span>
-                <span className="text-sm font-bold text-white">{summary.matchedKeywords}/{summary.totalKeywords} matched</span>
+                <span className="text-sm text-slate-300">{t("matchRate.overallKeywords")}</span>
+                <span className="text-sm font-bold text-white">{t("matchRate.matchedCount", { matched: summary.matchedKeywords, total: summary.totalKeywords })}</span>
               </div>
               <MiniBar
                 value={summary.matchedKeywords}
@@ -415,8 +415,15 @@ export default function ATSScoreClient() {
                 color="bg-blue-500"
               />
               <div className="mt-4">
-                <div className="text-xs text-slate-400 mb-2">Match types</div>
-                <MatchBreakdownBadges summary={summary} />
+                <div className="text-xs text-slate-400 mb-2">{t("matchRate.matchTypes")}</div>
+                <MatchBreakdownBadges
+                  summary={summary}
+                  labels={{
+                    exact: matchTypeLabel("exact"),
+                    variant: matchTypeLabel("variant"),
+                    semantic: matchTypeLabel("semantic"),
+                  }}
+                />
               </div>
             </div>
           </section>
@@ -427,18 +434,23 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              Matched Keywords ({result.keywordAnalysis.foundKeywords.length})
+              {t("matchedKeywords.title", { count: result.keywordAnalysis.foundKeywords.length })}
             </h2>
             <div className="flex flex-wrap gap-2">
               {result.keywordAnalysis.foundKeywords.map((kw, i) => (
                 <span
                   key={i}
                   className={`text-xs px-2.5 py-1.5 rounded-full border flex items-center gap-1.5 ${MATCH_TYPE_STYLE[kw.matchType]}`}
-                  title={`${MATCH_TYPE_LABEL[kw.matchType]} match · ${SKILL_TYPE_LABEL[kw.skillType]} · ${kw.frequency}x · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
+                  title={t("matchedKeywords.tooltip", {
+                    matchType: matchTypeLabel(kw.matchType),
+                    skillType: skillTypeLabel(kw.skillType),
+                    frequency: kw.frequency,
+                    foundIn: kw.foundIn.join(", ") || t("matchedKeywords.semanticFallback"),
+                  })}
                 >
                   {kw.keyword}
-                  {kw.frequency > 1 && <span className="text-[9px] opacity-60">{kw.frequency}x</span>}
-                  <span className="text-[9px] opacity-60">{MATCH_TYPE_LABEL[kw.matchType]}</span>
+                  {kw.frequency > 1 && <span className="text-[9px] opacity-60">{t("matchedKeywords.frequency", { frequency: kw.frequency })}</span>}
+                  <span className="text-[9px] opacity-60">{matchTypeLabel(kw.matchType)}</span>
                 </span>
               ))}
             </div>
@@ -450,22 +462,22 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-400" />
-              Missing Keywords ({result.keywordAnalysis.missingKeywords.length})
+              {t("missingKeywords.title", { count: result.keywordAnalysis.missingKeywords.length })}
             </h2>
             <div className="space-y-3">
               {result.keywordAnalysis.missingKeywords.map((kw, i) => (
                 <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-sm">{kw.keyword}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${
+                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
                       kw.importance === "critical" ? SEVERITY_STYLE.critical
                         : kw.importance === "important" ? SEVERITY_STYLE.warning
                           : SEVERITY_STYLE.minor
                     }`}>
-                      {kw.importance}
+                      {t(`importance.${kw.importance}`)}
                     </span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
-                      {SKILL_TYPE_LABEL[kw.skillType]}
+                      {skillTypeLabel(kw.skillType)}
                     </span>
                     {kw.suggestedSection && (
                       <span className="text-xs text-slate-500 flex items-center gap-1">
@@ -486,7 +498,7 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
-              Format Issues ({criticals.length} critical, {warnings.length} warnings)
+              {t("formatIssues.title", { critical: criticals.length, warnings: warnings.length })}
             </h2>
             <div className="space-y-3">
               {result.formatIssues.map((issue, i) => (
@@ -495,7 +507,7 @@ export default function ATSScoreClient() {
                     <span className="font-semibold text-sm">{issue.issue}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-medium text-slate-400 capitalize">{issue.category.replace("_", " ")}</span>
-                      <span className="text-xs font-medium capitalize">{issue.severity}</span>
+                      <span className="text-xs font-medium">{t(`severity.${issue.severity}`)}</span>
                     </div>
                   </div>
                   <p className="text-sm text-slate-300">{issue.fix}</p>
@@ -509,21 +521,21 @@ export default function ATSScoreClient() {
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <Search className="w-5 h-5 text-blue-400" />
-            Section Analysis
+            {t("sectionAnalysis.title")}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {result.sectionAnalysis.map((s, i) => (
               <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold text-sm">{s.section}</span>
-                  <span className={`text-xs font-medium capitalize ${QUALITY_STYLE[s.quality]}`}>
-                    {s.present ? s.quality : "missing"}
+                  <span className={`text-xs font-medium ${QUALITY_STYLE[s.quality]}`}>
+                    {s.present ? t(`quality.${s.quality}`) : t("quality.missing")}
                   </span>
                 </div>
                 {s.present && (
                   <div className="mb-2">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-slate-500">Keyword coverage</span>
+                      <span className="text-[10px] text-slate-500">{t("sectionAnalysis.keywordCoverage")}</span>
                       <span className="text-[10px] text-slate-400">{s.coverage}%</span>
                     </div>
                     <MiniBar
@@ -538,7 +550,7 @@ export default function ATSScoreClient() {
                       <span key={j} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-900/30 text-emerald-300">{kw}</span>
                     ))}
                     {s.keywordsFound.length > 5 && (
-                      <span className="text-[10px] text-slate-500">+{s.keywordsFound.length - 5} more</span>
+                      <span className="text-[10px] text-slate-500">{t("sectionAnalysis.moreKeywords", { count: s.keywordsFound.length - 5 })}</span>
                     )}
                   </div>
                 )}
@@ -553,7 +565,7 @@ export default function ATSScoreClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-400" />
-              Content Improvements
+              {t("contentImprovements.title")}
             </h2>
             <div className="space-y-4">
               {result.contentSuggestions.map((s, i) => (
@@ -561,12 +573,12 @@ export default function ATSScoreClient() {
                   <div className="text-xs text-slate-400 mb-2">{s.area}</div>
                   <div className="flex items-start gap-3">
                     <div className="flex-1 bg-red-950/20 border border-red-900/30 rounded-lg p-3">
-                      <div className="text-[10px] text-red-400 font-semibold mb-1">CURRENT</div>
+                      <div className="text-[10px] text-red-400 font-semibold mb-1">{t("contentImprovements.current")}</div>
                       <p className="text-sm text-slate-300">{s.current}</p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-slate-500 mt-3 shrink-0" />
                     <div className="flex-1 bg-emerald-950/20 border border-emerald-900/30 rounded-lg p-3">
-                      <div className="text-[10px] text-emerald-400 font-semibold mb-1">IMPROVED</div>
+                      <div className="text-[10px] text-emerald-400 font-semibold mb-1">{t("contentImprovements.improved")}</div>
                       <p className="text-sm text-slate-300">{s.improved}</p>
                     </div>
                   </div>
@@ -581,7 +593,7 @@ export default function ATSScoreClient() {
           <section className="mb-12">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-blue-400" />
-              Detailed Checks ({result.categoryScores.reduce((s, c) => s + c.checks.length, 0)} total)
+              {t("detailedChecks.title", { total: result.categoryScores.reduce((s, c) => s + c.checks.length, 0) })}
             </h2>
             <div className="space-y-4">
               {result.categoryScores.map((cat) => {
@@ -593,7 +605,7 @@ export default function ATSScoreClient() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className={`font-semibold text-sm ${colors.text}`}>{cat.name}</span>
-                        <span className="text-xs text-slate-400">{passed}/{total} passed</span>
+                        <span className="text-xs text-slate-400">{t("detailedChecks.passedCount", { passed, total })}</span>
                       </div>
                       <span className={`text-lg font-bold ${colors.text}`}>{cat.score}</span>
                     </div>
@@ -629,13 +641,13 @@ export default function ATSScoreClient() {
             href="/resume-generator"
             className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"
           >
-            Generate ATS-Optimized Resume
+            {t("results.generateResumeCta")}
           </Link>
           <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
           >
-            Back to Dashboard
+            {t("results.backToDashboard")}
           </Link>
         </div>
       </main>
@@ -648,14 +660,13 @@ export default function ATSScoreClient() {
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-600/20 border border-blue-600/30 text-blue-400 text-xs font-semibold mb-4">
           <FileText className="w-3.5 h-3.5" />
-          ATS Compatibility Score
+          {t("upload.badge")}
         </div>
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-          Will Your Resume Pass?
+          {t("upload.title")}
         </h1>
         <p className="text-slate-400 leading-relaxed">
-          Upload your resume and get an instant ATS score with formatting checks,
-          keyword matching, and specific fixes to beat applicant tracking systems.
+          {t("upload.description")}
         </p>
       </div>
 
@@ -695,7 +706,7 @@ export default function ATSScoreClient() {
               <div className="text-left">
                 <p className="text-sm font-semibold text-white">{file.name}</p>
                 <p className="text-xs text-slate-400">
-                  {(file.size / 1024).toFixed(0)} KB · Click to change
+                  {t("upload.fileSizeChange", { size: (file.size / 1024).toFixed(0) })}
                 </p>
               </div>
             </div>
@@ -703,9 +714,9 @@ export default function ATSScoreClient() {
             <>
               <Upload className="w-8 h-8 text-slate-400 mx-auto mb-3" />
               <p className="text-sm text-slate-300 font-medium mb-1">
-                Drop your resume here or click to browse
+                {t("upload.dropzoneTitle")}
               </p>
-              <p className="text-xs text-slate-500">PDF, DOCX, DOC, or TXT — max 5MB</p>
+              <p className="text-xs text-slate-500">{t("upload.dropzoneHint")}</p>
             </>
           )}
         </div>
@@ -716,15 +727,15 @@ export default function ATSScoreClient() {
           className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
         >
           <FileText className="w-4 h-4 text-blue-400" />
-          Compare against a job description
-          <span className="text-xs text-slate-500 font-normal">(recommended)</span>
+          {t("upload.compareJd")}
+          <span className="text-xs text-slate-500 font-normal">{t("upload.recommended")}</span>
           {showJd ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
         {showJd && (
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste the job posting here for keyword-specific scoring..."
+            placeholder={t("upload.jdPlaceholder")}
             rows={5}
             className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
           />
@@ -737,11 +748,11 @@ export default function ATSScoreClient() {
           disabled={!file}
           className="w-full px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-lg transition-colors shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Score My Resume
+          {t("upload.submit")}
         </button>
 
         <p className="text-slate-500 text-xs text-center">
-          AI-powered analysis takes ~15 seconds
+          {t("upload.footnote")}
         </p>
       </div>
     </main>

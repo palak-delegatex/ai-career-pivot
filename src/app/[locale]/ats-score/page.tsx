@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import ATSScoreClient from "./ATSScoreClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "ATS Resume Score | AICareerPivot",
-  description:
-    "Upload your resume and get an instant ATS compatibility score with specific fixes to beat applicant tracking systems.",
-  alternates: { canonical: "https://ai-career-pivot.com/ats-score" },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "atsScore" });
+  return { title: t("metaTitle"), description: t("metaDescription"), alternates: { canonical: "https://ai-career-pivot.com/ats-score" } };
+}
 
 export default function ATSScorePage() {
   const crumbs = breadcrumbSchema([{ name: "ATS Score", path: "/ats-score" }]);

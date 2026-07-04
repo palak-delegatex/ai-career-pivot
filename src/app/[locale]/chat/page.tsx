@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Send, ArrowLeft, Sparkles, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import WeeklyCheckIn from "@/components/WeeklyCheckIn";
@@ -135,6 +136,7 @@ function ChatMessage({ msg }: { msg: Message }) {
 }
 
 export default function ChatPage() {
+  const t = useTranslations("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -377,7 +379,7 @@ export default function ChatPage() {
         ...prev.filter((m) => m.content !== ""),
         {
           role: "assistant",
-          content: "Sorry, I had trouble responding. Please try again in a moment.",
+          content: t("errorResponse"),
           timestamp: Date.now(),
         },
       ]);
@@ -405,7 +407,7 @@ export default function ChatPage() {
         <main className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-slate-400">Loading your coaching session...</p>
+            <p className="text-slate-400">{t("loading")}</p>
           </div>
         </main>
       </AuthenticatedLayout>
@@ -417,12 +419,12 @@ export default function ChatPage() {
       <AuthenticatedLayout>
         <main className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <p className="text-slate-400 mb-4">No career plan found. Complete your assessment first.</p>
+            <p className="text-slate-400 mb-4">{t("noPlan")}</p>
             <Link
               href="/dashboard"
               className="px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors inline-block"
             >
-              Go to Dashboard
+              {t("goToDashboard")}
             </Link>
           </div>
         </main>
@@ -440,13 +442,13 @@ export default function ChatPage() {
             <Link
               href="/dashboard"
               className="text-slate-400 hover:text-white transition-colors p-1"
-              aria-label="Back to dashboard"
+              aria-label={t("backToDashboard")}
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <CoachAvatar />
             <div>
-              <h1 className="text-sm font-bold text-white">Career Coach</h1>
+              <h1 className="text-sm font-bold text-white">{t("title")}</h1>
               <p className="text-xs text-slate-400">{planContext.targetRole}</p>
             </div>
           </div>
@@ -455,7 +457,7 @@ export default function ChatPage() {
               onClick={() => setSessionSelectorOpen(!sessionSelectorOpen)}
               className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-800"
             >
-              Previous sessions
+              {t("previousSessions")}
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
             {sessionSelectorOpen && (
@@ -490,9 +492,9 @@ export default function ChatPage() {
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/10 border border-teal-500/20 mb-4">
                 <Sparkles className="w-6 h-6 text-teal-400" />
               </div>
-              <h2 className="text-lg font-bold text-white mb-1">Career Coach</h2>
+              <h2 className="text-lg font-bold text-white mb-1">{t("title")}</h2>
               <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-                Your AI coaching partner for the {planContext.targetRole} pivot. Ask about your progress, get advice on next steps, or work through challenges.
+                {t("emptyStateDescription", { targetRole: planContext.targetRole })}
               </p>
             </div>
           )}
@@ -532,7 +534,7 @@ export default function ChatPage() {
               value={input}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Ask your career coach..."
+              placeholder={t("inputPlaceholder")}
               rows={1}
               style={{ minHeight: "44px", maxHeight: "120px" }}
               className="flex-1 bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500 resize-none transition-colors overflow-y-auto"
@@ -541,12 +543,12 @@ export default function ChatPage() {
               onClick={() => handleSend()}
               disabled={!input.trim() || streaming}
               className="p-2.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:hover:bg-teal-600 text-white rounded-xl transition-colors shrink-0"
-              aria-label="Send message"
+              aria-label={t("sendMessage")}
             >
               <Send className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-[10px] text-slate-600 mt-1.5 text-center">Enter to send · Shift+Enter for new line</p>
+          <p className="text-[10px] text-slate-600 mt-1.5 text-center">{t("inputHint")}</p>
         </div>
       </div>
     </main>

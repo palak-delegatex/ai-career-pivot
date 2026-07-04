@@ -20,6 +20,7 @@ import {
   Target,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { LinkedInOptimizeResult } from "@/app/api/linkedin/optimize/route";
 
 type Phase = "input" | "loading" | "results";
@@ -115,6 +116,7 @@ function ScoreRing({ score, size = 100 }: { score: number; size?: number }) {
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  const t = useTranslations("linkedinOptimizer");
 
   return (
     <button
@@ -128,12 +130,12 @@ function CopyButton({ text }: { text: string }) {
       {copied ? (
         <>
           <Check className="w-3 h-3 text-emerald-400" />
-          <span className="text-emerald-400">Copied</span>
+          <span className="text-emerald-400">{t("copied")}</span>
         </>
       ) : (
         <>
           <Copy className="w-3 h-3" />
-          <span>Copy</span>
+          <span>{t("copy")}</span>
         </>
       )}
     </button>
@@ -158,6 +160,7 @@ function highlightChanges(original: string, suggested: string) {
 }
 
 export default function LinkedInOptimizerClient() {
+  const t = useTranslations("linkedinOptimizer");
   const [phase, setPhase] = useState<Phase>("input");
   const [inputTab, setInputTab] = useState<InputTab>("url");
   const [linkedinUrl, setLinkedinUrl] = useState("");
@@ -249,22 +252,22 @@ export default function LinkedInOptimizerClient() {
 
   async function optimize() {
     if (!targetRole.trim()) {
-      setError("Target role is required.");
+      setError(t("errorTargetRoleRequired"));
       return;
     }
 
     if (inputTab === "url" && !linkedinUrl.trim()) {
-      setError("Please enter a LinkedIn profile URL.");
+      setError(t("errorUrlRequired"));
       return;
     }
 
     if (inputTab === "paste" && !pasteHeadline && !pasteSummary) {
-      setError("Please paste at least your headline or summary.");
+      setError(t("errorPasteRequired"));
       return;
     }
 
     if (inputTab === "onboarding" && !intakeProfile) {
-      setError("No onboarding data found. Complete the career assessment first.");
+      setError(t("errorNoOnboarding"));
       return;
     }
 
@@ -291,7 +294,7 @@ export default function LinkedInOptimizerClient() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Optimization failed");
+        throw new Error(data.error || t("errorOptimizationFailed"));
       }
 
       const data: LinkedInOptimizeResult = await res.json();
@@ -299,7 +302,7 @@ export default function LinkedInOptimizerClient() {
       setPhase("results");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Try again."
+        err instanceof Error ? err.message : t("errorGeneric")
       );
       setPhase("input");
     }
@@ -310,13 +313,12 @@ export default function LinkedInOptimizerClient() {
     return (
       <main className="max-w-2xl mx-auto px-6 py-24 text-center">
         <Loader2 className="w-10 h-10 text-teal-400 animate-spin mx-auto mb-4" />
-        <h2 className="text-xl font-bold mb-2">Optimizing Your Profile</h2>
+        <h2 className="text-xl font-bold mb-2">{t("loadingTitle")}</h2>
         <p className="text-slate-400 text-sm">
-          Analyzing each section for pivot-readiness and writing targeted
-          rewrites...
+          {t("loadingSubtitle")}
         </p>
         <div className="mt-8 space-y-3 max-w-xs mx-auto">
-          {["Scoring sections", "Writing rewrites", "Finding keywords"].map(
+          {[t("loadingStep1"), t("loadingStep2"), t("loadingStep3")].map(
             (step, i) => (
               <div
                 key={step}
@@ -338,14 +340,10 @@ export default function LinkedInOptimizerClient() {
   // --- Results Phase ---
   if (phase === "results" && result) {
     const labelDesc: Record<string, string> = {
-      "Pivot-Ready":
-        "Your profile effectively tells your career pivot story. Minor tweaks will make it even stronger.",
-      "Almost There":
-        "Strong foundation with a few sections that need better pivot framing to attract recruiters.",
-      "Needs Reframing":
-        "Your experience is valuable but needs significant reframing to signal your career pivot.",
-      "Major Rewrite Needed":
-        "Your profile currently reads for your old career. A full rewrite will transform your visibility.",
+      "Pivot-Ready": t("labelDescPivotReady"),
+      "Almost There": t("labelDescAlmostThere"),
+      "Needs Reframing": t("labelDescNeedsReframing"),
+      "Major Rewrite Needed": t("labelDescMajorRewrite"),
     };
 
     return (
@@ -353,20 +351,23 @@ export default function LinkedInOptimizerClient() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight mb-1">
-              LinkedIn Optimization Results
+              {t("resultsTitle")}
             </h1>
             <p className="text-slate-400 text-sm">
-              Pivot-optimized for{" "}
-              <span className="text-white font-medium">{targetRole}</span>
-              {targetIndustry && (
-                <>
-                  {" "}
-                  in{" "}
-                  <span className="text-white font-medium">
-                    {targetIndustry}
-                  </span>
-                </>
-              )}
+              {targetIndustry
+                ? t.rich("resultsSubtitleWithIndustry", {
+                    role: targetRole,
+                    industry: targetIndustry,
+                    strong: (chunks) => (
+                      <span className="text-white font-medium">{chunks}</span>
+                    ),
+                  })
+                : t.rich("resultsSubtitle", {
+                    role: targetRole,
+                    strong: (chunks) => (
+                      <span className="text-white font-medium">{chunks}</span>
+                    ),
+                  })}
             </p>
           </div>
           <button
@@ -376,7 +377,7 @@ export default function LinkedInOptimizerClient() {
             }}
             className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
           >
-            Optimize again →
+            {t("optimizeAgain")}
           </button>
         </div>
 
@@ -415,7 +416,7 @@ export default function LinkedInOptimizerClient() {
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-400" />
-              Quick Wins
+              {t("quickWinsTitle")}
             </h2>
             <div className="grid gap-3 sm:grid-cols-3">
               {result.quickWins.slice(0, 3).map((win, i) => (
@@ -428,7 +429,7 @@ export default function LinkedInOptimizerClient() {
                       {i + 1}
                     </span>
                     <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> ~5 min
+                      <Clock className="w-3 h-3" /> {t("quickWinTime")}
                     </span>
                   </div>
                   <p className="text-sm text-slate-200">{win}</p>
@@ -440,7 +441,7 @@ export default function LinkedInOptimizerClient() {
 
         {/* Section Cards */}
         <section className="mb-8 space-y-4">
-          <h2 className="text-lg font-bold">Section-by-Section Optimization</h2>
+          <h2 className="text-lg font-bold">{t("sectionBySectionTitle")}</h2>
           {result.sectionScores.map((section) => {
             const Icon = SECTION_ICONS[section.section] || Sparkles;
             return (
@@ -475,12 +476,12 @@ export default function LinkedInOptimizerClient() {
                 <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-700/40">
                   <div className="p-5">
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                      Current
+                      {t("currentLabel")}
                     </div>
                     <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
                       {section.current || (
                         <span className="italic text-slate-500">
-                          No content — this section is empty
+                          {t("emptySection")}
                         </span>
                       )}
                     </p>
@@ -488,7 +489,7 @@ export default function LinkedInOptimizerClient() {
                   <div className="p-5 bg-teal-950/10">
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-xs font-semibold text-teal-400 uppercase tracking-wider">
-                        Suggested
+                        {t("suggestedLabel")}
                       </div>
                       <CopyButton text={section.suggested} />
                     </div>
@@ -501,7 +502,9 @@ export default function LinkedInOptimizerClient() {
                 {/* Reasoning */}
                 <div className="px-5 py-3 border-t border-slate-700/40 bg-slate-800/20">
                   <p className="text-xs text-slate-400">
-                    <span className="font-semibold text-slate-300">Why: </span>
+                    <span className="font-semibold text-slate-300">
+                      {t("whyLabel")}
+                    </span>
                     {section.reasoning}
                   </p>
                 </div>
@@ -514,13 +517,13 @@ export default function LinkedInOptimizerClient() {
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <Search className="w-5 h-5 text-teal-400" />
-            Keyword Intelligence
+            {t("keywordIntelTitle")}
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {/* Missing Keywords */}
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
               <h3 className="text-sm font-semibold text-amber-400 mb-3">
-                Missing Keywords
+                {t("missingKeywordsTitle")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {result.missingKeywords.map((kw, i) => (
@@ -536,7 +539,7 @@ export default function LinkedInOptimizerClient() {
                   >
                     {kw.keyword}
                     <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg bg-slate-700 text-slate-200 text-xs whitespace-nowrap z-10 shadow-lg">
-                      Add to: {kw.whereToAdd}
+                      {t("addTo", { where: kw.whereToAdd })}
                     </div>
                   </div>
                 ))}
@@ -546,7 +549,7 @@ export default function LinkedInOptimizerClient() {
             {/* Recruiter Search Terms */}
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-5">
               <h3 className="text-sm font-semibold text-teal-400 mb-3">
-                Recruiter Search Terms
+                {t("recruiterTermsTitle")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {result.recruiterSearchTerms.map((term, i) => (
@@ -566,7 +569,7 @@ export default function LinkedInOptimizerClient() {
         <section className="mb-10">
           <div className="bg-teal-950/20 border border-teal-900/30 rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-teal-300 mb-2">
-              Your Bridge Story
+              {t("bridgeStoryTitle")}
             </h3>
             <p className="text-sm text-slate-300 leading-relaxed">
               {result.bridgeStorySummary}
@@ -579,13 +582,13 @@ export default function LinkedInOptimizerClient() {
             href="/gap-analysis"
             className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
           >
-            Gap Analysis
+            {t("gapAnalysisCta")}
           </Link>
           <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
           >
-            Back to Dashboard
+            {t("backToDashboardCta")}
           </Link>
         </div>
       </main>
@@ -594,9 +597,9 @@ export default function LinkedInOptimizerClient() {
 
   // --- Input Phase ---
   const tabs: { key: InputTab; label: string; icon: typeof LinkIcon }[] = [
-    { key: "url", label: "LinkedIn URL", icon: LinkIcon },
-    { key: "paste", label: "Paste Sections", icon: ClipboardPaste },
-    { key: "onboarding", label: "From Onboarding", icon: Database },
+    { key: "url", label: t("tabUrl"), icon: LinkIcon },
+    { key: "paste", label: t("tabPaste"), icon: ClipboardPaste },
+    { key: "onboarding", label: t("tabOnboarding"), icon: Database },
   ];
 
   return (
@@ -604,14 +607,13 @@ export default function LinkedInOptimizerClient() {
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
           <Sparkles className="w-3.5 h-3.5" />
-          LinkedIn Profile Optimizer
+          {t("badge")}
         </div>
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-          Rewrite Your LinkedIn for the Pivot
+          {t("heroTitle")}
         </h1>
         <p className="text-slate-400 leading-relaxed max-w-xl mx-auto">
-          Get section-by-section rewrites that tell your bridge story, surface
-          missing keywords, and match how recruiters actually search.
+          {t("heroSubtitle")}
         </p>
       </div>
 
@@ -621,7 +623,7 @@ export default function LinkedInOptimizerClient() {
           {/* Source Tabs */}
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-2">
-              Profile Source
+              {t("profileSourceLabel")}
             </label>
             <div className="flex rounded-xl bg-slate-800 p-1">
               {tabs.map(({ key, label, icon: TabIcon }) => (
@@ -645,17 +647,17 @@ export default function LinkedInOptimizerClient() {
           {inputTab === "url" && (
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">
-                LinkedIn Profile URL
+                {t("urlLabel")}
               </label>
               <input
                 type="url"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
-                placeholder="https://linkedin.com/in/yourname"
+                placeholder={t("urlPlaceholder")}
                 className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
               <p className="text-xs text-slate-500 mt-1.5">
-                We&apos;ll fetch your profile data via Proxycurl
+                {t("urlHelp")}
               </p>
             </div>
           )}
@@ -665,47 +667,47 @@ export default function LinkedInOptimizerClient() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                  Headline
+                  {t("headlineLabel")}
                 </label>
                 <input
                   value={pasteHeadline}
                   onChange={(e) => setPasteHeadline(e.target.value)}
-                  placeholder="Your current LinkedIn headline"
+                  placeholder={t("headlinePlaceholder")}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                  About / Summary
+                  {t("summaryLabel")}
                 </label>
                 <textarea
                   value={pasteSummary}
                   onChange={(e) => setPasteSummary(e.target.value)}
-                  placeholder="Paste your LinkedIn About section"
+                  placeholder={t("summaryPlaceholder")}
                   rows={4}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-y"
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                  Experience
+                  {t("experienceLabel")}
                 </label>
                 <textarea
                   value={pasteExperience}
                   onChange={(e) => setPasteExperience(e.target.value)}
-                  placeholder="Paste your experience descriptions"
+                  placeholder={t("experiencePlaceholder")}
                   rows={3}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-y"
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                  Skills (comma-separated)
+                  {t("skillsLabel")}
                 </label>
                 <input
                   value={pasteSkills}
                   onChange={(e) => setPasteSkills(e.target.value)}
-                  placeholder="Python, Project Management, Data Analysis"
+                  placeholder={t("skillsPlaceholder")}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
@@ -718,7 +720,7 @@ export default function LinkedInOptimizerClient() {
               {intakeLoaded ? (
                 <div className="bg-teal-950/20 border border-teal-800/30 rounded-xl p-4 text-sm">
                   <p className="text-teal-300 font-semibold mb-1">
-                    Profile loaded from onboarding
+                    {t("profileLoaded")}
                     {intakeProfile?.currentTitle && (
                       <span className="font-normal text-slate-400">
                         {" "}
@@ -727,25 +729,29 @@ export default function LinkedInOptimizerClient() {
                     )}
                   </p>
                   <p className="text-slate-400">
-                    {intakeProfile?.skills?.length ?? 0} skills,{" "}
-                    {intakeProfile?.experience?.length ?? 0} experiences,{" "}
-                    {intakeProfile?.education?.length ?? 0} education entries
+                    {t("profileLoadedCounts", {
+                      skills: intakeProfile?.skills?.length ?? 0,
+                      experiences: intakeProfile?.experience?.length ?? 0,
+                      education: intakeProfile?.education?.length ?? 0,
+                    })}
                   </p>
                 </div>
               ) : (
                 <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 text-sm">
                   <p className="text-amber-300 font-semibold mb-1">
-                    No onboarding data found
+                    {t("noOnboardingTitle")}
                   </p>
                   <p className="text-slate-400">
-                    Complete the{" "}
-                    <Link
-                      href="/onboarding"
-                      className="text-teal-400 hover:text-teal-300 underline"
-                    >
-                      career assessment
-                    </Link>{" "}
-                    first, then come back here.
+                    {t.rich("noOnboardingBody", {
+                      link: (chunks) => (
+                        <Link
+                          href="/onboarding"
+                          className="text-teal-400 hover:text-teal-300 underline"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
                   </p>
                 </div>
               )}
@@ -756,23 +762,23 @@ export default function LinkedInOptimizerClient() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                Target Role *
+                {t("targetRoleLabel")}
               </label>
               <input
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
-                placeholder="e.g. Product Manager"
+                placeholder={t("targetRolePlaceholder")}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-                Target Industry
+                {t("targetIndustryLabel")}
               </label>
               <input
                 value={targetIndustry}
                 onChange={(e) => setTargetIndustry(e.target.value)}
-                placeholder="e.g. SaaS / FinTech"
+                placeholder={t("targetIndustryPlaceholder")}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
@@ -782,19 +788,19 @@ export default function LinkedInOptimizerClient() {
           {assessmentContext && (
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                From Your Assessment
+                {t("fromAssessmentTitle")}
               </div>
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-teal-400" />
                   <span className="text-slate-300">
-                    {assessmentContext.skillCount} skills
+                    {t("assessmentSkills", { count: assessmentContext.skillCount })}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span className="text-slate-300">
-                    {assessmentContext.transferableCount} transferable
+                    {t("assessmentTransferable", { count: assessmentContext.transferableCount })}
                   </span>
                 </div>
                 {assessmentContext.targetRole && (
@@ -816,7 +822,7 @@ export default function LinkedInOptimizerClient() {
             disabled={!targetRole.trim()}
             className="w-full px-6 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all shadow-lg shadow-teal-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Optimize My LinkedIn →
+            {t("submitButton")}
           </button>
         </div>
 
@@ -839,33 +845,33 @@ export default function LinkedInOptimizerClient() {
                   <div className="font-semibold text-white text-sm">
                     {intakeProfile?.currentTitle
                       ? `${intakeProfile.currentTitle}`
-                      : "Your Name"}
+                      : t("previewName")}
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">
                     {inputTab === "paste" && pasteHeadline
                       ? pasteHeadline
                       : inputTab === "onboarding" && intakeProfile?.currentTitle
                         ? `${intakeProfile.currentTitle}${intakeProfile.currentIndustry ? ` · ${intakeProfile.currentIndustry}` : ""}`
-                        : "Your current headline"}
+                        : t("previewHeadline")}
                   </div>
                 </div>
 
                 {/* About preview */}
                 <div>
                   <div className="text-xs font-semibold text-slate-500 mb-1">
-                    About
+                    {t("previewAbout")}
                   </div>
                   <p className="text-xs text-slate-400 line-clamp-3">
                     {inputTab === "paste" && pasteSummary
                       ? pasteSummary
-                      : "Your summary will appear here..."}
+                      : t("previewSummaryEmpty")}
                   </p>
                 </div>
 
                 {/* Experience preview */}
                 <div>
                   <div className="text-xs font-semibold text-slate-500 mb-1">
-                    Experience
+                    {t("previewExperience")}
                   </div>
                   {(inputTab === "onboarding"
                     ? intakeProfile?.experience?.slice(0, 2)
@@ -884,7 +890,7 @@ export default function LinkedInOptimizerClient() {
                     </div>
                   )) ?? (
                     <p className="text-xs text-slate-500 italic">
-                      Experience entries will appear here
+                      {t("previewExperienceEmpty")}
                     </p>
                   )}
                 </div>
@@ -894,7 +900,7 @@ export default function LinkedInOptimizerClient() {
                   (inputTab === "onboarding" && intakeProfile?.skills)) && (
                   <div>
                     <div className="text-xs font-semibold text-slate-500 mb-1">
-                      Skills
+                      {t("previewSkills")}
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {(inputTab === "paste"
@@ -920,7 +926,7 @@ export default function LinkedInOptimizerClient() {
                 <div className="pt-2 border-t border-slate-700/40">
                   <div className="flex items-center gap-1.5 text-xs text-teal-400">
                     <ChevronRight className="w-3 h-3" />
-                    Pivot target: {targetRole || "Not set"}
+                    {t("pivotTarget", { role: targetRole || t("pivotTargetNotSet") })}
                   </div>
                 </div>
               </div>

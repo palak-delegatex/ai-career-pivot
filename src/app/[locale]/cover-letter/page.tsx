@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import CoverLetterClient from "./CoverLetterClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "AI Cover Letter Generator | AICareerPivot",
-  description:
-    "Generate a tailored, compelling cover letter for your career pivot with AI-powered keyword matching and tone control.",
-  alternates: { canonical: "https://ai-career-pivot.com/cover-letter" },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "coverLetter" });
+  return { title: t("metaTitle"), description: t("metaDescription"), alternates: { canonical: "https://ai-career-pivot.com/cover-letter" } };
+}
 
 export default function CoverLetterPage() {
   const crumbs = breadcrumbSchema([{ name: "Cover Letter Generator", path: "/cover-letter" }]);

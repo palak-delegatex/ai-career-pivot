@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   FileText,
   Mail,
@@ -31,11 +32,7 @@ const POPULAR_ROLES = [
   "Project Manager",
 ];
 
-const TONES: { key: Tone; label: string }[] = [
-  { key: "professional", label: "Professional" },
-  { key: "conversational", label: "Conversational" },
-  { key: "bold", label: "Bold" },
-];
+const TONES: Tone[] = ["professional", "conversational", "bold"];
 
 function renderMarkdownBasic(text: string): React.ReactNode {
   const lines = text.split("\n");
@@ -87,6 +84,7 @@ function renderMarkdownBasic(text: string): React.ReactNode {
 }
 
 export default function ResumeGeneratorClient() {
+  const t = useTranslations("resumeGenerator");
   const [phase, setPhase] = useState<Phase>("setup");
   const [mode, setMode] = useState<Mode>("resume");
   const [targetRole, setTargetRole] = useState("");
@@ -166,7 +164,7 @@ export default function ResumeGeneratorClient() {
         saveCoverLetterToSupabase(content, role);
       }
     } catch {
-      setOutput("Sorry, something went wrong. Please try again.");
+      setOutput(t("errorGeneric"));
       setPhase("done");
     }
   }
@@ -270,13 +268,13 @@ export default function ResumeGeneratorClient() {
               )}
               <div>
                 <h1 className="text-sm font-bold text-white">
-                  {mode === "resume" ? "Resume" : "Cover Letter"} Generator
+                  {mode === "resume" ? t("headerTitleResume") : t("headerTitleCoverLetter")}
                 </h1>
                 <p className="text-xs text-slate-400">
                   {displayRole}
-                  {jobDescription.trim() && " · JD-tailored"}
-                  {mode === "cover-letter" && ` · ${tone}`}
-                  {saving && " · Saving..."}
+                  {jobDescription.trim() && ` · ${t("headerJdTailored")}`}
+                  {mode === "cover-letter" && ` · ${t(`tone_${tone}`)}`}
+                  {saving && ` · ${t("headerSaving")}`}
                 </p>
               </div>
             </div>
@@ -289,7 +287,7 @@ export default function ResumeGeneratorClient() {
                       className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Pencil className="w-3.5 h-3.5" />
-                      Edit
+                      {t("actionEdit")}
                     </button>
                   )}
                   {editing && (
@@ -298,7 +296,7 @@ export default function ResumeGeneratorClient() {
                       className="flex items-center gap-1.5 text-xs text-teal-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      Done
+                      {t("actionDone")}
                     </button>
                   )}
                   <button
@@ -317,14 +315,14 @@ export default function ResumeGeneratorClient() {
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
-                    {copied ? "Copied!" : "Copy"}
+                    {copied ? t("actionCopied") : t("actionCopy")}
                   </button>
                   <button
                     onClick={reset}
                     className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    New
+                    {t("actionNew")}
                   </button>
                 </>
               )}
@@ -364,28 +362,28 @@ export default function ResumeGeneratorClient() {
                   }`}
                 >
                   {mode === "resume"
-                    ? "Now Generate Cover Letter →"
-                    : "Now Generate Resume →"}
+                    ? t("ctaGenerateCoverLetter")
+                    : t("ctaGenerateResume")}
                 </button>
                 {mode === "resume" && (
                   <Link
                     href="/cover-letter"
                     className="px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-600 font-semibold text-sm transition-colors"
                   >
-                    Create Cover Letter
+                    {t("ctaCreateCoverLetter")}
                   </Link>
                 )}
                 <Link
                   href="/ats-score"
                   className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition-colors"
                 >
-                  Check ATS Score
+                  {t("ctaCheckAtsScore")}
                 </Link>
                 <Link
                   href="/dashboard"
                   className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
                 >
-                  Dashboard
+                  {t("ctaDashboard")}
                 </Link>
               </div>
             )}
@@ -401,26 +399,27 @@ export default function ResumeGeneratorClient() {
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
           <FileText className="w-3.5 h-3.5" />
-          AI Resume & Cover Letter
+          {t("badge")}
         </div>
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-          Generate Application Materials
+          {t("heading")}
         </h1>
         <p className="text-slate-400 leading-relaxed">
-          ATS-optimized resume and tailored cover letter from your career
-          profile, in seconds.
+          {t("subtitle")}
         </p>
       </div>
 
       {!profileLoaded && (
         <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">
-          <p className="text-amber-300 font-semibold mb-1">Profile not loaded</p>
+          <p className="text-amber-300 font-semibold mb-1">{t("profileNotLoadedTitle")}</p>
           <p className="text-slate-400">
-            Complete the{" "}
-            <Link href="/onboarding" className="text-teal-400 hover:text-teal-300 underline">
-              career assessment
-            </Link>{" "}
-            first to generate personalized materials.
+            {t.rich("profileNotLoadedBody", {
+              assessmentLink: (chunks) => (
+                <Link href="/onboarding" className="text-teal-400 hover:text-teal-300 underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -429,7 +428,7 @@ export default function ResumeGeneratorClient() {
         {/* Mode toggle */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-3">
-            What to Generate
+            {t("whatToGenerate")}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -442,9 +441,9 @@ export default function ResumeGeneratorClient() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <FileText className="w-4 h-4" />
-                <span className="text-sm font-semibold">Resume</span>
+                <span className="text-sm font-semibold">{t("modeResumeTitle")}</span>
               </div>
-              <p className="text-xs text-slate-500">ATS-optimized, tailored to role</p>
+              <p className="text-xs text-slate-500">{t("modeResumeDesc")}</p>
             </button>
             <button
               onClick={() => setMode("cover-letter")}
@@ -456,9 +455,9 @@ export default function ResumeGeneratorClient() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-4 h-4" />
-                <span className="text-sm font-semibold">Cover Letter</span>
+                <span className="text-sm font-semibold">{t("modeCoverLetterTitle")}</span>
               </div>
-              <p className="text-xs text-slate-500">Compelling pivot narrative</p>
+              <p className="text-xs text-slate-500">{t("modeCoverLetterDesc")}</p>
             </button>
           </div>
         </div>
@@ -466,7 +465,7 @@ export default function ResumeGeneratorClient() {
         {/* Target role */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-3">
-            Target Role
+            {t("targetRole")}
           </label>
           <div className="grid grid-cols-2 gap-2 mb-3">
             {POPULAR_ROLES.map((role) => (
@@ -490,7 +489,7 @@ export default function ResumeGeneratorClient() {
                   : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
               }`}
             >
-              Other role…
+              {t("otherRole")}
             </button>
           </div>
           {targetRole === "custom" && (
@@ -498,7 +497,7 @@ export default function ResumeGeneratorClient() {
               type="text"
               value={customRole}
               onChange={(e) => setCustomRole(e.target.value)}
-              placeholder="e.g. DevRel Engineer, Customer Success Manager"
+              placeholder={t("customRolePlaceholder")}
               className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               autoFocus
             />
@@ -509,20 +508,20 @@ export default function ResumeGeneratorClient() {
         {mode === "cover-letter" && (
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-3">
-              Tone
+              {t("toneLabel")}
             </label>
             <div className="flex gap-2">
-              {TONES.map((t) => (
+              {TONES.map((toneKey) => (
                 <button
-                  key={t.key}
-                  onClick={() => setTone(t.key)}
+                  key={toneKey}
+                  onClick={() => setTone(toneKey)}
                   className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-medium text-center transition-colors ${
-                    tone === t.key
+                    tone === toneKey
                       ? "bg-purple-600 text-white"
                       : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
                   }`}
                 >
-                  {t.label}
+                  {t(`tone_${toneKey}`)}
                 </button>
               ))}
             </div>
@@ -536,8 +535,8 @@ export default function ResumeGeneratorClient() {
             className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
           >
             <FileText className="w-4 h-4 text-teal-400" />
-            Tailor to a job description
-            <span className="text-xs text-slate-500 font-normal">(recommended)</span>
+            {t("tailorToJd")}
+            <span className="text-xs text-slate-500 font-normal">{t("recommended")}</span>
             {showJd ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
           {showJd && (
@@ -545,14 +544,14 @@ export default function ResumeGeneratorClient() {
               <textarea
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the full job posting — we'll mirror its keywords and priorities..."
+                placeholder={t("jdPlaceholder")}
                 rows={5}
                 className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-y"
               />
               {jobDescription.trim() && (
                 <div className="flex items-center gap-2 text-xs text-emerald-400">
                   <FileText className="w-3 h-3" />
-                  JD loaded — output will be tailored
+                  {t("jdLoaded")}
                 </div>
               )}
             </div>
@@ -568,11 +567,11 @@ export default function ResumeGeneratorClient() {
               : "bg-purple-600 hover:bg-purple-500 shadow-purple-900/30"
           }`}
         >
-          Generate {mode === "resume" ? "Resume" : "Cover Letter"} →
+          {mode === "resume" ? t("submitResume") : t("submitCoverLetter")}
         </button>
 
         <p className="text-slate-500 text-xs text-center">
-          Streams in real time · Edit, copy, or download PDF when done
+          {t("footerHelper")}
         </p>
       </div>
     </main>
