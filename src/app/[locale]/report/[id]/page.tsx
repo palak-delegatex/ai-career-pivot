@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getSupabaseClient } from "@/lib/supabase";
@@ -6,9 +7,34 @@ import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import ReportContent from "./ReportContent";
 import CareerProfileCard from "@/components/CareerProfileCard";
 import ActivityTracker from "@/components/ActivityTracker";
+import ShareResultButtons from "@/components/ShareResultButtons";
 
 interface Props {
   params: Promise<{ id: string; locale: string }>;
+}
+
+/** Highest-matchScore plan — the headline result we surface and let users share. */
+function bestPlan(plans: PivotPlan[]): PivotPlan | undefined {
+  return plans
+    .filter((p) => typeof p.matchScore === "number")
+    .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))[0];
+}
+
+// Personal reports are shareable (share loop) but must NOT be indexed by search
+// engines — they contain the user's profile. The co-located opengraph-image
+// wires og:image automatically; here we set a safe title/description + noindex.
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "My AI Career Pivot Plan",
+    description:
+      "See your AI-mapped career pivot match — built from your skills, values, and finances.",
+    robots: { index: false, follow: false },
+    openGraph: {
+      title: "My AI Career Pivot Plan",
+      description: "AI-mapped career pivot match from AICareerPivot.",
+      type: "website",
+    },
+  };
 }
 
 export default async function ReportPage({ params }: Props) {
@@ -28,6 +54,7 @@ export default async function ReportPage({ params }: Props) {
   const profile = report.profile as UserProfile;
   const plans = report.plans as PivotPlan[];
   const valuesAssessment = report.values_assessment as ValuesAssessment | null;
+  const topPlan = bestPlan(plans);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -48,6 +75,10 @@ export default async function ReportPage({ params }: Props) {
               {profile.yearsExperience ? ` · ${t('yearsExp', { count: profile.yearsExperience })}` : ""}
             </p>
           )}
+        </div>
+
+        <div className="mb-10 flex justify-center">
+          <ShareResultButtons score={topPlan?.matchScore} />
         </div>
 
         {valuesAssessment && (
