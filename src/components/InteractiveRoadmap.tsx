@@ -2,8 +2,13 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download, LayoutGrid } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
 import RoadmapKanban from "@/components/RoadmapKanban";
+import RoadmapProgressHero, { type HeroPhaseStat } from "@/components/RoadmapProgressHero";
+import NextStepCard from "@/components/NextStepCard";
+import MomentumStrip from "@/components/MomentumStrip";
+import RoadmapPaywallGate from "@/components/RoadmapPaywallGate";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -18,8 +23,6 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import type { SkillGap, RecommendedResource } from "@/lib/intake";
-import RoadmapMomentum from "@/components/RoadmapMomentum";
-import RoadmapNextAction from "@/components/RoadmapNextAction";
 import { computeMomentum, deriveNextAction, type RoadmapMilestoneRef } from "@/lib/roadmap-momentum";
 
 type MilestoneStatus = "not-started" | "in-progress" | "completed";
@@ -94,6 +97,10 @@ function nextStatus(current: MilestoneStatus): MilestoneStatus {
   return "not-started";
 }
 
+// Free tier surfaces the first 2 milestones (both delivering personalized
+// value) before the progress-aware paywall gate (AIC-687).
+const FREE_TIER_VISIBLE_MILESTONES = 2;
+
 export default function InteractiveRoadmap({
   sixMonthMilestones,
   oneYearMilestones,
@@ -103,6 +110,10 @@ export default function InteractiveRoadmap({
   skillGaps = [],
   recommendedResources = [],
   pdfButton,
+  isFreeTier = false,
+  greetingName,
+  subtitle,
+  transferableSkillsCount = 0,
 }: {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
@@ -112,6 +123,13 @@ export default function InteractiveRoadmap({
   skillGaps?: SkillGap[];
   recommendedResources?: RecommendedResource[];
   pdfButton?: React.ReactNode;
+  isFreeTier?: boolean;
+  /** First name for the hero greeting. */
+  greetingName?: string;
+  /** e.g. "Marketing Manager → Product Manager". */
+  subtitle?: string;
+  /** Transferable-skill count surfaced in the paywall gate messaging. */
+  transferableSkillsCount?: number;
 }) {
   const [progress, setProgress] = useState<Map<string, MilestoneProgress>>(new Map());
   const [saving, setSaving] = useState<string | null>(null);
@@ -130,17 +148,30 @@ export default function InteractiveRoadmap({
     phase: Phase;
     index: number;
   } | null>(null);
+  const isMobile = useIsMobile();
 
   function setViewAndPersist(v: "timeline" | "checklist" | "board") {
     setView(v);
     localStorage.setItem("roadmap_view_preference", v);
   }
 
-  const phases: Phase[] = [
-    { key: "6mo", label: "6 Months", milestones: sixMonthMilestones, color: "emerald", deadline: "6 months" },
-    { key: "1yr", label: "1 Year", milestones: oneYearMilestones, color: "teal", deadline: "1 year" },
-    { key: "2yr", label: "2 Years", milestones: twoYearMilestones, color: "cyan", deadline: "2 years" },
-  ];
+  const allPhases: Phase[] = useMemo(
+    () => [
+      { key: "6mo", label: "6 Months", milestones: sixMonthMilestones, color: "emerald", deadline: "6 months" },
+      { key: "1yr", label: "1 Year", milestones: oneYearMilestones, color: "teal", deadline: "1 year" },
+      { key: "2yr", label: "2 Years", milestones: twoYearMilestones, color: "cyan", deadline: "2 years" },
+    ],
+    [sixMonthMilestones, oneYearMilestones, twoYearMilestones]
+  );
+
+  const totalAllMilestones = allPhases.reduce((s, p) => s + p.milestones.length, 0);
+
+  const phases: Phase[] = isFreeTier
+    ? allPhases.map((phase, i) => {
+        if (i > 0) return { ...phase, milestones: [] };
+        return { ...phase, milestones: phase.milestones.slice(0, FREE_TIER_VISIBLE_MILESTONES) };
+      }).filter(p => p.milestones.length > 0)
+    : allPhases;
 
   const progressKey = (phase: string, idx: number) => `${phase}:${idx}`;
 
@@ -298,6 +329,87 @@ export default function InteractiveRoadmap({
     if (phase) setSelectedMilestone({ text: phase.milestones[index], phase, index });
   };
 
+  // Per-phase stats for the progress hero (uses all phases so the free-tier
+  // hero still communicates the full scope behind the paywall).
+  const heroPhaseStats = useMemo<HeroPhaseStat[]>(
+    () =>
+      allPhases.map((phase) => {
+        let completed = 0;
+        for (let i = 0; i < phase.milestones.length; i++) {
+          if (progress.get(progressKey(phase.key, i))?.completed) completed++;
+        }
+        return {
+          key: phase.key as HeroPhaseStat["key"],
+          label: phase.label,
+          completed,
+          total: phase.milestones.length,
+          color: phase.color,
+        };
+      }),
+    [allPhases, progress]
+  );
+
+  const heroTotals = useMemo(() => {
+    const total = allPhases.reduce((s, p) => s + p.milestones.length, 0);
+    const completed = heroPhaseStats.reduce((s, p) => s + p.completed, 0);
+    return {
+      total,
+      completed,
+      percent: total > 0 ? (completed / total) * 100 : 0,
+    };
+  }, [allPhases, heroPhaseStats]);
+
+  // Streak calendar inputs + day-streak, derived from completion timestamps.
+  const { activeDays, phaseForDay, dayStreak } = useMemo(() => {
+    const active = new Set<string>();
+    const forDay = new Map<string, string>();
+    for (const [key, item] of progress) {
+      if (item.completed && item.completed_at) {
+        const day = item.completed_at.slice(0, 10);
+        active.add(day);
+        forDay.set(day, key.split(":")[0]);
+      }
+    }
+    let streak = 0;
+    const cursor = new Date();
+    for (let i = 0; i < 365; i++) {
+      const dateStr = cursor.toISOString().slice(0, 10);
+      if (active.has(dateStr)) {
+        streak++;
+      } else if (i > 0) {
+        break;
+      }
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return { activeDays: active, phaseForDay: forDay, dayStreak: streak };
+  }, [progress]);
+
+  // Earned badges derived from momentum/completion signals (AIC-687). Keys must
+  // match BADGE_DEFINITIONS in CompletionBadges.
+  const earnedBadges = useMemo(() => {
+    const earned = new Set<string>();
+    if (heroTotals.completed >= 1) earned.add("first_step");
+    if (dayStreak >= 7) earned.add("streak_master");
+    if (momentum.completedLast7Days >= 3) earned.add("momentum");
+    if (heroTotals.percent >= 50) earned.add("halfway_there");
+    if (heroTotals.percent >= 100) earned.add("career_ready");
+    if (heroPhaseStats.some((p) => p.total > 0 && p.completed === p.total)) {
+      earned.add("phase_complete");
+    }
+    return earned;
+  }, [heroTotals, dayStreak, momentum, heroPhaseStats]);
+
+  // Supporting context for the "Your Next Step" hero card.
+  const nextStepMeta = useMemo(() => {
+    if (!nextAction) return { description: undefined as string | undefined, resourceCount: 0 };
+    const related = getRelatedSkillGaps(nextAction.text);
+    const description = related.length
+      ? `Builds ${related.slice(0, 3).map((g) => g.skill).join(", ")}.`
+      : undefined;
+    return { description, resourceCount: recommendedResources.length };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextAction, skillGaps, recommendedResources]);
+
   function StatusIcon({ status, isSaving, color }: { status: MilestoneStatus; isSaving: boolean; color: "emerald" | "teal" | "cyan" }) {
     const colors = phaseColors[color];
     if (isSaving) {
@@ -328,8 +440,51 @@ export default function InteractiveRoadmap({
 
   return (
     <section aria-label="Interactive career roadmap">
+      {/* Progress hero — ring, per-phase breakdown, greeting, streak (AIC-687) */}
+      {loaded && heroTotals.total > 0 && (
+        <RoadmapProgressHero
+          greetingName={greetingName}
+          subtitle={subtitle}
+          percentComplete={heroTotals.percent}
+          totalCompleted={heroTotals.completed}
+          totalMilestones={heroTotals.total}
+          phaseStats={heroPhaseStats}
+          streakDays={dayStreak}
+        />
+      )}
+
+      {/* Mobile-first single column; two-column with sticky sidebar at >=768px */}
+      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6">
+        {/* Sidebar — next step (sticky on desktop) */}
+        {loaded && totalMilestones > 0 && (
+          <div className="md:col-start-2 md:row-start-1 md:sticky md:top-6">
+            <NextStepCard
+              next={nextAction}
+              description={nextStepMeta.description}
+              resourceCount={nextStepMeta.resourceCount}
+              saving={saving !== null}
+              onStart={cycleMilestoneStatus}
+              onOpen={openMilestone}
+            />
+          </div>
+        )}
+
+        {/* Sidebar — momentum strip (last on mobile, sticky on desktop) */}
+        {loaded && totalMilestones > 0 && (
+          <div className="order-last md:order-none md:col-start-2 md:row-start-2 md:sticky md:top-6">
+            <MomentumStrip
+              activeDays={activeDays}
+              phaseForDay={phaseForDay}
+              streakDays={dayStreak}
+              earnedBadges={earnedBadges}
+            />
+          </div>
+        )}
+
+        {/* Main column — view toggle + milestones + paywall gate */}
+        <div className="min-w-0 md:col-start-1 md:row-start-1 md:row-span-2">
       {/* Overall progress header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -338,18 +493,22 @@ export default function InteractiveRoadmap({
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">
             Your Progress
           </span>
+          {loaded && (
+            <span className="text-xs text-slate-400 sm:hidden">
+              <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {loaded && (
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-400 hidden sm:inline">
               <span className="text-white font-medium">{totalCompleted}</span> / {totalMilestones} milestones
             </span>
           )}
-          {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
             <button
               onClick={() => setViewAndPersist("timeline")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "timeline"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -357,11 +516,11 @@ export default function InteractiveRoadmap({
               aria-label="Timeline view"
             >
               <GitBranch className="h-3.5 w-3.5" />
-              Timeline
+              <span className="hidden sm:inline">Timeline</span>
             </button>
             <button
               onClick={() => setViewAndPersist("checklist")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "checklist"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -369,11 +528,11 @@ export default function InteractiveRoadmap({
               aria-label="Checklist view"
             >
               <List className="h-3.5 w-3.5" />
-              Checklist
+              <span className="hidden sm:inline">Checklist</span>
             </button>
             <button
               onClick={() => setViewAndPersist("board")}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer min-h-[36px] ${
                 view === "board"
                   ? "bg-slate-700 text-white"
                   : "text-slate-400 hover:text-slate-200"
@@ -381,37 +540,11 @@ export default function InteractiveRoadmap({
               aria-label="Board view"
             >
               <LayoutGrid className="h-3.5 w-3.5" />
-              Board
+              <span className="hidden sm:inline">Board</span>
             </button>
           </div>
         </div>
       </div>
-
-      {/* Overall progress bar */}
-      {loaded && totalMilestones > 0 && (
-        <div className="h-1.5 rounded-full bg-slate-700/50 overflow-hidden mb-4">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 transition-all duration-500"
-            style={{ width: `${(totalCompleted / totalMilestones) * 100}%` }}
-          />
-        </div>
-      )}
-
-      {/* Next action + momentum — derived from roadmap state */}
-      {loaded && totalMilestones > 0 && (
-        <>
-          <RoadmapNextAction
-            next={nextAction}
-            percentComplete={momentum.percentComplete}
-            saving={saving !== null}
-            onAdvance={cycleMilestoneStatus}
-            onOpen={openMilestone}
-          />
-          <div className="mb-4">
-            <RoadmapMomentum momentum={momentum} />
-          </div>
-        </>
-      )}
 
       {/* Secondary action bar */}
       {pdfButton && (
@@ -589,12 +722,34 @@ export default function InteractiveRoadmap({
         />
       )}
 
+      {/* Free-tier progress-aware paywall gate (AIC-687) */}
+      {isFreeTier && totalAllMilestones > FREE_TIER_VISIBLE_MILESTONES && (
+        <div className="mt-6">
+          <RoadmapPaywallGate
+            completedCount={heroTotals.completed}
+            transferableSkillsCount={transferableSkillsCount}
+            lockedMilestoneCount={totalAllMilestones - FREE_TIER_VISIBLE_MILESTONES}
+            onUpgrade={() => { window.location.href = "/pricing"; }}
+          />
+        </div>
+      )}
+        </div>
+      </div>
+
       {/* Milestone Detail Sheet */}
       <Sheet
         open={!!selectedMilestone}
         onOpenChange={(open) => { if (!open) setSelectedMilestone(null); }}
       >
-        <SheetContent side="right" className="bg-slate-900 border-slate-700 overflow-y-auto">
+        <SheetContent
+          side={isMobile ? "bottom" : "right"}
+          className={
+            isMobile
+              ? "bg-slate-900 border-slate-700 overflow-y-auto rounded-t-2xl max-h-[85vh]"
+              : "bg-slate-900 border-slate-700 overflow-y-auto"
+          }
+        >
+          {isMobile && <div className="w-10 h-1 rounded-full bg-slate-600 mx-auto mt-2 mb-1 shrink-0" />}
           {selectedMilestone && (() => {
             const { text, phase, index } = selectedMilestone;
             const key = progressKey(phase.key, index);

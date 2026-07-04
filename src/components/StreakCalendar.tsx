@@ -13,6 +13,11 @@ interface StreakCalendarProps {
   activeDays: Set<string>;
   phaseForDay: Map<string, string>;
   streakDays: number;
+  /**
+   * When true, render without the card chrome + title so the calendar can be
+   * embedded inside another card (e.g. the roadmap MomentumStrip, AIC-687).
+   */
+  bare?: boolean;
 }
 
 const phaseColor: Record<string, string> = {
@@ -78,6 +83,7 @@ export default function StreakCalendar({
   activeDays,
   phaseForDay,
   streakDays,
+  bare = false,
 }: StreakCalendarProps) {
   const [toast, setToast] = useState<string | null>(null);
 
@@ -111,16 +117,22 @@ export default function StreakCalendar({
     activeDays.has(yesterdayStr);
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-slate-300">Streak Calendar</h3>
-        {streakDays >= 3 && (
-          <div className="flex items-center gap-1 text-orange-400">
-            <Flame className="h-4 w-4" />
-            <span className="text-xs font-semibold">{streakDays}d</span>
-          </div>
-        )}
-      </div>
+    <div
+      className={
+        bare ? "" : "bg-slate-800/60 border border-slate-700 rounded-2xl p-5"
+      }
+    >
+      {!bare && (
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-bold text-slate-300">Streak Calendar</h3>
+          {streakDays >= 3 && (
+            <div className="flex items-center gap-1 text-orange-400">
+              <Flame className="h-4 w-4" />
+              <span className="text-xs font-semibold">{streakDays}d</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {toast && (
         <div className="mb-3 px-3 py-2 rounded-lg bg-orange-900/30 border border-orange-700/40 text-orange-300 text-xs font-medium animate-[fade-in_300ms_ease-out]">
