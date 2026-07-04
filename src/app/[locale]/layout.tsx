@@ -14,7 +14,8 @@ import { PostHogProvider } from "../PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
 import { HelpPanel } from "@/components/ui/help-panel";
-import { routing } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
+import { alternatesFor, ogLocaleFor, localizedPath } from "@/lib/seo";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,58 +57,67 @@ const notoJP = Noto_Sans_JP({
 
 const BASE_URL = "https://ai-career-pivot.com";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    default: "AICareerPivot — Your Personal Career Strategist",
-    template: "%s | AICareerPivot",
-  },
-  description:
-    "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
-  keywords: [
-    "career pivot",
-    "career change",
-    "career transition",
-    "career roadmap",
-    "AI career advice",
-    "career planning",
-    "job change",
-    "career strategy",
-  ],
-  authors: [{ name: "AICareerPivot", url: BASE_URL }],
-  creator: "AICareerPivot",
-  publisher: "AICareerPivot",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  // Fall back to the default locale for hreflang/og math on unknown segments;
+  // the layout itself calls notFound() for those below.
+  const safeLocale = (hasLocale(routing.locales, locale) ? locale : routing.defaultLocale) as Locale;
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      default: "AICareerPivot — Your Personal Career Strategist",
+      template: "%s | AICareerPivot",
     },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: BASE_URL,
-    siteName: "AICareerPivot",
-    title: "AICareerPivot — Your Personal Career Strategist",
     description:
       "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AICareerPivot — Your Personal Career Strategist",
-    description:
-      "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
-    creator: "@aicareer_pivot",
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-};
+    keywords: [
+      "career pivot",
+      "career change",
+      "career transition",
+      "career roadmap",
+      "AI career advice",
+      "career planning",
+      "job change",
+      "career strategy",
+    ],
+    authors: [{ name: "AICareerPivot", url: BASE_URL }],
+    creator: "AICareerPivot",
+    publisher: "AICareerPivot",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: ogLocaleFor(safeLocale),
+      url: localizedPath("/", safeLocale),
+      siteName: "AICareerPivot",
+      title: "AICareerPivot — Your Personal Career Strategist",
+      description:
+        "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "AICareerPivot — Your Personal Career Strategist",
+      description:
+        "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints.",
+      creator: "@aicareer_pivot",
+    },
+    alternates: alternatesFor("/", safeLocale),
+  };
+}
 
 // Statically render all supported locales at build time (AIC-667).
 export function generateStaticParams() {

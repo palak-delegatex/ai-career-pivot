@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
+import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import type { Locale } from "@/i18n/routing";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-export const metadata: Metadata = {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
   title: "About AICareerPivot — Our Methodology & Mission",
   description:
     "AICareerPivot builds personalized career transition roadmaps powered by AI. Learn about our methodology: how we factor in your skills, finances, and family constraints to create real, actionable plans.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/about",
-  },
+  alternates: alternatesFor("/about", locale),
   openGraph: {
+    locale: ogLocaleFor(locale),
     title: "About AICareerPivot — Our Methodology & Mission",
     description:
       "Learn how AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial runway, and family constraints.",
-    url: "https://ai-career-pivot.com/about",
+    url: localizedPath("/about", locale),
   },
 };
+}
 
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
