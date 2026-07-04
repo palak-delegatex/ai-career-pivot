@@ -344,6 +344,23 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Plan-abandoner recovery (AIC-691): in the free flow, capture the email as a
+  // lead the moment a plan is requested — before generation even finishes — so
+  // the plan-recovery cron can nudge the ~66.7% who generate a plan but never
+  // start checkout (AIC-437). Fire-and-forget: never block or fail generation on
+  // lead capture. Upsert on lower-cased email so regenerating doesn't duplicate.
+  if (!paymentSessionId && profile.email) {
+    void supabase
+      .from("plan_leads")
+      .upsert(
+        { email: profile.email.toLowerCase().trim(), name: profile.name ?? null },
+        { onConflict: "email" }
+      )
+      .then(({ error }) => {
+        if (error) console.error("plan_leads capture error:", error.message);
+      });
+  }
+
   try {
   const marketMap = await fetchMarketDataForPlan(profile);
   const marketDataBlock = formatMarketDataForPrompt(marketMap);
