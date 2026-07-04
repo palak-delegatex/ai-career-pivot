@@ -8,6 +8,7 @@ import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
+import FeatureShowcase from "@/components/FeatureShowcase";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 import StickyCtaBar from "@/components/StickyCtaBar";
@@ -465,6 +466,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             </AnimatedSection>
           </div>
         </section>
+
+        {/* AI feature showcase — surface plan gen / insights / PDF before signup (AIC-532) */}
+        <FeatureShowcase />
 
         {/* Success Metrics Banner */}
         <SuccessMetrics />

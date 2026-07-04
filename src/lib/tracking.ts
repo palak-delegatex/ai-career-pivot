@@ -124,6 +124,19 @@ export function trackReferralLinkCopied() {
   capture("referral_link_copied");
 }
 
+// AI feature showcase (pre-signup demo of plan generation / insights / PDF)
+export function trackFeatureShowcaseViewed(props: { location: string }) {
+  capture("feature_showcase_viewed", props);
+}
+
+export function trackFeatureShowcaseTabChanged(props: { tab: "plan" | "insights" | "pdf"; location: string }) {
+  capture("feature_showcase_tab_changed", props);
+}
+
+export function trackFeatureShowcaseCtaClicked(props: { tab: "plan" | "insights" | "pdf"; location: string; destination: string }) {
+  capture("feature_showcase_cta_clicked", props);
+}
+
 // Free tier conversion funnel
 export function trackFreeSignup(props: { source: string }) {
   capture("free_signup", props);
