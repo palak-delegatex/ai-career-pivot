@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -19,19 +19,22 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { MenuIcon } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 
+// `key` maps to a `nav.*` entry in messages/*.json (AIC-667). Hrefs stay
+// locale-agnostic — the locale-aware Link from `@/i18n/navigation` prefixes them.
 const NAV_LINKS = [
-  { href: "/free", label: "Free Snapshot" },
-  { href: "/blog", label: "Blog" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/dashboard", label: "My Roadmaps" },
-  { href: "/job-tracker", label: "Job Tracker" },
-  { href: "/networking", label: "Networking" },
-  { href: "/cover-letter", label: "Cover Letter" },
-  { href: "/linkedin-optimizer", label: "LinkedIn" },
+  { href: "/free", key: "nav.freeSnapshot" },
+  { href: "/blog", key: "nav.blog" },
+  { href: "/pricing", key: "nav.pricing" },
+  { href: "/how-it-works", key: "nav.howItWorks" },
+  { href: "/dashboard", key: "nav.myRoadmaps" },
+  { href: "/job-tracker", key: "nav.jobTracker" },
+  { href: "/networking", key: "nav.networking" },
+  { href: "/cover-letter", key: "nav.coverLetter" },
+  { href: "/linkedin-optimizer", key: "nav.linkedin" },
 ] as const;
 
 const LogoIcon = (
@@ -64,6 +67,7 @@ function Logo() {
 }
 
 export default function SiteNav() {
+  const t = useTranslations();
   const pathname = usePathname();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -85,7 +89,7 @@ export default function SiteNav() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-teal-600 focus:text-white focus:font-semibold focus:text-sm"
       >
-        Skip to content
+        {t("nav.skipToContent")}
       </a>
     <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
       <Logo />
@@ -94,19 +98,20 @@ export default function SiteNav() {
       <div className="hidden md:flex items-center gap-1">
         <NavigationMenu>
           <NavigationMenuList>
-            {NAV_LINKS.map(({ href, label }) => (
+            {NAV_LINKS.map(({ href, key }) => (
               <NavigationMenuItem key={href}>
                 <NavigationMenuLink
-                  href={href}
+                  render={<Link href={href} />}
                   active={pathname === href}
                   className="text-sm font-medium text-slate-400 hover:text-white hover:bg-transparent focus:bg-transparent data-active:text-white"
                 >
-                  {label}
+                  {t(key)}
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
+        <LanguageSwitcher />
         {user ? (
           <div className="flex items-center gap-3 ml-2">
             <Link
@@ -117,29 +122,30 @@ export default function SiteNav() {
             </Link>
             <form action="/api/auth/signout" method="POST">
               <Button type="submit" variant="outline" size="sm">
-                Sign Out
+                {t("common.signOut")}
               </Button>
             </form>
           </div>
         ) : (
           <Button render={<Link href="/login" />} size="sm" className="ml-2">
-            Sign In
+            {t("common.signIn")}
           </Button>
         )}
       </div>
 
-      {/* Mobile nav — only hamburger icon, everything else inside the sheet */}
-      <div className="md:hidden flex items-center">
+      {/* Mobile nav — language switcher + hamburger; everything else in the sheet */}
+      <div className="md:hidden flex items-center gap-1">
+        <LanguageSwitcher />
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="icon" aria-label="Open menu" className="min-w-[44px] min-h-[44px]" />
+              <Button variant="ghost" size="icon" aria-label={t("nav.openMenu")} className="min-w-[44px] min-h-[44px]" />
             }
           >
             <MenuIcon className="size-5" />
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
-            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <SheetTitle className="sr-only">{t("nav.openMenu")}</SheetTitle>
             <div className="flex flex-col gap-1 p-4 pt-6">
               {/* Logo at top of sheet */}
               <div className="mb-4">
@@ -156,13 +162,13 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  Get Started Free
+                  {t("common.getStartedFree")}
                 </SheetClose>
               )}
 
               <Separator className="mb-2" />
 
-              {NAV_LINKS.map(({ href, label }) => (
+              {NAV_LINKS.map(({ href, key }) => (
                 <SheetClose
                   key={href}
                   render={
@@ -176,7 +182,7 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  {label}
+                  {t(key)}
                 </SheetClose>
               ))}
               <Separator className="my-2" />
@@ -194,14 +200,14 @@ export default function SiteNav() {
                       />
                     }
                   >
-                    Account
+                    {t("common.account")}
                   </SheetClose>
                   <div className="px-3 py-2 text-xs text-slate-400 truncate">
                     {user.user_metadata?.full_name || user.email}
                   </div>
                   <form action="/api/auth/signout" method="POST">
                     <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
-                      Sign Out
+                      {t("common.signOut")}
                     </button>
                   </form>
                 </>
@@ -214,7 +220,7 @@ export default function SiteNav() {
                     />
                   }
                 >
-                  Sign In
+                  {t("common.signIn")}
                 </SheetClose>
               )}
             </div>

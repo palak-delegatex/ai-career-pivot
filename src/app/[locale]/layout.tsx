@@ -6,10 +6,14 @@ import {
   Noto_Sans_Devanagari,
   Noto_Sans_JP,
 } from "next/font/google";
-import "./globals.css";
+import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import "../globals.css";
 import { PostHogProvider } from "./PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
+import { routing } from "@/i18n/routing";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -104,23 +108,42 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// Pre-render a route tree for every supported locale at build time (AIC-667).
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+
+  // Reject unknown locales instead of rendering an empty/default catalog.
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  // Opt this layout (and everything below it) into static rendering for `locale`.
+  setRequestLocale(locale);
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <NextIntlClientProvider>
           <PostHogProvider>
             <div className="flex-1">{children}</div>
             <Footer />
           </PostHogProvider>
           <Analytics />
-        </body>
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

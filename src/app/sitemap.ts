@@ -6,7 +6,8 @@ import { getAllPosts } from "@/lib/blog";
 const BASE_URL = "https://ai-career-pivot.com";
 
 function pageLastModified(pagePath: string): Date {
-  const appDir = path.join(process.cwd(), "src/app");
+  // Route pages live under the `[locale]` segment after the i18n migration (AIC-667).
+  const appDir = path.join(process.cwd(), "src/app/[locale]");
   const filePath = path.join(appDir, pagePath, "page.tsx");
   try {
     return fs.statSync(filePath).mtime;
