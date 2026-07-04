@@ -507,7 +507,11 @@
     "trustMoneyBack": "30 Tage Geld-zurück-Garantie",
     "trustNoCharges": "Keine wiederkehrenden Gebühren",
     "trustedBy": "Vertraut von Fachkräften führender Organisationen",
-    "valuePropCallout": "Das einzige Karrierewechsel-Tool, das um deine Hypothek, deine Kinder und dein Einkommen herum plant — nicht nur um deine Fähigkeiten."
+    "valuePropCallout": "Das einzige Karrierewechsel-Tool, das um deine Hypothek, deine Kinder und dein Einkommen herum plant — nicht nur um deine Fähigkeiten.",
+    "heroFreeCtaEyebrow": "Noch nicht bereit, dich festzulegen?",
+    "heroFreeCtaControl": "Kostenlos starten — keine Karte nötig",
+    "heroFreeCtaBenefit": "Kostenlose Skill-Gap-Analyse ansehen",
+    "heroFreeCtaSub": "In 2 Minuten ausprobieren. Nur upgraden, wenn dir dein Plan gefällt."
   },
   "report": {
     "aiToolkitHeading": "KI-Toolkit für diese Rolle",

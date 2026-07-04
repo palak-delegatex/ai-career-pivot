@@ -507,7 +507,11 @@
     "trustMoneyBack": "30-day money-back guarantee",
     "trustNoCharges": "No recurring charges",
     "trustedBy": "Trusted by professionals from leading organizations",
-    "valuePropCallout": "The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills."
+    "valuePropCallout": "The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills.",
+    "heroFreeCtaEyebrow": "Not ready to commit?",
+    "heroFreeCtaControl": "Get Started Free — no card required",
+    "heroFreeCtaBenefit": "See Your Free Skill-Gap Snapshot",
+    "heroFreeCtaSub": "Try it in 2 minutes. Upgrade only if you love your roadmap."
   },
   "report": {
     "aiToolkitHeading": "AI Toolkit for This Role",

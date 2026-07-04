@@ -507,7 +507,11 @@
     "trustMoneyBack": "Garantie de remboursement de 30 jours",
     "trustNoCharges": "Aucun frais récurrent",
     "trustedBy": "Approuvé par des professionnels d'organisations de premier plan",
-    "valuePropCallout": "Le seul outil de reconversion professionnelle qui planifie en tenant compte de votre prêt immobilier, de vos enfants et de vos revenus — pas seulement de vos compétences."
+    "valuePropCallout": "Le seul outil de reconversion professionnelle qui planifie en tenant compte de votre prêt immobilier, de vos enfants et de vos revenus — pas seulement de vos compétences.",
+    "heroFreeCtaEyebrow": "Pas encore prêt à vous engager ?",
+    "heroFreeCtaControl": "Commencez gratuitement — sans carte",
+    "heroFreeCtaBenefit": "Voir votre bilan de compétences gratuit",
+    "heroFreeCtaSub": "Essayez en 2 minutes. Passez à l’offre payante seulement si votre feuille de route vous plaît."
   },
   "report": {
     "aiToolkitHeading": "Boîte à outils IA pour ce poste",

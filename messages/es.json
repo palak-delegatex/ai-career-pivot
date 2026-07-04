@@ -507,7 +507,11 @@
     "trustMoneyBack": "Garantía de devolución de 30 días",
     "trustNoCharges": "Sin cargos recurrentes",
     "trustedBy": "Con la confianza de profesionales de organizaciones líderes",
-    "valuePropCallout": "La única herramienta de reorientación profesional que planifica en torno a tu hipoteca, tus hijos y tus ingresos — no solo tus habilidades."
+    "valuePropCallout": "La única herramienta de reorientación profesional que planifica en torno a tu hipoteca, tus hijos y tus ingresos — no solo tus habilidades.",
+    "heroFreeCtaEyebrow": "¿Aún no quieres comprometerte?",
+    "heroFreeCtaControl": "Empieza gratis — sin tarjeta",
+    "heroFreeCtaBenefit": "Ve tu análisis gratuito de brechas de habilidades",
+    "heroFreeCtaSub": "Pruébalo en 2 minutos. Mejora tu plan solo si te encanta."
   },
   "report": {
     "aiToolkitHeading": "Kit de herramientas de IA para este puesto",

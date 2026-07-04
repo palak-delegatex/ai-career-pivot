@@ -507,7 +507,11 @@
     "trustMoneyBack": "30日間の返金保証",
     "trustNoCharges": "継続的な料金なし",
     "trustedBy": "大手組織のプロフェッショナルから信頼されています",
-    "valuePropCallout": "あなたのスキルだけでなく、住宅ローン、子ども、収入を考慮してプランを立てる唯一のキャリアピボットツール。"
+    "valuePropCallout": "あなたのスキルだけでなく、住宅ローン、子ども、収入を考慮してプランを立てる唯一のキャリアピボットツール。",
+    "heroFreeCtaEyebrow": "まだ迷っていますか？",
+    "heroFreeCtaControl": "無料で始める — カード不要",
+    "heroFreeCtaBenefit": "無料のスキルギャップ診断を見る",
+    "heroFreeCtaSub": "2分でお試し。ロードマップが気に入ったらアップグレード。"
   },
   "report": {
     "aiToolkitHeading": "この職種向けのAIツールキット",
