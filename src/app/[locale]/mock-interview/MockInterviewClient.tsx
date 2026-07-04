@@ -5,6 +5,7 @@ import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Key
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
+import { useLocale } from "next-intl";
 
 type InterviewType = "behavioral" | "technical" | "situational";
 type InputMode = "text" | "voice";
@@ -120,6 +121,7 @@ function SpeechMetricsDisplay({ metrics }: { metrics: SpeechMetrics }) {
 }
 
 export default function MockInterviewClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("setup");
   const [targetRole, setTargetRole] = useState("");
   const [customRole, setCustomRole] = useState("");
@@ -180,6 +182,7 @@ export default function MockInterviewClient() {
           jobDescription: jobDescription.trim() || undefined,
           messages: [{ role: "user", content: "Start the interview." }],
           questionCount: 0,
+          locale,
         }),
       });
 
@@ -255,6 +258,7 @@ export default function MockInterviewClient() {
           messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
           questionCount: willEnd ? 6 : nextQuestionCount,
           speechMetrics: aggregatedMetrics,
+          locale,
         }),
       });
 

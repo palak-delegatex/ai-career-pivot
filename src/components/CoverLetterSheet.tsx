@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import {
   Sheet,
   SheetContent,
@@ -39,6 +40,7 @@ export default function CoverLetterSheet({
   open,
   onOpenChange,
 }: CoverLetterSheetProps) {
+  const locale = useLocale();
   const [tone, setTone] = useState<Tone>("professional");
   const [keyPoints, setKeyPoints] = useState<string[]>(() => {
     const prefill = job.matchedSkills.slice(0, 3);
@@ -131,6 +133,7 @@ export default function CoverLetterSheet({
             targetIndustry: plan.targetIndustry,
             skillGaps: plan.skillGaps,
           },
+          locale,
         }),
       });
 

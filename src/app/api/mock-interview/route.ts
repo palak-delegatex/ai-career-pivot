@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { localeSystemPrompt } from "@/lib/locale";
 
 interface SpeechMetricsPayload {
   totalAnswers: number;
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
     messages,
     questionCount = 0,
     speechMetrics,
+    locale,
   }: {
     targetRole: string;
     interviewType?: "behavioral" | "technical" | "situational";
@@ -27,6 +29,7 @@ export async function POST(req: NextRequest) {
     messages: { role: "user" | "assistant"; content: string }[];
     questionCount?: number;
     speechMetrics?: SpeechMetricsPayload;
+    locale?: string;
   } = await req.json();
 
   if (!targetRole || !messages) {
@@ -39,9 +42,11 @@ export async function POST(req: NextRequest) {
   const isEndOfInterview = questionCount >= 5;
 
   const jd = jobDescription?.trim() || undefined;
-  const systemPrompt = isEndOfInterview
-    ? buildFeedbackPrompt(targetRole, jd, speechMetrics)
-    : buildInterviewerPrompt(targetRole, interviewType, questionCount, jd);
+  const systemPrompt =
+    (isEndOfInterview
+      ? buildFeedbackPrompt(targetRole, jd, speechMetrics)
+      : buildInterviewerPrompt(targetRole, interviewType, questionCount, jd)) +
+    localeSystemPrompt(locale);
 
   const result = streamText({
     model: anthropic("claude-sonnet-4-6"),

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useLocale } from "next-intl";
 import { Send, Minus, MessageSquare } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
@@ -114,6 +115,7 @@ export default function FollowUpChat({
   completionPercent,
   nextMilestone,
 }: FollowUpChatProps) {
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -216,6 +218,7 @@ export default function FollowUpChat({
           planIndex,
           messages: updatedMessages,
           sessionId,
+          locale,
         }),
       });
 

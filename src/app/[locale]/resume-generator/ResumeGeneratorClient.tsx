@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
 import {
   FileText,
@@ -88,6 +89,7 @@ function renderMarkdownBasic(text: string): React.ReactNode {
 }
 
 export default function ResumeGeneratorClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("setup");
   const [mode, setMode] = useState<Mode>("resume");
   const [targetRole, setTargetRole] = useState("");
@@ -142,6 +144,7 @@ export default function ResumeGeneratorClient() {
           jobDescription: jobDescription.trim() || undefined,
           tone: mode === "cover-letter" ? tone : undefined,
           profile,
+          locale,
         }),
       });
 

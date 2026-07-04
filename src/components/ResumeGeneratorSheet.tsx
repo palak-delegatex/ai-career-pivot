@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useLocale } from "next-intl";
 import {
   Sheet,
   SheetTrigger,
@@ -54,6 +55,7 @@ const TEMPLATES: { key: Template; name: string; desc: string }[] = [
 ];
 
 export default function ResumeGeneratorSheet({ plan, profile, children }: ResumeGeneratorSheetProps) {
+  const locale = useLocale();
   const allSkills = [
     ...profile.transferableSkills.map((s) => ({ skill: s, category: "direct" as const })),
     ...(plan.skillGaps ?? []).map((g) => ({ skill: g.skill, category: skillTransferCategory(g) })),
@@ -118,6 +120,7 @@ export default function ResumeGeneratorSheet({ plan, profile, children }: Resume
             targetIndustry: plan.targetIndustry,
             skillGaps: plan.skillGaps,
           },
+          locale,
         }),
       });
 

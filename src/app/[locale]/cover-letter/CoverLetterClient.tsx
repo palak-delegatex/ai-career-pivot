@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
 import {
@@ -136,6 +137,7 @@ function getSections(text: string): { title: string; wordCount: number }[] {
 }
 
 export default function CoverLetterClient() {
+  const locale = useLocale();
   const [phase, setPhase] = useState<Phase>("setup");
   const [jobSource, setJobSource] = useState<JobSource>("paste");
   const [jobUrl, setJobUrl] = useState("");
@@ -251,6 +253,7 @@ export default function CoverLetterClient() {
           tone,
           keyPoints: keyPoints.filter(Boolean),
           profile,
+          locale,
         }),
       });
 
