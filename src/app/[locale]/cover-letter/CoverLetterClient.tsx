@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import NextStepCTA from "@/components/NextStepCTA";
 import {
   FileSignature,
   Loader2,
@@ -772,6 +773,11 @@ export default function CoverLetterClient() {
               </div>
             </div>
           </aside>
+        </div>
+        <div className="shrink-0 border-t border-slate-700/60 bg-slate-900/80 px-6 py-4">
+          <div className="max-w-xl mx-auto">
+            <NextStepCTA fromTool="cover-letter" />
+          </div>
         </div>
       </main>
     );

@@ -13,6 +13,7 @@ import "../globals.css";
 import { PostHogProvider } from "../PostHogProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
+import { HelpPanel } from "@/components/ui/help-panel";
 import { routing } from "@/i18n/routing";
 
 const inter = Inter({
@@ -137,6 +138,7 @@ export default async function LocaleLayout({
           <PostHogProvider>
             <div className="flex-1">{children}</div>
             <Footer />
+            <HelpPanel />
           </PostHogProvider>
         </NextIntlClientProvider>
         <Analytics />

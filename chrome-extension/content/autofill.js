@@ -596,9 +596,48 @@
     setTimeout(() => document.addEventListener("click", dismiss), 0);
   }
 
-  // --- Summary panel ---
+  // --- Summary pill (persistent, collapsible) ---
 
-  function createSummaryPanel(results) {
+  function createSummaryPill(results) {
+    const existing = document.querySelector(".acp-autofill-pill");
+    if (existing) existing.remove();
+    const existingPanel = document.querySelector(".acp-summary-panel");
+    if (existingPanel) existingPanel.remove();
+
+    const container = document.createElement("div");
+    container.className = "acp-autofill-pill";
+
+    const attentionText = results.attention > 0
+      ? ` · <span class="acp-autofill-pill-stat-attention">${results.attention} review</span>`
+      : "";
+
+    const collapsed = document.createElement("div");
+    collapsed.className = "acp-autofill-pill-collapsed";
+    collapsed.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span><span class="acp-autofill-pill-stat-filled">${results.filled} filled</span>${attentionText}</span>
+      <span class="acp-autofill-pill-close">&times;</span>
+    `;
+
+    container.appendChild(collapsed);
+
+    collapsed.querySelector(".acp-autofill-pill-close").addEventListener("click", (e) => {
+      e.stopPropagation();
+      container.remove();
+    });
+
+    collapsed.addEventListener("click", (e) => {
+      if (e.target.closest(".acp-autofill-pill-close")) return;
+      container.remove();
+      showExpandedSummary(results);
+    });
+
+    document.body.appendChild(container);
+  }
+
+  function showExpandedSummary(results) {
     const existing = document.querySelector(".acp-summary-panel");
     if (existing) existing.remove();
 
@@ -673,10 +712,12 @@
       <div class="acp-summary-hint">Click the ✓ icon on any field to clear and manually edit</div>
     `;
 
-    panel.querySelector(".acp-summary-close").addEventListener("click", () => panel.remove());
+    panel.querySelector(".acp-summary-close").addEventListener("click", () => {
+      panel.remove();
+      createSummaryPill(results);
+    });
 
     document.body.appendChild(panel);
-    setTimeout(() => panel.remove(), 15000);
   }
 
   function escapeHtml(str) {
@@ -791,103 +832,68 @@
       atsName: ats?.name ? ats.name.charAt(0).toUpperCase() + ats.name.slice(1) : null,
     };
 
-    createSummaryPanel(results);
+    createSummaryPill(results);
     return results;
   }
 
-  // --- Banner ---
+  // --- Floating autofill card (replaces banner) ---
 
-  function showBanner() {
-    if (document.querySelector(".acp-autofill-banner")) return;
+  function showAutofillCard(detectedFields) {
+    if (document.querySelector(".acp-autofill-card")) return;
 
     const ats = detectATS();
-    const atsLabel = ats ? ` (${ats.name.charAt(0).toUpperCase() + ats.name.slice(1)} detected)` : "";
+    const atsName = ats ? ats.name.charAt(0).toUpperCase() + ats.name.slice(1) : null;
+    const fillableFields = detectedFields.filter(f => f.field);
+    const fieldCount = fillableFields.length;
 
-    const banner = document.createElement("div");
-    banner.className = "acp-autofill-banner";
-    banner.innerHTML = `
-      <div class="acp-autofill-banner-text">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <span>AICareerPivot can fill in your details${atsLabel}</span>
+    const previewNames = fillableFields.slice(0, 4).map(f => {
+      const name = f.label || f.field;
+      return name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, " $1").trim();
+    });
+    const moreCount = fieldCount - previewNames.length;
+    const previewText = previewNames.join(", ") + (moreCount > 0 ? `, +${moreCount} more` : "");
+
+    const card = document.createElement("div");
+    card.className = "acp-autofill-card";
+    card.innerHTML = `
+      <div class="acp-autofill-card-header">
+        <div class="acp-autofill-card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>Fill ${fieldCount} fields?</span>
+          ${atsName ? `<span class="acp-autofill-card-ats">${atsName}</span>` : ""}
+        </div>
+        <button class="acp-autofill-card-close" type="button">&times;</button>
       </div>
-      <button class="acp-banner-btn acp-banner-btn-fill">Autofill</button>
-      <button class="acp-banner-btn acp-banner-btn-skip">Not now</button>
-      <button class="acp-banner-btn acp-banner-btn-never">Never on this site</button>
+      <div class="acp-autofill-card-preview">${escapeHtml(previewText)}</div>
+      <div class="acp-autofill-card-actions">
+        <button class="acp-autofill-card-fill" type="button">Autofill</button>
+      </div>
+      <span class="acp-autofill-card-never">Don't show on ${window.location.hostname}</span>
     `;
 
-    const fillBtn = banner.querySelector(".acp-banner-btn-fill");
-    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
-    const neverBtn = banner.querySelector(".acp-banner-btn-never");
+    card.querySelector(".acp-autofill-card-close").addEventListener("click", () => card.remove());
 
-    fillBtn.addEventListener("click", async () => {
-      fillBtn.textContent = "Filling...";
-      fillBtn.disabled = true;
-      const result = await runAutofill();
-      banner.querySelector(".acp-autofill-banner-text span").textContent =
-        `Filled ${result.filled} of ${result.total} fields` +
-        (result.attention ? ` — ${result.attention} need review` : "");
-      fillBtn.remove();
-      skipBtn.textContent = "Done";
-      neverBtn.remove();
-      setTimeout(() => banner.remove(), 4000);
+    card.querySelector(".acp-autofill-card-fill").addEventListener("click", async (e) => {
+      const btn = e.currentTarget;
+      btn.textContent = "Filling…";
+      btn.disabled = true;
+      await runAutofill();
+      card.remove();
     });
 
-    skipBtn.addEventListener("click", () => banner.remove());
-
-    neverBtn.addEventListener("click", async () => {
+    card.querySelector(".acp-autofill-card-never").addEventListener("click", async () => {
       const host = window.location.hostname;
       const { disabledSites = [] } = await chrome.storage.sync.get("disabledSites");
       if (!disabledSites.includes(host)) {
         disabledSites.push(host);
         await chrome.storage.sync.set({ disabledSites });
       }
-      banner.remove();
+      card.remove();
     });
 
-    document.body.prepend(banner);
-  }
-
-  function showResumeUploadBanner(fileInputs) {
-    if (!fileInputs.length) return;
-    const banner = document.querySelector(".acp-autofill-banner");
-    if (!banner) return;
-
-    const existing = banner.querySelector(".acp-banner-btn-resume");
-    if (existing) return;
-
-    const skipBtn = banner.querySelector(".acp-banner-btn-skip");
-    const resumeBtn = document.createElement("button");
-    resumeBtn.className = "acp-banner-btn acp-banner-btn-resume";
-    resumeBtn.textContent = "Upload Resume";
-
-    resumeBtn.addEventListener("click", async () => {
-      resumeBtn.textContent = "Uploading…";
-      resumeBtn.disabled = true;
-
-      try {
-        const result = await msg("FETCH_RESUME_PDF");
-        if (!result.ok) throw new Error(result.error);
-
-        const file = base64ToFile(result.data.base64, result.data.filename);
-        for (const input of fileInputs) {
-          injectFileToInput(input, file);
-        }
-
-        resumeBtn.textContent = "Resume attached ✓";
-        resumeBtn.classList.add("acp-banner-btn-resume-done");
-      } catch (err) {
-        resumeBtn.textContent = "Upload Resume";
-        resumeBtn.disabled = false;
-      }
-    });
-
-    if (skipBtn) {
-      banner.insertBefore(resumeBtn, skipBtn);
-    } else {
-      banner.appendChild(resumeBtn);
-    }
+    document.body.appendChild(card);
   }
 
   // --- Init ---
@@ -903,14 +909,10 @@
       const fields = detectFormFields(detectATS());
       const fileInputs = detectFileInputs();
 
-      if (fields.some(f => f.field) || fileInputs.length) showBanner();
+      if (fields.some(f => f.field) || fileInputs.length) showAutofillCard(fields);
 
       for (const fi of fileInputs) {
         createResumeUploadBtn(fi);
-      }
-
-      if (fileInputs.length) {
-        showResumeUploadBanner(fileInputs);
       }
     }, 1500);
 

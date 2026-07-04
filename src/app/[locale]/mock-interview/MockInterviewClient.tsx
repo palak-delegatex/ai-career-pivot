@@ -1,16 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Keyboard, Play, Pause, Square, Volume2 } from "lucide-react";
 import Link from "next/link";
+import NextStepCTA from "@/components/NextStepCTA";
+import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 
 type InterviewType = "behavioral" | "technical" | "situational";
+type InputMode = "text" | "voice";
 type Phase = "setup" | "interview" | "done";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: number;
+  audioUrl?: string | null;
+  speechMetrics?: SpeechMetrics | null;
 }
 
 const INTERVIEW_TYPES: { value: InterviewType; label: string; desc: string }[] = [
@@ -48,6 +53,72 @@ function renderMarkdown(text: string): React.ReactNode {
   return <>{nodes}</>;
 }
 
+function AudioPlayback({ url }: { url: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play();
+      setPlaying(true);
+    }
+  };
+
+  return (
+    <span className="inline-flex items-center gap-1 ml-2">
+      <audio
+        ref={audioRef}
+        src={url}
+        onEnded={() => setPlaying(false)}
+      />
+      <button
+        onClick={toggle}
+        className="text-purple-400 hover:text-purple-300 transition-colors p-0.5"
+        aria-label={playing ? "Pause recording" : "Play recording"}
+      >
+        {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+      </button>
+      <Volume2 className="w-3 h-3 text-slate-500" />
+    </span>
+  );
+}
+
+function SpeechMetricsDisplay({ metrics }: { metrics: SpeechMetrics }) {
+  const pacingLabel =
+    metrics.wordsPerMinute < 100 ? "Slow" :
+    metrics.wordsPerMinute > 170 ? "Fast" : "Good";
+  const pacingColor =
+    metrics.wordsPerMinute < 100 ? "text-amber-400" :
+    metrics.wordsPerMinute > 170 ? "text-amber-400" : "text-emerald-400";
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-1.5">
+      <span className="inline-flex items-center gap-1 text-[10px] bg-slate-700/50 rounded-full px-2 py-0.5">
+        <span className="text-slate-400">{metrics.durationSeconds}s</span>
+      </span>
+      <span className={`inline-flex items-center gap-1 text-[10px] bg-slate-700/50 rounded-full px-2 py-0.5 ${pacingColor}`}>
+        {metrics.wordsPerMinute} wpm · {pacingLabel}
+      </span>
+      {metrics.fillerWordTotal > 0 && (
+        <span className="inline-flex items-center gap-1 text-[10px] bg-amber-900/30 border border-amber-800/30 rounded-full px-2 py-0.5 text-amber-400">
+          {metrics.fillerWordTotal} filler{metrics.fillerWordTotal !== 1 ? "s" : ""}
+          ({metrics.fillerWords.map((f) => f.word).join(", ")})
+        </span>
+      )}
+      {metrics.fillerWordTotal === 0 && (
+        <span className="inline-flex items-center gap-1 text-[10px] bg-emerald-900/30 border border-emerald-800/30 rounded-full px-2 py-0.5 text-emerald-400">
+          No fillers
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function MockInterviewClient() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [targetRole, setTargetRole] = useState("");
@@ -60,8 +131,11 @@ export default function MockInterviewClient() {
   const [streaming, setStreaming] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
   const [showEndOption, setShowEndOption] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>("text");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const voice = useVoiceRecorder();
+  const allMetricsRef = useRef<SpeechMetrics[]>([]);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -140,7 +214,7 @@ export default function MockInterviewClient() {
     }
   }
 
-  async function handleSend(text?: string) {
+  async function handleSend(text?: string, voiceAudioUrl?: string | null, voiceMetrics?: SpeechMetrics | null) {
     const content = (text ?? input).trim();
     if (!content || streaming) return;
 
@@ -148,7 +222,17 @@ export default function MockInterviewClient() {
     const isEndRequest = content.toLowerCase().includes("end interview") || content === "__end__";
     const nextQuestionCount = questionCount + 1;
 
-    const userMessage: Message = { role: "user", content: isEndRequest ? "Please give me my interview feedback and scorecard." : content, timestamp: Date.now() };
+    if (voiceMetrics) {
+      allMetricsRef.current.push(voiceMetrics);
+    }
+
+    const userMessage: Message = {
+      role: "user",
+      content: isEndRequest ? "Please give me my interview feedback and scorecard." : content,
+      timestamp: Date.now(),
+      audioUrl: voiceAudioUrl,
+      speechMetrics: voiceMetrics,
+    };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
@@ -157,6 +241,8 @@ export default function MockInterviewClient() {
     setShowEndOption(false);
 
     const willEnd = isEndRequest || nextQuestionCount >= 5;
+
+    const aggregatedMetrics = willEnd ? aggregateSpeechMetrics(allMetricsRef.current) : undefined;
 
     try {
       const res = await fetch("/api/mock-interview", {
@@ -168,6 +254,7 @@ export default function MockInterviewClient() {
           jobDescription: jobDescription.trim() || undefined,
           messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
           questionCount: willEnd ? 6 : nextQuestionCount,
+          speechMetrics: aggregatedMetrics,
         }),
       });
 
@@ -209,6 +296,42 @@ export default function MockInterviewClient() {
     }
   }
 
+  function handleVoiceSend() {
+    const result = voice.stopRecording();
+    if (!result) {
+      voice.clearRecording();
+      return;
+    }
+    handleSend(result.transcript, voice.audioUrl, result.metrics);
+    voice.clearRecording();
+  }
+
+  function aggregateSpeechMetrics(all: SpeechMetrics[]): object | undefined {
+    if (all.length === 0) return undefined;
+    const totalDuration = all.reduce((s, m) => s + m.durationSeconds, 0);
+    const totalWords = all.reduce((s, m) => s + m.wordCount, 0);
+    const avgWpm = totalDuration > 0 ? Math.round((totalWords / totalDuration) * 60) : 0;
+    const fillerMap = new Map<string, number>();
+    for (const m of all) {
+      for (const f of m.fillerWords) {
+        fillerMap.set(f.word, (fillerMap.get(f.word) ?? 0) + f.count);
+      }
+    }
+    const totalFillers = [...fillerMap.values()].reduce((s, c) => s + c, 0);
+    return {
+      totalAnswers: all.length,
+      totalDurationSeconds: totalDuration,
+      totalWords,
+      averageWordsPerMinute: avgWpm,
+      totalFillerWords: totalFillers,
+      fillerWordPercentage: totalWords > 0 ? Math.round((totalFillers / totalWords) * 100) : 0,
+      topFillers: [...fillerMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([word, count]) => ({ word, count })),
+    };
+  }
+
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -224,6 +347,8 @@ export default function MockInterviewClient() {
     setInput("");
     setJobDescription("");
     setShowJdInput(false);
+    voice.clearRecording();
+    allMetricsRef.current = [];
   }
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
@@ -337,6 +462,46 @@ export default function MockInterviewClient() {
             )}
           </div>
 
+          {/* Input mode selection */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-3">Answer Mode</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setInputMode("text")}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl text-left transition-colors ${
+                  inputMode === "text"
+                    ? "bg-purple-600/20 border-2 border-purple-500 text-white"
+                    : "bg-slate-800/60 border-2 border-transparent text-slate-400 hover:border-slate-600"
+                }`}
+              >
+                <Keyboard className="w-4 h-4 shrink-0" />
+                <div>
+                  <div className="text-sm font-semibold">Type</div>
+                  <div className="text-xs text-slate-500">Text answers</div>
+                </div>
+              </button>
+              <button
+                onClick={() => setInputMode("voice")}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl text-left transition-colors ${
+                  inputMode === "voice"
+                    ? "bg-purple-600/20 border-2 border-purple-500 text-white"
+                    : "bg-slate-800/60 border-2 border-transparent text-slate-400 hover:border-slate-600"
+                }`}
+              >
+                <Mic2 className="w-4 h-4 shrink-0" />
+                <div>
+                  <div className="text-sm font-semibold">Speak</div>
+                  <div className="text-xs text-slate-500">Voice + analysis</div>
+                </div>
+              </button>
+            </div>
+            {inputMode === "voice" && !voice.supported && (
+              <p className="text-amber-400 text-xs mt-2">
+                Voice input requires Chrome or Edge. You can switch to text mode.
+              </p>
+            )}
+          </div>
+
           <button
             onClick={startInterview}
             disabled={!targetRole || (targetRole === "custom" && !customRole.trim())}
@@ -346,7 +511,7 @@ export default function MockInterviewClient() {
           </button>
 
           <p className="text-slate-500 text-xs text-center">
-            5 questions · ~10 minutes · {jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
+            5 questions · ~10 minutes · {inputMode === "voice" ? "Voice analysis & feedback" : jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
           </p>
         </div>
       </main>
@@ -412,7 +577,15 @@ export default function MockInterviewClient() {
                   : "bg-slate-800/60 text-slate-200 border-l-[3px] border-purple-500/60"
               }`}>
                 {msg.role === "user" ? (
-                  <p className="whitespace-pre-wrap">{msg.content === "Please give me my interview feedback and scorecard." ? "End interview — give me my feedback." : msg.content}</p>
+                  <div>
+                    <p className="whitespace-pre-wrap">
+                      {msg.content === "Please give me my interview feedback and scorecard."
+                        ? "End interview — give me my feedback."
+                        : msg.content}
+                      {msg.audioUrl && <AudioPlayback url={msg.audioUrl} />}
+                    </p>
+                    {msg.speechMetrics && <SpeechMetricsDisplay metrics={msg.speechMetrics} />}
+                  </div>
                 ) : (
                   <div className="space-y-0.5">{renderMarkdown(msg.content)}</div>
                 )}
@@ -436,15 +609,18 @@ export default function MockInterviewClient() {
           )}
 
           {phase === "done" && (
-            <div className="rounded-2xl bg-emerald-950/30 border border-emerald-800/30 p-5 text-center">
-              <p className="text-emerald-400 font-semibold mb-3">Interview Complete</p>
-              <div className="flex gap-3 justify-center">
+            <div className="rounded-2xl bg-emerald-950/30 border border-emerald-800/30 p-5">
+              <p className="text-emerald-400 font-semibold mb-3 text-center">Interview Complete</p>
+              <div className="flex gap-3 justify-center mb-4">
                 <button
                   onClick={resetInterview}
                   className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
                 >
                   Practice Again
                 </button>
+              </div>
+              <NextStepCTA fromTool="mock-interview" />
+              <div className="flex justify-center mt-4">
                 <Link
                   href="/dashboard"
                   className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"
@@ -471,31 +647,108 @@ export default function MockInterviewClient() {
                 </button>
               </div>
             )}
-            <div className="flex gap-2 items-end">
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  e.currentTarget.style.height = "auto";
-                  e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 120) + "px";
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="Type your answer..."
-                rows={1}
-                style={{ minHeight: "44px", maxHeight: "120px" }}
-                className="flex-1 bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
-              />
-              <button
-                onClick={() => handleSend()}
-                disabled={!input.trim() || streaming}
-                className="p-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl transition-colors shrink-0"
-                aria-label="Send answer"
-              >
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="text-[10px] text-slate-600 text-center">Enter to send · Shift+Enter for new line</p>
+
+            {inputMode === "voice" ? (
+              <div className="space-y-2">
+                {voice.error && (
+                  <p className="text-amber-400 text-xs text-center">{voice.error}</p>
+                )}
+
+                {voice.isRecording ? (
+                  <div className="space-y-3">
+                    <div className="bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-3 min-h-[60px]">
+                      <p className="text-sm text-white whitespace-pre-wrap">
+                        {voice.transcript}
+                        {voice.interimTranscript && (
+                          <span className="text-slate-400">{voice.interimTranscript}</span>
+                        )}
+                        {!voice.transcript && !voice.interimTranscript && (
+                          <span className="text-slate-500 italic">Listening... speak your answer</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="flex items-center gap-2 text-red-400 text-xs">
+                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                        Recording
+                      </div>
+                      <button
+                        onClick={handleVoiceSend}
+                        disabled={streaming}
+                        className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl transition-colors text-sm font-semibold flex items-center gap-2"
+                      >
+                        <Square className="w-3.5 h-3.5" />
+                        Stop & Send
+                      </button>
+                      <button
+                        onClick={() => { voice.stopRecording(); voice.clearRecording(); }}
+                        className="px-3 py-2 text-slate-400 hover:text-white rounded-xl transition-colors text-xs hover:bg-slate-800"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={voice.startRecording}
+                      disabled={streaming}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-800/60 border border-slate-600 hover:border-purple-500 rounded-xl text-sm text-slate-300 hover:text-white transition-colors disabled:opacity-40"
+                    >
+                      <Mic2 className="w-4 h-4 text-purple-400" />
+                      Tap to speak your answer
+                    </button>
+                    <button
+                      onClick={() => setInputMode("text")}
+                      className="p-2.5 text-slate-400 hover:text-white rounded-xl transition-colors hover:bg-slate-800"
+                      aria-label="Switch to text input"
+                    >
+                      <Keyboard className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                <p className="text-[10px] text-slate-600 text-center">
+                  {voice.isRecording ? "Speak naturally — click Stop & Send when done" : "Uses browser speech recognition · Works best in Chrome"}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <div className="flex gap-2 items-end">
+                  <textarea
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      e.currentTarget.style.height = "auto";
+                      e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 120) + "px";
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type your answer..."
+                    rows={1}
+                    style={{ minHeight: "44px", maxHeight: "120px" }}
+                    className="flex-1 bg-slate-800/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
+                  />
+                  <button
+                    onClick={() => handleSend()}
+                    disabled={!input.trim() || streaming}
+                    className="p-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white rounded-xl transition-colors shrink-0"
+                    aria-label="Send answer"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                  {voice.supported && (
+                    <button
+                      onClick={() => setInputMode("voice")}
+                      className="p-2.5 text-slate-400 hover:text-purple-400 rounded-xl transition-colors shrink-0 hover:bg-slate-800"
+                      aria-label="Switch to voice input"
+                    >
+                      <Mic2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-600 text-center">Enter to send · Shift+Enter for new line</p>
+              </div>
+            )}
           </div>
         </div>
       )}

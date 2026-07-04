@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import NextStepCTA from "@/components/NextStepCTA";
 import {
   Loader2,
   Copy,
@@ -574,13 +575,9 @@ export default function LinkedInOptimizerClient() {
           </div>
         </section>
 
-        <div className="flex gap-3 justify-center">
-          <Link
-            href="/gap-analysis"
-            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
-          >
-            Gap Analysis
-          </Link>
+        <NextStepCTA fromTool="linkedin-optimizer" />
+
+        <div className="flex justify-center mt-4">
           <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"

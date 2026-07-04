@@ -1,6 +1,7 @@
 const DEFAULT_API_URL = "https://ai-career-pivot.vercel.app";
 
 let selectedResumeId = null;
+let currentStep = 1;
 
 function msg(type, payload) {
   return new Promise((resolve) => {
@@ -18,29 +19,32 @@ function hide(id) {
 
 // --- Step navigation ---
 
-function goToStep(step) {
-  const stepWelcome = document.getElementById("stepWelcome");
-  const stepResume = document.getElementById("stepResume");
-  const dot1 = document.getElementById("dot1");
-  const dot2 = document.getElementById("dot2");
+const STEP_IDS = ["stepWelcome", "stepConnect", "stepTryIt", "stepReady"];
+const TRACK_FILL_PCT = [0, 33, 66, 100];
 
-  if (step === 1) {
-    stepWelcome.hidden = false;
-    stepResume.hidden = true;
-    dot1.classList.add("active");
-    dot2.classList.remove("active");
-  } else {
-    stepWelcome.hidden = true;
-    stepResume.hidden = false;
-    dot1.classList.remove("active");
-    dot2.classList.add("active");
-    loadResumeStep();
+function goToStep(step) {
+  currentStep = step;
+
+  for (const id of STEP_IDS) {
+    document.getElementById(id).hidden = true;
   }
+  document.getElementById(STEP_IDS[step - 1]).hidden = false;
+
+  for (let i = 1; i <= 4; i++) {
+    const trackEl = document.getElementById(`track${i}`);
+    trackEl.classList.remove("active", "completed");
+    if (i < step) trackEl.classList.add("completed");
+    if (i === step) trackEl.classList.add("active");
+  }
+
+  document.getElementById("trackFill").style.width = TRACK_FILL_PCT[step - 1] + "%";
+
+  if (step === 2) loadConnectStep();
 }
 
-// --- Step 2: Resume loading ---
+// --- Step 2: Connect (sign-in + resume) ---
 
-async function loadResumeStep() {
+async function loadConnectStep() {
   const session = await msg("GET_SESSION");
 
   if (!session.ok || !session.data) {
@@ -125,7 +129,6 @@ function selectResume(id, element) {
   });
   element.classList.add("selected");
   selectedResumeId = id;
-  document.getElementById("finishBtn").disabled = false;
 }
 
 function escapeHtml(str) {
@@ -141,21 +144,32 @@ async function finishOnboarding() {
     await chrome.storage.sync.set({ activeResumeId: selectedResumeId });
   }
   await chrome.storage.sync.set({ onboardingComplete: true });
-  window.close();
 }
 
 // --- Event listeners ---
 
+// Step 1 → 2
 document.getElementById("nextBtn").addEventListener("click", () => goToStep(2));
-document.getElementById("backBtn").addEventListener("click", () => goToStep(1));
 
-document.getElementById("finishBtn").addEventListener("click", finishOnboarding);
+// Step 2: back, forward, skip
+document.getElementById("backToWelcome").addEventListener("click", () => goToStep(1));
+document.getElementById("nextToTryIt").addEventListener("click", () => goToStep(3));
+document.getElementById("skipConnect").addEventListener("click", () => goToStep(3));
 
-document.getElementById("skipBtn").addEventListener("click", async () => {
-  await chrome.storage.sync.set({ onboardingComplete: true });
-  window.close();
+// Step 3: back, forward, skip
+document.getElementById("backToConnect").addEventListener("click", () => goToStep(2));
+document.getElementById("nextToReady").addEventListener("click", () => goToStep(4));
+document.getElementById("skipTryIt").addEventListener("click", () => goToStep(4));
+
+// Step 4: open dashboard
+document.getElementById("openDashboard").addEventListener("click", async () => {
+  await finishOnboarding();
+  const { apiUrl } = await chrome.storage.sync.get("apiUrl");
+  const baseUrl = apiUrl || DEFAULT_API_URL;
+  chrome.tabs.create({ url: `${baseUrl}/dashboard` });
 });
 
+// Sign in
 document.getElementById("signInBtn").addEventListener("click", async () => {
   const btn = document.getElementById("signInBtn");
   const errorEl = document.getElementById("authError");
@@ -165,7 +179,7 @@ document.getElementById("signInBtn").addEventListener("click", async () => {
 
   const result = await msg("SIGN_IN_GOOGLE");
   if (result.ok) {
-    loadResumeStep();
+    loadConnectStep();
   } else {
     btn.disabled = false;
     btn.querySelector("span").textContent = "Continue with Google";

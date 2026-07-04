@@ -42,21 +42,28 @@ export async function generateMetadata({
   };
 }
 
-function WaitlistCTA() {
+function WaitlistCTA({
+  heading = "Ready to build your own roadmap?",
+  subheading = "Get a personalized AI-powered career pivot plan based on your skills, finances, and family situation.",
+  buttonText = "Get My Roadmap — $19 →",
+}: {
+  heading?: string;
+  subheading?: string;
+  buttonText?: string;
+} = {}) {
   return (
     <div className="my-10 p-6 rounded-2xl bg-teal-950 border border-teal-800 text-center not-prose">
       <p className="text-teal-300 font-semibold text-lg mb-2">
-        Ready to build your own roadmap?
+        {heading}
       </p>
       <p className="text-slate-400 text-sm mb-5">
-        Get a personalized AI-powered career pivot plan based on your skills,
-        finances, and family situation.
+        {subheading}
       </p>
       <Link
         href="/pricing"
         className="inline-block px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-colors"
       >
-        Get My Roadmap — $19 →
+        {buttonText}
       </Link>
     </div>
   );

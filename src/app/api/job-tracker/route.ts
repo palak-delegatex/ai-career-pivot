@@ -3,12 +3,12 @@ import { getSupabaseClient } from "@/lib/supabase";
 import type { JobStage, JobSource } from "@/lib/job-tracker";
 
 const VALID_STAGES: JobStage[] = [
-  "saved",
+  "exploring",
   "applied",
-  "phone_screen",
-  "interview",
+  "interviewing",
   "offer",
-  "rejected",
+  "pivoted",
+  "passed",
 ];
 
 const VALID_SOURCES: JobSource[] = [
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "email, role, company required" }, { status: 400 });
   }
 
-  const validStage = VALID_STAGES.includes(stage) ? stage : "saved";
+  const validStage = VALID_STAGES.includes(stage) ? stage : "exploring";
   const validSource = VALID_SOURCES.includes(source) ? source : "other";
 
   const supabase = getSupabaseClient();
@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
       match_score: typeof match_score === "number" ? match_score : 0,
       next_action: next_action ?? "",
       notes: notes ?? "",
-      applied_at: validStage !== "saved" ? now : null,
+      source_type: body.source_type ?? "manual",
+      applied_at: validStage !== "exploring" ? now : null,
       stage_changed_at: now,
     })
     .select()

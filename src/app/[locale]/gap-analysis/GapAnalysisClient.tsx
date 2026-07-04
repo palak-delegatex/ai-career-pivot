@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import NextStepCTA from "@/components/NextStepCTA";
+import LearningResources from "@/components/LearningResources";
 import {
   Search,
   CheckCircle2,
@@ -339,6 +341,19 @@ export default function GapAnalysisClient() {
           </section>
         )}
 
+        {/* Learning Resources */}
+        {result.missingSkills.length > 0 && (
+          <LearningResources
+            skillGaps={result.missingSkills.map((s) => ({
+              skill: s.skill,
+              currentLevel: "none",
+              requiredLevel: s.importance === "must-have" ? "proficient" : "familiar",
+              priority: s.importance === "must-have" ? "high" : "medium",
+            }))}
+            targetRole={result.careerPivotFit?.summary}
+          />
+        )}
+
         {/* Experience Gaps */}
         {result.experienceGaps.length > 0 && (
           <section className="mb-8">
@@ -429,13 +444,9 @@ export default function GapAnalysisClient() {
           </section>
         )}
 
-        <div className="flex gap-3 justify-center">
-          <Link
-            href="/mock-interview"
-            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-sm transition-colors"
-          >
-            Practice Interview for This Role
-          </Link>
+        <NextStepCTA fromTool="gap-analysis" />
+
+        <div className="flex justify-center mt-4">
           <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold text-sm transition-colors"

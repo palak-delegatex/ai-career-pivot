@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import ResumeGeneratorSheet from "@/components/ResumeGeneratorSheet";
+import LearningResources from "@/components/LearningResources";
 
 interface MatchedSkill {
   skill: string;
@@ -428,6 +429,28 @@ export default function GapAnalysisTab({ profile, plan }: GapAnalysisTabProps) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
+              {/* Learning Resources */}
+              {result.missingSkills.length > 0 && (
+                <AccordionItem value="learning-resources">
+                  <AccordionTrigger>
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-teal-400" />
+                      Learning Resources
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <LearningResources
+                      skillGaps={result.missingSkills.map((s) => ({
+                        skill: s.skill,
+                        currentLevel: "none",
+                        requiredLevel: s.importance === "must-have" ? "proficient" : "familiar",
+                        priority: s.importance === "must-have" ? "high" : "medium",
+                      }))}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
               {/* Experience Gaps */}
               {result.experienceGaps.length > 0 && (
