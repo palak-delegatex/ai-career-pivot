@@ -1,22 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getAllPosts } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
+import {
+  canonicalFor,
+  hreflangAlternates,
+  ogLocale,
+} from "@/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Blog — Career Pivot Guides & Resources",
-  description:
-    "Actionable guides for professionals ready to change careers. Real frameworks for career pivots, industry switches, and navigating change with a family.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/blog",
-  },
-  openGraph: {
-    url: "https://ai-career-pivot.com/blog",
-    title: "Blog — Career Pivot Guides & Resources",
-    description:
-      "Actionable guides for professionals ready to change careers.",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta.blogIndex" });
+  const url = canonicalFor(locale, "/blog");
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: url,
+      languages: hreflangAlternates("/blog"),
+    },
+    openGraph: {
+      type: "website",
+      url,
+      siteName: "AICareerPivot",
+      locale: ogLocale(locale),
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+    },
+  };
+}
 
 export default function BlogIndex() {
   const posts = getAllPosts();

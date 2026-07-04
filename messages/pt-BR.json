@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — Seu estrategista de carreira pessoal",
-    "defaultDescription": "Pare de se sentir preso. Crie um plano de transição de carreira personalizado com base nas suas habilidades, finanças e responsabilidades familiares. Planos práticos de 6 meses, 1 ano e 2 anos."
+    "landing": {
+      "title": "Mudança de carreira com IA | AICareerPivot Brasil",
+      "description": "Diagnóstico gratuito das suas lacunas de habilidades e um plano personalizado para você migrar para uma carreira em IA no mercado brasileiro.",
+      "ogTitle": "Descubra o caminho real para uma carreira em IA",
+      "ogDescription": "Diagnóstico gratuito, mapa de lacunas e plano de transição feito para o Brasil. Sem hype — só os próximos passos.",
+      "ogHeadline": "Sua carreira em IA, guiada por dados.",
+      "ogSub": "Diagnóstico gratuito"
+    },
+    "blogIndex": {
+      "title": "Blog AICareerPivot | Carreira em IA no Brasil",
+      "description": "Guias práticos sobre transição de carreira, habilidades de IA e o mercado de tecnologia brasileiro. Conteúdo direto, sem promessas vazias.",
+      "ogTitle": "Guias de transição de carreira para IA — Brasil",
+      "ogDescription": "Como entrar na área de IA, quais habilidades priorizar e o que o mercado brasileiro realmente pede. Atualizado toda semana.",
+      "ogHeadline": "Blog · Carreira em IA para brasileiros",
+      "ogSub": "AICareerPivot"
+    }
   },
   "faq": {
     "metaTitle": "Perguntas frequentes — AICareerPivot",

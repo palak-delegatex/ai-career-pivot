@@ -1,30 +1,47 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getAllPosts } from "@/lib/blog";
 import HomeClient from "./HomeClient";
 import { organizationSchema } from "@/lib/schema";
+import {
+  canonicalFor,
+  hreflangAlternates,
+  ogLocale,
+} from "@/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "AICareerPivot — Your AI-Powered Career Transition Strategist",
-  description:
-    "AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial situation, and family constraints. Get a custom 6-month, 1-year, and 2-year career pivot plan.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com",
-  },
-  openGraph: {
-    url: "https://ai-career-pivot.com",
-    title: "AICareerPivot — Your AI-Powered Career Transition Strategist",
-    description:
-      "Personalized AI-powered career pivot roadmaps for professionals who need to account for skills, finances, and family constraints.",
-    images: [{ url: "https://ai-career-pivot.com/og-home.png" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AICareerPivot — Your AI-Powered Career Transition Strategist",
-    description:
-      "Personalized AI-powered career pivot roadmaps for professionals who need to account for skills, finances, and family constraints.",
-    images: ["https://ai-career-pivot.com/og-home.png"],
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta.landing" });
+  const url = canonicalFor(locale, "");
+
+  // OG image comes from the colocated `opengraph-image.tsx` file convention
+  // (localized per locale) — intentionally not overridden here.
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: url,
+      languages: hreflangAlternates(""),
+    },
+    openGraph: {
+      type: "website",
+      url,
+      siteName: "AICareerPivot",
+      locale: ogLocale(locale),
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+    },
+  };
+}
 
 const websiteSchema = {
   "@context": "https://schema.org",
@@ -41,7 +58,13 @@ const websiteSchema = {
   },
 };
 
-export default function Page() {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const recentPosts = getAllPosts().slice(0, 4);
   const orgSchema = organizationSchema();
   return (

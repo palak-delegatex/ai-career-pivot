@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — Votre stratège de carrière personnel",
-    "defaultDescription": "Ne restez plus prisonnier. Construisez une feuille de route de reconversion personnalisée selon vos compétences, vos finances et vos contraintes familiales. Des plans concrets à 6 mois, 1 an et 2 ans."
+    "landing": {
+      "title": "Reconversion vers l'IA : bilan et feuille de route",
+      "description": "Bilan de compétences IA, analyse des écarts et feuille de route personnalisée pour réussir votre reconversion vers un métier de l'IA. Commencez gratuitement.",
+      "ogTitle": "Réussir sa reconversion vers un métier de l'IA",
+      "ogDescription": "Des données, pas des promesses : bilan, écarts de compétences et plan d'action pour votre transition vers l'IA.",
+      "ogHeadline": "RECONVERSION IA",
+      "ogSub": "Votre bilan gratuit en 10 minutes"
+    },
+    "blogIndex": {
+      "title": "Blog — Réussir sa transition vers l'IA",
+      "description": "Guides concrets et données pour votre reconversion vers les métiers de l'IA : compétences, formations, CV, marché de l'emploi en France et Afrique francophone.",
+      "ogTitle": "Le blog AICareerPivot — carrières dans l'IA",
+      "ogDescription": "Conseils fondés sur les données pour changer de carrière vers l'intelligence artificielle.",
+      "ogHeadline": "BLOG",
+      "ogSub": "Reconversion & métiers de l'IA"
+    }
   },
   "faq": {
     "metaTitle": "Foire aux questions — AICareerPivot",

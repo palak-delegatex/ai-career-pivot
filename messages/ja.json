@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — あなた専属のキャリア戦略パートナー",
-    "defaultDescription": "縛られる日々を終わりに。あなたのスキル・資金・家庭の事情に基づいた、パーソナライズされたキャリア転身ロードマップを作成。6か月・1年・2年の実行可能なプラン。"
+    "landing": {
+      "title": "AI未経験から転職｜スキルギャップをAI診断 - AICareerPivot",
+      "description": "AIがあなたの職務経歴を分析し、AI職種へのスキルギャップ・学習ロードマップ・職務経歴書までを提案。未経験からのAI転職を、感覚ではなくデータで設計します。",
+      "ogTitle": "AI未経験からのキャリア設計 - AICareerPivot",
+      "ogDescription": "職務経歴の分析からスキルギャップ診断、書類作成まで。AI転職をデータで支援。",
+      "ogHeadline": "AI未経験でも、キャリアは設計できる。",
+      "ogSub": "無料スキルギャップ診断"
+    },
+    "blogIndex": {
+      "title": "AI転職ガイド｜未経験・スキルギャップ・学習法 - AICareerPivot",
+      "description": "AI業界への転職を目指す方へ。未経験からの始め方、スキルギャップの埋め方、職務経歴書のコツを、データと実例ベースで解説する記事一覧です。",
+      "ogTitle": "AI転職ガイド - AICareerPivot ブログ",
+      "ogDescription": "AI未経験からの転職・リスキリングの実践知を、非誇張・データ重視でお届け。",
+      "ogHeadline": "AI転職、次の一手を。",
+      "ogSub": "実践ガイド一覧"
+    }
   },
   "faq": {
     "metaTitle": "よくある質問 — AICareerPivot",

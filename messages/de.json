@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — Ihr persönlicher Karrierestratege",
-    "defaultDescription": "Fühlen Sie sich nicht länger gefangen. Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer Fähigkeiten, Finanzen und familiären Rahmenbedingungen. Umsetzbare Pläne für 6 Monate, 1 Jahr und 2 Jahre."
+    "landing": {
+      "title": "KI-Karrierewechsel: Ihr datenbasierter Fahrplan",
+      "description": "Analysieren Sie Ihre Kompetenzlücken und starten Sie datenbasiert in einen KI-Beruf. Kostenlose Analyse, realistischer Lernpfad, DACH-taugliche Unterlagen.",
+      "ogTitle": "Der datenbasierte Weg in einen KI-Beruf",
+      "ogDescription": "Kompetenzlücken erkennen, Lernpfad erhalten, Bewerbung vorbereiten — ohne Hype.",
+      "ogHeadline": "KI-KARRIEREWECHSEL — DATENBASIERT, NICHT GERATEN",
+      "ogSub": "Kostenlose Kompetenzanalyse"
+    },
+    "blogIndex": {
+      "title": "KI-Karriere Blog | Fundierte Berufswechsel-Tipps",
+      "description": "Fundierte Artikel zu Karrierewechsel mit KI: Kompetenzlücken, Lernpfade, Bewerbung und Arbeitsmarkt im DACH-Raum. Ehrliche Analysen statt Hype.",
+      "ogTitle": "KI-Karriere Blog von AICareerPivot",
+      "ogDescription": "Ehrliche, datenbasierte Analysen zum Berufswechsel in KI-Rollen.",
+      "ogHeadline": "WISSEN FÜR IHREN KI-KARRIEREWECHSEL",
+      "ogSub": "AICareerPivot"
+    }
   },
   "faq": {
     "metaTitle": "Häufig gestellte Fragen — AICareerPivot",

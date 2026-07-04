@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — Tu estratega de carrera personal",
-    "defaultDescription": "Deja de sentirte atrapado. Crea un plan de transición profesional personalizado según tus habilidades, finanzas y circunstancias familiares. Planes accionables a 6 meses, 1 año y 2 años."
+    "landing": {
+      "title": "Pivota tu carrera hacia la IA | AICareerPivot",
+      "description": "Descubre qué habilidades tuyas se traducen a roles de IA bien pagados. Análisis con IA y hoja de ruta clara. Empieza gratis, sin empezar de cero.",
+      "ogTitle": "Pivota tu carrera hacia la IA, sin empezar de cero",
+      "ogDescription": "Análisis de tu perfil con IA + hoja de ruta a los roles de IA mejor pagados de tu país. Gratis para empezar.",
+      "ogHeadline": "TU EXPERIENCIA + IA = TU PRÓXIMO ROL",
+      "ogSub": "Análisis gratis en minutos"
+    },
+    "blogIndex": {
+      "title": "Blog de IA y carrera | AICareerPivot",
+      "description": "Guías prácticas y sin hype para hacer un cambio de carrera con IA: qué aprender, cómo empezar y cómo posicionar tu perfil para roles globales.",
+      "ogTitle": "Cambio de carrera con IA: guías prácticas y honestas",
+      "ogDescription": "Artículos basados en datos sobre cómo hacer la transición laboral hacia la inteligencia artificial, sin empezar de cero.",
+      "ogHeadline": "CAMBIO DE CARRERA CON IA",
+      "ogSub": "Guías sin hype, basadas en datos"
+    }
   },
   "faq": {
     "metaTitle": "Preguntas frecuentes — AICareerPivot",

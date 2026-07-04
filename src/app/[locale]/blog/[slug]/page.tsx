@@ -5,21 +5,27 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import { routing } from "@/i18n/routing";
+import { canonicalFor, ogLocale } from "@/i18n/metadata";
 
 export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
+  // Pre-render every visible post in every locale. Localized posts live in
+  // `src/content/blog/<locale>/` and only appear here once `draft: false`.
+  return routing.locales.flatMap((locale) =>
+    getAllSlugs(locale).map((slug) => ({ locale, slug })),
+  );
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = getPost(slug);
+  const { locale, slug } = await params;
+  const post = getPost(slug, locale);
   if (!post) return {};
 
-  const url = `https://ai-career-pivot.com/blog/${slug}`;
+  const url = canonicalFor(locale, `/blog/${slug}`);
   return {
     title: post.title,
     description: post.description,
@@ -28,6 +34,7 @@ export async function generateMetadata({
     openGraph: {
       type: "article",
       url,
+      locale: ogLocale(locale),
       title: post.title,
       description: post.description,
       publishedTime: post.date,
@@ -93,10 +100,10 @@ const components = { WaitlistCTA, PricingCTA };
 export default async function BlogPost({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const post = getPost(slug);
+  const { locale, slug } = await params;
+  const post = getPost(slug, locale);
   if (!post) notFound();
 
   const articleSchema = {

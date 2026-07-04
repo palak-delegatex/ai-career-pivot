@@ -65,8 +65,22 @@
     }
   },
   "meta": {
-    "defaultTitle": "AICareerPivot — Your Personal Career Strategist",
-    "defaultDescription": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+    "landing": {
+      "title": "AICareerPivot — Your AI-Powered Career Transition Strategist",
+      "description": "AICareerPivot builds personalized career transition roadmaps by analyzing your skills, financial situation, and family constraints. Get a custom 6-month, 1-year, and 2-year career pivot plan.",
+      "ogTitle": "AICareerPivot — Your AI-Powered Career Transition Strategist",
+      "ogDescription": "Personalized AI-powered career pivot roadmaps for professionals who need to account for skills, finances, and family constraints.",
+      "ogHeadline": "Stop feeling trapped. Start your pivot.",
+      "ogSub": "Personalized roadmaps built around your skills, finances, and family."
+    },
+    "blogIndex": {
+      "title": "Blog | AICareerPivot",
+      "description": "Practical, data-backed guides on changing careers into AI: what to learn, how to start, and how to position your experience for AI roles.",
+      "ogTitle": "AI Career Change: practical, honest guides",
+      "ogDescription": "Data-backed articles on transitioning into AI roles — without starting from scratch.",
+      "ogHeadline": "AI CAREER CHANGE",
+      "ogSub": "Practical, data-backed guides"
+    }
   },
   "faq": {
     "metaTitle": "FAQ — AICareerPivot",
