@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Check, ChevronDown, Clock, Loader2, Pencil, X, ExternalLink, BookOpen, Target, List, GitBranch, Download, LayoutGrid } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
@@ -22,6 +22,9 @@ import { Separator } from "@/components/ui/separator";
 import type { SkillGap, RecommendedResource } from "@/lib/intake";
 import UpgradePrompt from "@/components/UpgradePrompt";
 import ContextualGate from "@/components/ContextualGate";
+import RoadmapMomentum from "@/components/RoadmapMomentum";
+import RoadmapNextAction from "@/components/RoadmapNextAction";
+import { computeMomentum, deriveNextAction, type RoadmapMilestoneRef } from "@/lib/roadmap-momentum";
 
 type MilestoneStatus = "not-started" | "in-progress" | "completed";
 
@@ -280,6 +283,39 @@ export default function InteractiveRoadmap({
   const totalMilestones = phases.reduce((s, p) => s + p.milestones.length, 0);
   const totalCompleted = phases.reduce((s, p) => s + getPhaseProgress(p), 0);
 
+  // Momentum + "next action" derived from the persisted completion state.
+  // Restricted to visible phases so free-tier users still get a real signal
+  // (and a next action pointing inside the pre-paywall milestones).
+  const orderedRefs = useMemo<RoadmapMilestoneRef[]>(() => {
+    const refs: RoadmapMilestoneRef[] = [];
+    for (const phase of phases) {
+      phase.milestones.forEach((text, index) => {
+        refs.push({
+          phaseKey: phase.key,
+          phaseLabel: phase.label,
+          index,
+          text,
+          status: deriveStatus(progress.get(progressKey(phase.key, index))),
+        });
+      });
+    }
+    return refs;
+  }, [phases, progress]);
+
+  const momentum = useMemo(() => {
+    const completedDates = orderedRefs
+      .map((r) => progress.get(progressKey(r.phaseKey, r.index)))
+      .filter((p) => p?.completed)
+      .map((p) => p!.completed_at);
+    return computeMomentum(completedDates, totalMilestones);
+  }, [orderedRefs, progress, totalMilestones]);
+
+  const nextAction = useMemo(() => deriveNextAction(orderedRefs), [orderedRefs]);
+  const openMilestone = (phaseKey: string, index: number) => {
+    const phase = phases.find((p) => p.key === phaseKey);
+    if (phase) setSelectedMilestone({ text: phase.milestones[index], phase, index });
+  };
+
   function StatusIcon({ status, isSaving, color }: { status: MilestoneStatus; isSaving: boolean; color: "emerald" | "teal" | "cyan" }) {
     const colors = phaseColors[color];
     if (isSaving) {
@@ -381,6 +417,22 @@ export default function InteractiveRoadmap({
             style={{ width: `${(totalCompleted / totalMilestones) * 100}%` }}
           />
         </div>
+      )}
+
+      {/* Next action + momentum — derived from roadmap state */}
+      {loaded && totalMilestones > 0 && (
+        <>
+          <RoadmapNextAction
+            next={nextAction}
+            percentComplete={momentum.percentComplete}
+            saving={saving !== null}
+            onAdvance={cycleMilestoneStatus}
+            onOpen={openMilestone}
+          />
+          <div className="mb-4">
+            <RoadmapMomentum momentum={momentum} />
+          </div>
+        </>
       )}
 
       {/* Biweekly progress strip for 6-month milestones */}
