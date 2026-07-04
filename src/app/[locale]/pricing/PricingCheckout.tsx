@@ -3,8 +3,35 @@
 import { useState } from "react";
 import { trackCheckoutStarted, trackCheckoutError } from "@/lib/tracking";
 
-export default function PricingCheckout({ plan = "report" }: { plan?: string }) {
-  const [email, setEmail] = useState("");
+// Transient failures (network blips, 5xx, rate-limits) are worth retrying
+// automatically before showing the user an error — a single checkout attempt
+// per month means every recoverable failure is real revenue.
+const MAX_ATTEMPTS = 3;
+const RETRY_DELAYS_MS = [600, 1800]; // backoff before attempts 2 and 3
+
+// Shown when checkout can't start after exhausting automatic retries.
+const CHECKOUT_RETRY_MESSAGE =
+  "We couldn't start your checkout — this is usually a brief hiccup. Please tap the button to try again.";
+
+// A thrown error carries `.transient` when the failure is safe to retry.
+class CheckoutError extends Error {
+  transient: boolean;
+  constructor(message: string, transient: boolean) {
+    super(message);
+    this.transient = transient;
+  }
+}
+
+export default function PricingCheckout({
+  plan = "report",
+  prefillEmail = "",
+  sourceFeature,
+}: {
+  plan?: string;
+  prefillEmail?: string;
+  sourceFeature?: string;
+}) {
+  const [email, setEmail] = useState(prefillEmail);
   const [discountCode, setDiscountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,6 +40,40 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
     report: "Get My Report — $19",
     lifetime: "Get Lifetime Access — $149",
   };
+
+  async function attemptCheckout(): Promise<string> {
+    let res: Response;
+    try {
+      res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature }),
+      });
+    } catch {
+      // fetch rejects only on network-level failure — always transient
+      throw new CheckoutError(CHECKOUT_RETRY_MESSAGE, true);
+    }
+
+    let data: { url?: string; error?: string } = {};
+    try {
+      data = await res.json();
+    } catch {
+      // ignore body parse errors; handled by status below
+    }
+
+    if (!res.ok) {
+      // 5xx and 429 are server-side/transient; 4xx (bad email, invalid plan) is not.
+      const transient = res.status >= 500 || res.status === 429;
+      throw new CheckoutError(
+        transient ? CHECKOUT_RETRY_MESSAGE : data.error ?? CHECKOUT_RETRY_MESSAGE,
+        transient
+      );
+    }
+    if (!data.url) {
+      throw new CheckoutError(CHECKOUT_RETRY_MESSAGE, true);
+    }
+    return data.url;
+  }
 
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
@@ -24,22 +85,26 @@ export default function PricingCheckout({ plan = "report" }: { plan?: string }) 
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Checkout failed");
-      if (data.url) {
-        window.location.href = data.url;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const url = await attemptCheckout();
+        window.location.href = url;
+        return; // navigating away — keep the button in its loading state
+      } catch (err) {
+        const isCheckoutError = err instanceof CheckoutError;
+        const transient = isCheckoutError && err.transient;
+        const message = err instanceof Error ? err.message : CHECKOUT_RETRY_MESSAGE;
+        const willRetry = transient && attempt < MAX_ATTEMPTS;
+
+        trackCheckoutError({ plan, error: message, attempt, retrying: willRetry });
+
+        if (!willRetry) {
+          setError(message);
+          setLoading(false);
+          return;
+        }
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt - 1]));
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong.";
-      trackCheckoutError({ plan, error: message });
-      setError(message);
-      setLoading(false);
     }
   }
 
