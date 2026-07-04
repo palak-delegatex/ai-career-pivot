@@ -67,5 +67,181 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Ihr persönlicher Karrierestratege",
     "defaultDescription": "Fühlen Sie sich nicht länger gefangen. Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer Fähigkeiten, Finanzen und familiären Rahmenbedingungen. Umsetzbare Pläne für 6 Monate, 1 Jahr und 2 Jahre."
+  },
+  "faq": {
+    "metaTitle": "Häufig gestellte Fragen — AICareerPivot",
+    "metaDescription": "Antworten auf häufige Fragen zum beruflichen Neustart: wie lange er dauert, ob du Ersparnisse brauchst, wie du mit Familie den Beruf wechselst und wie AICareerPivot deinen persönlichen Fahrplan erstellt.",
+    "ogTitle": "Häufig gestellte Fragen — AICareerPivot",
+    "ogDescription": "Häufige Fragen zum beruflichen Neustart beantwortet: Zeitrahmen, Finanzen, Kompetenzlücken und wie AICareerPivot personalisierte Fahrpläne für den Übergang erstellt.",
+    "breadcrumb": "Häufig gestellte Fragen",
+    "navHowItWorks": "So funktioniert's",
+    "navAbout": "Über uns",
+    "navGetStarted": "Loslegen",
+    "eyebrow": "Häufig gestellte Fragen",
+    "heading": "Fragen zum beruflichen Neustart, ehrlich beantwortet",
+    "subheading": "Ehrliche Antworten auf die Fragen, die sich Fachkräfte vor einem beruflichen Wechsel stellen — auch auf jene, die die meisten Karriereratgeber auslassen.",
+    "ctaHeading": "Noch Fragen?",
+    "ctaSubheading": "Hol dir deinen persönlichen Fahrplan für den beruflichen Neustart, und wir beantworten alle Fragen zu deiner konkreten Situation.",
+    "ctaButton": "Meinen Fahrplan holen — 19 $ →",
+    "q1": {
+      "question": "Wie lange dauert ein beruflicher Neustart in der Regel?",
+      "answer": "Die meisten erfolgreichen beruflichen Neuausrichtungen dauern bei guter Planung 12 bis 24 Monate. Der Zeitrahmen hängt davon ab, wie stark sich deine angestrebte Position von deiner aktuellen unterscheidet, wie groß dein finanzieller Spielraum ist und ob du zusätzliche Qualifikationen benötigst. AICareerPivot erstellt einen realistischen Zeitplan auf Basis deiner konkreten Situation — nicht auf Basis eines allgemeinen Durchschnitts — mit Meilensteinen nach 6 Monaten, 1 Jahr und 2 Jahren."
+    },
+    "q2": {
+      "question": "Brauche ich viele Ersparnisse, um den Beruf zu wechseln?",
+      "answer": "Nicht unbedingt, aber du brauchst einen Plan. Die meisten Fachkräfte machen den Fehler, entweder endlos auf den \"perfekten\" finanziellen Moment zu warten oder überstürzt zu kündigen. AICareerPivot analysiert dein aktuelles Einkommen, deine Fixkosten und deine angestrebte Gehaltsspanne, um einen Übergang zu gestalten, der die Kontinuität deines Einkommens sichert. Viele Wechsel lassen sich schrittweise vollziehen — Weiterbildung und Networking neben dem Job —, sodass du nie eine Einkommenslücke hast."
+    },
+    "q3": {
+      "question": "Kann ich den Beruf wechseln, wenn ich Familie und finanzielle Verpflichtungen habe?",
+      "answer": "Ja, und genau dafür wurde AICareerPivot entwickelt. Wir berücksichtigen familiäre Einschränkungen, das Einkommen deines Partners, Kosten für die Betreuung von Angehörigen sowie Hypotheken- oder Mietverpflichtungen direkt in deinem Fahrplan. Die Übergänge werden so aufeinander abgestimmt, dass die Belastung für deinen Haushalt minimal bleibt. Wir haben festgestellt, dass Fachkräfte mit mehr Einschränkungen oft überlegtere und erfolgreichere Wechsel schaffen, weil sie sorgfältiger planen."
+    },
+    "q4": {
+      "question": "Welche Arten von beruflichen Neuausrichtungen unterstützt AICareerPivot?",
+      "answer": "AICareerPivot unterstützt eine breite Palette von Übergängen: von Fachrollen ins Management, von einer Branche in eine andere (z. B. von Finanzen in die Tech-Branche), vom Angestelltenverhältnis in die Selbstständigkeit, von Präsenz- zu Remote-Tätigkeiten und vom individuellen Beitragenden in eine Führungsrolle. Die KI passt den Fahrplan an die konkrete Übertragbarkeit deiner Kompetenzen und die Marktnachfrage für deinen angestrebten Weg an."
+    },
+    "q5": {
+      "question": "Wie unterscheidet sich AICareerPivot von einem Karriere-Coach?",
+      "answer": "Ein Karriere-Coach ist teuer (in der Regel 150–500 $ pro Stunde), gibt oft allgemeine Ratschläge und verfügt selten über die Daten, um Empfehlungen mit Marktbelegen zu untermauern. AICareerPivot bietet datenbasierte, personalisierte Fahrpläne, die die Realität des Arbeitsmarkts, Gehaltsbenchmarks und die Analyse von Kompetenzlücken berücksichtigen — verfügbar, wann immer du sie brauchst, zu einem Bruchteil der Kosten. Dennoch ist AICareerPivot ein Planungswerkzeug und kein Ersatz für menschliche Mentoren, die dein konkretes Fachgebiet kennen."
+    },
+    "q6": {
+      "question": "Welche Informationen muss ich angeben?",
+      "answer": "Um deinen Fahrplan zu erstellen, fragt AICareerPivot nach: deiner aktuellen Position und Branche, deinen wichtigsten Kompetenzen und Jahren an Erfahrung, deiner angestrebten beruflichen Richtung, deiner finanziellen Situation (Einkommen, Ersparnisse, größere Ausgaben), deinem Zeitrahmen und deiner Risikobereitschaft sowie etwaigen familiären oder persönlichen Einschränkungen. Je mehr Kontext du gibst, desto konkreter und nützlicher wird dein Fahrplan."
+    },
+    "q7": {
+      "question": "Enthält der Fahrplan konkrete Maßnahmen oder nur allgemeine Ratschläge?",
+      "answer": "Konkrete Maßnahmen. Jeder Meilenstein deines Fahrplans enthält konkrete nächste Schritte: welche Kompetenzen du aufbauen solltest, welche Zertifizierungen wichtig und welche optional sind, Networking-Strategien für dein Zielfeld, wie du deinen Lebenslauf für die neue Rolle neu ausrichtest und wie du deine Jobsuche an deinen finanziellen Rahmen anpasst. Allgemeine Ratschläge (\"netzwerke mehr\", \"aktualisiere dein LinkedIn\") sind nicht der Ansatz von AICareerPivot."
+    },
+    "q8": {
+      "question": "Wie geht AICareerPivot mit Kompetenzlücken um?",
+      "answer": "Die KI ermittelt, welche deiner vorhandenen Kompetenzen sich direkt auf deine Zielposition übertragen lassen, welche teilweise übertragbar sind und wo die tatsächlichen Lücken liegen. Anschließend priorisiert sie diese Lücken nach ihrer Wirkung — nicht jede fehlende Kompetenz ist gleich wichtig — und empfiehlt die effizientesten Wege, die wichtigen zu schließen (konkrete Kurse, Projekte, Zertifizierungen oder Lernen im Job). Dir wird nicht gesagt, du sollst \"Python lernen\", wenn Python für die von dir angestrebten Rollen gar nicht erforderlich ist."
+    },
+    "q9": {
+      "question": "Ist AICareerPivot bereits verfügbar?",
+      "answer": "AICareerPivot befindet sich derzeit im Early Access. Wir binden eine begrenzte Zahl von Nutzern ein, um die Qualität der Fahrpläne zu verfeinern und sicherzustellen, dass jeder Plan unserem Anspruch an echten Mehrwert genügt. Trag dich in die Warteliste ein, um benachrichtigt zu werden, sobald dein Platz frei wird."
+    }
+  },
+  "howItWorks": {
+    "navAbout": "Über uns",
+    "navFaq": "FAQ",
+    "navGetStarted": "Loslegen",
+    "heroImageAlt": "Frau, die ihre KI-generierte Karriere-Roadmap auf Tablets betrachtet",
+    "heroEyebrow": "So funktioniert's",
+    "heroTitle": "In drei Schritten vom Stillstand zur Strategie",
+    "heroSubtitle": "AICareerPivot verwandelt Ihre gesamte Situation — Fähigkeiten, Finanzen, Familie, Ziele — in eine konkrete, mehrjährige Roadmap für den beruflichen Wechsel, mit konkreten Schritten in jeder Phase.",
+    "tldrHeading": "Kurz gesagt",
+    "tldrPoint1": "Teilen Sie Ihre gesamte Situation (Fähigkeiten, Finanzen, familiäre Rahmenbedingungen) — nicht nur Ihren Lebenslauf.",
+    "tldrPoint2": "Die KI von AICareerPivot entwickelt eine datenbasierte Strategie für den beruflichen Wechsel, mit einer Zuordnung übertragbarer Fähigkeiten und einer Analyse der finanziellen Tragfähigkeit.",
+    "tldrPoint3": "Erhalten Sie eine konkrete, mehrjährige Roadmap mit klaren Meilensteinen nach 6 Monaten, 1 Jahr und 2 Jahren — statt vager Inspiration.",
+    "step1Title": "Teilen Sie Ihre Situation",
+    "step1Subtitle": "Das ganze Bild, nicht nur Ihr Lebenslauf",
+    "step1Description": "Die meisten Karriere-Tools betrachten nur Ihren beruflichen Werdegang. AICareerPivot beginnt mit Ihrer gesamten Situation: was Sie heute tun, wohin Sie wollen und welche realen Rahmenbedingungen zählen.",
+    "step1Detail1": "Ihre aktuelle Rolle, Branche und Berufserfahrung in Jahren",
+    "step1Detail2": "Die Fähigkeiten, die Sie aufgebaut haben — fachlich und überfachlich",
+    "step1Detail3": "Ihre angestrebte berufliche Richtung oder Branche",
+    "step1Detail4": "Finanzieller Kontext: Einkommen, Ersparnisse, größere Ausgaben und Risikobereitschaft",
+    "step1Detail5": "Familiäre und persönliche Rahmenbedingungen, die Ihren Zeitplan beeinflussen",
+    "step1Detail6": "Wie 'Erfolg' für Sie tatsächlich aussieht",
+    "step2Title": "Die KI entwickelt Ihre Strategie",
+    "step2Subtitle": "Datenbasiert, nicht generisch",
+    "step2Description": "Sobald Sie Ihren Kontext geteilt haben, macht sich die KI an die Arbeit. Sie liefert keinen generischen Plan — sie erstellt einen, der auf Ihrem konkreten Profil und realen Arbeitsmarktdaten beruht.",
+    "step2Detail1": "Erkennt, welche Ihrer Fähigkeiten sich direkt auf Ihre Zielrolle übertragen lassen",
+    "step2Detail2": "Beziffert die tatsächlichen Kompetenzlücken — und welche davon wirklich zählen",
+    "step2Detail3": "Berechnet die finanzielle Tragfähigkeit: Können Sie diesen Schritt mit Ihrem aktuellen Spielraum gehen?",
+    "step2Detail4": "Bildet Übergangswege von Ihrer aktuellen Rolle zu den Zielrollen ab",
+    "step2Detail5": "Ordnet die Meilensteine so an, dass die Einkommenskontinuität gewahrt bleibt",
+    "step2Detail6": "Empfiehlt die effizientesten Weiterbildungswege — keine Wunschliste",
+    "step3Title": "Setzen Sie es mit Zuversicht um",
+    "step3Subtitle": "Konkrete Schritte, keine Inspiration",
+    "step3Description": "Sie erhalten eine mehrjährige Roadmap mit konkreten, aufeinander abgestimmten Schritten in jeder Phase. Keine vagen Ratschläge — jeder Meilenstein sagt Ihnen genau, was zu tun ist und warum.",
+    "step3Detail1": "6-Monats-Plan: Sofortmaßnahmen, um sich für Ihre Zielrolle zu positionieren",
+    "step3Detail2": "1-Jahres-Plan: Kompetenzaufbau, Networking-Meilensteine und Einkommensstrategie",
+    "step3Detail3": "2-Jahres-Plan: Bewerbungszeitplan für die Zielrolle und Abschluss des Wechsels",
+    "step3Detail4": "Konkrete Ressourcen, Zertifikate und Projekte, die für Ihren Weg zählen",
+    "step3Detail5": "Wie Sie Ihre bisherige Erfahrung für die neue Rolle neu formulieren",
+    "step3Detail6": "Entscheidungspunkte, an denen Sie den Plan neu bewerten und anpassen können",
+    "whyHeading": "Warum dieser Ansatz funktioniert",
+    "why1Title": "Rahmenbedingungen führen zu besseren Plänen",
+    "why1Description": "Fachkräfte mit finanziellen Verpflichtungen und familiärer Verantwortung können keine unkalkulierten Risiken eingehen. Diese Rahmenbedingung erzwingt eine überlegtere, gestufte Planung — und genau das führt zu erfolgreichen Wechseln.",
+    "why2Title": "Übertragbare Fähigkeiten werden unterschätzt",
+    "why2Description": "Die meisten Fachkräfte unterschätzen ihre vorhandenen Fähigkeiten erheblich. Die KI erkennt, wie Ihre bisherige Erfahrung zu den Zielrollen passt, und zeigt oft, dass Sie näher dran sind, als Sie denken.",
+    "why3Title": "Das Timing zählt mehr als Qualifikationen",
+    "why3Description": "Der größte Fehler beim beruflichen Wechsel ist schlechtes Timing — entweder zu früh zu handeln, bevor man einen Vorsprung aufgebaut hat, oder so lange zu warten, bis sich das Zeitfenster schließt. AICareerPivot gestaltet Ihren Plan rund um die optimale Abfolge.",
+    "includesHeading": "Was Ihre Roadmap enthält",
+    "includes1": "Meilensteinplan für 6 Monate, 1 Jahr und 2 Jahre",
+    "includes2": "Analyse der Kompetenzlücken mit priorisiertem Lernpfad",
+    "includes3": "Bewertung der finanziellen Tragfähigkeit für Ihren Zeitplan",
+    "includes4": "Strategie zur Einkommenskontinuität während des Wechsels",
+    "includes5": "Konkrete Ressourcen, Kurse und Projekte je Meilenstein",
+    "includes6": "Leitfaden zur Neuformulierung des Lebenslaufs für Ihre Zielrolle",
+    "includes7": "Networking-Strategie für Ihre Zielbranche",
+    "includes8": "Entscheidungs-Checkpoints zum Neubewerten und Anpassen",
+    "ctaHeading": "Bereit, Ihre Roadmap zu sehen?",
+    "ctaSubtitle": "Sichern Sie sich noch heute Ihren persönlichen Plan für den beruflichen Wechsel — für nur 19 $ Einführungspreis.",
+    "ctaButton": "Meine Roadmap erhalten — 19 $ →",
+    "ctaFaqLink": "Noch Fragen? Lesen Sie die FAQ →"
+  },
+  "about": {
+    "nav": {
+      "howItWorks": "So funktioniert's",
+      "faq": "Häufige Fragen",
+      "getStarted": "Loslegen"
+    },
+    "hero": {
+      "imageAlt": "Fachkraft bespricht Karrierestrategie in einem modernen Arbeitsumfeld",
+      "eyebrow": "Über uns",
+      "title": "Karriereberatung, die dein ganzes Leben berücksichtigt",
+      "subtitle": "AICareerPivot ist ein KI-gestützter Karrierestratege, entwickelt für die Realität, mit der die meisten Fachkräfte konfrontiert sind: Du kannst nicht einfach kündigen und dann schauen, wie es weitergeht. Du hast finanzielle Verpflichtungen, familiäre Rücksichten und echte Einschränkungen, die generische Karriere-Coaches ignorieren."
+    },
+    "tldr": {
+      "heading": "Kurz gesagt",
+      "point1": "AICareerPivot ist ein KI-gestützter Karrierestratege, der personalisierte Umstiegs-Fahrpläne erstellt und dabei deine Fähigkeiten, deine Finanzen und deine familiären Rahmenbedingungen berücksichtigt.",
+      "point2": "Anders als generische Karriere-Coaches enthält jeder Fahrplan konkrete Meilensteine nach 6 Monaten, 1 Jahr und 2 Jahren – samt Analyse der finanziellen Tragfähigkeit.",
+      "point3": "Entwickelt für die 95 % der Fachkräfte mit Hypothek, Kindern und Partner – nicht für Menschen, die einfach kündigen und dann weitersehen können."
+    },
+    "mission": {
+      "heading": "Unsere Mission",
+      "lead": "<strong>Wir sind überzeugt, dass jede Fachkraft einen realistischen Weg zu einer Karriere verdient, die sie liebt</strong> – nicht nur Inspiration, sondern einen echten Plan mit konkreten Schritten, einer Analyse der finanziellen Tragfähigkeit und ehrlichen Zeitplänen.",
+      "body": "Die meisten Karriereratschläge sind für Menschen ohne Verpflichtungen geschrieben, mit unbegrenzten Ersparnissen und einem Partner, der einspringen kann. Das trifft auf die meisten Menschen nicht zu. AICareerPivot wurde für die anderen 95 % entwickelt: Fachkräfte mit Hypothek, Kindern, pflegebedürftigen Eltern und Partnern, die ebenfalls eine eigene Karriere haben."
+    },
+    "methodology": {
+      "heading": "Unsere Methodik",
+      "intro": "Jeder AICareerPivot-Fahrplan beruht auf fünf Grundprinzipien, die unsere Pläne realistisch machen und nicht bloß erstrebenswert.",
+      "principleTooltip": "Prinzip {number} von {total}",
+      "principles": {
+        "wholeLifeContext": {
+          "title": "Ganzheitlicher Lebenskontext",
+          "description": "Generische Karriereratschläge übersehen, dass die meisten Fachkräfte eine Hypothek, unterhaltsberechtigte Angehörige und einen Partner mit eigener Karriere haben. AICareerPivot beginnt damit, deine gesamte Situation zu verstehen – nicht nur deinen Lebenslauf."
+        },
+        "financialRealism": {
+          "title": "Finanzieller Realismus",
+          "description": "Wir berechnen deinen finanziellen Spielraum, berücksichtigen den Bedarf an durchgehendem Einkommen und gestalten Übergangswege, die nicht verlangen, dass du 'einfach kündigst und weitersiehst'. Übergänge werden entlang deiner realen finanziellen Rahmenbedingungen geplant."
+        },
+        "skillsFirstMapping": {
+          "title": "Kompetenzorientierte Zuordnung",
+          "description": "Unsere KI erkennt, welche deiner vorhandenen Fähigkeiten auf die angestrebten Rollen übertragbar sind, quantifiziert die Lücken und empfiehlt die effizientesten Lernwege – keine generische Wunschliste an Fähigkeiten."
+        },
+        "timeHorizonedPlanning": {
+          "title": "Planung nach Zeithorizonten",
+          "description": "Jeder Fahrplan enthält konkrete Meilensteine nach 6 Monaten, 1 Jahr und 2 Jahren. Du weißt jederzeit, was der nächste Schritt ist und wie er zum übergeordneten Umstiegsziel beiträgt."
+        },
+        "evidenceBasedRecommendations": {
+          "title": "Evidenzbasierte Empfehlungen",
+          "description": "Die Empfehlungen beruhen auf Arbeitsmarktdaten, branchenüblichen Umstiegsmustern und realen Gehaltsbenchmarks – nicht auf generischem Optimismus darüber, was passieren 'könnte'."
+        }
+      }
+    },
+    "technology": {
+      "heading": "So funktioniert die KI",
+      "intro": "AICareerPivot nutzt große Sprachmodelle, ergänzt um Daten zu Karriereübergängen, Arbeitsmarktinformationen und Gehaltsbenchmarks. Sobald du dein Profil teilst, geht die KI so vor:",
+      "step1": "Sie identifiziert übertragbare Fähigkeiten von deiner aktuellen Rolle zu den angestrebten Rollen, inklusive Lückenanalyse",
+      "step2": "Sie berechnet die finanzielle Tragfähigkeit auf Basis deines Einkommens, deiner Ersparnisse und der angestrebten Gehaltsspanne",
+      "step3": "Sie ordnet die Meilensteine so an, dass finanzielles Risiko und familiäre Belastung möglichst gering bleiben",
+      "step4": "Sie erstellt einen personalisierten Fahrplan für 6 Monate, 1 Jahr und 2 Jahre mit konkreten Maßnahmen"
+    },
+    "cta": {
+      "heading": "Bereit, deinen echten Ausstiegsplan zu erstellen?",
+      "subtitle": "Hol dir noch heute deinen personalisierten Karriere-Fahrplan – zum Einführungspreis von nur 19 $.",
+      "button": "Meinen Fahrplan holen — 19 $ →"
+    }
   }
 }

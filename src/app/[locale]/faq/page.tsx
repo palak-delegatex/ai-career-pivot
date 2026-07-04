@@ -1,86 +1,60 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "FAQ — AICareerPivot",
-  description:
-    "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AICareerPivot builds your personalized roadmap.",
-  alternates: {
-    canonical: "https://ai-career-pivot.com/faq",
-  },
-  openGraph: {
-    title: "FAQ — AICareerPivot",
-    description:
-      "Common questions about career pivots answered: timelines, finances, skills gaps, and how AICareerPivot creates personalized transition roadmaps.",
-    url: "https://ai-career-pivot.com/faq",
-  },
-};
-
-const faqs = [
-  {
-    question: "How long does a career pivot typically take?",
-    answer:
-      "Most successful career pivots take 12 to 24 months when planned properly. The timeline depends on how different your target role is from your current role, your financial runway, and whether you need additional credentials. AICareerPivot creates a realistic timeline based on your specific situation — not a generic average — with milestones at 6 months, 1 year, and 2 years.",
-  },
-  {
-    question: "Do I need a lot of savings to change careers?",
-    answer:
-      "Not necessarily, but you do need a plan. Most professionals make the mistake of either waiting indefinitely for the 'perfect' financial moment or quitting impulsively. AICareerPivot analyzes your current income, fixed expenses, and target salary range to design a transition path that maintains income continuity. Many pivots can be staged — upskilling and networking while employed — so you never have a gap in earnings.",
-  },
-  {
-    question: "Can I change careers if I have a family and financial obligations?",
-    answer:
-      "Yes, and this is exactly what AICareerPivot is designed for. We factor in family constraints, partner's income, dependent care costs, and mortgage or rent obligations directly into your roadmap. Transitions are sequenced to minimize disruption to your household. We've found that professionals with more constraints often make more deliberate, successful transitions because they plan more carefully.",
-  },
-  {
-    question: "What types of career pivots does AICareerPivot support?",
-    answer:
-      "AICareerPivot supports a wide range of transitions: from technical roles to management, from one industry to another (e.g., finance to tech), from corporate to entrepreneurship, from in-person to remote roles, and from individual contributor to leadership. The AI adapts the roadmap based on the specific skills transferability and market demand for your target path.",
-  },
-  {
-    question: "How is AICareerPivot different from a career coach?",
-    answer:
-      "A human career coach is expensive (typically $150–500/hour), often gives generic advice, and rarely has the data to back up recommendations with market evidence. AICareerPivot provides data-informed, personalized roadmaps that factor in labor market realities, salary benchmarks, and skills gap analysis — available whenever you need it, at a fraction of the cost. That said, AICareerPivot is a planning tool, not a replacement for human mentors who know your specific field.",
-  },
-  {
-    question: "What information do I need to provide?",
-    answer:
-      "To build your roadmap, AICareerPivot asks about: your current role and industry, your key skills and years of experience, your target career direction, your financial situation (income, savings, major expenses), your timeline and risk tolerance, and any family or personal constraints. The more context you provide, the more specific and useful your roadmap will be.",
-  },
-  {
-    question: "Will the roadmap include specific actions, or just general advice?",
-    answer:
-      "Specific actions. Each milestone in your roadmap includes concrete next steps: which skills to build, which certifications matter vs. which are optional, networking strategies for your target field, how to reframe your resume for the new role, and how to time your job search around your financial constraints. Generic advice ('network more', 'update your LinkedIn') is not the AICareerPivot approach.",
-  },
-  {
-    question: "How does AICareerPivot handle skills gaps?",
-    answer:
-      "The AI identifies which of your existing skills transfer directly to your target role, which are partially transferable, and what the actual gaps are. It then prioritizes the gaps by impact — not every missing skill matters equally — and recommends the most efficient ways to close the important ones (specific courses, projects, certifications, or on-the-job learning). You won't be told to 'learn Python' if Python isn't actually required for the roles you're targeting.",
-  },
-  {
-    question: "Is AICareerPivot available now?",
-    answer:
-      "AICareerPivot is currently in early access. We're onboarding a limited number of users to refine the roadmap quality and ensure every plan meets our standard for genuine usefulness. Join the waitlist to be notified when your spot opens.",
-  },
-];
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  dateModified: "2026-06-12",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "faq" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: {
+      canonical: "https://ai-career-pivot.com/faq",
     },
-  })),
-};
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://ai-career-pivot.com/faq",
+    },
+  };
+}
 
-export default function FAQPage() {
-  const crumbs = breadcrumbSchema([{ name: "FAQ", path: "/faq" }]);
+const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"] as const;
+
+export default async function FAQPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("faq");
+
+  const faqs = FAQ_KEYS.map((key) => ({
+    question: t(`${key}.question`),
+    answer: t(`${key}.answer`),
+  }));
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    dateModified: "2026-06-12",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  const crumbs = breadcrumbSchema([{ name: t("breadcrumb"), path: "/faq" }]);
   return (
     <>
       <script
@@ -100,25 +74,25 @@ export default function FAQPage() {
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">How It Works</Link>
-            <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">About</Link>
+            <Link href="/how-it-works" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">{t("navHowItWorks")}</Link>
+            <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">{t("navAbout")}</Link>
             <Link
               href="/pricing"
               className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
-              Get Started
+              {t("navGetStarted")}
             </Link>
           </div>
         </nav>
 
         <main className="max-w-3xl mx-auto px-6 py-20">
           <header className="mb-16">
-            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">FAQ</p>
+            <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">{t("eyebrow")}</p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
-              Career pivot questions, answered honestly
+              {t("heading")}
             </h1>
             <p className="text-xl text-slate-400 leading-relaxed">
-              Real answers to the questions professionals ask before making a career change — including the ones most career advice skips.
+              {t("subheading")}
             </p>
           </header>
 
@@ -136,13 +110,13 @@ export default function FAQPage() {
           </div>
 
           <div className="mt-16 text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
-            <h2 className="text-2xl font-bold text-white mb-3">Still have questions?</h2>
-            <p className="text-slate-400 mb-8">Get your personalized career pivot roadmap and we&apos;ll answer any questions about your specific situation.</p>
+            <h2 className="text-2xl font-bold text-white mb-3">{t("ctaHeading")}</h2>
+            <p className="text-slate-400 mb-8">{t("ctaSubheading")}</p>
             <Link
               href="/pricing"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
-              Get My Roadmap — $19 →
+              {t("ctaButton")}
             </Link>
           </div>
         </main>

@@ -67,5 +67,181 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Seu estrategista de carreira pessoal",
     "defaultDescription": "Pare de se sentir preso. Crie um plano de transição de carreira personalizado com base nas suas habilidades, finanças e responsabilidades familiares. Planos práticos de 6 meses, 1 ano e 2 anos."
+  },
+  "faq": {
+    "metaTitle": "Perguntas frequentes — AICareerPivot",
+    "metaDescription": "Respostas às dúvidas mais comuns sobre transições de carreira: quanto tempo leva, se você precisa de reservas, como mudar de carreira com família e como o AICareerPivot cria seu roteiro personalizado.",
+    "ogTitle": "Perguntas frequentes — AICareerPivot",
+    "ogDescription": "Respondemos às dúvidas mais comuns sobre transições de carreira: prazos, finanças, lacunas de habilidades e como o AICareerPivot cria roteiros de transição personalizados.",
+    "breadcrumb": "Perguntas frequentes",
+    "navHowItWorks": "Como funciona",
+    "navAbout": "Sobre",
+    "navGetStarted": "Começar",
+    "eyebrow": "Perguntas frequentes",
+    "heading": "Dúvidas sobre transição de carreira, respondidas com honestidade",
+    "subheading": "Respostas reais às perguntas que os profissionais fazem antes de mudar de carreira — incluindo aquelas que a maioria dos conselhos de carreira ignora.",
+    "ctaHeading": "Ainda tem dúvidas?",
+    "ctaSubheading": "Receba seu roteiro personalizado de transição de carreira e responderemos a qualquer pergunta sobre a sua situação específica.",
+    "ctaButton": "Quero meu roteiro — US$ 19 →",
+    "q1": {
+      "question": "Quanto tempo costuma levar uma transição de carreira?",
+      "answer": "A maioria das transições de carreira bem-sucedidas leva de 12 a 24 meses quando bem planejada. O prazo depende de quão diferente é a função que você almeja em relação à atual, da sua reserva financeira e de você precisar ou não de novas credenciais. O AICareerPivot cria um prazo realista com base na sua situação específica — e não em uma média genérica — com marcos aos 6 meses, 1 ano e 2 anos."
+    },
+    "q2": {
+      "question": "Preciso de muitas reservas para mudar de carreira?",
+      "answer": "Não necessariamente, mas você precisa de um plano. A maioria dos profissionais comete o erro de esperar indefinidamente pelo momento financeiro \"perfeito\" ou de pedir demissão por impulso. O AICareerPivot analisa sua renda atual, suas despesas fixas e a faixa salarial almejada para desenhar um caminho de transição que mantenha a continuidade da renda. Muitas transições podem ser feitas por etapas — qualificando-se e ampliando sua rede enquanto trabalha — para que você nunca fique sem receita."
+    },
+    "q3": {
+      "question": "Posso mudar de carreira se tenho família e obrigações financeiras?",
+      "answer": "Sim, e é exatamente para isso que o AICareerPivot foi criado. Incorporamos as restrições familiares, a renda do parceiro, os custos com cuidado de dependentes e as obrigações de financiamento ou aluguel diretamente ao seu roteiro. As transições são sequenciadas para minimizar o impacto na sua casa. Percebemos que profissionais com mais restrições costumam fazer transições mais deliberadas e bem-sucedidas, porque planejam com mais cuidado."
+    },
+    "q4": {
+      "question": "Que tipos de transição de carreira o AICareerPivot apoia?",
+      "answer": "O AICareerPivot apoia uma ampla variedade de transições: de funções técnicas para a gestão, de um setor para outro (por exemplo, de finanças para tecnologia), de emprego corporativo para o empreendedorismo, de funções presenciais para remotas e de colaborador individual para a liderança. A IA adapta o roteiro com base na transferibilidade específica das suas habilidades e na demanda de mercado para o caminho que você almeja."
+    },
+    "q5": {
+      "question": "Como o AICareerPivot se diferencia de um coach de carreira?",
+      "answer": "Um coach de carreira é caro (normalmente de US$ 150 a 500 por hora), muitas vezes dá conselhos genéricos e raramente tem dados para embasar as recomendações com evidências de mercado. O AICareerPivot oferece roteiros personalizados e baseados em dados que consideram as realidades do mercado de trabalho, referências salariais e a análise de lacunas de habilidades — disponíveis sempre que você precisar, por uma fração do custo. Dito isso, o AICareerPivot é uma ferramenta de planejamento, não um substituto para mentores humanos que conhecem a sua área específica."
+    },
+    "q6": {
+      "question": "Quais informações preciso fornecer?",
+      "answer": "Para montar seu roteiro, o AICareerPivot pergunta sobre: sua função e setor atuais, suas principais habilidades e anos de experiência, a direção de carreira que você almeja, sua situação financeira (renda, reservas, despesas maiores), seu prazo e tolerância a risco, e quaisquer restrições familiares ou pessoais. Quanto mais contexto você fornecer, mais específico e útil será o seu roteiro."
+    },
+    "q7": {
+      "question": "O roteiro incluirá ações específicas ou apenas conselhos gerais?",
+      "answer": "Ações específicas. Cada marco do seu roteiro inclui próximos passos concretos: quais habilidades desenvolver, quais certificações importam e quais são opcionais, estratégias de networking para a sua área-alvo, como reformular seu currículo para a nova função e como programar sua busca por emprego de acordo com suas restrições financeiras. Conselhos genéricos (\"faça mais networking\", \"atualize seu LinkedIn\") não são a abordagem do AICareerPivot."
+    },
+    "q8": {
+      "question": "Como o AICareerPivot lida com lacunas de habilidades?",
+      "answer": "A IA identifica quais das suas habilidades atuais se transferem diretamente para a função almejada, quais são parcialmente transferíveis e quais são as lacunas reais. Em seguida, prioriza essas lacunas por impacto — nem toda habilidade que falta importa igualmente — e recomenda as formas mais eficientes de fechar as importantes (cursos, projetos, certificações específicas ou aprendizado no trabalho). Você não será orientado a \"aprender Python\" se Python não for realmente necessário para as funções que você almeja."
+    },
+    "q9": {
+      "question": "O AICareerPivot já está disponível?",
+      "answer": "O AICareerPivot está atualmente em acesso antecipado. Estamos integrando um número limitado de usuários para aprimorar a qualidade dos roteiros e garantir que cada plano atenda ao nosso padrão de utilidade genuína. Entre na lista de espera para ser avisado quando sua vaga abrir."
+    }
+  },
+  "howItWorks": {
+    "navAbout": "Sobre",
+    "navFaq": "Perguntas frequentes",
+    "navGetStarted": "Começar",
+    "heroImageAlt": "Mulher revisando seu roteiro de carreira gerado por IA em tablets",
+    "heroEyebrow": "Como funciona",
+    "heroTitle": "De travado a estratégico em três passos",
+    "heroSubtitle": "O AICareerPivot transforma toda a sua situação — habilidades, finanças, família, objetivos — em um roteiro concreto de transição de carreira de vários anos, com ações específicas em cada etapa.",
+    "tldrHeading": "Resumindo",
+    "tldrPoint1": "Compartilhe toda a sua situação (habilidades, finanças, restrições familiares) — não apenas o seu currículo.",
+    "tldrPoint2": "A IA do AICareerPivot cria uma estratégia de transição de carreira baseada em dados, com mapeamento de habilidades transferíveis e análise de viabilidade financeira.",
+    "tldrPoint3": "Receba um roteiro concreto de vários anos com marcos específicos em 6 meses, 1 ano e 2 anos — não inspiração vaga.",
+    "step1Title": "Compartilhe sua situação",
+    "step1Subtitle": "O quadro completo, não apenas o seu currículo",
+    "step1Description": "A maioria das ferramentas de carreira analisa apenas o seu histórico profissional. O AICareerPivot começa pela sua situação como um todo: o que você faz agora, o que quer a seguir e as restrições reais que importam.",
+    "step1Detail1": "Seu cargo atual, setor e anos de experiência",
+    "step1Detail2": "As habilidades que você desenvolveu — técnicas e não técnicas",
+    "step1Detail3": "A direção ou o setor de carreira que você almeja",
+    "step1Detail4": "Contexto financeiro: renda, poupança, despesas importantes e tolerância a risco",
+    "step1Detail5": "Restrições familiares e pessoais que afetam o seu cronograma",
+    "step1Detail6": "O que 'sucesso' realmente significa para você",
+    "step2Title": "A IA cria sua estratégia",
+    "step2Subtitle": "Baseada em dados, não genérica",
+    "step2Description": "Depois que você compartilha o seu contexto, a IA entra em ação. Ela não entrega um plano genérico — cria um fundamentado no seu perfil específico e em dados reais do mercado de trabalho.",
+    "step2Detail1": "Identifica quais das suas habilidades se transferem diretamente para o cargo almejado",
+    "step2Detail2": "Quantifica as lacunas reais de habilidades — e quais realmente importam",
+    "step2Detail3": "Calcula a viabilidade financeira: você consegue fazer essa mudança com a sua reserva atual?",
+    "step2Detail4": "Mapeia os caminhos de transição do seu cargo atual até os cargos almejados",
+    "step2Detail5": "Sequencia os marcos para manter a continuidade da renda",
+    "step2Detail6": "Recomenda os caminhos de qualificação mais eficientes — não uma lista de desejos",
+    "step3Title": "Execute com confiança",
+    "step3Subtitle": "Ações concretas, não inspiração",
+    "step3Description": "Você recebe um roteiro de vários anos com ações específicas e sequenciadas em cada etapa. Sem conselhos vagos — cada marco diz exatamente o que fazer e por quê.",
+    "step3Detail1": "Plano de 6 meses: ações imediatas para começar a se posicionar rumo ao cargo almejado",
+    "step3Detail2": "Plano de 1 ano: desenvolvimento de habilidades, marcos de networking e estratégia de renda",
+    "step3Detail3": "Plano de 2 anos: cronograma de candidatura ao cargo almejado e conclusão da transição",
+    "step3Detail4": "Recursos, certificações e projetos específicos que importam para o seu caminho",
+    "step3Detail5": "Como reformular a sua experiência atual para o novo cargo",
+    "step3Detail6": "Pontos de decisão em que você pode reavaliar e ajustar o plano",
+    "whyHeading": "Por que essa abordagem funciona",
+    "why1Title": "Restrições geram planos melhores",
+    "why1Description": "Profissionais com obrigações financeiras e responsabilidades familiares não podem correr riscos sem cálculo. Essa restrição força um planejamento mais deliberado e faseado — que é justamente o que leva a transições bem-sucedidas.",
+    "why2Title": "Habilidades transferíveis são subestimadas",
+    "why2Description": "A maioria dos profissionais subestima drasticamente as suas habilidades atuais. A IA identifica como a sua experiência atual se conecta aos cargos almejados, revelando muitas vezes que você está mais perto do que imagina.",
+    "why3Title": "O momento importa mais do que as qualificações",
+    "why3Description": "O maior erro nas transições de carreira é o momento errado — seja agir cedo demais antes de criar vantagem, seja esperar tanto que a oportunidade se fecha. O AICareerPivot desenha o seu plano em torno da sequência ideal.",
+    "includesHeading": "O que o seu roteiro inclui",
+    "includes1": "Plano de marcos de 6 meses, 1 ano e 2 anos",
+    "includes2": "Análise de lacunas de habilidades com um caminho de aprendizado priorizado",
+    "includes3": "Avaliação de viabilidade financeira para o seu cronograma",
+    "includes4": "Estratégia de continuidade de renda durante a transição",
+    "includes5": "Recursos, cursos e projetos específicos por marco",
+    "includes6": "Guia de reformulação do currículo para o cargo almejado",
+    "includes7": "Estratégia de networking para o seu setor almejado",
+    "includes8": "Pontos de checagem de decisão para reavaliar e adaptar",
+    "ctaHeading": "Pronto para ver o seu roteiro?",
+    "ctaSubtitle": "Receba hoje o seu plano personalizado de transição de carreira — por apenas $19 de preço de lançamento.",
+    "ctaButton": "Obter meu roteiro — $19 →",
+    "ctaFaqLink": "Tem dúvidas? Leia as perguntas frequentes →"
+  },
+  "about": {
+    "nav": {
+      "howItWorks": "Como funciona",
+      "faq": "Perguntas frequentes",
+      "getStarted": "Começar"
+    },
+    "hero": {
+      "imageAlt": "Profissional discutindo estratégia de carreira em um espaço de trabalho moderno",
+      "eyebrow": "Sobre",
+      "title": "Orientação de carreira que considera toda a sua vida",
+      "subtitle": "O AICareerPivot é um estrategista de carreira com tecnologia de IA, criado para a realidade que a maioria dos profissionais enfrenta: você não pode simplesmente pedir demissão e resolver depois. Você tem obrigações financeiras, questões familiares e limitações reais que os coaches de carreira genéricos ignoram."
+    },
+    "tldr": {
+      "heading": "Resumo",
+      "point1": "O AICareerPivot é um estrategista de carreira com tecnologia de IA que cria planos de transição personalizados considerando suas habilidades, suas finanças e suas limitações familiares.",
+      "point2": "Diferente dos coaches de carreira genéricos, cada plano inclui marcos concretos em 6 meses, 1 ano e 2 anos, com análise de viabilidade financeira.",
+      "point3": "Feito para os 95% dos profissionais que têm financiamentos, filhos e cônjuges — não para quem pode simplesmente pedir demissão e resolver depois."
+    },
+    "mission": {
+      "heading": "Nossa missão",
+      "lead": "<strong>Acreditamos que todo profissional merece um caminho realista para uma carreira que ame</strong> — não apenas inspiração, mas um plano de verdade, com passos concretos, análise de viabilidade financeira e prazos honestos.",
+      "body": "A maioria das orientações de carreira é escrita para pessoas sem responsabilidades, com economias ilimitadas e um cônjuge que pode cobrir as lacunas. Essa não é a realidade da maioria. O AICareerPivot foi criado para os outros 95%: profissionais com financiamentos, filhos, pais idosos e cônjuges que também têm suas próprias carreiras."
+    },
+    "methodology": {
+      "heading": "Nossa metodologia",
+      "intro": "Cada plano do AICareerPivot é construído sobre cinco princípios fundamentais que tornam nossos planos realistas, e não apenas aspiracionais.",
+      "principleTooltip": "Princípio {number} de {total}",
+      "principles": {
+        "wholeLifeContext": {
+          "title": "Contexto de vida integral",
+          "description": "As orientações de carreira genéricas ignoram que a maioria dos profissionais tem financiamentos, dependentes e cônjuges com suas próprias carreiras. O AICareerPivot começa entendendo a sua situação completa — não apenas o seu currículo."
+        },
+        "financialRealism": {
+          "title": "Realismo financeiro",
+          "description": "Calculamos sua margem financeira, consideramos as necessidades de continuidade de renda e desenhamos caminhos de transição que não exigem que você 'simplesmente peça demissão e resolva depois'. As transições são sequenciadas em torno das suas limitações financeiras reais."
+        },
+        "skillsFirstMapping": {
+          "title": "Mapeamento com foco nas habilidades",
+          "description": "Nossa IA identifica quais das suas habilidades atuais são transferíveis para os cargos-alvo, quantifica as lacunas e recomenda os caminhos de aprendizado mais eficientes — não uma lista genérica de desejos de habilidades."
+        },
+        "timeHorizonedPlanning": {
+          "title": "Planejamento por horizontes de tempo",
+          "description": "Cada plano inclui marcos concretos em 6 meses, 1 ano e 2 anos. Você sempre sabe qual é o próximo passo e como ele se conecta ao objetivo maior da transição."
+        },
+        "evidenceBasedRecommendations": {
+          "title": "Recomendações baseadas em evidências",
+          "description": "As recomendações se baseiam em dados do mercado de trabalho, padrões de transição do setor e referências salariais reais — não em um otimismo genérico sobre o que 'poderia' acontecer."
+        }
+      }
+    },
+    "technology": {
+      "heading": "Como a IA funciona",
+      "intro": "O AICareerPivot usa grandes modelos de linguagem complementados por dados de transição de carreira, informações do mercado de trabalho e referências salariais. Quando você compartilha o seu perfil, a IA:",
+      "step1": "Identifica habilidades transferíveis do seu cargo atual para os cargos-alvo, com análise de lacunas",
+      "step2": "Calcula a viabilidade financeira com base na sua renda, nas suas economias e na faixa salarial-alvo",
+      "step3": "Sequencia os marcos para minimizar o risco financeiro e o impacto na família",
+      "step4": "Gera um plano personalizado de 6 meses, 1 ano e 2 anos com ações específicas"
+    },
+    "cta": {
+      "heading": "Pronto para construir seu verdadeiro plano de saída?",
+      "subtitle": "Receba hoje seu plano personalizado de transição de carreira — por apenas US$ 19 de preço de lançamento.",
+      "button": "Receber meu plano — US$ 19 →"
+    }
   }
 }

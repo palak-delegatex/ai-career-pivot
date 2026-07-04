@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent } from "@/components/ui/card";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -51,77 +52,52 @@ const howItWorksSchema = {
   ],
 };
 
-const steps = [
-  {
-    number: "01",
-    title: "Share Your Situation",
-    subtitle: "The full picture, not just your resume",
-    description:
-      "Most career tools only look at your professional history. AICareerPivot starts with your whole situation: what you do now, what you want next, and the real-world constraints that matter.",
-    details: [
-      "Your current role, industry, and years of experience",
-      "The skills you've built — technical and non-technical",
-      "Your target career direction or industry",
-      "Financial context: income, savings, major expenses, and risk tolerance",
-      "Family and personal constraints that affect your timeline",
-      "What 'success' actually looks like for you",
-    ],
-    accent: "from-teal-500 to-emerald-500",
-  },
-  {
-    number: "02",
-    title: "AI Builds Your Strategy",
-    subtitle: "Data-informed, not generic",
-    description:
-      "Once you've shared your context, the AI gets to work. It doesn't give you a generic plan — it builds one grounded in your specific profile and real labor market data.",
-    details: [
-      "Identifies which of your skills transfer directly to your target role",
-      "Quantifies the actual skills gaps — and which ones actually matter",
-      "Calculates financial viability: can you make this move with your current runway?",
-      "Maps transition paths from your current role to target roles",
-      "Sequences milestones to maintain income continuity",
-      "Recommends the most efficient upskilling paths — not a wishlist",
-    ],
-    accent: "from-teal-400 to-cyan-500",
-  },
-  {
-    number: "03",
-    title: "Execute with Confidence",
-    subtitle: "Concrete actions, not inspiration",
-    description:
-      "You get a multi-year roadmap with specific, sequenced actions at each stage. No vague advice — every milestone tells you exactly what to do and why.",
-    details: [
-      "6-month plan: immediate actions to start positioning for your target role",
-      "1-year plan: skill development, networking milestones, and income strategy",
-      "2-year plan: target role application timeline and transition completion",
-      "Specific resources, certifications, and projects that matter for your path",
-      "How to reframe your existing experience for the new role",
-      "Decision points where you can reassess and adjust the plan",
-    ],
-    accent: "from-cyan-500 to-teal-500",
-  },
-];
+// Non-translatable presentation metadata for each step. User-facing copy
+// (title/subtitle/description/details) is resolved via next-intl below.
+const stepMeta = [
+  { number: "01", accent: "from-teal-500 to-emerald-500" },
+  { number: "02", accent: "from-teal-400 to-cyan-500" },
+  { number: "03", accent: "from-cyan-500 to-teal-500" },
+] as const;
 
-const whyItWorks = [
-  {
-    title: "Constraints make better plans",
-    description:
-      "Professionals with financial obligations and family responsibilities can't take uncalculated risks. That constraint forces more deliberate, staged planning — which is actually what leads to successful transitions.",
-  },
-  {
-    title: "Transferable skills are undervalued",
-    description:
-      "Most professionals dramatically undervalue their existing skills. The AI identifies how your current experience maps to target roles, often revealing that you're closer than you think.",
-  },
-  {
-    title: "Timing matters more than qualifications",
-    description:
-      "The biggest mistake in career pivots is poor timing — either moving too early before building leverage, or waiting so long the window closes. AICareerPivot designs your plan around the optimal sequencing.",
-  },
-];
-
-export default function HowItWorksPage() {
+export default async function HowItWorksPage() {
+  const t = await getTranslations("howItWorks");
   const crumbs = breadcrumbSchema([{ name: "How It Works", path: "/how-it-works" }]);
+
+  const steps = stepMeta.map((meta, i) => {
+    const n = i + 1;
+    return {
+      number: meta.number,
+      accent: meta.accent,
+      title: t(`step${n}Title`),
+      subtitle: t(`step${n}Subtitle`),
+      description: t(`step${n}Description`),
+      details: [
+        t(`step${n}Detail1`),
+        t(`step${n}Detail2`),
+        t(`step${n}Detail3`),
+        t(`step${n}Detail4`),
+        t(`step${n}Detail5`),
+        t(`step${n}Detail6`),
+      ],
+    };
+  });
+
+  const whyItWorks = [1, 2, 3].map((n) => ({
+    title: t(`why${n}Title`),
+    description: t(`why${n}Description`),
+  }));
+
+  const roadmapIncludes = [
+    t("includes1"),
+    t("includes2"),
+    t("includes3"),
+    t("includes4"),
+    t("includes5"),
+    t("includes6"),
+    t("includes7"),
+    t("includes8"),
+  ];
   return (
     <>
       <script
@@ -141,13 +117,13 @@ export default function HowItWorksPage() {
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">About</Link>
-            <Link href="/faq" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">FAQ</Link>
+            <Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">{t("navAbout")}</Link>
+            <Link href="/faq" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">{t("navFaq")}</Link>
             <Link
               href="/pricing"
               className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
             >
-              Get Started
+              {t("navGetStarted")}
             </Link>
           </div>
         </nav>
@@ -155,7 +131,7 @@ export default function HowItWorksPage() {
         <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
           <Image
             src="/images/how-it-works.png"
-            alt="Woman reviewing her AI-generated Career Roadmap on tablet devices"
+            alt={t("heroImageAlt")}
             fill
             priority
             className="object-cover object-center"
@@ -164,12 +140,12 @@ export default function HowItWorksPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/80 via-[#030712]/70 to-[#030712]" />
           <div className="relative z-10 flex items-end h-full max-w-5xl mx-auto px-6 pb-12">
             <header>
-              <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">How It Works</p>
+              <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">{t("heroEyebrow")}</p>
               <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
-                From stuck to strategic in three steps
+                {t("heroTitle")}
               </h1>
               <p className="text-xl text-slate-300 leading-relaxed max-w-2xl">
-                AICareerPivot turns your full situation — skills, finances, family, goals — into a concrete multi-year career transition roadmap with specific actions at every stage.
+                {t("heroSubtitle")}
               </p>
             </header>
           </div>
@@ -179,11 +155,11 @@ export default function HowItWorksPage() {
 
           {/* TL;DR */}
           <section className="mb-12 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
-            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>
+            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("tldrHeading")}</h2>
             <ul className="space-y-2 text-sm text-slate-300">
-              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Share your full situation (skills, finances, family constraints) — not just your resume.</li>
-              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>AICareerPivot&apos;s AI builds a data-informed career transition strategy with transferable skills mapping and financial viability analysis.</li>
-              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>Get a concrete multi-year roadmap with specific milestones at 6 months, 1 year, and 2 years — not vague inspiration.</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>{t("tldrPoint1")}</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>{t("tldrPoint2")}</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5 shrink-0">•</span>{t("tldrPoint3")}</li>
             </ul>
           </section>
 
@@ -230,7 +206,7 @@ export default function HowItWorksPage() {
 
           {/* Why it works */}
           <section className="mb-20" aria-labelledby="why-heading">
-            <h2 id="why-heading" className="text-2xl font-bold text-white mb-8">Why this approach works</h2>
+            <h2 id="why-heading" className="text-2xl font-bold text-white mb-8">{t("whyHeading")}</h2>
             <div className="grid md:grid-cols-3 gap-5">
               {whyItWorks.map((item) => (
                 <Card key={item.title} className="bg-slate-900/60 border-slate-800 text-white rounded-xl py-0">
@@ -245,18 +221,9 @@ export default function HowItWorksPage() {
 
           {/* What you get */}
           <section className="mb-20 bg-slate-900/60 rounded-2xl border border-slate-800 p-8" aria-labelledby="output-heading">
-            <h2 id="output-heading" className="text-xl font-bold text-white mb-4">What your roadmap includes</h2>
+            <h2 id="output-heading" className="text-xl font-bold text-white mb-4">{t("includesHeading")}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {[
-                "6-month, 1-year, and 2-year milestone plan",
-                "Skills gap analysis with prioritized learning path",
-                "Financial viability assessment for your timeline",
-                "Income continuity strategy during the transition",
-                "Specific resources, courses, and projects by milestone",
-                "Resume reframing guide for your target role",
-                "Networking strategy for your target industry",
-                "Decision checkpoints to reassess and adapt",
-              ].map((item) => (
+              {roadmapIncludes.map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-400">
                   <span className="w-5 h-5 rounded-full bg-teal-950 border border-teal-800/50 flex items-center justify-center flex-shrink-0">
                     <svg className="w-3 h-3 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -271,17 +238,17 @@ export default function HowItWorksPage() {
 
           {/* CTA */}
           <section className="text-center bg-gradient-to-br from-teal-950/60 to-slate-900/60 rounded-3xl p-10 border border-teal-500/20">
-            <h2 className="text-2xl font-bold text-white mb-3">Ready to see your roadmap?</h2>
-            <p className="text-slate-400 mb-8">Get your personalized career pivot plan today — just $19 intro pricing.</p>
+            <h2 className="text-2xl font-bold text-white mb-3">{t("ctaHeading")}</h2>
+            <p className="text-slate-400 mb-8">{t("ctaSubtitle")}</p>
             <Link
               href="/pricing"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 text-white"
             >
-              Get My Roadmap — $19 →
+              {t("ctaButton")}
             </Link>
             <div className="mt-4">
               <Link href="/faq" className="text-sm text-slate-500 hover:text-slate-400 transition-colors">
-                Have questions? Read the FAQ →
+                {t("ctaFaqLink")}
               </Link>
             </div>
           </section>

@@ -67,5 +67,181 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Your Personal Career Strategist",
     "defaultDescription": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+  },
+  "faq": {
+    "metaTitle": "FAQ — AICareerPivot",
+    "metaDescription": "Answers to common questions about career pivots: how long it takes, whether you need savings, how to change careers with a family, and how AICareerPivot builds your personalized roadmap.",
+    "ogTitle": "FAQ — AICareerPivot",
+    "ogDescription": "Common questions about career pivots answered: timelines, finances, skills gaps, and how AICareerPivot creates personalized transition roadmaps.",
+    "breadcrumb": "FAQ",
+    "navHowItWorks": "How It Works",
+    "navAbout": "About",
+    "navGetStarted": "Get Started",
+    "eyebrow": "FAQ",
+    "heading": "Career pivot questions, answered honestly",
+    "subheading": "Real answers to the questions professionals ask before making a career change — including the ones most career advice skips.",
+    "ctaHeading": "Still have questions?",
+    "ctaSubheading": "Get your personalized career pivot roadmap and we'll answer any questions about your specific situation.",
+    "ctaButton": "Get My Roadmap — $19 →",
+    "q1": {
+      "question": "How long does a career pivot typically take?",
+      "answer": "Most successful career pivots take 12 to 24 months when planned properly. The timeline depends on how different your target role is from your current role, your financial runway, and whether you need additional credentials. AICareerPivot creates a realistic timeline based on your specific situation — not a generic average — with milestones at 6 months, 1 year, and 2 years."
+    },
+    "q2": {
+      "question": "Do I need a lot of savings to change careers?",
+      "answer": "Not necessarily, but you do need a plan. Most professionals make the mistake of either waiting indefinitely for the 'perfect' financial moment or quitting impulsively. AICareerPivot analyzes your current income, fixed expenses, and target salary range to design a transition path that maintains income continuity. Many pivots can be staged — upskilling and networking while employed — so you never have a gap in earnings."
+    },
+    "q3": {
+      "question": "Can I change careers if I have a family and financial obligations?",
+      "answer": "Yes, and this is exactly what AICareerPivot is designed for. We factor in family constraints, partner's income, dependent care costs, and mortgage or rent obligations directly into your roadmap. Transitions are sequenced to minimize disruption to your household. We've found that professionals with more constraints often make more deliberate, successful transitions because they plan more carefully."
+    },
+    "q4": {
+      "question": "What types of career pivots does AICareerPivot support?",
+      "answer": "AICareerPivot supports a wide range of transitions: from technical roles to management, from one industry to another (e.g., finance to tech), from corporate to entrepreneurship, from in-person to remote roles, and from individual contributor to leadership. The AI adapts the roadmap based on the specific skills transferability and market demand for your target path."
+    },
+    "q5": {
+      "question": "How is AICareerPivot different from a career coach?",
+      "answer": "A human career coach is expensive (typically $150–500/hour), often gives generic advice, and rarely has the data to back up recommendations with market evidence. AICareerPivot provides data-informed, personalized roadmaps that factor in labor market realities, salary benchmarks, and skills gap analysis — available whenever you need it, at a fraction of the cost. That said, AICareerPivot is a planning tool, not a replacement for human mentors who know your specific field."
+    },
+    "q6": {
+      "question": "What information do I need to provide?",
+      "answer": "To build your roadmap, AICareerPivot asks about: your current role and industry, your key skills and years of experience, your target career direction, your financial situation (income, savings, major expenses), your timeline and risk tolerance, and any family or personal constraints. The more context you provide, the more specific and useful your roadmap will be."
+    },
+    "q7": {
+      "question": "Will the roadmap include specific actions, or just general advice?",
+      "answer": "Specific actions. Each milestone in your roadmap includes concrete next steps: which skills to build, which certifications matter vs. which are optional, networking strategies for your target field, how to reframe your resume for the new role, and how to time your job search around your financial constraints. Generic advice ('network more', 'update your LinkedIn') is not the AICareerPivot approach."
+    },
+    "q8": {
+      "question": "How does AICareerPivot handle skills gaps?",
+      "answer": "The AI identifies which of your existing skills transfer directly to your target role, which are partially transferable, and what the actual gaps are. It then prioritizes the gaps by impact — not every missing skill matters equally — and recommends the most efficient ways to close the important ones (specific courses, projects, certifications, or on-the-job learning). You won't be told to 'learn Python' if Python isn't actually required for the roles you're targeting."
+    },
+    "q9": {
+      "question": "Is AICareerPivot available now?",
+      "answer": "AICareerPivot is currently in early access. We're onboarding a limited number of users to refine the roadmap quality and ensure every plan meets our standard for genuine usefulness. Join the waitlist to be notified when your spot opens."
+    }
+  },
+  "howItWorks": {
+    "navAbout": "About",
+    "navFaq": "FAQ",
+    "navGetStarted": "Get Started",
+    "heroImageAlt": "Woman reviewing her AI-generated Career Roadmap on tablet devices",
+    "heroEyebrow": "How It Works",
+    "heroTitle": "From stuck to strategic in three steps",
+    "heroSubtitle": "AICareerPivot turns your full situation — skills, finances, family, goals — into a concrete multi-year career transition roadmap with specific actions at every stage.",
+    "tldrHeading": "TL;DR",
+    "tldrPoint1": "Share your full situation (skills, finances, family constraints) — not just your resume.",
+    "tldrPoint2": "AICareerPivot's AI builds a data-informed career transition strategy with transferable skills mapping and financial viability analysis.",
+    "tldrPoint3": "Get a concrete multi-year roadmap with specific milestones at 6 months, 1 year, and 2 years — not vague inspiration.",
+    "step1Title": "Share Your Situation",
+    "step1Subtitle": "The full picture, not just your resume",
+    "step1Description": "Most career tools only look at your professional history. AICareerPivot starts with your whole situation: what you do now, what you want next, and the real-world constraints that matter.",
+    "step1Detail1": "Your current role, industry, and years of experience",
+    "step1Detail2": "The skills you've built — technical and non-technical",
+    "step1Detail3": "Your target career direction or industry",
+    "step1Detail4": "Financial context: income, savings, major expenses, and risk tolerance",
+    "step1Detail5": "Family and personal constraints that affect your timeline",
+    "step1Detail6": "What 'success' actually looks like for you",
+    "step2Title": "AI Builds Your Strategy",
+    "step2Subtitle": "Data-informed, not generic",
+    "step2Description": "Once you've shared your context, the AI gets to work. It doesn't give you a generic plan — it builds one grounded in your specific profile and real labor market data.",
+    "step2Detail1": "Identifies which of your skills transfer directly to your target role",
+    "step2Detail2": "Quantifies the actual skills gaps — and which ones actually matter",
+    "step2Detail3": "Calculates financial viability: can you make this move with your current runway?",
+    "step2Detail4": "Maps transition paths from your current role to target roles",
+    "step2Detail5": "Sequences milestones to maintain income continuity",
+    "step2Detail6": "Recommends the most efficient upskilling paths — not a wishlist",
+    "step3Title": "Execute with Confidence",
+    "step3Subtitle": "Concrete actions, not inspiration",
+    "step3Description": "You get a multi-year roadmap with specific, sequenced actions at each stage. No vague advice — every milestone tells you exactly what to do and why.",
+    "step3Detail1": "6-month plan: immediate actions to start positioning for your target role",
+    "step3Detail2": "1-year plan: skill development, networking milestones, and income strategy",
+    "step3Detail3": "2-year plan: target role application timeline and transition completion",
+    "step3Detail4": "Specific resources, certifications, and projects that matter for your path",
+    "step3Detail5": "How to reframe your existing experience for the new role",
+    "step3Detail6": "Decision points where you can reassess and adjust the plan",
+    "whyHeading": "Why this approach works",
+    "why1Title": "Constraints make better plans",
+    "why1Description": "Professionals with financial obligations and family responsibilities can't take uncalculated risks. That constraint forces more deliberate, staged planning — which is actually what leads to successful transitions.",
+    "why2Title": "Transferable skills are undervalued",
+    "why2Description": "Most professionals dramatically undervalue their existing skills. The AI identifies how your current experience maps to target roles, often revealing that you're closer than you think.",
+    "why3Title": "Timing matters more than qualifications",
+    "why3Description": "The biggest mistake in career pivots is poor timing — either moving too early before building leverage, or waiting so long the window closes. AICareerPivot designs your plan around the optimal sequencing.",
+    "includesHeading": "What your roadmap includes",
+    "includes1": "6-month, 1-year, and 2-year milestone plan",
+    "includes2": "Skills gap analysis with prioritized learning path",
+    "includes3": "Financial viability assessment for your timeline",
+    "includes4": "Income continuity strategy during the transition",
+    "includes5": "Specific resources, courses, and projects by milestone",
+    "includes6": "Resume reframing guide for your target role",
+    "includes7": "Networking strategy for your target industry",
+    "includes8": "Decision checkpoints to reassess and adapt",
+    "ctaHeading": "Ready to see your roadmap?",
+    "ctaSubtitle": "Get your personalized career pivot plan today — just $19 intro pricing.",
+    "ctaButton": "Get My Roadmap — $19 →",
+    "ctaFaqLink": "Have questions? Read the FAQ →"
+  },
+  "about": {
+    "nav": {
+      "howItWorks": "How It Works",
+      "faq": "FAQ",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "imageAlt": "Professional discussing career strategy in a modern workspace",
+      "eyebrow": "About",
+      "title": "Career advice that accounts for your whole life",
+      "subtitle": "AICareerPivot is an AI-powered career strategist built for the reality most professionals face: you can't just quit and figure it out. You have financial obligations, family considerations, and real constraints that generic career coaches ignore."
+    },
+    "tldr": {
+      "heading": "TL;DR",
+      "point1": "AICareerPivot is an AI-powered career strategist that builds personalized transition roadmaps factoring in your skills, finances, and family constraints.",
+      "point2": "Unlike generic career coaches, every roadmap includes concrete milestones at 6 months, 1 year, and 2 years with financial viability analysis.",
+      "point3": "Built for the 95% of professionals who have mortgages, kids, and partners — not for people who can just quit and figure it out."
+    },
+    "mission": {
+      "heading": "Our Mission",
+      "lead": "<strong>We believe every professional deserves a realistic path to a career they love</strong> — not just inspiration, but an actual plan with concrete steps, financial viability analysis, and honest timelines.",
+      "body": "Most career advice is written for people with no responsibilities, unlimited savings, and a partner who can pick up the slack. That's not most people. AICareerPivot was built for the other 95%: professionals with mortgages, kids, aging parents, and partners who also have careers."
+    },
+    "methodology": {
+      "heading": "Our Methodology",
+      "intro": "Every AICareerPivot roadmap is built on five core principles that make our plans realistic, not just aspirational.",
+      "principleTooltip": "Principle {number} of {total}",
+      "principles": {
+        "wholeLifeContext": {
+          "title": "Whole-Life Context",
+          "description": "Generic career advice ignores that most professionals have mortgages, dependents, and partners with their own careers. AICareerPivot starts by understanding your full situation — not just your resume."
+        },
+        "financialRealism": {
+          "title": "Financial Realism",
+          "description": "We calculate your financial runway, factor in income continuity requirements, and design transition paths that don't require you to 'just quit and figure it out.' Transitions are sequenced around your real financial constraints."
+        },
+        "skillsFirstMapping": {
+          "title": "Skills-First Mapping",
+          "description": "Our AI identifies which of your existing skills are transferable to target roles, quantifies the gaps, and recommends the most efficient learning paths — not a generic skills wishlist."
+        },
+        "timeHorizonedPlanning": {
+          "title": "Time-Horizoned Planning",
+          "description": "Every roadmap includes concrete milestones at 6 months, 1 year, and 2 years. You always know what the next step is and how it connects to the bigger transition goal."
+        },
+        "evidenceBasedRecommendations": {
+          "title": "Evidence-Based Recommendations",
+          "description": "Recommendations are grounded in labor market data, industry transition patterns, and real salary benchmarks — not generic optimism about what 'could' happen."
+        }
+      }
+    },
+    "technology": {
+      "heading": "How the AI Works",
+      "intro": "AICareerPivot uses large language models augmented with career transition data, labor market information, and salary benchmarks. When you share your profile, the AI:",
+      "step1": "Identifies transferable skills from your current role to target roles, with gap analysis",
+      "step2": "Calculates financial viability based on your income, savings, and target salary range",
+      "step3": "Sequences milestones to minimize financial risk and family disruption",
+      "step4": "Generates a personalized 6-month, 1-year, and 2-year roadmap with specific actions"
+    },
+    "cta": {
+      "heading": "Ready to build your real escape plan?",
+      "subtitle": "Get your personalized career pivot roadmap today — just $19 intro pricing.",
+      "button": "Get My Roadmap — $19 →"
+    }
   }
 }

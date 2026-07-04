@@ -1,0 +1,26 @@
+name: i18n parity
+
+# Fails the build if any locale catalog is missing keys present in messages/en.json,
+# carries stale keys, or drifts on ICU interpolation arguments (AIC-668).
+on:
+  pull_request:
+    paths:
+      - "messages/**"
+      - "scripts/check-i18n-parity.mjs"
+      - ".github/workflows/i18n-parity.yml"
+  push:
+    branches: [main]
+    paths:
+      - "messages/**"
+      - "scripts/check-i18n-parity.mjs"
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check i18n catalog parity
+        run: node scripts/check-i18n-parity.mjs

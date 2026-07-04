@@ -67,5 +67,181 @@
   "meta": {
     "defaultTitle": "AICareerPivot — Votre stratège de carrière personnel",
     "defaultDescription": "Ne restez plus prisonnier. Construisez une feuille de route de reconversion personnalisée selon vos compétences, vos finances et vos contraintes familiales. Des plans concrets à 6 mois, 1 an et 2 ans."
+  },
+  "faq": {
+    "metaTitle": "Foire aux questions — AICareerPivot",
+    "metaDescription": "Réponses aux questions courantes sur les reconversions professionnelles : combien de temps cela prend, s'il faut de l'épargne, comment changer de carrière en ayant une famille, et comment AICareerPivot élabore votre feuille de route personnalisée.",
+    "ogTitle": "Foire aux questions — AICareerPivot",
+    "ogDescription": "Les questions courantes sur les reconversions, résolues : délais, finances, écarts de compétences et comment AICareerPivot crée des feuilles de route de transition personnalisées.",
+    "breadcrumb": "Foire aux questions",
+    "navHowItWorks": "Comment ça marche",
+    "navAbout": "À propos",
+    "navGetStarted": "Commencer",
+    "eyebrow": "Foire aux questions",
+    "heading": "Vos questions sur la reconversion, des réponses en toute honnêteté",
+    "subheading": "De vraies réponses aux questions que les professionnels se posent avant de changer de carrière — y compris celles que la plupart des conseils passent sous silence.",
+    "ctaHeading": "Encore des questions ?",
+    "ctaSubheading": "Obtenez votre feuille de route de reconversion personnalisée et nous répondrons à toutes vos questions sur votre situation particulière.",
+    "ctaButton": "Obtenir ma feuille de route — 19 $ →",
+    "q1": {
+      "question": "Combien de temps prend généralement une reconversion professionnelle ?",
+      "answer": "La plupart des reconversions réussies prennent de 12 à 24 mois lorsqu'elles sont bien planifiées. Le délai dépend de l'écart entre le poste que vous visez et votre poste actuel, de votre marge financière et de la nécessité ou non d'obtenir des diplômes supplémentaires. AICareerPivot établit un calendrier réaliste fondé sur votre situation précise — et non sur une moyenne générique — avec des étapes à 6 mois, 1 an et 2 ans."
+    },
+    "q2": {
+      "question": "Ai-je besoin d'une épargne importante pour changer de carrière ?",
+      "answer": "Pas forcément, mais il vous faut un plan. La plupart des professionnels commettent l'erreur d'attendre indéfiniment le moment financier « parfait » ou de démissionner sur un coup de tête. AICareerPivot analyse vos revenus actuels, vos charges fixes et la fourchette salariale visée pour concevoir une transition qui préserve la continuité de vos revenus. De nombreuses reconversions peuvent se faire par étapes — en montant en compétences et en développant votre réseau tout en travaillant — afin de ne jamais connaître de rupture de revenus."
+    },
+    "q3": {
+      "question": "Puis-je changer de carrière si j'ai une famille et des obligations financières ?",
+      "answer": "Oui, et c'est précisément ce pour quoi AICareerPivot a été conçu. Nous intégrons directement à votre feuille de route les contraintes familiales, les revenus de votre partenaire, les frais de garde des personnes à charge et les échéances de prêt immobilier ou de loyer. Les transitions sont ordonnées de manière à limiter les perturbations pour votre foyer. Nous avons constaté que les professionnels ayant le plus de contraintes réussissent souvent des transitions plus réfléchies, car ils planifient avec plus de soin."
+    },
+    "q4": {
+      "question": "Quels types de reconversions AICareerPivot prend-il en charge ?",
+      "answer": "AICareerPivot prend en charge un large éventail de transitions : d'un poste technique vers le management, d'un secteur à un autre (par exemple, de la finance vers la tech), de l'entreprise vers l'entrepreneuriat, du présentiel vers le télétravail, et de contributeur individuel vers un rôle de direction. L'IA adapte la feuille de route en fonction de la transférabilité précise de vos compétences et de la demande du marché pour la voie que vous visez."
+    },
+    "q5": {
+      "question": "En quoi AICareerPivot se distingue-t-il d'un coach de carrière ?",
+      "answer": "Un coach de carrière coûte cher (généralement de 150 à 500 $ de l'heure), donne souvent des conseils génériques et dispose rarement des données nécessaires pour étayer ses recommandations par des preuves du marché. AICareerPivot propose des feuilles de route personnalisées et fondées sur les données, qui tiennent compte des réalités du marché du travail, des références salariales et de l'analyse des écarts de compétences — disponibles dès que vous en avez besoin, pour une fraction du coût. Cela dit, AICareerPivot est un outil de planification, et non un substitut aux mentors qui connaissent votre domaine précis."
+    },
+    "q6": {
+      "question": "Quelles informations dois-je fournir ?",
+      "answer": "Pour élaborer votre feuille de route, AICareerPivot vous interroge sur : votre poste et votre secteur actuels, vos compétences clés et vos années d'expérience, la direction professionnelle que vous visez, votre situation financière (revenus, épargne, dépenses importantes), votre calendrier et votre tolérance au risque, ainsi que toute contrainte familiale ou personnelle. Plus vous fournissez de contexte, plus votre feuille de route sera précise et utile."
+    },
+    "q7": {
+      "question": "La feuille de route comprendra-t-elle des actions concrètes ou seulement des conseils généraux ?",
+      "answer": "Des actions concrètes. Chaque étape de votre feuille de route comprend des prochaines démarches précises : quelles compétences développer, quelles certifications comptent et lesquelles sont facultatives, des stratégies de réseautage pour votre secteur cible, comment reformuler votre CV pour le nouveau poste et comment planifier votre recherche d'emploi en fonction de vos contraintes financières. Les conseils génériques (« réseautez davantage », « mettez à jour votre LinkedIn ») ne correspondent pas à l'approche d'AICareerPivot."
+    },
+    "q8": {
+      "question": "Comment AICareerPivot gère-t-il les écarts de compétences ?",
+      "answer": "L'IA identifie lesquelles de vos compétences actuelles se transfèrent directement au poste visé, lesquelles sont partiellement transférables et quels sont les véritables écarts. Elle hiérarchise ensuite ces écarts selon leur impact — toutes les compétences manquantes n'ont pas le même poids — et recommande les moyens les plus efficaces de combler les plus importantes (cours, projets, certifications précises ou apprentissage sur le terrain). On ne vous dira pas d'« apprendre Python » si Python n'est pas réellement requis pour les postes que vous visez."
+    },
+    "q9": {
+      "question": "AICareerPivot est-il disponible dès maintenant ?",
+      "answer": "AICareerPivot est actuellement en accès anticipé. Nous intégrons un nombre limité d'utilisateurs afin d'affiner la qualité des feuilles de route et de garantir que chaque plan répond à notre exigence d'utilité réelle. Inscrivez-vous sur la liste d'attente pour être prévenu dès que votre place se libère."
+    }
+  },
+  "howItWorks": {
+    "navAbout": "À propos",
+    "navFaq": "FAQ",
+    "navGetStarted": "Commencer",
+    "heroImageAlt": "Femme consultant sa feuille de route de carrière générée par IA sur des tablettes",
+    "heroEyebrow": "Comment ça marche",
+    "heroTitle": "De bloqué à stratégique en trois étapes",
+    "heroSubtitle": "AICareerPivot transforme l'ensemble de votre situation — compétences, finances, famille, objectifs — en une feuille de route concrète de transition professionnelle sur plusieurs années, avec des actions précises à chaque étape.",
+    "tldrHeading": "En bref",
+    "tldrPoint1": "Partagez l'ensemble de votre situation (compétences, finances, contraintes familiales) — pas seulement votre CV.",
+    "tldrPoint2": "L'IA d'AICareerPivot élabore une stratégie de transition professionnelle fondée sur les données, avec une cartographie des compétences transférables et une analyse de viabilité financière.",
+    "tldrPoint3": "Obtenez une feuille de route concrète sur plusieurs années avec des jalons précis à 6 mois, 1 an et 2 ans — pas de vague inspiration.",
+    "step1Title": "Partagez votre situation",
+    "step1Subtitle": "Le tableau complet, pas seulement votre CV",
+    "step1Description": "La plupart des outils de carrière ne regardent que votre parcours professionnel. AICareerPivot part de votre situation dans son ensemble : ce que vous faites aujourd'hui, ce que vous visez ensuite et les contraintes réelles qui comptent.",
+    "step1Detail1": "Votre poste actuel, votre secteur et vos années d'expérience",
+    "step1Detail2": "Les compétences que vous avez développées — techniques et non techniques",
+    "step1Detail3": "L'orientation ou le secteur professionnel que vous visez",
+    "step1Detail4": "Contexte financier : revenus, épargne, dépenses importantes et tolérance au risque",
+    "step1Detail5": "Les contraintes familiales et personnelles qui influent sur votre calendrier",
+    "step1Detail6": "Ce que la 'réussite' représente réellement pour vous",
+    "step2Title": "L'IA élabore votre stratégie",
+    "step2Subtitle": "Fondée sur les données, pas générique",
+    "step2Description": "Une fois votre contexte partagé, l'IA se met au travail. Elle ne vous donne pas un plan générique : elle en construit un ancré dans votre profil précis et dans des données réelles du marché du travail.",
+    "step2Detail1": "Identifie lesquelles de vos compétences se transfèrent directement vers le poste visé",
+    "step2Detail2": "Quantifie les véritables écarts de compétences — et ceux qui comptent vraiment",
+    "step2Detail3": "Calcule la viabilité financière : pouvez-vous faire ce changement avec votre marge actuelle ?",
+    "step2Detail4": "Cartographie les parcours de transition entre votre poste actuel et les postes visés",
+    "step2Detail5": "Ordonne les jalons pour préserver la continuité des revenus",
+    "step2Detail6": "Recommande les parcours de montée en compétences les plus efficaces — pas une liste de souhaits",
+    "step3Title": "Passez à l'action avec confiance",
+    "step3Subtitle": "Des actions concrètes, pas de l'inspiration",
+    "step3Description": "Vous obtenez une feuille de route sur plusieurs années avec des actions précises et ordonnées à chaque étape. Aucun conseil vague — chaque jalon vous indique exactement quoi faire et pourquoi.",
+    "step3Detail1": "Plan à 6 mois : actions immédiates pour commencer à vous positionner vers le poste visé",
+    "step3Detail2": "Plan à 1 an : développement des compétences, jalons de réseautage et stratégie de revenus",
+    "step3Detail3": "Plan à 2 ans : calendrier de candidature au poste visé et achèvement de la transition",
+    "step3Detail4": "Ressources, certifications et projets précis qui comptent pour votre parcours",
+    "step3Detail5": "Comment reformuler votre expérience actuelle pour le nouveau poste",
+    "step3Detail6": "Des points de décision où vous pouvez réévaluer et ajuster le plan",
+    "whyHeading": "Pourquoi cette approche fonctionne",
+    "why1Title": "Les contraintes produisent de meilleurs plans",
+    "why1Description": "Les professionnels ayant des obligations financières et des responsabilités familiales ne peuvent pas prendre de risques inconsidérés. Cette contrainte impose une planification plus réfléchie et progressive — ce qui mène justement à des transitions réussies.",
+    "why2Title": "Les compétences transférables sont sous-estimées",
+    "why2Description": "La plupart des professionnels sous-estiment fortement leurs compétences actuelles. L'IA identifie comment votre expérience actuelle se rattache aux postes visés, révélant souvent que vous êtes plus proche que vous ne le pensez.",
+    "why3Title": "Le timing compte plus que les qualifications",
+    "why3Description": "La plus grande erreur dans une reconversion est un mauvais timing — bouger trop tôt avant d'avoir bâti un avantage, ou attendre si longtemps que la fenêtre se referme. AICareerPivot conçoit votre plan autour du séquençage optimal.",
+    "includesHeading": "Ce que contient votre feuille de route",
+    "includes1": "Plan de jalons à 6 mois, 1 an et 2 ans",
+    "includes2": "Analyse des écarts de compétences avec un parcours d'apprentissage priorisé",
+    "includes3": "Évaluation de viabilité financière pour votre calendrier",
+    "includes4": "Stratégie de continuité des revenus pendant la transition",
+    "includes5": "Ressources, cours et projets précis par jalon",
+    "includes6": "Guide de reformulation du CV pour le poste visé",
+    "includes7": "Stratégie de réseautage pour votre secteur visé",
+    "includes8": "Points de contrôle décisionnels pour réévaluer et vous adapter",
+    "ctaHeading": "Prêt à découvrir votre feuille de route ?",
+    "ctaSubtitle": "Obtenez dès aujourd'hui votre plan de reconversion personnalisé — pour seulement 19 $ en tarif de lancement.",
+    "ctaButton": "Obtenir ma feuille de route — 19 $ →",
+    "ctaFaqLink": "Des questions ? Consultez la FAQ →"
+  },
+  "about": {
+    "nav": {
+      "howItWorks": "Comment ça marche",
+      "faq": "FAQ",
+      "getStarted": "Commencer"
+    },
+    "hero": {
+      "imageAlt": "Professionnel échangeant sur sa stratégie de carrière dans un espace de travail moderne",
+      "eyebrow": "À propos",
+      "title": "Des conseils de carrière qui tiennent compte de toute votre vie",
+      "subtitle": "AICareerPivot est un stratège de carrière propulsé par l'IA, conçu pour la réalité que vivent la plupart des professionnels : vous ne pouvez pas simplement démissionner et improviser. Vous avez des obligations financières, des considérations familiales et des contraintes réelles que les coachs de carrière génériques ignorent."
+    },
+    "tldr": {
+      "heading": "En bref",
+      "point1": "AICareerPivot est un stratège de carrière propulsé par l'IA qui élabore des feuilles de route de transition personnalisées en tenant compte de vos compétences, de vos finances et de vos contraintes familiales.",
+      "point2": "Contrairement aux coachs de carrière génériques, chaque feuille de route comprend des jalons concrets à 6 mois, 1 an et 2 ans, avec une analyse de viabilité financière.",
+      "point3": "Conçu pour les 95 % de professionnels qui ont un crédit immobilier, des enfants et un conjoint — pas pour ceux qui peuvent simplement démissionner et improviser."
+    },
+    "mission": {
+      "heading": "Notre mission",
+      "lead": "<strong>Nous pensons que chaque professionnel mérite un chemin réaliste vers une carrière qu'il aime</strong> — pas seulement de l'inspiration, mais un véritable plan avec des étapes concrètes, une analyse de viabilité financière et des échéances honnêtes.",
+      "body": "La plupart des conseils de carrière s'adressent à des personnes sans responsabilités, avec une épargne illimitée et un conjoint capable de compenser. Ce n'est pas le cas de la plupart des gens. AICareerPivot a été conçu pour les 95 % restants : des professionnels avec un crédit immobilier, des enfants, des parents âgés et un conjoint qui a lui aussi sa propre carrière."
+    },
+    "methodology": {
+      "heading": "Notre méthodologie",
+      "intro": "Chaque feuille de route AICareerPivot repose sur cinq principes fondamentaux qui rendent nos plans réalistes, et pas seulement idéalistes.",
+      "principleTooltip": "Principe {number} sur {total}",
+      "principles": {
+        "wholeLifeContext": {
+          "title": "Contexte de vie global",
+          "description": "Les conseils de carrière génériques ignorent que la plupart des professionnels ont un crédit immobilier, des personnes à charge et un conjoint avec sa propre carrière. AICareerPivot commence par comprendre l'ensemble de votre situation — pas seulement votre CV."
+        },
+        "financialRealism": {
+          "title": "Réalisme financier",
+          "description": "Nous calculons votre marge financière, tenons compte des besoins de continuité de revenus et concevons des parcours de transition qui ne vous obligent pas à « démissionner sans plan et improviser ». Les transitions sont séquencées en fonction de vos contraintes financières réelles."
+        },
+        "skillsFirstMapping": {
+          "title": "Cartographie axée sur les compétences",
+          "description": "Notre IA identifie celles de vos compétences actuelles qui sont transférables vers les postes visés, quantifie les écarts et recommande les parcours d'apprentissage les plus efficaces — et non une liste générique de compétences souhaitées."
+        },
+        "timeHorizonedPlanning": {
+          "title": "Planification par horizons temporels",
+          "description": "Chaque feuille de route comprend des jalons concrets à 6 mois, 1 an et 2 ans. Vous savez toujours quelle est la prochaine étape et comment elle s'inscrit dans l'objectif global de transition."
+        },
+        "evidenceBasedRecommendations": {
+          "title": "Recommandations fondées sur des données",
+          "description": "Les recommandations s'appuient sur les données du marché du travail, les schémas de transition sectoriels et des références salariales réelles — et non sur un optimisme générique quant à ce qui « pourrait » arriver."
+        }
+      }
+    },
+    "technology": {
+      "heading": "Comment fonctionne l'IA",
+      "intro": "AICareerPivot utilise de grands modèles de langage enrichis de données sur les transitions de carrière, d'informations sur le marché du travail et de références salariales. Lorsque vous partagez votre profil, l'IA :",
+      "step1": "Identifie les compétences transférables de votre poste actuel vers les postes visés, avec une analyse des écarts",
+      "step2": "Calcule la viabilité financière en fonction de vos revenus, de votre épargne et de la fourchette salariale visée",
+      "step3": "Séquence les jalons afin de minimiser le risque financier et les perturbations familiales",
+      "step4": "Génère une feuille de route personnalisée à 6 mois, 1 an et 2 ans avec des actions précises"
+    },
+    "cta": {
+      "heading": "Prêt à bâtir votre véritable plan d'évasion ?",
+      "subtitle": "Obtenez dès aujourd'hui votre feuille de route de reconversion personnalisée — pour seulement 19 $ en tarif de lancement.",
+      "button": "Obtenir ma feuille de route — 19 $ →"
+    }
   }
 }
