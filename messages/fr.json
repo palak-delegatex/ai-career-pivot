@@ -1035,6 +1035,16 @@
       "addToStage": "Ajouter à l'étape",
       "cancel": "Annuler",
       "submit": "Ajouter au suivi"
+    },
+    "page": {
+      "metaTitle": "Suivi des candidatures — AICareerPivot",
+      "metaDescription": "Suivez vos candidatures avec un tableau Kanban visuel et des analyses de pipeline.",
+      "breadcrumb": "Suivi des candidatures"
+    },
+    "client": {
+      "signInToUse": "Veuillez vous connecter pour utiliser le suivi des candidatures.",
+      "loadingJobs": "Chargement de votre suivi des candidatures...",
+      "loadFailed": "Impossible de charger vos offres suivies. Veuillez réessayer."
     }
   },
   "shareableProgress": {
@@ -1486,5 +1496,186 @@
     "labelMilestones": "jalons",
     "emptyOwner": "Complétez les éléments du plan de transition pour ajouter des {label} à votre portfolio.",
     "emptyVisitor": "Aucun {label} à afficher pour le moment."
+  },
+  "networking": {
+    "page": {
+      "metaTitle": "CRM de networking — AICareerPivot",
+      "metaDescription": "Gérez vos contacts professionnels, vos relances et vos relations de networking.",
+      "breadcrumb": "Networking"
+    },
+    "client": {
+      "signInRequired": "Connexion requise",
+      "signInToUse": "Veuillez vous connecter pour utiliser le CRM de networking.",
+      "signInToManage": "Veuillez vous connecter pour gérer votre réseau."
+    }
+  },
+  "login": {
+    "page": {
+      "metaTitle": "Se connecter",
+      "metaDescription": "Connectez-vous pour accéder à vos feuilles de route de reconversion."
+    },
+    "form": {
+      "heading": "Se connecter",
+      "subheading": "Accédez à vos feuilles de route de reconversion et suivez vos progrès.",
+      "continueWithGoogle": "Continuer avec Google",
+      "redirecting": "Redirection en cours...",
+      "or": "ou",
+      "emailPlaceholder": "vous@exemple.com",
+      "continueWithEmail": "Continuer avec l'e-mail",
+      "sending": "Envoi en cours...",
+      "terms": "En vous connectant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité."
+    },
+    "magicLink": {
+      "heading": "Vérifiez votre e-mail",
+      "body": "Nous avons envoyé un lien de connexion à {email}. Cliquez sur le lien pour accéder à votre compte.",
+      "differentEmail": "Utiliser une autre adresse e-mail"
+    },
+    "error": {
+      "googleUnavailable": "La connexion avec Google est temporairement indisponible. Essayez la connexion par e-mail ou réessayez plus tard.",
+      "serverError": "La connexion a échoué en raison d'un problème serveur. Réessayez ou utilisez la connexion par e-mail.",
+      "accessDenied": "Accès refusé. Vous devrez peut-être accorder des autorisations pour vous connecter avec Google.",
+      "authFailed": "L'authentification a échoué. Veuillez réessayer."
+    }
+  },
+  "privacy": {
+    "page": {
+      "metaTitle": "Politique de confidentialité — AICareerPivot",
+      "metaDescription": "Politique de confidentialité d'AICareerPivot. Découvrez quelles données nous collectons, comment nous les utilisons et vos choix concernant l'extension Chrome et l'application web.",
+      "metaOgTitle": "Politique de confidentialité — AICareerPivot",
+      "metaOgDescription": "Politique de confidentialité d'AICareerPivot. Découvrez quelles données nous collectons, comment nous les utilisons et vos choix."
+    },
+    "nav": {
+      "about": "À propos",
+      "faq": "FAQ",
+      "getStarted": "Commencer"
+    },
+    "eyebrow": "Légal",
+    "heading": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : juin 2026",
+    "intro": "AICareerPivot (« nous », « notre ») exploite l'extension Chrome AICareerPivot et l'application web sur ai-career-pivot.vercel.app. Cette politique de confidentialité explique quelles données l'extension collecte, comment elles sont utilisées et vos choix.",
+    "s1": {
+      "heading": "1. Ce que nous collectons",
+      "account": {
+        "title": "Informations de compte",
+        "body": "Lorsque vous vous connectez avec Google, nous recevons votre nom, adresse e-mail et photo de profil via Google OAuth. Nous les utilisons uniquement pour vous authentifier et afficher votre identité dans l'extension."
+      },
+      "jobData": {
+        "title": "Données d'offres d'emploi",
+        "body": "Lorsque vous enregistrez une offre d'emploi, l'extension extrait le titre du poste, le nom de l'entreprise, la localisation, le salaire (si affiché), l'URL source et le texte de la description du poste de la page que vous consultez. Ces données sont envoyées à nos serveurs pour calculer votre score de correspondance ATS et synchroniser vos offres enregistrées sur vos appareils."
+      },
+      "resume": {
+        "title": "Contenu du CV",
+        "body": "Si vous téléchargez ou collez un CV, nous le stockons de manière sécurisée afin que l'extension puisse calculer des scores de correspondance de mots-clés par rapport aux descriptions de poste. Les données du CV ne sont jamais partagées avec des employeurs ou des tiers."
+      },
+      "autofill": {
+        "title": "Données des formulaires de candidature",
+        "body": "La fonctionnalité de remplissage automatique lit les libellés des champs de formulaire sur les pages de candidature pour déterminer où insérer vos informations (nom, e-mail, téléphone, historique professionnel, formation). Le contenu du formulaire est traité localement dans votre navigateur ; seules les réponses générées par IA aux questions ouvertes sont envoyées à nos serveurs."
+      },
+      "analytics": {
+        "title": "Analyses d'utilisation",
+        "body": "Nous collectons des événements d'utilisation anonymes et agrégés (par ex., « offre enregistrée », « remplissage automatique utilisé ») via PostHog pour améliorer le produit. Ces événements ne contiennent pas de descriptions de poste, de texte de CV ni d'informations personnelles."
+      }
+    },
+    "s2": {
+      "heading": "2. Comment nous utilisons vos données",
+      "item1": {
+        "body": "calculer les scores ATS, synchroniser les offres enregistrées, remplir automatiquement les candidatures et fournir des analyses dans le tableau de bord."
+      },
+      "item2": {
+        "body": "analyser les schémas d'utilisation agrégés pour prioriser les fonctionnalités et corriger les bugs."
+      },
+      "item3": {
+        "body": "envoyer des e-mails d'intégration et des mises à jour produit. Vous pouvez vous désabonner à tout moment."
+      },
+      "noSell": "Nous ne vendons, ne louons ni ne partageons vos données personnelles avec des annonceurs ou des courtiers en données."
+    },
+    "s3": {
+      "heading": "3. Où vivent vos données",
+      "body": "Vos données sont stockées dans Supabase (hébergé sur AWS aux États-Unis) et diffusées via Vercel. Toutes les données sont transmises via HTTPS."
+    },
+    "s4": {
+      "heading": "4. Conservation des données",
+      "body": "Les données de votre compte et les offres enregistrées sont conservées tant que votre compte est actif. Si vous supprimez votre compte, nous supprimons toutes les données associées dans les 30 jours."
+    },
+    "s5": {
+      "heading": "5. Services tiers",
+      "col": {
+        "service": "Service",
+        "purpose": "Objectif",
+        "dataShared": "Données partagées"
+      },
+      "row1": {
+        "purpose": "Authentification",
+        "data": "E-mail, nom, photo de profil"
+      },
+      "row2": {
+        "purpose": "Base de données et authentification",
+        "data": "Toutes les données de compte et d'offres"
+      },
+      "row3": {
+        "purpose": "Hébergement et API",
+        "data": "Requêtes acheminées via les serveurs Vercel"
+      },
+      "row4": {
+        "purpose": "Analyses produit",
+        "data": "Événements d'utilisation anonymes (sans PII)"
+      },
+      "row5": {
+        "purpose": "Génération de texte par IA",
+        "data": "Description du poste + contexte partiel du profil pour générer des réponses de candidature"
+      }
+    },
+    "s6": {
+      "heading": "6. Vos choix",
+      "choice1": {
+        "body": "depuis votre tableau de bord à tout moment."
+      },
+      "choice2": {
+        "body": "sur des sites spécifiques en utilisant l'option « Jamais sur ce site » dans la bannière de remplissage automatique."
+      },
+      "choice3": {
+        "body": "pour arrêter immédiatement toute collecte de données."
+      },
+      "choice4": {
+        "body": "en visitant la page des paramètres de votre compte, ce qui supprime toutes les données stockées."
+      }
+    },
+    "s7": {
+      "heading": "7. Vie privée des enfants",
+      "body": "AICareerPivot ne s'adresse pas aux personnes de moins de 16 ans. Nous ne collectons pas sciemment de données auprès d'enfants."
+    },
+    "s8": {
+      "heading": "8. Modifications de cette politique",
+      "body": "Nous pouvons mettre à jour cette politique de temps à autre. Les changements importants seront communiqués via l'extension ou par e-mail. La date « Dernière mise à jour » en haut reflète la révision la plus récente."
+    },
+    "s9": {
+      "heading": "9. Contact",
+      "body": "Des questions sur cette politique ? Envoyez-nous un e-mail à"
+    }
+  },
+  "blog": {
+    "index": {
+      "heading": "Blog reconversion professionnelle",
+      "subheading": "Des guides pratiques pour les professionnels naviguant dans les transitions de carrière.",
+      "readArticle": "Lire l'article →"
+    },
+    "post": {
+      "backToBlog": "← Retour au blog",
+      "tldr": "En bref",
+      "faqHeading": "Questions fréquentes",
+      "team": "Équipe AICareerPivot"
+    },
+    "cta": {
+      "waitlist": {
+        "heading": "Prêt à construire votre propre feuille de route ?",
+        "subheading": "Obtenez un plan de reconversion personnalisé propulsé par l'IA, basé sur vos compétences, vos finances et votre situation familiale.",
+        "button": "Obtenir ma feuille de route — 19 $ →"
+      },
+      "pricing": {
+        "heading": "Obtenez votre feuille de route de reconversion pour 29 $",
+        "subheading": "Paiement unique. Analyse de votre CV et LinkedIn par IA. Garantie de remboursement de 30 jours.",
+        "button": "Voir les tarifs →"
+      }
+    }
   }
 }

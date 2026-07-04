@@ -1035,6 +1035,16 @@
       "addToStage": "Adicionar à etapa",
       "cancel": "Cancelar",
       "submit": "Adicionar ao rastreador"
+    },
+    "page": {
+      "metaTitle": "Rastreador de vagas — AICareerPivot",
+      "metaDescription": "Acompanhe suas candidaturas com um quadro Kanban visual e análise de pipeline.",
+      "breadcrumb": "Rastreador de vagas"
+    },
+    "client": {
+      "signInToUse": "Faça login para usar o rastreador de vagas.",
+      "loadingJobs": "Carregando seu rastreador de vagas...",
+      "loadFailed": "Falha ao carregar suas vagas salvas. Tente novamente."
     }
   },
   "shareableProgress": {
@@ -1486,5 +1496,186 @@
     "labelMilestones": "marcos",
     "emptyOwner": "Conclua itens do plano de transição para adicionar {label} ao seu portfólio.",
     "emptyVisitor": "Ainda não há {label} para exibir."
+  },
+  "networking": {
+    "page": {
+      "metaTitle": "CRM de networking — AICareerPivot",
+      "metaDescription": "Acompanhe seus contatos profissionais, follow-ups e relacionamentos de networking.",
+      "breadcrumb": "Networking"
+    },
+    "client": {
+      "signInRequired": "Faça login para continuar",
+      "signInToUse": "Faça login para usar o CRM de networking.",
+      "signInToManage": "Faça login para gerenciar sua rede de contatos."
+    }
+  },
+  "login": {
+    "page": {
+      "metaTitle": "Entrar",
+      "metaDescription": "Entre para acessar seus roteiros de mudança de carreira."
+    },
+    "form": {
+      "heading": "Entrar",
+      "subheading": "Acesse seus roteiros de mudança de carreira e acompanhe seu progresso.",
+      "continueWithGoogle": "Continuar com o Google",
+      "redirecting": "Redirecionando...",
+      "or": "ou",
+      "emailPlaceholder": "voce@exemplo.com",
+      "continueWithEmail": "Continuar com e-mail",
+      "sending": "Enviando...",
+      "terms": "Ao entrar, você concorda com nossos Termos de Serviço e Política de Privacidade."
+    },
+    "magicLink": {
+      "heading": "Verifique seu e-mail",
+      "body": "Enviamos um link de acesso para {email}. Clique no link para acessar sua conta.",
+      "differentEmail": "Usar um e-mail diferente"
+    },
+    "error": {
+      "googleUnavailable": "O login com Google está temporariamente indisponível. Tente o login por e-mail ou tente novamente mais tarde.",
+      "serverError": "Falha no login devido a um problema no servidor. Tente novamente ou use o login por e-mail.",
+      "accessDenied": "Acesso negado. Talvez seja necessário conceder permissões para entrar com o Google.",
+      "authFailed": "Autenticação falhou. Tente novamente."
+    }
+  },
+  "privacy": {
+    "page": {
+      "metaTitle": "Política de privacidade — AICareerPivot",
+      "metaDescription": "Política de privacidade do AICareerPivot. Saiba quais dados coletamos, como os utilizamos e quais são suas opções em relação à extensão do Chrome e ao aplicativo web.",
+      "metaOgTitle": "Política de privacidade — AICareerPivot",
+      "metaOgDescription": "Política de privacidade do AICareerPivot. Saiba quais dados coletamos, como os utilizamos e suas opções."
+    },
+    "nav": {
+      "about": "Sobre",
+      "faq": "Perguntas frequentes",
+      "getStarted": "Começar"
+    },
+    "eyebrow": "Legal",
+    "heading": "Política de privacidade",
+    "lastUpdated": "Última atualização: junho de 2026",
+    "intro": "O AICareerPivot (\"nós\", \"nos\", \"nosso\") opera a extensão do Chrome do AICareerPivot e o aplicativo web em ai-career-pivot.vercel.app. Esta política de privacidade explica quais dados a extensão coleta, como são usados e quais são suas opções.",
+    "s1": {
+      "heading": "1. O que coletamos",
+      "account": {
+        "title": "Informações da conta",
+        "body": "Quando você faz login com o Google, recebemos seu nome, endereço de e-mail e foto de perfil do Google OAuth. Usamos isso apenas para autenticá-lo e exibir sua identidade na extensão."
+      },
+      "jobData": {
+        "title": "Dados de vagas de emprego",
+        "body": "Quando você salva uma vaga, a extensão extrai o título do cargo, o nome da empresa, a localização, o salário (se exibido), a URL de origem e o texto da descrição da vaga da página que você está visualizando. Esses dados são enviados aos nossos servidores para calcular sua pontuação de correspondência ATS e sincronizar suas vagas salvas entre dispositivos."
+      },
+      "resume": {
+        "title": "Conteúdo do currículo",
+        "body": "Se você carregar ou colar um currículo, o armazenamos com segurança para que a extensão possa calcular pontuações de correspondência de palavras-chave com as descrições de vagas. Os dados do currículo nunca são compartilhados com empregadores ou terceiros."
+      },
+      "autofill": {
+        "title": "Dados do formulário de candidatura",
+        "body": "O recurso de preenchimento automático lê os rótulos dos campos do formulário nas páginas de candidatura para determinar onde inserir suas informações (nome, e-mail, telefone, histórico profissional, educação). O conteúdo do formulário é processado localmente no seu navegador; apenas as respostas geradas por IA para perguntas abertas são enviadas aos nossos servidores."
+      },
+      "analytics": {
+        "title": "Análise de uso",
+        "body": "Coletamos eventos de uso anônimos e agregados (por exemplo, \"vaga salva\", \"preenchimento automático usado\") por meio do PostHog para melhorar o produto. Esses eventos não contêm descrições de vagas, texto de currículo ou informações pessoais."
+      }
+    },
+    "s2": {
+      "heading": "2. Como usamos seus dados",
+      "item1": {
+        "body": "calcular pontuações ATS, sincronizar vagas salvas, preencher automaticamente candidaturas e fornecer análises no painel."
+      },
+      "item2": {
+        "body": "analisar padrões de uso agregados para priorizar funcionalidades e corrigir erros."
+      },
+      "item3": {
+        "body": "enviar e-mails de integração e atualizações do produto. Você pode cancelar a assinatura a qualquer momento."
+      },
+      "noSell": "Não vendemos, alugamos nem compartilhamos seus dados pessoais com anunciantes ou corretores de dados."
+    },
+    "s3": {
+      "heading": "3. Onde seus dados ficam armazenados",
+      "body": "Seus dados são armazenados no Supabase (hospedado na AWS nos Estados Unidos) e servidos pelo Vercel. Todos os dados são transmitidos via HTTPS."
+    },
+    "s4": {
+      "heading": "4. Retenção de dados",
+      "body": "Os dados da sua conta e as vagas salvas são mantidos enquanto sua conta estiver ativa. Se você excluir sua conta, excluiremos todos os dados associados em até 30 dias."
+    },
+    "s5": {
+      "heading": "5. Serviços de terceiros",
+      "col": {
+        "service": "Serviço",
+        "purpose": "Finalidade",
+        "dataShared": "Dados compartilhados"
+      },
+      "row1": {
+        "purpose": "Autenticação",
+        "data": "E-mail, nome, foto de perfil"
+      },
+      "row2": {
+        "purpose": "Banco de dados e autenticação",
+        "data": "Todos os dados de conta e vagas"
+      },
+      "row3": {
+        "purpose": "Hospedagem e API",
+        "data": "Requisições roteadas pelos servidores da Vercel"
+      },
+      "row4": {
+        "purpose": "Análise de produto",
+        "data": "Eventos de uso anônimos (sem PII)"
+      },
+      "row5": {
+        "purpose": "Geração de texto por IA",
+        "data": "Descrição da vaga + contexto parcial do perfil para gerar respostas de candidatura"
+      }
+    },
+    "s6": {
+      "heading": "6. Suas escolhas",
+      "choice1": {
+        "body": "do seu painel a qualquer momento."
+      },
+      "choice2": {
+        "body": "em sites específicos usando a opção \"Nunca neste site\" no banner de preenchimento automático."
+      },
+      "choice3": {
+        "body": "para interromper toda coleta de dados imediatamente."
+      },
+      "choice4": {
+        "body": "visitando a página de configurações da sua conta, que remove todos os dados armazenados."
+      }
+    },
+    "s7": {
+      "heading": "7. Privacidade infantil",
+      "body": "O AICareerPivot não é direcionado a menores de 16 anos. Não coletamos dados de crianças conscientemente."
+    },
+    "s8": {
+      "heading": "8. Alterações nesta política",
+      "body": "Podemos atualizar esta política periodicamente. Alterações significativas serão comunicadas pela extensão ou por e-mail. A data \"Última atualização\" no topo reflete a revisão mais recente."
+    },
+    "s9": {
+      "heading": "9. Contato",
+      "body": "Dúvidas sobre esta política? Envie um e-mail para"
+    }
+  },
+  "blog": {
+    "index": {
+      "heading": "Blog de transição de carreira",
+      "subheading": "Guias práticos para profissionais em processo de transição de carreira.",
+      "readArticle": "Ler artigo →"
+    },
+    "post": {
+      "backToBlog": "← Voltar ao blog",
+      "tldr": "Resumo",
+      "faqHeading": "Perguntas frequentes",
+      "team": "Equipe AICareerPivot"
+    },
+    "cta": {
+      "waitlist": {
+        "heading": "Pronto para criar seu próprio roteiro?",
+        "subheading": "Obtenha um plano personalizado de mudança de carreira com tecnologia de IA, baseado em suas habilidades, finanças e situação familiar.",
+        "button": "Obter meu roteiro — $19 →"
+      },
+      "pricing": {
+        "heading": "Obtenha seu roteiro de mudança de carreira por $29",
+        "subheading": "Pagamento único. Análise de currículo e LinkedIn com tecnologia de IA. Garantia de 30 dias.",
+        "button": "Ver preços →"
+      }
+    }
   }
 }

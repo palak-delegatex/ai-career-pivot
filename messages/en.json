@@ -1035,6 +1035,16 @@
       "addToStage": "Add to stage",
       "cancel": "Cancel",
       "submit": "Add to Tracker"
+    },
+    "page": {
+      "metaTitle": "Job Tracker — AICareerPivot",
+      "metaDescription": "Track your job applications with a visual Kanban board and pipeline analytics.",
+      "breadcrumb": "Job Tracker"
+    },
+    "client": {
+      "signInToUse": "Please sign in to use the Job Tracker.",
+      "loadingJobs": "Loading your job tracker...",
+      "loadFailed": "Failed to load your tracked jobs. Please try again."
     }
   },
   "shareableProgress": {
@@ -1486,5 +1496,186 @@
     "labelMilestones": "milestones",
     "emptyOwner": "Complete transition plan items to add {label} to your portfolio.",
     "emptyVisitor": "No {label} to display yet."
+  },
+  "networking": {
+    "page": {
+      "metaTitle": "Networking CRM — AICareerPivot",
+      "metaDescription": "Track your professional contacts, follow-ups, and networking relationships.",
+      "breadcrumb": "Networking"
+    },
+    "client": {
+      "signInRequired": "Sign in required",
+      "signInToUse": "Please sign in to use the Networking CRM.",
+      "signInToManage": "Please sign in to manage your network."
+    }
+  },
+  "login": {
+    "page": {
+      "metaTitle": "Sign In",
+      "metaDescription": "Sign in to access your career pivot roadmaps."
+    },
+    "form": {
+      "heading": "Sign In",
+      "subheading": "Access your career pivot roadmaps and track your progress.",
+      "continueWithGoogle": "Continue with Google",
+      "redirecting": "Redirecting...",
+      "or": "or",
+      "emailPlaceholder": "you@example.com",
+      "continueWithEmail": "Continue with Email",
+      "sending": "Sending...",
+      "terms": "By signing in, you agree to our Terms of Service and Privacy Policy."
+    },
+    "magicLink": {
+      "heading": "Check your email",
+      "body": "We sent a sign-in link to {email}. Click the link to access your account.",
+      "differentEmail": "Use a different email"
+    },
+    "error": {
+      "googleUnavailable": "Google sign-in is temporarily unavailable. Please try email sign-in, or try again later.",
+      "serverError": "Sign-in failed due to a server issue. Please try again or use email sign-in.",
+      "accessDenied": "Access was denied. You may need to grant permissions to sign in with Google.",
+      "authFailed": "Authentication failed. Please try again."
+    }
+  },
+  "privacy": {
+    "page": {
+      "metaTitle": "Privacy Policy — AICareerPivot",
+      "metaDescription": "AICareerPivot privacy policy. Learn what data we collect, how we use it, and your choices regarding the Chrome extension and web application.",
+      "metaOgTitle": "Privacy Policy — AICareerPivot",
+      "metaOgDescription": "AICareerPivot privacy policy. Learn what data we collect, how we use it, and your choices."
+    },
+    "nav": {
+      "about": "About",
+      "faq": "FAQ",
+      "getStarted": "Get Started"
+    },
+    "eyebrow": "Legal",
+    "heading": "Privacy Policy",
+    "lastUpdated": "Last updated: June 2026",
+    "intro": "AICareerPivot (\"we\", \"us\", \"our\") operates the AICareerPivot Chrome extension and the web application at ai-career-pivot.vercel.app. This privacy policy explains what data the extension collects, how it is used, and your choices.",
+    "s1": {
+      "heading": "1. What We Collect",
+      "account": {
+        "title": "Account information",
+        "body": "When you sign in with Google, we receive your name, email address, and profile picture from Google OAuth. We use this solely to authenticate you and display your identity in the extension."
+      },
+      "jobData": {
+        "title": "Job listing data",
+        "body": "When you save a job, the extension extracts the job title, company name, location, salary (if shown), source URL, and the job description text from the page you are viewing. This data is sent to our servers so we can calculate your ATS match score and sync your saved jobs across devices."
+      },
+      "resume": {
+        "title": "Resume content",
+        "body": "If you upload or paste a resume, we store it securely so the extension can calculate keyword match scores against job descriptions. Resume data is never shared with employers or third parties."
+      },
+      "autofill": {
+        "title": "Application form data",
+        "body": "The autofill feature reads form field labels on application pages to determine where to insert your information (name, email, phone, work history, education). Form content is processed locally in your browser; only AI-generated answers to open-ended questions are sent to our servers for generation and returned to you."
+      },
+      "analytics": {
+        "title": "Usage analytics",
+        "body": "We collect anonymous, aggregated usage events (e.g., \"job saved\", \"autofill used\") through PostHog to improve the product. These events do not contain job descriptions, resume text, or personal information."
+      }
+    },
+    "s2": {
+      "heading": "2. How We Use Your Data",
+      "item1": {
+        "body": "calculate ATS scores, sync saved jobs, autofill applications, and provide dashboard analytics."
+      },
+      "item2": {
+        "body": "analyze aggregated usage patterns to prioritize features and fix bugs."
+      },
+      "item3": {
+        "body": "send onboarding emails and product updates. You can unsubscribe at any time."
+      },
+      "noSell": "We do not sell, rent, or share your personal data with advertisers or data brokers."
+    },
+    "s3": {
+      "heading": "3. Where Your Data Lives",
+      "body": "Your data is stored in Supabase (hosted on AWS in the United States) and served through Vercel. All data is transmitted over HTTPS."
+    },
+    "s4": {
+      "heading": "4. Data Retention",
+      "body": "Your account data and saved jobs are retained as long as your account is active. If you delete your account, we delete all associated data within 30 days."
+    },
+    "s5": {
+      "heading": "5. Third-Party Services",
+      "col": {
+        "service": "Service",
+        "purpose": "Purpose",
+        "dataShared": "Data shared"
+      },
+      "row1": {
+        "purpose": "Authentication",
+        "data": "Email, name, profile picture"
+      },
+      "row2": {
+        "purpose": "Database and auth",
+        "data": "All account and job data"
+      },
+      "row3": {
+        "purpose": "Hosting and API",
+        "data": "Requests routed through Vercel servers"
+      },
+      "row4": {
+        "purpose": "Product analytics",
+        "data": "Anonymous usage events (no PII)"
+      },
+      "row5": {
+        "purpose": "AI text generation",
+        "data": "Job description + partial profile context for generating application answers"
+      }
+    },
+    "s6": {
+      "heading": "6. Your Choices",
+      "choice1": {
+        "body": "from your dashboard at any time."
+      },
+      "choice2": {
+        "body": "on specific sites using the \"Never on this site\" option in the autofill banner."
+      },
+      "choice3": {
+        "body": "to stop all data collection immediately."
+      },
+      "choice4": {
+        "body": "by visiting your account settings page, which removes all stored data."
+      }
+    },
+    "s7": {
+      "heading": "7. Children's Privacy",
+      "body": "AICareerPivot is not directed at anyone under 16. We do not knowingly collect data from children."
+    },
+    "s8": {
+      "heading": "8. Changes to This Policy",
+      "body": "We may update this policy from time to time. Material changes will be communicated via the extension or email. The \"Last updated\" date at the top reflects the most recent revision."
+    },
+    "s9": {
+      "heading": "9. Contact",
+      "body": "Questions about this policy? Email us at"
+    }
+  },
+  "blog": {
+    "index": {
+      "heading": "Career Pivot Blog",
+      "subheading": "Practical guides for professionals navigating career transitions.",
+      "readArticle": "Read article →"
+    },
+    "post": {
+      "backToBlog": "← Back to blog",
+      "tldr": "TL;DR",
+      "faqHeading": "Frequently asked questions",
+      "team": "AICareerPivot Team"
+    },
+    "cta": {
+      "waitlist": {
+        "heading": "Ready to build your own roadmap?",
+        "subheading": "Get a personalized AI-powered career pivot plan based on your skills, finances, and family situation.",
+        "button": "Get My Roadmap — $19 →"
+      },
+      "pricing": {
+        "heading": "Get your career pivot roadmap for $29",
+        "subheading": "One-time payment. AI-powered analysis of your resume and LinkedIn. 30-day money-back guarantee.",
+        "button": "See Pricing →"
+      }
+    }
   }
 }

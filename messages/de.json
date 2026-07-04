@@ -1035,6 +1035,16 @@
       "addToStage": "Zur Phase hinzufügen",
       "cancel": "Abbrechen",
       "submit": "Zum Tracker hinzufügen"
+    },
+    "page": {
+      "metaTitle": "Bewerbungs-Tracker — AICareerPivot",
+      "metaDescription": "Verfolgen Sie Ihre Bewerbungen mit einem visuellen Kanban-Board und Pipeline-Analysen.",
+      "breadcrumb": "Bewerbungs-Tracker"
+    },
+    "client": {
+      "signInToUse": "Bitte melden Sie sich an, um den Bewerbungs-Tracker zu nutzen.",
+      "loadingJobs": "Ihr Bewerbungs-Tracker wird geladen...",
+      "loadFailed": "Gespeicherte Jobs konnten nicht geladen werden. Bitte erneut versuchen."
     }
   },
   "shareableProgress": {
@@ -1486,5 +1496,186 @@
     "labelMilestones": "Meilensteine",
     "emptyOwner": "Schließe Punkte deines Wechselplans ab, um {label} zu deinem Portfolio hinzuzufügen.",
     "emptyVisitor": "Noch keine {label} zum Anzeigen vorhanden."
+  },
+  "networking": {
+    "page": {
+      "metaTitle": "Networking CRM — AICareerPivot",
+      "metaDescription": "Verwalten Sie Ihre beruflichen Kontakte, Follow-ups und Netzwerkbeziehungen.",
+      "breadcrumb": "Networking"
+    },
+    "client": {
+      "signInRequired": "Anmeldung erforderlich",
+      "signInToUse": "Bitte melden Sie sich an, um das Networking CRM zu nutzen.",
+      "signInToManage": "Bitte melden Sie sich an, um Ihr Netzwerk zu verwalten."
+    }
+  },
+  "login": {
+    "page": {
+      "metaTitle": "Anmelden",
+      "metaDescription": "Melden Sie sich an, um auf Ihre Karrierewechsel-Fahrpläne zuzugreifen."
+    },
+    "form": {
+      "heading": "Anmelden",
+      "subheading": "Greifen Sie auf Ihre Karrierewechsel-Fahrpläne zu und verfolgen Sie Ihren Fortschritt.",
+      "continueWithGoogle": "Mit Google fortfahren",
+      "redirecting": "Weiterleitung...",
+      "or": "oder",
+      "emailPlaceholder": "sie@beispiel.com",
+      "continueWithEmail": "Mit E-Mail fortfahren",
+      "sending": "Wird gesendet...",
+      "terms": "Mit der Anmeldung stimmen Sie unseren Nutzungsbedingungen und der Datenschutzrichtlinie zu."
+    },
+    "magicLink": {
+      "heading": "Prüfen Sie Ihre E-Mails",
+      "body": "Wir haben einen Anmeldelink an {email} gesendet. Klicken Sie auf den Link, um auf Ihr Konto zuzugreifen.",
+      "differentEmail": "Andere E-Mail-Adresse verwenden"
+    },
+    "error": {
+      "googleUnavailable": "Google-Anmeldung ist vorübergehend nicht verfügbar. Bitte versuchen Sie die E-Mail-Anmeldung oder versuchen Sie es später erneut.",
+      "serverError": "Anmeldung aufgrund eines Serverproblems fehlgeschlagen. Bitte erneut versuchen oder E-Mail-Anmeldung verwenden.",
+      "accessDenied": "Zugriff wurde verweigert. Möglicherweise müssen Sie Berechtigungen erteilen, um sich mit Google anzumelden.",
+      "authFailed": "Authentifizierung fehlgeschlagen. Bitte erneut versuchen."
+    }
+  },
+  "privacy": {
+    "page": {
+      "metaTitle": "Datenschutzrichtlinie — AICareerPivot",
+      "metaDescription": "Datenschutzrichtlinie von AICareerPivot. Erfahren Sie, welche Daten wir erheben, wie wir sie verwenden und welche Optionen Sie in Bezug auf die Chrome-Erweiterung und die Webanwendung haben.",
+      "metaOgTitle": "Datenschutzrichtlinie — AICareerPivot",
+      "metaOgDescription": "Datenschutzrichtlinie von AICareerPivot. Erfahren Sie, welche Daten wir erheben, wie wir sie verwenden und Ihre Optionen."
+    },
+    "nav": {
+      "about": "Über uns",
+      "faq": "FAQ",
+      "getStarted": "Loslegen"
+    },
+    "eyebrow": "Rechtliches",
+    "heading": "Datenschutzrichtlinie",
+    "lastUpdated": "Zuletzt aktualisiert: Juni 2026",
+    "intro": "AICareerPivot (\"wir\", \"uns\", \"unser\") betreibt die AICareerPivot Chrome-Erweiterung und die Webanwendung unter ai-career-pivot.vercel.app. Diese Datenschutzrichtlinie erläutert, welche Daten die Erweiterung erhebt, wie sie verwendet werden und welche Optionen Sie haben.",
+    "s1": {
+      "heading": "1. Was wir erheben",
+      "account": {
+        "title": "Kontoinformationen",
+        "body": "Wenn Sie sich mit Google anmelden, erhalten wir Ihren Namen, Ihre E-Mail-Adresse und Ihr Profilbild über Google OAuth. Wir verwenden diese ausschließlich zur Authentifizierung und zur Anzeige Ihrer Identität in der Erweiterung."
+      },
+      "jobData": {
+        "title": "Stellenangebotsdaten",
+        "body": "Wenn Sie einen Job speichern, extrahiert die Erweiterung Jobtitel, Unternehmensname, Standort, Gehalt (falls angezeigt), Quell-URL und den Stellenbeschreibungstext von der angezeigten Seite. Diese Daten werden an unsere Server gesendet, um Ihren ATS-Match-Score zu berechnen und Ihre gespeicherten Jobs geräteübergreifend zu synchronisieren."
+      },
+      "resume": {
+        "title": "Lebenslaufinhalt",
+        "body": "Wenn Sie einen Lebenslauf hochladen oder einfügen, speichern wir ihn sicher, damit die Erweiterung Keyword-Match-Scores gegenüber Stellenbeschreibungen berechnen kann. Lebenslaufdaten werden niemals an Arbeitgeber oder Dritte weitergegeben."
+      },
+      "autofill": {
+        "title": "Bewerbungsformulardaten",
+        "body": "Die Autofill-Funktion liest Formularfeld-Labels auf Bewerbungsseiten, um zu bestimmen, wo Ihre Informationen (Name, E-Mail, Telefon, Berufserfahrung, Bildung) einzufügen sind. Formularinhalte werden lokal in Ihrem Browser verarbeitet; nur KI-generierte Antworten auf offene Fragen werden zur Generierung an unsere Server gesendet."
+      },
+      "analytics": {
+        "title": "Nutzungsanalysen",
+        "body": "Wir erfassen anonyme, aggregierte Nutzungsereignisse (z. B. „Job gespeichert“, „Autofill verwendet“) über PostHog, um das Produkt zu verbessern. Diese Ereignisse enthalten keine Stellenbeschreibungen, Lebenslauftexte oder personenbezogene Informationen."
+      }
+    },
+    "s2": {
+      "heading": "2. Wie wir Ihre Daten verwenden",
+      "item1": {
+        "body": "ATS-Scores berechnen, gespeicherte Jobs synchronisieren, Bewerbungen automatisch ausfüllen und Dashboard-Analysen bereitstellen."
+      },
+      "item2": {
+        "body": "Aggregierte Nutzungsmuster analysieren, um Funktionen zu priorisieren und Fehler zu beheben."
+      },
+      "item3": {
+        "body": "Onboarding-E-Mails und Produktaktualisierungen senden. Sie können sich jederzeit abmelden."
+      },
+      "noSell": "Wir verkaufen, vermieten oder teilen Ihre personenbezogenen Daten nicht mit Werbetreibenden oder Datenbrokern."
+    },
+    "s3": {
+      "heading": "3. Wo Ihre Daten gespeichert sind",
+      "body": "Ihre Daten werden in Supabase (gehostet auf AWS in den USA) gespeichert und über Vercel bereitgestellt. Alle Daten werden über HTTPS übertragen."
+    },
+    "s4": {
+      "heading": "4. Datenspeicherung",
+      "body": "Ihre Kontodaten und gespeicherten Jobs werden so lange aufbewahrt, wie Ihr Konto aktiv ist. Wenn Sie Ihr Konto löschen, löschen wir alle zugehörigen Daten innerhalb von 30 Tagen."
+    },
+    "s5": {
+      "heading": "5. Drittanbieterdienste",
+      "col": {
+        "service": "Dienst",
+        "purpose": "Zweck",
+        "dataShared": "Geteilte Daten"
+      },
+      "row1": {
+        "purpose": "Authentifizierung",
+        "data": "E-Mail, Name, Profilbild"
+      },
+      "row2": {
+        "purpose": "Datenbank und Authentifizierung",
+        "data": "Alle Konto- und Jobdaten"
+      },
+      "row3": {
+        "purpose": "Hosting und API",
+        "data": "Über Vercel-Server geleitete Anfragen"
+      },
+      "row4": {
+        "purpose": "Produktanalysen",
+        "data": "Anonyme Nutzungsereignisse (keine PII)"
+      },
+      "row5": {
+        "purpose": "KI-Textgenerierung",
+        "data": "Stellenbeschreibung + teilweiser Profilkontext zur Generierung von Bewerbungsantworten"
+      }
+    },
+    "s6": {
+      "heading": "6. Ihre Optionen",
+      "choice1": {
+        "body": "aus Ihrem Dashboard jederzeit."
+      },
+      "choice2": {
+        "body": "auf bestimmten Seiten über die Option „Nie auf dieser Seite“ im Autofill-Banner."
+      },
+      "choice3": {
+        "body": "um die gesamte Datenerfassung sofort zu stoppen."
+      },
+      "choice4": {
+        "body": "durch Aufrufen Ihrer Kontoeinstellungsseite, wodurch alle gespeicherten Daten entfernt werden."
+      }
+    },
+    "s7": {
+      "heading": "7. Kinderdatenschutz",
+      "body": "AICareerPivot richtet sich nicht an Personen unter 16 Jahren. Wir erheben wissentlich keine Daten von Kindern."
+    },
+    "s8": {
+      "heading": "8. Änderungen dieser Richtlinie",
+      "body": "Wir können diese Richtlinie von Zeit zu Zeit aktualisieren. Wesentliche Änderungen werden über die Erweiterung oder per E-Mail mitgeteilt. Das Datum „Zuletzt aktualisiert“ oben zeigt die aktuellste Überarbeitung."
+    },
+    "s9": {
+      "heading": "9. Kontakt",
+      "body": "Fragen zu dieser Richtlinie? Schreiben Sie uns an"
+    }
+  },
+  "blog": {
+    "index": {
+      "heading": "Karrierewechsel-Blog",
+      "subheading": "Praktische Leitfäden für Fachleute, die einen Karrierewechsel durchlaufen.",
+      "readArticle": "Artikel lesen →"
+    },
+    "post": {
+      "backToBlog": "← Zurück zum Blog",
+      "tldr": "Kurzfassung",
+      "faqHeading": "Häufig gestellte Fragen",
+      "team": "AICareerPivot-Team"
+    },
+    "cta": {
+      "waitlist": {
+        "heading": "Bereit, Ihren eigenen Fahrplan zu erstellen?",
+        "subheading": "Erhalten Sie einen personalisierten KI-gestützten Karrierewechselplan basierend auf Ihren Fähigkeiten, Ihrer finanziellen Situation und Ihrer familiären Lage.",
+        "button": "Meinen Fahrplan erhalten — 19 $ →"
+      },
+      "pricing": {
+        "heading": "Holen Sie sich Ihren Karrierewechsel-Fahrplan für 29 $",
+        "subheading": "Einmalzahlung. KI-gestützte Analyse Ihres Lebenslaufs und LinkedIn. 30-Tage-Geld-zurück-Garantie.",
+        "button": "Preise ansehen →"
+      }
+    }
   }
 }
