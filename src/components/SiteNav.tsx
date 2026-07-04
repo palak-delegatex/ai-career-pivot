@@ -91,11 +91,11 @@ export default function SiteNav() {
       >
         {t("nav.skipToContent")}
       </a>
-    <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
+    <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
       <Logo />
 
       {/* Desktop nav */}
-      <div className="hidden md:flex items-center gap-1">
+      <div className="hidden lg:flex items-center gap-1">
         <NavigationMenu>
           <NavigationMenuList>
             {NAV_LINKS.map(({ href, key }) => (
@@ -103,7 +103,7 @@ export default function SiteNav() {
                 <NavigationMenuLink
                   render={<Link href={href} />}
                   active={pathname === href}
-                  className="text-sm font-medium text-slate-400 hover:text-white hover:bg-transparent focus:bg-transparent data-active:text-white"
+                  className="text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white hover:bg-transparent focus:bg-transparent data-active:text-white"
                 >
                   {t(key)}
                 </NavigationMenuLink>
@@ -134,7 +134,7 @@ export default function SiteNav() {
       </div>
 
       {/* Mobile nav — language switcher + hamburger; everything else in the sheet */}
-      <div className="md:hidden flex items-center gap-1">
+      <div className="lg:hidden flex items-center gap-1">
         <LanguageSwitcher />
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger
