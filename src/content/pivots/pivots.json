@@ -1,0 +1,1146 @@
+{
+  "version": 1,
+  "note": "Dataset for programmatic /pivot/[from]-to-[role] pages (AIC-697). Copy owned by CMO.",
+  "pivots": [
+    {
+      "slug": "teacher-to-ai-learning-experience-designer",
+      "fromRole": "Teacher",
+      "toRole": "AI Learning Experience Designer",
+      "headline": "From Teacher to AI Learning Experience Designer",
+      "subhead": "Your classroom experience is exactly what AI education teams need — here is how to make the move.",
+      "transferableSkills": [
+        "Curriculum and lesson design",
+        "Explaining complex ideas simply",
+        "Assessment and feedback design",
+        "Facilitation and classroom management"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why teaching translates to AI learning design",
+          "body": "AI Learning Experience Designers build the training flows, prompts, and guardrails that help people learn with AI — and teachers already do the human half of that work every day. Your instincts for scaffolding a concept, sequencing difficulty, and spotting where a learner gets stuck map directly onto AI tutoring flows and evaluation rubrics. The pivot reframes lesson planning as learning experience design, a role edtech and enterprise teams actively hire for."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on roughly 6-12 months of part-time upskilling while you keep teaching. Focus on prompt design, a working sense of how AI models produce and fail at answers, and one industry learning tool or LMS. Build a portfolio by redesigning a single unit as an AI-assisted module and documenting the results. One concrete before-and-after project stands out far more than a stack of certificates."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need a technical degree to become an AI Learning Experience Designer?",
+          "answer": "No. The role rewards instructional judgment and clear communication over engineering. You will need working fluency with AI tools and prompt design, which you can build part-time in a few months. Your teaching background is the hard-to-hire part; the AI layer is the add-on."
+        },
+        {
+          "question": "How long does the teacher-to-AI pivot take?",
+          "answer": "Typically 6-12 months of part-time effort while you keep teaching. Most of that time goes into learning prompt design, understanding how AI models behave, and building one portfolio project that reframes your curriculum work in AI terms."
+        },
+        {
+          "question": "What skills transfer from teaching to this role?",
+          "answer": "Curriculum design, breaking down complex ideas, assessment, feedback, and facilitation transfer directly. These are exactly the human skills AI learning teams struggle to hire for, and you practice them every day in the classroom."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that maps your teaching experience to AI learning roles step by step."
+    },
+    {
+      "slug": "project-manager-to-ai-product-manager",
+      "fromRole": "Project Manager",
+      "toRole": "AI Product Manager",
+      "headline": "From Project Manager to AI Product Manager",
+      "subhead": "You already ship complex work across teams — AI product management is the natural next step.",
+      "transferableSkills": [
+        "Cross-functional coordination",
+        "Stakeholder management",
+        "Scoping and prioritization",
+        "Risk and dependency tracking"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why PMs move into AI product roles well",
+          "body": "AI Product Managers decide what AI features get built, how success is measured, and where the model should and should not be trusted. Project managers already own scope, stakeholders, and delivery — the missing piece is product judgment and AI literacy. Your ability to align engineering, design, and business around a plan is exactly what AI teams need to turn a promising model into a shippable, safe product."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect roughly 6-12 months part-time. Learn how large language models behave, how to write clear eval criteria, and how to reason about hallucination, latency, and cost tradeoffs. Practice by writing a product spec for an AI feature — including guardrails and success metrics — and shadowing how your current org evaluates AI tools. Framing your delivery record as product outcomes is half the battle."
+        }
+      ],
+      "faq": [
+        {
+          "question": "What is the difference between a project manager and an AI product manager?",
+          "answer": "Project managers own delivery — timelines, scope, and coordination. AI product managers own the what and why: which AI features to build, how to measure them, and where the model can be trusted. The pivot adds product judgment and AI literacy to your existing delivery strengths."
+        },
+        {
+          "question": "Do I need to code to be an AI product manager?",
+          "answer": "No. You need to understand how AI models behave, fail, and get evaluated — not to build them. The valuable skill is translating between technical teams and business goals, which project managers already do daily."
+        },
+        {
+          "question": "How do I show AI product skills without the title yet?",
+          "answer": "Write a product spec for an AI feature with clear success metrics and guardrails, and get close to how your org evaluates AI tools. A concrete spec plus your delivery record makes a strong case for a first AI PM role."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your project delivery record into an AI product management path."
+    },
+    {
+      "slug": "marketing-manager-to-ai-marketing-strategist",
+      "fromRole": "Marketing Manager",
+      "toRole": "AI Marketing Strategist",
+      "headline": "From Marketing Manager to AI Marketing Strategist",
+      "subhead": "AI is rewriting the marketing stack — your strategy skills decide where it actually pays off.",
+      "transferableSkills": [
+        "Campaign strategy and planning",
+        "Audience and segmentation insight",
+        "Content and brand judgment",
+        "Analytics and attribution"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why marketing leaders are prime for this pivot",
+          "body": "AI Marketing Strategists design how a team uses AI across content, personalization, and analytics — deciding what to automate and what to keep human. Marketing managers already own the strategy and the metrics; the shift is adding fluency in AI tools and prompt-driven workflows. Because you understand brand voice and customer intent, you can direct AI toward results instead of generic output, which is where most teams stall."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-9 months part-time. Get hands-on with AI content and analytics tools, learn prompt patterns for briefs and copy, and study where AI-generated marketing goes wrong on accuracy and brand fit. Prove it by running one campaign workflow with AI in the loop and measuring the lift against your baseline. Strategists who show measured impact beat those who only demo tools."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Will AI replace marketing managers?",
+          "answer": "AI is automating production tasks, not strategy. The professionals at risk are those who only execute; the ones who thrive direct AI toward the right audiences and messages. Becoming an AI Marketing Strategist puts you on the directing side of that shift."
+        },
+        {
+          "question": "What does an AI Marketing Strategist actually do?",
+          "answer": "They design how a marketing team uses AI across content, personalization, and analytics — choosing what to automate, what to keep human, and how to measure the result. It combines classic marketing strategy with hands-on AI-tool fluency."
+        },
+        {
+          "question": "How do I start pivoting from marketing manager to AI strategist?",
+          "answer": "Run one real campaign with AI in the workflow, measure the lift against your normal baseline, and document what worked. That single measured result, plus your existing strategy experience, is enough to start interviewing for AI-forward marketing roles."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that positions your marketing strategy experience for AI-forward roles."
+    },
+    {
+      "slug": "sales-representative-to-ai-sales-engineer",
+      "fromRole": "Sales Representative",
+      "toRole": "AI Sales Engineer",
+      "headline": "From Sales Rep to AI Sales Engineer",
+      "subhead": "You can already sell and translate value — AI sales engineering pays a premium for both.",
+      "transferableSkills": [
+        "Discovery and needs analysis",
+        "Objection handling",
+        "Demo and storytelling",
+        "Customer relationship building"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why sales reps make strong AI sales engineers",
+          "body": "AI Sales Engineers help customers understand and adopt AI products — running technical demos, scoping use cases, and answering how the model works and where it fits. Sales reps already own discovery, trust, and objection handling; the addition is enough technical depth to speak credibly about AI capabilities and limits. Because you translate value to buyers, you can bridge the gap between an AI product team and a skeptical customer better than most engineers."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 6-12 months part-time. Learn how AI products are built at a conceptual level, how to run a proof-of-concept, and how to explain accuracy, integration, and data concerns to buyers. Practice by building a demo narrative for an AI tool you admire and recording yourself walking a prospect through it. Reps who can demo AI confidently are in high demand as vendors scale."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need an engineering degree to be an AI sales engineer?",
+          "answer": "No. You need enough technical fluency to run demos and answer capability, accuracy, and integration questions credibly — not to build the product. Your selling and relationship skills are the harder part to hire, and they transfer directly."
+        },
+        {
+          "question": "What does an AI sales engineer do?",
+          "answer": "They pair with sales to help customers evaluate and adopt AI products — scoping use cases, running technical demos and proofs-of-concept, and addressing concerns about accuracy, data, and integration. It blends selling with hands-on product knowledge."
+        },
+        {
+          "question": "How do I make the jump from sales rep to AI sales engineer?",
+          "answer": "Build a strong demo narrative for an AI product, learn the basics of how it works and where it fails, and practice walking a buyer through a proof-of-concept. That plus your sales track record is a credible starting portfolio."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your sales skills into an AI sales engineering path."
+    },
+    {
+      "slug": "business-analyst-to-ai-business-analyst",
+      "fromRole": "Business Analyst",
+      "toRole": "AI Business Analyst",
+      "headline": "From Business Analyst to AI Business Analyst",
+      "subhead": "You already turn messy requirements into decisions — AI just raises the leverage.",
+      "transferableSkills": [
+        "Requirements gathering",
+        "Data analysis and reporting",
+        "Process mapping",
+        "Stakeholder translation"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why the analyst-to-AI-analyst pivot is short",
+          "body": "AI Business Analysts identify where AI can improve a process, define the data and success criteria, and translate between business teams and AI builders. Business analysts already do requirements, data, and stakeholder translation — the new layer is understanding what AI can realistically automate and how to evaluate it. Your habit of questioning assumptions and defining metrics is exactly what keeps AI projects from chasing hype instead of value."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-9 months part-time. Learn how AI models are evaluated, the basics of prompt design, and how to spot processes where automation actually pays off. Build proof by mapping one workflow in your current job and writing a short case for where AI fits, with metrics. Analysts who can scope an AI use case end to end are in demand as companies look for practical wins."
+        }
+      ],
+      "faq": [
+        {
+          "question": "How is an AI business analyst different from a regular business analyst?",
+          "answer": "The core work is the same — requirements, data, and stakeholder translation — but focused on AI initiatives. You additionally assess where AI can realistically help, define success and data criteria, and evaluate model performance against business goals."
+        },
+        {
+          "question": "Do I need to learn machine learning to become an AI business analyst?",
+          "answer": "No deep ML required. You need to understand how AI models are evaluated and where automation pays off, plus basic prompt design. Your analytical and requirements skills are the foundation the role is built on."
+        },
+        {
+          "question": "What is the fastest way to show I can do this role?",
+          "answer": "Map a real workflow in your current job and write a short, metrics-backed case for where AI fits and how you would measure it. Scoping one AI use case end to end demonstrates exactly what hiring managers want to see."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that extends your analyst skills into AI-focused work."
+    },
+    {
+      "slug": "accountant-to-ai-finance-automation-analyst",
+      "fromRole": "Accountant",
+      "toRole": "AI Finance Automation Analyst",
+      "headline": "From Accountant to AI Finance Automation Analyst",
+      "subhead": "You know where the numbers break — now lead the AI that automates the tedious parts.",
+      "transferableSkills": [
+        "Financial controls and reconciliation",
+        "Attention to detail and accuracy",
+        "Process documentation",
+        "Compliance awareness"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why accountants are positioned for finance AI",
+          "body": "AI Finance Automation Analysts apply AI and automation to close processes, reporting, and anomaly detection while keeping controls intact. Accountants already know the workflows, the failure points, and the compliance stakes — the addition is fluency with AI tools and a sense of when to trust automated output. Because you understand what a correct number looks like, you can catch where AI gets finance subtly wrong, which is exactly the oversight these roles require."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 6-12 months part-time. Learn how AI handles document extraction and classification, the basics of evaluating model accuracy, and one automation or analytics platform. Prove it by automating a piece of your own close or reconciliation and documenting the time saved and the controls preserved. In finance, showing that you kept accuracy and auditability intact matters more than the tool you picked."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Will AI make accountants obsolete?",
+          "answer": "AI is automating repetitive finance tasks, not judgment, controls, or accountability. Accountants who learn to direct and audit that automation become more valuable, not less. This pivot puts you in charge of the AI rather than competing with it."
+        },
+        {
+          "question": "What does an AI finance automation analyst do?",
+          "answer": "They apply AI and automation to close, reporting, reconciliation, and anomaly detection while preserving controls and auditability. The role pairs finance expertise with hands-on fluency in AI and automation tools."
+        },
+        {
+          "question": "Do I need to code to move into finance AI?",
+          "answer": "Not deeply. You need to understand what AI can automate, how to check its accuracy, and one automation or analytics platform. Your accounting knowledge and controls mindset are the parts that are hard to teach."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your accounting expertise into a finance-AI career."
+    },
+    {
+      "slug": "registered-nurse-to-clinical-ai-specialist",
+      "fromRole": "Registered Nurse",
+      "toRole": "Clinical AI Specialist",
+      "headline": "From Registered Nurse to Clinical AI Specialist",
+      "subhead": "AI is entering the clinic — it needs people who understand real patient care to guide it.",
+      "transferableSkills": [
+        "Clinical workflow knowledge",
+        "Patient safety and risk judgment",
+        "Cross-team communication",
+        "Documentation and protocols"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why clinical experience is the qualification",
+          "body": "Clinical AI Specialists help hospitals and vendors deploy AI safely — validating tools against real workflows, flagging safety risks, and training staff. Nurses bring exactly what AI teams lack: firsthand knowledge of how care actually happens and where a wrong output could harm a patient. Your judgment about clinical risk and your credibility with care teams make you the bridge between a promising model and safe bedside use."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 6-12 months part-time. Learn how clinical AI tools are validated, the basics of how models can be biased or wrong, and the fundamentals of health data and privacy. Build proof by evaluating one AI tool used in your setting and writing up its workflow fit and safety gaps. In healthcare, demonstrated safety judgment carries more weight than technical certificates."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need to leave nursing entirely to work in clinical AI?",
+          "answer": "Not necessarily. Many clinical AI roles are hybrid or grow out of informatics and quality functions inside health systems. Your clinical credibility is central to the job, so staying connected to care often strengthens your position rather than weakening it."
+        },
+        {
+          "question": "What does a clinical AI specialist do?",
+          "answer": "They help health systems and vendors deploy AI tools safely — validating them against real clinical workflows, identifying safety and bias risks, and training staff to use them. The role turns bedside experience into deployment judgment."
+        },
+        {
+          "question": "Do I need a data science degree for this pivot?",
+          "answer": "No. You need to understand how clinical AI is validated, how models can fail or be biased, and the basics of health data and privacy. Your clinical workflow knowledge and patient-safety judgment are the hard-to-replace foundation."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that channels your clinical experience into a healthcare-AI role."
+    },
+    {
+      "slug": "journalist-to-ai-content-strategist",
+      "fromRole": "Journalist",
+      "toRole": "AI Content Strategist",
+      "headline": "From Journalist to AI Content Strategist",
+      "subhead": "Your judgment about what is true and worth saying is exactly what AI content lacks.",
+      "transferableSkills": [
+        "Editorial judgment and fact-checking",
+        "Clear, fast writing",
+        "Source evaluation",
+        "Audience and narrative sense"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why journalists thrive in AI content roles",
+          "body": "AI Content Strategists design how organizations produce content with AI — building prompt systems, editorial guardrails, and review processes that keep quality and accuracy high. Journalists already own the scarce skills: fact-checking, editorial judgment, and a sense of what an audience needs. Because AI generates plausible-but-wrong text easily, teams need someone who can catch it and design workflows that prevent it, which is precisely your beat."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 3-9 months part-time. Learn prompt design, how AI models hallucinate and drift from a brief, and one content or SEO tool that teams use at scale. Prove it by building an AI-assisted content workflow — draft, fact-check, edit — for a sample topic and documenting the quality controls. Editors who can make AI content reliable, not just fast, are in demand."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Is AI going to replace writers and journalists?",
+          "answer": "AI can draft quickly but produces plausible errors and generic copy. Organizations need people who can direct it, fact-check it, and enforce quality — which is journalism work. This pivot moves you into designing and governing AI content rather than competing with it."
+        },
+        {
+          "question": "What does an AI content strategist do?",
+          "answer": "They design how a team produces content with AI — building prompt systems, editorial guardrails, and review workflows so output stays accurate and on-brand. It combines editorial judgment with hands-on AI-tool fluency."
+        },
+        {
+          "question": "How do I show I can do this without prior AI experience?",
+          "answer": "Build one AI-assisted content workflow end to end — draft, fact-check, edit — and document the quality controls you added. That, plus your editorial track record, demonstrates exactly the judgment these roles need."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your editorial skills into an AI content strategy career."
+    },
+    {
+      "slug": "customer-support-lead-to-conversational-ai-designer",
+      "fromRole": "Customer Support Lead",
+      "toRole": "Conversational AI Designer",
+      "headline": "From Support Lead to Conversational AI Designer",
+      "subhead": "You know how real customers ask, stall, and get frustrated — AI assistants need that.",
+      "transferableSkills": [
+        "Understanding customer intent",
+        "Tone and de-escalation",
+        "Knowledge base and macro design",
+        "Escalation and edge-case handling"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why support leads design better AI assistants",
+          "body": "Conversational AI Designers shape how chatbots and voice assistants talk — mapping intents, writing responses, and deciding when to hand off to a human. Support leads already know the real questions customers ask and where scripted answers break down. Your instinct for tone, edge cases, and escalation is what separates an assistant customers trust from one they abandon, and it comes directly from years on the front line."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-9 months part-time. Learn intent and dialogue design, prompt patterns for assistants, and how to test conversations for failure modes. Build proof by designing a conversation flow for a common support scenario, including fallback and human handoff, and testing it against real transcripts. Designers who ground assistant behavior in actual customer language stand out immediately."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need to be a developer to design conversational AI?",
+          "answer": "No. The role is about dialogue design, intent mapping, and tone — not coding the bot. You will use prompt patterns and design tools, but your understanding of real customer conversations is the core skill that transfers from support."
+        },
+        {
+          "question": "What does a conversational AI designer do?",
+          "answer": "They design how chatbots and voice assistants respond — mapping user intents, writing responses, handling edge cases, and deciding when to escalate to a human. It turns front-line support insight into assistant behavior."
+        },
+        {
+          "question": "How do I start this pivot from a support role?",
+          "answer": "Design one conversation flow for a common support scenario, including fallbacks and human handoff, and test it against real transcripts you already know well. That grounded sample plus your support experience is a strong portfolio start."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your support expertise into conversational AI design."
+    },
+    {
+      "slug": "operations-manager-to-ai-operations-manager",
+      "fromRole": "Operations Manager",
+      "toRole": "AI Operations Manager",
+      "headline": "From Operations Manager to AI Operations Manager",
+      "subhead": "You already run the machine — now run the one with AI in the loop.",
+      "transferableSkills": [
+        "Process optimization",
+        "Vendor and tool management",
+        "Team leadership",
+        "Metrics and SLA ownership"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why ops managers own AI deployment naturally",
+          "body": "AI Operations Managers oversee how AI tools are rolled out, monitored, and improved across a team or company — owning workflows, adoption, and results. Operations managers already run process, vendors, and metrics; the new layer is understanding what AI can automate and how to monitor its output. Because you think in systems and SLAs, you can turn a scattered set of AI experiments into a governed, measurable operation, which is what most companies are missing."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 3-9 months part-time. Learn how AI tools are evaluated and monitored, prompt basics, and how to design a rollout that includes guardrails and feedback loops. Prove it by piloting one AI tool in your operation and reporting adoption, time saved, and error rates. Ops leaders who can show a controlled, measured AI rollout are exactly who these roles hire."
+        }
+      ],
+      "faq": [
+        {
+          "question": "What does an AI operations manager do?",
+          "answer": "They lead how AI tools are deployed, monitored, and improved across a team — owning workflow design, adoption, guardrails, and outcome metrics. It applies classic operations discipline to AI-enabled processes."
+        },
+        {
+          "question": "Do I need a technical background for this role?",
+          "answer": "No. You need to understand what AI can automate and how to monitor its performance, not to build models. Your operations, vendor, and metrics experience is the foundation the role is built on."
+        },
+        {
+          "question": "How do I demonstrate readiness for an AI ops role?",
+          "answer": "Pilot one AI tool in your current operation and report adoption, time saved, and error rates with guardrails in place. A single controlled, measured rollout shows exactly the discipline these roles require."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that extends your operations leadership into AI operations."
+    },
+    {
+      "slug": "graphic-designer-to-ai-product-designer",
+      "fromRole": "Graphic Designer",
+      "toRole": "AI Product Designer",
+      "headline": "From Graphic Designer to AI Product Designer",
+      "subhead": "Your eye for clarity is what AI-powered products desperately need.",
+      "transferableSkills": [
+        "Visual and layout design",
+        "User empathy",
+        "Iteration and feedback",
+        "Brand and systems thinking"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why designers move into AI product design",
+          "body": "AI Product Designers craft the interfaces where people interact with AI — designing how outputs are shown, how trust and uncertainty are communicated, and how users guide the model. Graphic designers bring the visual craft and user empathy; the addition is understanding AI behavior and interaction patterns like prompting and streaming responses. Because AI features live or die on how understandable they feel, your ability to make complexity clear is a direct asset."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 6-12 months part-time. Learn UX fundamentals if you are print-focused, how AI outputs and errors should be surfaced to users, and a product design tool like Figma at a professional level. Build proof by redesigning an AI feature you use, showing how you handle loading, errors, and uncertainty. Portfolios that tackle real AI interaction problems get noticed far more than generic UI."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Can a graphic designer move into AI product design?",
+          "answer": "Yes. Your visual craft and user empathy transfer directly; the gap is UX and AI interaction patterns, which you can learn part-time. AI features depend heavily on clear, trustworthy interfaces, so design skill is in real demand."
+        },
+        {
+          "question": "What is different about designing AI products?",
+          "answer": "You design for uncertainty — showing how confident the AI is, handling wrong or slow outputs, and letting users steer the model. It adds AI-specific interaction patterns on top of standard product design craft."
+        },
+        {
+          "question": "What should my portfolio show for AI product design roles?",
+          "answer": "Redesign a real AI feature and demonstrate how you handle loading, errors, and uncertainty, not just polished screens. Tackling genuine AI interaction problems signals exactly the thinking these roles want."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that grows your design skills into AI product design."
+    },
+    {
+      "slug": "hr-manager-to-ai-people-analytics-lead",
+      "fromRole": "HR Manager",
+      "toRole": "AI People Analytics Lead",
+      "headline": "From HR Manager to AI People Analytics Lead",
+      "subhead": "You understand people and policy — now lead the AI that informs decisions about them.",
+      "transferableSkills": [
+        "People and org insight",
+        "Policy and compliance",
+        "Stakeholder communication",
+        "HR data and reporting"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why HR leaders are suited to people analytics AI",
+          "body": "AI People Analytics Leads use AI and data to inform hiring, retention, and workforce decisions — while guarding against bias and protecting privacy. HR managers already understand the people questions, the policy stakes, and the fairness concerns. The new layer is fluency with analytics and AI tools and a sharp sense of where automated decisions about people can go wrong, which is exactly the oversight leadership wants in place."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 6-12 months part-time. Learn people analytics fundamentals, how AI models can encode bias, and one analytics or BI tool. Prove it by analyzing one HR question — say, attrition drivers — with data and framing where AI could help and where it should not. HR leaders who pair analytical rigor with a fairness lens are exactly who these roles need."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need to be technical to lead AI people analytics?",
+          "answer": "No deep technical background is required. You need analytics fluency, one BI tool, and an understanding of how AI can introduce bias. Your HR judgment and grasp of policy and fairness are the core, hard-to-hire skills."
+        },
+        {
+          "question": "What does an AI people analytics lead do?",
+          "answer": "They apply AI and data to workforce questions — hiring, retention, engagement — while protecting privacy and guarding against biased decisions. The role blends HR expertise with analytics and responsible-AI oversight."
+        },
+        {
+          "question": "How do I begin this pivot from HR?",
+          "answer": "Take one people question like attrition, analyze it with data, and frame where AI could responsibly help versus where it should not. That analysis plus your HR background demonstrates the mix these roles want."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that moves your HR expertise into AI people analytics."
+    },
+    {
+      "slug": "management-consultant-to-ai-solutions-consultant",
+      "fromRole": "Management Consultant",
+      "toRole": "AI Solutions Consultant",
+      "headline": "From Management Consultant to AI Solutions Consultant",
+      "subhead": "Companies want AI advice grounded in business reality — that is your specialty.",
+      "transferableSkills": [
+        "Structured problem solving",
+        "Client management",
+        "Business case development",
+        "Change management"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why consultants pivot into AI advisory cleanly",
+          "body": "AI Solutions Consultants help organizations decide where to apply AI, build the business case, and lead adoption. Management consultants already own structured problem solving, client trust, and change management; the addition is AI literacy and a realistic sense of what these tools can and cannot deliver. Because you can separate hype from value and quantify impact, you are exactly who executives want guiding an AI investment rather than a vendor with something to sell."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-9 months part-time. Learn how AI models work at a conceptual level, common enterprise use cases and their failure modes, and how AI ROI is estimated. Prove it by writing an AI opportunity assessment for one industry or function, with prioritized use cases and risks. Consultants who can scope AI value credibly are in demand as adoption accelerates."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need deep AI expertise to be an AI solutions consultant?",
+          "answer": "No. You need enough AI literacy to separate realistic use cases from hype and to build a credible business case. Your consulting skills — structuring problems, managing clients, driving change — are the core of the role."
+        },
+        {
+          "question": "What does an AI solutions consultant do?",
+          "answer": "They advise organizations on where to apply AI, quantify the business case, and lead adoption and change. It applies classic consulting rigor to AI strategy and implementation decisions."
+        },
+        {
+          "question": "How do I position myself for this pivot?",
+          "answer": "Write an AI opportunity assessment for a function or industry you know, with prioritized use cases, risks, and rough ROI. That artifact plus your consulting background shows you can guide AI decisions credibly."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your consulting experience into AI advisory work."
+    },
+    {
+      "slug": "financial-analyst-to-machine-learning-data-analyst",
+      "fromRole": "Financial Analyst",
+      "toRole": "Machine Learning Data Analyst",
+      "headline": "From Financial Analyst to ML Data Analyst",
+      "subhead": "You already model and interpret data — ML analytics is a focused next step.",
+      "transferableSkills": [
+        "Quantitative modeling",
+        "Data interpretation",
+        "Excel and SQL",
+        "Communicating insights to leaders"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why financial analysts move into ML analytics",
+          "body": "Machine Learning Data Analysts prepare data, build and interpret models, and translate results for decision-makers. Financial analysts already reason quantitatively, work with data, and explain findings to executives. The addition is programming in Python or R, statistics for modeling, and how machine learning models are trained and evaluated. Your discipline around assumptions and validation is exactly what keeps ML work honest instead of overfitted."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 9-18 months part-time, as this pivot is more technical. Learn Python, SQL if you do not have it, core statistics, and the basics of common ML models and evaluation. Build proof with a portfolio project that takes a real dataset from cleaning to a model to a clear business recommendation. Analysts who can connect a model back to a decision stand out from those who only tune metrics."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Is moving from finance to ML analytics realistic without a CS degree?",
+          "answer": "Yes, though it is more technical than some pivots. Your quantitative and data skills are a strong base; you add programming, statistics, and ML fundamentals over roughly 9-18 months part-time. A portfolio matters more than a specific degree."
+        },
+        {
+          "question": "What does a machine learning data analyst do?",
+          "answer": "They prepare data, build and interpret models, and translate the results into decisions for the business. It sits between data science and analytics, pairing modeling with clear communication."
+        },
+        {
+          "question": "How do I prove I can do the work?",
+          "answer": "Build a portfolio project that goes from raw data through cleaning and a model to a concrete business recommendation. Showing you can connect a model to a real decision is far more convincing than isolated accuracy scores."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your financial analysis skills toward machine learning analytics."
+    },
+    {
+      "slug": "product-manager-to-ai-product-manager",
+      "fromRole": "Product Manager",
+      "toRole": "AI Product Manager",
+      "headline": "From Product Manager to AI Product Manager",
+      "subhead": "You already own the product — adding AI judgment is the upgrade the market rewards.",
+      "transferableSkills": [
+        "Product discovery and prioritization",
+        "User research",
+        "Metrics and experimentation",
+        "Cross-functional leadership"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why the PM-to-AI-PM step is short",
+          "body": "AI Product Managers do everything a product manager does, plus decide where AI should be used, how to evaluate it, and where the model must be constrained. You already own discovery, prioritization, and metrics; the new layer is understanding model behavior, evals, and the tradeoffs around accuracy, latency, and cost. Because you think in user outcomes and experiments, you can hold AI features to real success criteria instead of shipping a demo that impresses but does not deliver."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn how large language models behave and fail, how to write eval criteria, and the cost and latency tradeoffs of AI features. Prove it by writing an AI feature spec with guardrails and metrics, and by running a small AI experiment in your current product. PMs who can define and measure AI success are among the most in-demand hires right now."
+        }
+      ],
+      "faq": [
+        {
+          "question": "How hard is it to move from PM to AI PM?",
+          "answer": "It is one of the shortest AI pivots, often 3-6 months part-time. You already have the product skills; you add model literacy, evaluation, and AI-specific tradeoffs. Many PMs make the shift inside their current company by taking on AI features."
+        },
+        {
+          "question": "What extra skills does an AI product manager need?",
+          "answer": "Beyond core product skills, you need to understand how AI models behave and fail, how to write evaluation criteria, and how to reason about accuracy, latency, and cost. These sit on top of everything you already do as a PM."
+        },
+        {
+          "question": "How do I break in without an AI PM title?",
+          "answer": "Write an AI feature spec with clear metrics and guardrails, then run a small AI experiment in your current product. Owning even one AI feature end to end is often enough to move into a dedicated AI PM role."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that upgrades your product management career for AI."
+    },
+    {
+      "slug": "software-engineer-to-machine-learning-engineer",
+      "fromRole": "Software Engineer",
+      "toRole": "Machine Learning Engineer",
+      "headline": "From Software Engineer to Machine Learning Engineer",
+      "subhead": "You already ship production code — ML engineering is a focused specialization away.",
+      "transferableSkills": [
+        "Programming and system design",
+        "Testing and deployment",
+        "APIs and data pipelines",
+        "Debugging and code review"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why engineers are the natural ML pipeline",
+          "body": "Machine Learning Engineers build and deploy models into production — data pipelines, training, serving, and monitoring. Software engineers already own most of that surface: code quality, systems, and deployment. The addition is machine learning fundamentals, model evaluation, and MLOps patterns. Because you understand production constraints, you can turn a research notebook into a reliable service, which is exactly the gap many data science teams have."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 6-12 months part-time. Learn core ML concepts, how models are trained and evaluated, and the modern LLM and MLOps tooling for serving and monitoring. Prove it by shipping one project that trains or fine-tunes a model and deploys it behind an API with monitoring. Engineers who show end-to-end ML delivery, not just a tutorial notebook, move fastest into these roles."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need a machine learning degree to become an ML engineer?",
+          "answer": "No. Many ML engineers come from software engineering. You add ML fundamentals, evaluation, and MLOps to your existing production skills over roughly 6-12 months part-time. Demonstrated projects outweigh formal ML credentials."
+        },
+        {
+          "question": "What does a machine learning engineer do?",
+          "answer": "They build and deploy models into production — data pipelines, training or fine-tuning, serving, and monitoring. It is where software engineering meets machine learning, emphasizing reliability at scale."
+        },
+        {
+          "question": "What project proves I am ready?",
+          "answer": "Ship one project that trains or fine-tunes a model and deploys it behind an API with monitoring. End-to-end delivery, not a standalone notebook, shows you can operate ML in production."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that specializes your engineering skills toward machine learning."
+    },
+    {
+      "slug": "recruiter-to-ai-talent-sourcing-specialist",
+      "fromRole": "Recruiter",
+      "toRole": "AI Talent Sourcing Specialist",
+      "headline": "From Recruiter to AI Talent Sourcing Specialist",
+      "subhead": "You already find and read people well — AI just multiplies your reach.",
+      "transferableSkills": [
+        "Candidate sourcing and screening",
+        "Boolean and search skills",
+        "Stakeholder and candidate communication",
+        "Pipeline and funnel management"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why recruiters lead AI sourcing well",
+          "body": "AI Talent Sourcing Specialists use AI tools to source, screen, and engage candidates at scale — while keeping the human judgment and fairness that hiring requires. Recruiters already own sourcing, screening, and relationships; the addition is fluency with AI sourcing tools and awareness of where automated screening can be biased or wrong. Because you know what a strong candidate really looks like, you can direct AI to widen the pipeline without lowering the bar."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn the leading AI sourcing and outreach tools, prompt patterns for candidate research, and how AI screening can introduce bias. Prove it by running one AI-assisted sourcing project and comparing pipeline quality and speed against your normal process. Recruiters who can show measured gains while protecting fairness are exactly who talent teams want leading AI adoption."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Will AI replace recruiters?",
+          "answer": "AI is automating sourcing and screening tasks, not relationship-building or judgment. Recruiters who learn to direct these tools become more productive and more valuable. This pivot puts you in charge of the AI rather than being displaced by it."
+        },
+        {
+          "question": "What does an AI talent sourcing specialist do?",
+          "answer": "They use AI tools to source, screen, and engage candidates at scale while preserving human judgment and fairness. The role pairs recruiting expertise with hands-on AI-tool fluency."
+        },
+        {
+          "question": "How do I start this pivot from recruiting?",
+          "answer": "Run one AI-assisted sourcing project and compare pipeline quality and speed to your usual process, noting how you kept screening fair. That measured result plus your recruiting record makes a strong case."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your recruiting skills into AI-powered sourcing."
+    },
+    {
+      "slug": "paralegal-to-legal-ai-analyst",
+      "fromRole": "Paralegal",
+      "toRole": "Legal AI Analyst",
+      "headline": "From Paralegal to Legal AI Analyst",
+      "subhead": "You know how legal work really flows — AI tools need that to be trustworthy.",
+      "transferableSkills": [
+        "Legal research",
+        "Document review and drafting",
+        "Attention to detail",
+        "Process and matter management"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why paralegals are ready for legal AI",
+          "body": "Legal AI Analysts help firms and legal teams adopt AI for research, review, and drafting — validating outputs, spotting errors, and designing safe workflows. Paralegals already know the documents, the research process, and the cost of a mistake. The addition is fluency with legal AI tools and a clear sense of where AI hallucinates citations or misreads context, which is exactly the oversight legal teams require before trusting these tools."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 3-9 months part-time. Learn the leading legal AI tools, how models fabricate citations and misstate law, and how to design a review workflow that catches those errors. Prove it by evaluating one legal AI tool on a real task and documenting where it succeeded and failed. In law, demonstrated caution and accuracy matter more than any technical badge."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Is AI going to replace paralegals?",
+          "answer": "AI can draft and search quickly but fabricates citations and misreads context, so legal teams need people who validate its output. Paralegals who learn to direct and check these tools become more valuable. This pivot moves you into overseeing legal AI."
+        },
+        {
+          "question": "What does a legal AI analyst do?",
+          "answer": "They help legal teams adopt AI for research, review, and drafting — validating outputs, catching errors like fabricated citations, and designing safe review workflows. It turns paralegal expertise into AI oversight."
+        },
+        {
+          "question": "Do I need a law degree for this role?",
+          "answer": "No. Your paralegal experience with research, review, and process is the foundation. You add fluency with legal AI tools and a sharp eye for where they fail, which you can build in a few months part-time."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your paralegal experience into a legal-AI role."
+    },
+    {
+      "slug": "executive-assistant-to-ai-workflow-automation-specialist",
+      "fromRole": "Executive Assistant",
+      "toRole": "AI Workflow Automation Specialist",
+      "headline": "From Executive Assistant to AI Workflow Automation Specialist",
+      "subhead": "You already automate chaos into order — now do it with AI tools, for pay that reflects it.",
+      "transferableSkills": [
+        "Process and calendar orchestration",
+        "Tool and systems fluency",
+        "Prioritization",
+        "Cross-team coordination"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why EAs excel at workflow automation",
+          "body": "AI Workflow Automation Specialists design and build automated workflows — connecting tools, adding AI steps, and removing manual busywork. Executive assistants already do this by hand every day: routing information, managing tools, and keeping complex schedules running. The addition is fluency with automation platforms and AI integrations. Because you know exactly which repetitive tasks eat time, you can target automation where it delivers the most relief, which is what teams value most."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn a no-code automation platform, how to add AI steps like summarization or drafting, and how to map a process before automating it. Prove it by automating one real workflow — say, meeting notes to action items — and documenting the time saved. Specialists who show tangible hours recovered are in high demand as companies chase efficiency."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Can an executive assistant really move into AI automation work?",
+          "answer": "Yes. EAs already orchestrate tools and processes manually, which is the core instinct automation work requires. You add no-code automation platforms and AI integrations, learnable in a few months part-time, and reframe your experience around building systems."
+        },
+        {
+          "question": "What does an AI workflow automation specialist do?",
+          "answer": "They design and build automated workflows that connect tools and insert AI steps to remove manual work. The role turns process orchestration into repeatable, AI-assisted automation."
+        },
+        {
+          "question": "Do I need to code for this role?",
+          "answer": "Mostly no. Modern automation is largely no-code or low-code, with AI steps added through simple configuration. Your knowledge of which tasks waste time is the harder-to-teach advantage."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your coordination skills into AI automation work."
+    },
+    {
+      "slug": "retail-manager-to-ai-merchandising-analyst",
+      "fromRole": "Retail Manager",
+      "toRole": "AI Merchandising Analyst",
+      "headline": "From Retail Manager to AI Merchandising Analyst",
+      "subhead": "You know what sells and why — AI merchandising needs that instinct behind the data.",
+      "transferableSkills": [
+        "Inventory and assortment sense",
+        "Sales and margin awareness",
+        "Customer behavior insight",
+        "Team and vendor coordination"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why retail managers fit merchandising AI",
+          "body": "AI Merchandising Analysts use AI and data to forecast demand, optimize assortment and pricing, and reduce stockouts and markdowns. Retail managers already understand what sells, how customers behave, and where the margin is. The addition is fluency with analytics and AI forecasting tools and a sense of when a model's recommendation ignores real-world context. Your on-the-floor judgment is what keeps AI merchandising grounded instead of blindly data-driven."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 6-12 months part-time. Learn retail analytics fundamentals, how demand forecasting models work and fail, and one BI or analytics tool. Prove it by analyzing one category's sales patterns and framing where AI forecasting would help, with the tradeoffs. Retail leaders who pair data fluency with merchandising instinct are exactly who these roles need as retailers lean on AI."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need to be technical to become an AI merchandising analyst?",
+          "answer": "No deep technical background is needed. You need analytics fluency, one BI tool, and an understanding of how forecasting models work. Your merchandising instinct and customer knowledge are the parts that are hard to hire for."
+        },
+        {
+          "question": "What does an AI merchandising analyst do?",
+          "answer": "They use AI and data to forecast demand and optimize assortment, pricing, and inventory — reducing stockouts and markdowns. The role combines retail judgment with analytics and AI-tool fluency."
+        },
+        {
+          "question": "How do I show I can do this work?",
+          "answer": "Analyze one category's sales patterns and frame where AI forecasting would help and where it would miss real-world context. That analysis plus your retail experience demonstrates the blend these roles want."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your retail experience into AI merchandising analytics."
+    },
+    {
+      "slug": "copywriter-to-prompt-engineer",
+      "fromRole": "Copywriter",
+      "toRole": "Prompt Engineer",
+      "headline": "From Copywriter to Prompt Engineer",
+      "subhead": "You already write to get a precise response — prompting is the same craft, aimed at models.",
+      "transferableSkills": [
+        "Precise, intentional writing",
+        "Understanding tone and audience",
+        "Editing and iteration",
+        "Testing messaging variants"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why copywriters make natural prompt engineers",
+          "body": "Prompt Engineers design the instructions that get reliable, high-quality output from AI models — testing phrasings, structuring context, and building reusable prompt systems. Copywriters already write with intent, iterate on wording, and understand how small changes shift a reader's response. The same craft applies to models: clarity, structure, and testing. Because you obsess over how language lands, you can coax consistent behavior from AI where others get vague results."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn how large language models interpret prompts, common patterns like few-shot and structured output, and how to test and evaluate prompt quality. Prove it by building a small prompt system for a real task — with variants and a simple evaluation — and documenting what improved reliability. Writers who treat prompting as testable craft, not guesswork, stand out quickly."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need to code to be a prompt engineer?",
+          "answer": "Light technical comfort helps, but the core skill is precise, structured writing and systematic testing — which copywriters already have. Many prompt roles focus on designing and evaluating prompts rather than heavy programming."
+        },
+        {
+          "question": "What does a prompt engineer actually do?",
+          "answer": "They design and refine the instructions that get reliable, high-quality output from AI models — testing phrasings, structuring context, and building reusable prompt systems with evaluation. It is language craft applied to models."
+        },
+        {
+          "question": "How do I prove prompt engineering skill?",
+          "answer": "Build a small prompt system for a real task with variants and a simple evaluation, and document what improved reliability. Treating prompting as testable craft rather than trial and error is exactly what these roles look for."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your copywriting craft into prompt engineering."
+    },
+    {
+      "slug": "data-analyst-to-machine-learning-engineer",
+      "fromRole": "Data Analyst",
+      "toRole": "Machine Learning Engineer",
+      "headline": "From Data Analyst to Machine Learning Engineer",
+      "subhead": "You already live in data — ML engineering is the deeper, higher-leverage path.",
+      "transferableSkills": [
+        "SQL and data wrangling",
+        "Statistics and analysis",
+        "Data visualization",
+        "Business understanding of data"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why analysts have a head start on ML",
+          "body": "Machine Learning Engineers build and deploy models, and data analysts already own the data foundation: querying, cleaning, statistics, and knowing what the numbers mean. The addition is stronger programming, ML modeling, and deployment or MLOps skills. Because you understand data quality and business context, you can build models that answer the right question, avoiding the common trap of technically impressive but useless output."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Expect 9-18 months part-time, since this is a technical pivot. Strengthen Python, learn core ML models and evaluation, and pick up the basics of serving and monitoring a model. Prove it with a portfolio project that goes from data to a deployed model with a clear use case. Analysts who can ship a model, not just analyze data, move into ML roles fastest."
+        }
+      ],
+      "faq": [
+        {
+          "question": "How big a jump is data analyst to ML engineer?",
+          "answer": "It is a meaningful but achievable step, roughly 9-18 months part-time. Your data and statistics skills are a strong base; you add stronger programming, ML modeling, and deployment. A deployed portfolio project matters most."
+        },
+        {
+          "question": "What does a machine learning engineer do that an analyst does not?",
+          "answer": "They build, train, and deploy models into production with monitoring, rather than mainly analyzing and reporting on data. The role adds software engineering and MLOps on top of data skills."
+        },
+        {
+          "question": "What should I build to make the switch?",
+          "answer": "Create a portfolio project that goes from raw data through a trained model to a deployed service with a clear use case. Showing you can ship a model, not just analyze data, is the key differentiator."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that advances your data skills into machine learning engineering."
+    },
+    {
+      "slug": "social-media-manager-to-ai-content-operations-lead",
+      "fromRole": "Social Media Manager",
+      "toRole": "AI Content Operations Lead",
+      "headline": "From Social Media Manager to AI Content Operations Lead",
+      "subhead": "You already run a content machine — AI just scales it if someone keeps quality high.",
+      "transferableSkills": [
+        "Content planning and calendars",
+        "Brand voice consistency",
+        "Performance analytics",
+        "Multi-channel coordination"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why social managers lead content ops with AI",
+          "body": "AI Content Operations Leads build the systems that produce content with AI at scale — prompt libraries, review steps, and workflows across channels. Social media managers already run high-volume content with tight brand and performance standards. The addition is fluency with AI content tools and designing repeatable, quality-controlled workflows. Because you know what performs and what breaks brand, you can scale output with AI without the quality collapse teams fear."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn prompt design for content, how AI drafts drift off-brand or off-facts, and one workflow or content-ops tool. Prove it by building an AI-assisted content pipeline for one channel — brief, draft, review, publish — and reporting on output volume and quality. Managers who show scaled, on-brand production are exactly who content teams promote into these roles."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Will AI replace social media managers?",
+          "answer": "AI accelerates content production but produces off-brand and inaccurate drafts without oversight. Managers who build AI content systems and keep quality high become more valuable. This pivot moves you from producing posts to running the content operation."
+        },
+        {
+          "question": "What does an AI content operations lead do?",
+          "answer": "They build systems to produce content with AI at scale — prompt libraries, review workflows, and multi-channel processes — while protecting brand and accuracy. It turns content management into repeatable, AI-assisted operations."
+        },
+        {
+          "question": "How do I demonstrate readiness?",
+          "answer": "Build one AI-assisted content pipeline for a channel, from brief to publish with a review step, and report on volume and quality. Showing scaled, on-brand output is exactly what these roles want to see."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that scales your content skills into AI content operations."
+    },
+    {
+      "slug": "customer-success-manager-to-ai-customer-success-manager",
+      "fromRole": "Customer Success Manager",
+      "toRole": "AI Customer Success Manager",
+      "headline": "From CSM to AI Customer Success Manager",
+      "subhead": "You keep customers succeeding — now do it for AI products and the teams adopting them.",
+      "transferableSkills": [
+        "Relationship management",
+        "Onboarding and enablement",
+        "Churn and health monitoring",
+        "Cross-functional advocacy"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why CSMs fit AI product success roles",
+          "body": "AI Customer Success Managers help customers adopt and get value from AI products — guiding onboarding, setting realistic expectations, and translating capabilities and limits. CSMs already own relationships, adoption, and retention; the addition is understanding how AI products behave so you can set expectations and troubleshoot. Because AI tools are easy to misunderstand and misuse, customers need a success partner who can bridge the gap between hype and real value, which is your strength."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn how AI products are built and where they fail, prompt basics so you can coach users, and how to frame AI value in outcome terms. Prove it by mapping an onboarding and adoption plan for an AI product, including how you would handle common misconceptions. CSMs who can make AI adoption stick are in demand as AI vendors scale their customer bases."
+        }
+      ],
+      "faq": [
+        {
+          "question": "How is AI customer success different from regular customer success?",
+          "answer": "The relationship and retention work is the same, but you also set realistic expectations about AI capabilities, coach users on effective use, and troubleshoot AI-specific issues. It adds product understanding of AI on top of core CSM skills."
+        },
+        {
+          "question": "Do I need a technical background for this role?",
+          "answer": "No. You need enough understanding of how AI products behave and fail to guide customers, plus basic prompting to coach users. Your relationship and adoption skills are the foundation the role depends on."
+        },
+        {
+          "question": "How do I position myself for an AI CSM role?",
+          "answer": "Map an onboarding and adoption plan for an AI product, including how you would handle common misconceptions and set expectations. That plus your CSM track record shows you can drive real AI adoption."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that moves your customer success skills into AI products."
+    },
+    {
+      "slug": "qa-tester-to-ai-model-evaluation-specialist",
+      "fromRole": "QA Tester",
+      "toRole": "AI Model Evaluation Specialist",
+      "headline": "From QA Tester to AI Model Evaluation Specialist",
+      "subhead": "You already break things systematically — AI models need exactly that scrutiny.",
+      "transferableSkills": [
+        "Test case design",
+        "Edge-case thinking",
+        "Bug reporting and reproduction",
+        "Quality standards and rigor"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why QA testers evaluate AI models well",
+          "body": "AI Model Evaluation Specialists design tests for AI systems — probing for wrong answers, bias, and failure modes, and scoring model quality. QA testers already think in edge cases, reproduction, and systematic coverage. The addition is understanding how AI models fail differently from software: hallucination, inconsistency, and prompt sensitivity. Because your instinct is to find where something breaks, you are well suited to the growing work of stress-testing and red-teaming AI."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn how AI models are evaluated, how to build test sets and rubrics for open-ended output, and common failure modes like bias and hallucination. Prove it by evaluating one AI model on a task, building a small test set, and reporting failure patterns. Testers who can quantify AI quality are increasingly essential as companies ship AI features."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Can a QA tester move into AI model evaluation?",
+          "answer": "Yes — it is a natural fit. Your edge-case thinking and systematic testing transfer directly; you add knowledge of how AI models fail and how to score open-ended output. The pivot is learnable in a few months part-time."
+        },
+        {
+          "question": "What does an AI model evaluation specialist do?",
+          "answer": "They design tests for AI systems — probing for wrong answers, bias, and failure modes, and scoring model quality against rubrics. It applies QA rigor to the unpredictable output of AI models."
+        },
+        {
+          "question": "How do I show I can do this work?",
+          "answer": "Evaluate one AI model on a task, build a small test set, and report the failure patterns you find. Quantifying AI quality with a structured test set is exactly the skill these roles hire for."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your QA skills into AI model evaluation."
+    },
+    {
+      "slug": "administrative-assistant-to-ai-operations-coordinator",
+      "fromRole": "Administrative Assistant",
+      "toRole": "AI Operations Coordinator",
+      "headline": "From Administrative Assistant to AI Operations Coordinator",
+      "subhead": "You already keep the office running — coordinate the AI tools that run it next.",
+      "transferableSkills": [
+        "Scheduling and coordination",
+        "Tool and document management",
+        "Communication across teams",
+        "Process organization"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why admins move into AI operations coordination",
+          "body": "AI Operations Coordinators keep a company's AI tools and workflows running — onboarding teams, tracking usage, maintaining prompt and process documentation, and flagging issues. Administrative assistants already coordinate people, tools, and documents daily. The addition is fluency with AI tools and light workflow design. Because you keep systems organized and people supported, you can turn scattered AI adoption into something documented and dependable, which growing teams badly need."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn common workplace AI tools, prompt basics, and how to document and support an AI workflow for a team. Prove it by creating a simple AI usage guide and rollout plan for one tool, including onboarding steps. Coordinators who make AI adoption organized and repeatable are increasingly valued as companies add tools faster than they can manage them."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Is administrative assistant to AI operations a realistic pivot?",
+          "answer": "Yes. Coordination, documentation, and supporting people across tools are the heart of the role, and you already do them. You add fluency with AI tools and light workflow design, learnable in a few months part-time."
+        },
+        {
+          "question": "What does an AI operations coordinator do?",
+          "answer": "They keep a company's AI tools and workflows running — onboarding teams, tracking usage, maintaining documentation, and flagging issues. The role turns administrative coordination into organized AI adoption support."
+        },
+        {
+          "question": "How do I get started?",
+          "answer": "Create a simple usage guide and rollout plan for one AI tool, including onboarding steps for a team. That practical artifact plus your coordination experience shows you can support AI operations."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your coordination skills into an AI operations role."
+    },
+    {
+      "slug": "bookkeeper-to-ai-finance-operations-analyst",
+      "fromRole": "Bookkeeper",
+      "toRole": "AI Finance Operations Analyst",
+      "headline": "From Bookkeeper to AI Finance Operations Analyst",
+      "subhead": "You know the books cold — now direct the AI that speeds up the routine work.",
+      "transferableSkills": [
+        "Bookkeeping and reconciliation",
+        "Accuracy and consistency",
+        "Financial software fluency",
+        "Recordkeeping and compliance"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why bookkeepers fit finance operations AI",
+          "body": "AI Finance Operations Analysts apply AI and automation to routine finance work — data entry, categorization, invoice processing, and reconciliation — while keeping records accurate. Bookkeepers already know these workflows intimately and can tell when a number is off. The addition is fluency with AI and automation tools and knowing when to trust or double-check automated output. Your accuracy instinct is exactly the safeguard these roles are built around."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 6-12 months part-time. Learn how AI handles document extraction and categorization, one automation or accounting-AI tool, and how to verify automated results. Prove it by automating one routine bookkeeping task and documenting the time saved and the checks you kept. In finance, showing you preserved accuracy while speeding things up matters more than the specific tool."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Will AI replace bookkeepers?",
+          "answer": "AI is automating routine data entry and categorization, not oversight or accountability. Bookkeepers who learn to direct and verify that automation become more valuable. This pivot puts you in charge of the AI handling the tedious work."
+        },
+        {
+          "question": "What does an AI finance operations analyst do?",
+          "answer": "They apply AI and automation to routine finance tasks — data entry, categorization, invoice processing, reconciliation — while keeping records accurate and verifiable. It blends bookkeeping know-how with automation fluency."
+        },
+        {
+          "question": "Do I need to code for this pivot?",
+          "answer": "No. Modern finance automation is mostly configuration and no-code tools plus verification. Your bookkeeping accuracy and workflow knowledge are the harder-to-replace skills."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your bookkeeping expertise into finance-AI operations."
+    },
+    {
+      "slug": "librarian-to-ai-knowledge-manager",
+      "fromRole": "Librarian",
+      "toRole": "AI Knowledge Manager",
+      "headline": "From Librarian to AI Knowledge Manager",
+      "subhead": "You already organize information for real people — AI knowledge systems need that discipline.",
+      "transferableSkills": [
+        "Information organization and taxonomy",
+        "Research and search expertise",
+        "Metadata and cataloging",
+        "Helping people find answers"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why librarians are built for AI knowledge work",
+          "body": "AI Knowledge Managers design how organizations structure information so AI systems can retrieve it accurately — curating sources, taxonomies, and the knowledge bases behind AI assistants. Librarians already master organization, metadata, and helping people find trustworthy answers. The addition is understanding how AI retrieval works and where it fails. Because retrieval-based AI is only as good as the knowledge it draws on, your information discipline is directly what makes these systems reliable."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-9 months part-time. Learn how AI retrieval and knowledge bases work, how poor structure causes wrong answers, and one knowledge-management or documentation tool. Prove it by organizing a sample knowledge base and showing how structure improves AI answer quality. Information professionals who can make AI systems retrieve accurately are increasingly sought as companies build internal AI assistants."
+        }
+      ],
+      "faq": [
+        {
+          "question": "How does library work translate to AI knowledge management?",
+          "answer": "Organizing information, building taxonomies, and helping people find trustworthy answers are the exact skills AI retrieval systems depend on. You add an understanding of how AI knowledge bases work, which is learnable part-time in a few months."
+        },
+        {
+          "question": "What does an AI knowledge manager do?",
+          "answer": "They structure organizational information so AI systems retrieve it accurately — curating sources, taxonomies, and the knowledge bases behind AI assistants. It applies library discipline to AI-powered search and assistants."
+        },
+        {
+          "question": "How do I demonstrate this skill?",
+          "answer": "Organize a sample knowledge base and show how better structure improves AI answer quality. Connecting information organization to reliable AI retrieval is exactly what these roles value."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that turns your library expertise into AI knowledge management."
+    },
+    {
+      "slug": "supply-chain-analyst-to-ai-supply-chain-analyst",
+      "fromRole": "Supply Chain Analyst",
+      "toRole": "AI Supply Chain Analyst",
+      "headline": "From Supply Chain Analyst to AI Supply Chain Analyst",
+      "subhead": "You already model demand and risk — AI sharpens the forecasts you already own.",
+      "transferableSkills": [
+        "Demand and inventory analysis",
+        "Forecasting and planning",
+        "Data and reporting",
+        "Vendor and logistics knowledge"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why supply chain analysts extend into AI",
+          "body": "AI Supply Chain Analysts use AI to improve demand forecasting, inventory optimization, and disruption prediction. Supply chain analysts already do forecasting, planning, and data work — the addition is fluency with AI forecasting tools and a sense of when a model's prediction ignores real constraints. Because you understand lead times, suppliers, and logistics, you can keep AI recommendations grounded in operational reality instead of clean but unrealistic math."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 6-12 months part-time. Learn how AI demand and disruption models work and fail, strengthen your data and analytics tooling, and study where automation helps planning. Prove it by taking one forecasting problem in your work and framing where AI would improve it, with the tradeoffs. Analysts who blend supply chain judgment with AI fluency are in demand as companies harden their supply chains."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Do I need advanced technical skills for AI supply chain work?",
+          "answer": "Not initially. You need stronger analytics tooling and an understanding of how AI forecasting works and fails. Your supply chain judgment — lead times, suppliers, constraints — is the foundation that keeps AI recommendations realistic."
+        },
+        {
+          "question": "What does an AI supply chain analyst do?",
+          "answer": "They apply AI to demand forecasting, inventory optimization, and disruption prediction, improving on traditional planning. The role pairs supply chain expertise with AI-tool fluency."
+        },
+        {
+          "question": "How do I make the pivot concrete?",
+          "answer": "Take one forecasting problem from your job and frame where AI would improve it and where it would miss real constraints. That analysis plus your supply chain background shows the blend these roles need."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that extends your supply chain skills with AI."
+    },
+    {
+      "slug": "technical-writer-to-ai-documentation-specialist",
+      "fromRole": "Technical Writer",
+      "toRole": "AI Documentation Specialist",
+      "headline": "From Technical Writer to AI Documentation Specialist",
+      "subhead": "You make complex products understandable — AI documentation is a growing, specialized need.",
+      "transferableSkills": [
+        "Clear technical writing",
+        "Structuring complex information",
+        "Working with engineers",
+        "Editing and accuracy"
+      ],
+      "bodyBlocks": [
+        {
+          "heading": "Why technical writers specialize into AI docs",
+          "body": "AI Documentation Specialists write the docs, prompt guides, and usage instructions for AI products and internal AI tools — plus the knowledge content that AI assistants draw on. Technical writers already turn complex systems into clear guidance and work closely with engineers. The addition is understanding how AI products behave, how users prompt them, and where they fail. Because good AI adoption depends on clear documentation, your craft directly determines whether people use these tools well."
+        },
+        {
+          "heading": "What to learn and a realistic path",
+          "body": "Plan on 3-6 months part-time. Learn how AI products and prompting work, how to document non-deterministic behavior and limitations honestly, and how docs feed AI assistants. Prove it by writing a usage guide and prompt reference for an AI tool you know. Writers who can document AI clearly — including its limits — are increasingly needed as companies ship AI features fast."
+        }
+      ],
+      "faq": [
+        {
+          "question": "Is AI documentation different from regular technical writing?",
+          "answer": "The core craft is the same, but you document non-deterministic behavior, prompting, and limitations rather than fixed features. You explain where the AI can be trusted and where it cannot, which requires understanding how models behave."
+        },
+        {
+          "question": "What does an AI documentation specialist do?",
+          "answer": "They write docs, prompt guides, and usage instructions for AI products and internal tools, plus the knowledge content AI assistants rely on. It focuses technical writing on AI-specific behavior and adoption."
+        },
+        {
+          "question": "How do I show I am ready for this role?",
+          "answer": "Write a usage guide and prompt reference for an AI tool you know, honestly covering its limits. Documenting AI behavior clearly, including failure modes, is exactly what these roles look for."
+        }
+      ],
+      "cta": "Get a personalized AICareerPivot roadmap that focuses your technical writing on AI documentation."
+    }
+  ]
+}
