@@ -277,6 +277,92 @@
     },
     "stickyCta": {
       "cta": "Get My Plan — <s>$29</s> $19 →"
+    },
+    "featureShowcase": {
+      "eyebrow": "See It In Action",
+      "headingLead": "This is what you get.",
+      "headingAccent": "Before you pay.",
+      "subheading": "No vague promises. Here's a real sample of the AI-generated plan, insights, and report — built from an actual career-pivot profile.",
+      "sampleBadge": "Sample output",
+      "sampleNote": "— your plan is generated from your real resume, finances, and constraints.",
+      "tabs": {
+        "plan": {
+          "label": "Plan Generation",
+          "sub": "Your 6mo / 1yr / 2yr roadmap"
+        },
+        "insights": {
+          "label": "AI Insights",
+          "sub": "Skill match + gap analysis"
+        },
+        "pdf": {
+          "label": "PDF Report",
+          "sub": "Your plan, yours to keep"
+        }
+      },
+      "milestones": [
+        {
+          "horizon": "6 months",
+          "items": [
+            "Complete Google AI Essentials + ship 2 automation projects at your current job",
+            "Reposition your LinkedIn around 'operations + AI' — target 15 recruiter views/week",
+            "Land 3 informational interviews with AI Implementation Leads"
+          ]
+        },
+        {
+          "horizon": "1 year",
+          "items": [
+            "Move into an internal AI-adjacent role or land an AI Ops Analyst offer",
+            "Build a portfolio of 4 shipped workflow-automation case studies",
+            "Grow target-role network to 50+ warm connections"
+          ]
+        },
+        {
+          "horizon": "2 years",
+          "items": [
+            "AI Implementation Consultant — projected 35–45% comp increase",
+            "Lead cross-functional AI adoption for a business unit",
+            "Optional: independent consulting on the side for income diversification"
+          ]
+        }
+      ],
+      "skillGapTitle": "Skill-gap match — target: AI Implementation Consultant",
+      "skillGaps": [
+        {
+          "skill": "Process automation",
+          "match": 82,
+          "note": "Strong — 8 yrs ops experience transfers directly"
+        },
+        {
+          "skill": "Prompt engineering & LLM tooling",
+          "match": 41,
+          "note": "Gap — covered by AI Essentials in month 1"
+        },
+        {
+          "skill": "Stakeholder & change management",
+          "match": 88,
+          "note": "Strong — reframe as AI-adoption leadership"
+        },
+        {
+          "skill": "Data literacy / SQL basics",
+          "match": 55,
+          "note": "Partial — 3-week focused sprint recommended"
+        }
+      ],
+      "insightsTitle": "What the AI noticed about your profile",
+      "insights": [
+        "Your operations background is a hidden advantage: 71% of AI Implementation roles prioritize domain + change-management over coding.",
+        "Fastest wedge into the market: automate a painful workflow at your current employer and document the ROI as your first case study.",
+        "Biggest risk to de-risk first: the prompt-engineering gap. It's the cheapest to close and unlocks the most job titles."
+      ],
+      "pdfTitle": "A polished report you actually keep",
+      "pdfBody": "Your full roadmap, skill-gap analysis, and milestone checklist — exported as a shareable PDF. Bring it to your mentor, your manager, or your next interview. No subscription; it's yours forever.",
+      "pdfFeatures": [
+        "Full 6mo / 1yr / 2yr milestone plan",
+        "Skill-gap scores + recommended courses",
+        "Personalized to your finances & constraints"
+      ],
+      "ctaPrimary": "Generate Mine",
+      "ctaSecondary": "Or try the free skill-gap snapshot first — no payment"
     }
   },
   "meta": {

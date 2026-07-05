@@ -277,6 +277,92 @@
     },
     "stickyCta": {
       "cta": "Receber meu plano — <s>$29</s> $19 →"
+    },
+    "featureShowcase": {
+      "eyebrow": "Veja Em Ação",
+      "headingLead": "É isto que você recebe.",
+      "headingAccent": "Antes de pagar.",
+      "subheading": "Sem promessas vagas. Aqui está uma amostra real do plano, dos insights e do relatório gerados por IA — criados a partir de um perfil real de transição de carreira.",
+      "sampleBadge": "Saída de exemplo",
+      "sampleNote": "— seu plano é gerado a partir do seu currículo, das suas finanças e das suas restrições reais.",
+      "tabs": {
+        "plan": {
+          "label": "Geração de plano",
+          "sub": "Seu roteiro de 6 meses / 1 ano / 2 anos"
+        },
+        "insights": {
+          "label": "Insights de IA",
+          "sub": "Correspondência de skills + análise de lacunas"
+        },
+        "pdf": {
+          "label": "Relatório PDF",
+          "sub": "Seu plano, seu para sempre"
+        }
+      },
+      "milestones": [
+        {
+          "horizon": "6 meses",
+          "items": [
+            "Conclua o Google AI Essentials + entregue 2 projetos de automação no seu emprego atual",
+            "Reposicione seu LinkedIn em torno de 'operações + IA' — meta: 15 visualizações de recrutadores/semana",
+            "Consiga 3 entrevistas informativas com líderes de implementação de IA"
+          ]
+        },
+        {
+          "horizon": "1 ano",
+          "items": [
+            "Migre para um cargo interno próximo à IA ou consiga uma oferta de Analista de AI Ops",
+            "Construa um portfólio de 4 estudos de caso de automação de fluxos entregues",
+            "Amplie sua rede no cargo-alvo para mais de 50 contatos próximos"
+          ]
+        },
+        {
+          "horizon": "2 anos",
+          "items": [
+            "Consultor de Implementação de IA — aumento salarial projetado de 35–45%",
+            "Lidere a adoção de IA multifuncional para uma unidade de negócios",
+            "Opcional: consultoria independente paralela para diversificar a renda"
+          ]
+        }
+      ],
+      "skillGapTitle": "Correspondência de lacunas — alvo: Consultor de Implementação de IA",
+      "skillGaps": [
+        {
+          "skill": "Automação de processos",
+          "match": 82,
+          "note": "Forte — 8 anos de experiência em operações se transferem diretamente"
+        },
+        {
+          "skill": "Engenharia de prompts e ferramentas de LLM",
+          "match": 41,
+          "note": "Lacuna — coberta pelo AI Essentials no mês 1"
+        },
+        {
+          "skill": "Gestão de stakeholders e da mudança",
+          "match": 88,
+          "note": "Forte — reformule como liderança de adoção de IA"
+        },
+        {
+          "skill": "Letramento em dados / básico de SQL",
+          "match": 55,
+          "note": "Parcial — recomenda-se um sprint focado de 3 semanas"
+        }
+      ],
+      "insightsTitle": "O que a IA notou sobre o seu perfil",
+      "insights": [
+        "Sua experiência em operações é uma vantagem oculta: 71% dos cargos de implementação de IA priorizam domínio + gestão da mudança em vez de programação.",
+        "A entrada mais rápida no mercado: automatize um fluxo de trabalho penoso no seu empregador atual e documente o ROI como seu primeiro estudo de caso.",
+        "O maior risco a mitigar primeiro: a lacuna em engenharia de prompts. É a mais barata de fechar e desbloqueia o maior número de cargos."
+      ],
+      "pdfTitle": "Um relatório caprichado que você realmente guarda",
+      "pdfBody": "Seu roteiro completo, análise de lacunas de skills e checklist de marcos — exportado como um PDF compartilhável. Leve-o ao seu mentor, seu gestor ou sua próxima entrevista. Sem assinatura; é seu para sempre.",
+      "pdfFeatures": [
+        "Plano completo de marcos de 6 meses / 1 ano / 2 anos",
+        "Pontuações de lacunas de skills + cursos recomendados",
+        "Personalizado para suas finanças e restrições"
+      ],
+      "ctaPrimary": "Gerar o meu",
+      "ctaSecondary": "Ou experimente primeiro o retrato gratuito de lacunas de skills — sem pagamento"
     }
   },
   "meta": {

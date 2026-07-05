@@ -277,6 +277,92 @@
     },
     "stickyCta": {
       "cta": "Meinen Plan erhalten — <s>$29</s> $19 →"
+    },
+    "featureShowcase": {
+      "eyebrow": "In Aktion Erleben",
+      "headingLead": "Das bekommst du.",
+      "headingAccent": "Bevor du zahlst.",
+      "subheading": "Keine vagen Versprechen. Hier ist ein echtes Beispiel des KI-generierten Plans, der Insights und des Reports — erstellt aus einem echten Karrierewechsel-Profil.",
+      "sampleBadge": "Beispiel-Ausgabe",
+      "sampleNote": "— dein Plan wird aus deinem echten Lebenslauf, deinen Finanzen und Rahmenbedingungen erstellt.",
+      "tabs": {
+        "plan": {
+          "label": "Plan-Generierung",
+          "sub": "Deine 6-Monats- / 1-Jahres- / 2-Jahres-Roadmap"
+        },
+        "insights": {
+          "label": "KI-Insights",
+          "sub": "Skill-Match + Lückenanalyse"
+        },
+        "pdf": {
+          "label": "PDF-Report",
+          "sub": "Dein Plan, für dich zum Behalten"
+        }
+      },
+      "milestones": [
+        {
+          "horizon": "6 Monate",
+          "items": [
+            "Google AI Essentials abschließen + 2 Automatisierungsprojekte im aktuellen Job umsetzen",
+            "Dein LinkedIn auf 'Operations + KI' ausrichten — Ziel: 15 Recruiter-Aufrufe/Woche",
+            "3 Informationsgespräche mit AI-Implementation-Leads führen"
+          ]
+        },
+        {
+          "horizon": "1 Jahr",
+          "items": [
+            "In eine interne KI-nahe Rolle wechseln oder ein Angebot als AI Ops Analyst erhalten",
+            "Ein Portfolio aus 4 umgesetzten Workflow-Automatisierungs-Fallstudien aufbauen",
+            "Netzwerk in der Zielrolle auf 50+ warme Kontakte ausbauen"
+          ]
+        },
+        {
+          "horizon": "2 Jahre",
+          "items": [
+            "AI Implementation Consultant — prognostizierte Gehaltssteigerung von 35–45%",
+            "Bereichsübergreifende KI-Einführung für eine Geschäftseinheit leiten",
+            "Optional: nebenberufliche unabhängige Beratung zur Einkommensdiversifizierung"
+          ]
+        }
+      ],
+      "skillGapTitle": "Skill-Lücken-Match — Ziel: AI Implementation Consultant",
+      "skillGaps": [
+        {
+          "skill": "Prozessautomatisierung",
+          "match": 82,
+          "note": "Stark — 8 Jahre Operations-Erfahrung sind direkt übertragbar"
+        },
+        {
+          "skill": "Prompt-Engineering & LLM-Tools",
+          "match": 41,
+          "note": "Lücke — wird durch AI Essentials in Monat 1 geschlossen"
+        },
+        {
+          "skill": "Stakeholder- & Change-Management",
+          "match": 88,
+          "note": "Stark — als KI-Einführungs-Leadership neu framen"
+        },
+        {
+          "skill": "Datenkompetenz / SQL-Grundlagen",
+          "match": 55,
+          "note": "Teilweise — 3-wöchiger fokussierter Sprint empfohlen"
+        }
+      ],
+      "insightsTitle": "Was die KI an deinem Profil bemerkt hat",
+      "insights": [
+        "Dein Operations-Hintergrund ist ein versteckter Vorteil: 71% der AI-Implementation-Rollen priorisieren Fachwissen + Change-Management vor Programmierung.",
+        "Schnellster Markteinstieg: Automatisiere einen mühsamen Workflow bei deinem aktuellen Arbeitgeber und dokumentiere den ROI als erste Fallstudie.",
+        "Größtes Risiko zuerst entschärfen: die Prompt-Engineering-Lücke. Sie ist am günstigsten zu schließen und öffnet die meisten Jobtitel."
+      ],
+      "pdfTitle": "Ein ausgefeilter Report, den du wirklich behältst",
+      "pdfBody": "Deine komplette Roadmap, Skill-Lücken-Analyse und Meilenstein-Checkliste — exportiert als teilbares PDF. Nimm es mit zu deinem Mentor, deiner Führungskraft oder deinem nächsten Interview. Kein Abo; es gehört für immer dir.",
+      "pdfFeatures": [
+        "Vollständiger 6-Monats- / 1-Jahres- / 2-Jahres-Meilensteinplan",
+        "Skill-Lücken-Scores + empfohlene Kurse",
+        "Personalisiert auf deine Finanzen & Rahmenbedingungen"
+      ],
+      "ctaPrimary": "Meinen erstellen",
+      "ctaSecondary": "Oder probiere zuerst den kostenlosen Skill-Lücken-Schnappschuss — ohne Zahlung"
     }
   },
   "meta": {

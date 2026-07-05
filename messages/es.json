@@ -277,6 +277,92 @@
     },
     "stickyCta": {
       "cta": "Obtener mi plan — <s>$29</s> $19 →"
+    },
+    "featureShowcase": {
+      "eyebrow": "Míralo En Acción",
+      "headingLead": "Esto es lo que obtienes.",
+      "headingAccent": "Antes de pagar.",
+      "subheading": "Sin promesas vagas. Aquí tienes una muestra real del plan, los insights y el informe generados por IA — creados a partir de un perfil real de cambio de carrera.",
+      "sampleBadge": "Salida de ejemplo",
+      "sampleNote": "— tu plan se genera a partir de tu currículum, tus finanzas y tus circunstancias reales.",
+      "tabs": {
+        "plan": {
+          "label": "Generación de plan",
+          "sub": "Tu hoja de ruta a 6 meses / 1 año / 2 años"
+        },
+        "insights": {
+          "label": "Insights de IA",
+          "sub": "Coincidencia de skills + análisis de brechas"
+        },
+        "pdf": {
+          "label": "Informe PDF",
+          "sub": "Tu plan, tuyo para siempre"
+        }
+      },
+      "milestones": [
+        {
+          "horizon": "6 meses",
+          "items": [
+            "Completa Google AI Essentials + entrega 2 proyectos de automatización en tu trabajo actual",
+            "Reposiciona tu LinkedIn en torno a 'operaciones + IA' — objetivo: 15 vistas de reclutadores/semana",
+            "Consigue 3 entrevistas informativas con líderes de implementación de IA"
+          ]
+        },
+        {
+          "horizon": "1 año",
+          "items": [
+            "Pasa a un rol interno cercano a la IA o consigue una oferta de Analista de AI Ops",
+            "Construye un portafolio de 4 casos de automatización de flujos entregados",
+            "Amplía tu red en el rol objetivo a más de 50 contactos cercanos"
+          ]
+        },
+        {
+          "horizon": "2 años",
+          "items": [
+            "Consultor de Implementación de IA — aumento salarial proyectado del 35–45%",
+            "Lidera la adopción de IA multifuncional para una unidad de negocio",
+            "Opcional: consultoría independiente paralela para diversificar ingresos"
+          ]
+        }
+      ],
+      "skillGapTitle": "Coincidencia de brechas — objetivo: Consultor de Implementación de IA",
+      "skillGaps": [
+        {
+          "skill": "Automatización de procesos",
+          "match": 82,
+          "note": "Fuerte — 8 años de experiencia en operaciones se transfieren directamente"
+        },
+        {
+          "skill": "Ingeniería de prompts y herramientas LLM",
+          "match": 41,
+          "note": "Brecha — cubierta por AI Essentials en el mes 1"
+        },
+        {
+          "skill": "Gestión de stakeholders y del cambio",
+          "match": 88,
+          "note": "Fuerte — reformúlala como liderazgo en adopción de IA"
+        },
+        {
+          "skill": "Alfabetización de datos / SQL básico",
+          "match": 55,
+          "note": "Parcial — se recomienda un sprint enfocado de 3 semanas"
+        }
+      ],
+      "insightsTitle": "Lo que la IA notó sobre tu perfil",
+      "insights": [
+        "Tu experiencia en operaciones es una ventaja oculta: el 71% de los roles de implementación de IA priorizan el dominio + la gestión del cambio sobre la programación.",
+        "La entrada más rápida al mercado: automatiza un flujo de trabajo tedioso en tu empleador actual y documenta el ROI como tu primer caso de estudio.",
+        "El mayor riesgo a mitigar primero: la brecha en ingeniería de prompts. Es la más barata de cerrar y desbloquea la mayoría de los puestos."
+      ],
+      "pdfTitle": "Un informe pulido que de verdad conservas",
+      "pdfBody": "Tu hoja de ruta completa, análisis de brechas de skills y lista de hitos — exportado como un PDF que puedes compartir. Llévalo a tu mentor, tu jefe o tu próxima entrevista. Sin suscripción; es tuyo para siempre.",
+      "pdfFeatures": [
+        "Plan completo de hitos a 6 meses / 1 año / 2 años",
+        "Puntuaciones de brechas de skills + cursos recomendados",
+        "Personalizado según tus finanzas y circunstancias"
+      ],
+      "ctaPrimary": "Generar el mío",
+      "ctaSecondary": "O prueba primero la instantánea gratuita de brechas de skills — sin pago"
     }
   },
   "meta": {
