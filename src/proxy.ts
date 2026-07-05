@@ -4,7 +4,12 @@ import createMiddleware from "next-intl/middleware";
 import { createSupabaseProxyClient } from "@/lib/supabase-proxy";
 import { routing } from "@/i18n/routing";
 
-const PROTECTED_PATHS = ["/dashboard", "/report", "/chat", "/account"];
+// `/report/[id]` is intentionally NOT protected: it is the share-loop target
+// (Google-Docs model — reachable only by its unguessable id, robots: noindex).
+// The page itself renders a PII-minimized public view for non-owners and the
+// full-fidelity view only for the authenticated owner (see report/[id]/page.tsx).
+// Board decision AIC-712.
+const PROTECTED_PATHS = ["/dashboard", "/chat", "/account"];
 
 // next-intl locale detection + as-needed prefixing (AIC-667).
 const handleI18nRouting = createMiddleware(routing);
