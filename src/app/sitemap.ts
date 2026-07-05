@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { getAllPosts } from "@/lib/blog";
+import { pivots } from "@/content/pivots";
 import { locales } from "@/i18n/routing";
 import { localizedPath } from "@/lib/seo";
 
@@ -48,6 +49,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  // Programmatic pivot pages (AIC-688 Scope 4): one indexable page per
+  // from→to role transition, driven by src/content/pivots.ts.
+  const pivotLastModified = pageLastModified("pivot/[slug]");
+  const pivotPages: Entry[] = pivots.map((pivot) => ({
+    path: `/pivot/${pivot.slug}`,
+    lastModified: pivotLastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   const toolPages: Entry[] = [
     { path: "/assessment", priority: 0.7 },
     { path: "/gap-analysis", priority: 0.7 },
@@ -75,6 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/pricing", lastModified: pageLastModified("pricing"), changeFrequency: "monthly", priority: 0.8 },
     { path: "/success-stories", lastModified: pageLastModified("success-stories"), changeFrequency: "monthly", priority: 0.6 },
     ...toolPages,
+    ...pivotPages,
     { path: "/free", lastModified: pageLastModified("free"), changeFrequency: "monthly", priority: 0.7 },
     { path: "/privacy", lastModified: pageLastModified("privacy"), changeFrequency: "yearly", priority: 0.3 },
   ];
