@@ -2,7 +2,17 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { caseStudies } from "@/lib/testimonials";
+
+type CaseStudyCard = {
+  beforeRole: string;
+  afterRole: string;
+  timeline: string;
+  keyMetric: string;
+  quote: string;
+  name: string;
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,8 +25,17 @@ const stagger = {
 };
 
 export default function CaseStudyCards() {
+  const t = useTranslations("caseStudies");
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  const cardText = t.raw("cards") as CaseStudyCard[];
+  const cards = caseStudies.map((cs, i) => ({
+    ...cardText[i],
+    borderGradient: cs.borderGradient,
+    gradient: cs.gradient,
+    initials: cs.initials,
+  }));
 
   return (
     <section className="py-28 px-6">
@@ -32,15 +51,15 @@ export default function CaseStudyCards() {
             variants={fadeUp}
             className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3"
           >
-            Success Stories
+            {t("eyebrow")}
           </motion.p>
           <motion.h2
             variants={fadeUp}
             className="text-3xl sm:text-4xl font-extrabold text-white mb-4"
           >
-            Real transitions,{" "}
+            {t("headingLead")}{" "}
             <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-              real outcomes
+              {t("headingHighlight")}
             </span>
           </motion.h2>
         </motion.div>
@@ -51,7 +70,7 @@ export default function CaseStudyCards() {
           animate={inView ? "visible" : "hidden"}
           className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
-          {caseStudies.map((cs) => (
+          {cards.map((cs) => (
             <motion.div
               key={cs.name}
               variants={fadeUp}

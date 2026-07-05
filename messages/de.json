@@ -55,13 +55,155 @@
     }
   },
   "home": {
+    "nav": {
+      "howItWorks": "So funktioniert's",
+      "about": "Über uns",
+      "faq": "FAQ",
+      "blog": "Blog",
+      "pricing": "Preise",
+      "getStarted": "Loslegen"
+    },
     "hero": {
-      "eyebrow": "KI-gestützter Karrierestratege",
-      "title": "Fühlen Sie sich nicht länger in der falschen Karriere gefangen",
-      "subtitle": "Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer tatsächlichen Fähigkeiten, Finanzen und familiären Rahmenbedingungen — mit umsetzbaren Plänen für 6 Monate, 1 Jahr und 2 Jahre.",
-      "ctaPrimary": "Kostenlose Analyse erhalten",
-      "ctaSecondary": "So funktioniert's ansehen",
-      "trustNote": "Keine Kreditkarte erforderlich."
+      "badge": "Einführungspreis — nur $19 (statt $29) · Begrenzte Zeit",
+      "titleLine1": "Fühlen Sie sich nicht länger gefangen.",
+      "titleLine2": "Entwickeln Sie Ihren Ausstiegsplan.",
+      "subtitle": "Laden Sie Ihren Lebenslauf hoch. Erhalten Sie einen persönlichen Fahrplan für Ihren Karrierewechsel, der auf Ihren echten Fähigkeiten, Finanzen und familiären Rahmenbedingungen basiert — in unter 5 Minuten.",
+      "socialProof": "{count} Fachkräfte haben diesen Monat den Wechsel geschafft",
+      "ctaPrimary": "Jetzt meinen Wechselplan erstellen —",
+      "ctaSecondary": "So funktioniert's",
+      "freeLink": "Oder testen Sie die kostenlose Skill-Gap-Analyse — keine Zahlung erforderlich →",
+      "freeNote": "Dauert 3 Minuten · Kein Abo · Der vollständige Fahrplan gehört Ihnen",
+      "viewersToday": "🔥 {count} Personen haben diese Seite heute angesehen"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Schneller als allein zu planen"
+      },
+      {
+        "value": "6 Mon.",
+        "label": "Bis zu Ihrem ersten Meilenstein"
+      },
+      {
+        "value": "100 %",
+        "label": "Auf Ihr Leben zugeschnitten"
+      }
+    ],
+    "activity": {
+      "countLabel": "{count} Personen",
+      "suffix": "arbeiten gerade jetzt an ihrem Karrierewechsel"
+    },
+    "howItWorks": {
+      "eyebrow": "So funktioniert's",
+      "title": "In drei Schritten von festgefahren zu strategisch",
+      "subtitle": "Ein einfacher Prozess, der Ihre gesamte Situation in einen konkreten Aktionsplan verwandelt."
+    },
+    "steps": [
+      {
+        "title": "Wir analysieren Ihren Werdegang",
+        "desc": "Teilen Sie Ihr LinkedIn-Profil, Ihren Lebenslauf und Ihr Portfolio. Unsere KI analysiert Ihre tatsächliche Erfahrung — beruflicher Werdegang, übertragbare Fähigkeiten, Erfolge — bevor sie auch nur eine einzige Empfehlung ausspricht."
+      },
+      {
+        "title": "Die KI entwickelt Ihre Strategie",
+        "desc": "Wir verbinden Ihren echten Werdegang mit Ihrer finanziellen Situation und Ihren familiären Rahmenbedingungen, um einen maßgeschneiderten Fahrplan für den Wechsel zu erstellen. Keine allgemeinen Ratschläge. Ihr Plan, erstellt aus Ihren Daten."
+      },
+      {
+        "title": "Setzen Sie ihn mit Zuversicht um",
+        "desc": "Erhalten Sie konkrete Meilensteine für 6 Monate, 1 Jahr und 2 Jahre — mit Kompetenzlücken und Maßnahmen, die genau dort ansetzen, wo Sie heute tatsächlich stehen."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Datengestützte Erkenntnisse",
+      "title": "Ihre Karrierestrategie, unterstützt durch KI-Analytik",
+      "subtitle": "Verfolgen Sie Ihren Fortschritt, messen Sie Kompetenzlücken und sehen Sie genau, wo Sie stehen — alles in einem Dashboard.",
+      "imageAlt": "KI-gestütztes Karriere-Analytics-Dashboard mit Kompetenz-Match-Werten und Fortschrittsverfolgung"
+    },
+    "whoFor": {
+      "eyebrow": "Für wen es gedacht ist",
+      "title": "Gemacht für Menschen wie Sie",
+      "subtitle": "Anders als bei allgemeinen Karrieretipps analysieren wir zuerst Ihren tatsächlichen Werdegang — und beziehen dann Ihr gesamtes Leben mit ein."
+    },
+    "personas": [
+      {
+        "label": "Ausgebrannte Fachkräfte, die bereit für Veränderung sind",
+        "tag": "Burnout"
+      },
+      {
+        "label": "Eltern, die nicht einfach kündigen und improvisieren können",
+        "tag": "Familie"
+      },
+      {
+        "label": "Verdienende, die auf ein stabiles Einkommen angewiesen sind",
+        "tag": "Finanzen"
+      },
+      {
+        "label": "Umsteiger, die in eine neue Branche wechseln",
+        "tag": "Wechsel"
+      },
+      {
+        "label": "Remote-Arbeitende, die neue Möglichkeiten erkunden",
+        "tag": "Remote"
+      },
+      {
+        "label": "Ehrgeizige Angestellte, die schneller vorankommen wollen",
+        "tag": "Wachstum"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Echte Wechsel, echte Menschen",
+      "titleLead": "Sie haben aufgehört zu warten.",
+      "titleHighlight": "Sie können das auch.",
+      "subtitle": "Erste Nutzer setzen bereits ihre persönlichen Fahrpläne ein, um Karrierewechsel mit Zuversicht zu meistern.",
+      "cta": "Meinen Karrierewechsel starten —"
+    },
+    "beforeAfter": {
+      "eyebrow": "Echte Transformationen",
+      "titleLead": "Wo sie angefangen haben.",
+      "titleHighlight": "Wo sie heute stehen."
+    },
+    "beforeAfterCards": [
+      {
+        "before": "8 Jahre im Marketing festgefahren",
+        "after": "Product Manager bei einem Series-B-Startup",
+        "timeline": "Wechsel in 6 Monaten"
+      },
+      {
+        "before": "Ausgebrannter Buchhalter ohne Tech-Hintergrund",
+        "after": "Data Analytics Lead bei einem Fortune-500-Konzern",
+        "timeline": "Wechsel in 9 Monaten"
+      },
+      {
+        "before": "Retail-Operations-Manager, Karriere auf dem Plateau",
+        "after": "AI Implementation Consultant, 40 % Gehaltssteigerung",
+        "timeline": "Wechsel in 5 Monaten"
+      }
+    ],
+    "finalCta": {
+      "title": "Ihre Karriere wartet nicht. Sie sollten es auch nicht.",
+      "subtitle": "Mit jeder Woche, die Sie warten, verändert KI weitere Berufsbilder. Holen Sie sich jetzt Ihren persönlichen Wechsel-Fahrplan — solange der Einführungspreis gilt.",
+      "cta": "Meinen Wechselplan erstellen —",
+      "note": "3 Minuten · Kein Abo · Für immer Ihrer"
+    },
+    "courses": {
+      "eyebrow": "Fähigkeiten ausbauen",
+      "title": "KI-Fähigkeiten, die Sie wirklich einstellbar machen",
+      "subtitle": "Die Qualifikationen, die Personalverantwortliche anerkennen. Kuratiert für Fachkräfte, die in KI-nahe Rollen wechseln.",
+      "matchLabel": "{score} % Übereinstimmung",
+      "footerNote": "Nicht sicher, welche Kurse zu Ihrem Werdegang passen? Erhalten Sie einen persönlichen Lernpfad mit Ihrer kostenlosen Karrierewechsel-Analyse.",
+      "cta": "Meinen persönlichen Lernpfad erhalten —",
+      "valueProps": [
+        "Verstehen, wie LLMs funktionieren und wie man sie in jeder Rolle anwendet",
+        "Praktische KI-Tools für mehr Produktivität am Arbeitsplatz — ganz ohne Programmieren",
+        "Branchenweit anerkanntes Zertifikat für KI-Grundlagen auf Cloud-Infrastruktur",
+        "Grundlegende KI- und ML-Konzepte — passt gut zu jedem Unternehmenshintergrund",
+        "Andrew Ngs nicht-technischer KI-Strategiekurs — bereit für die Chefetage",
+        "Durchgängige ML-Engineering-Fähigkeiten mit praxisnahen Projekten"
+      ]
+    },
+    "blogPreview": {
+      "title": "Aus dem Blog",
+      "subtitle": "Praktische Leitfäden für Ihren Karrierewechsel",
+      "allLink": "Alle Artikel →"
     }
   },
   "meta": {
@@ -1678,5 +1820,186 @@
         "button": "Preise ansehen →"
       }
     }
+  },
+  "voices": {
+    "eyebrow": "Stimmen der KI-Ära",
+    "headingLead": "Die Vordenker, die KI gestalten, sind sich einig:",
+    "headingHighlight": "jetzt handeln.",
+    "subtitle": "Von Nobelpreisträgern bis zu CEOs, die die KI-Ära prägen — die Botschaft ist einstimmig. Das Zeitfenster zum Anpassen ist heute offen, nicht morgen.",
+    "stripText": "Die Experten sind sich einig — der Umbruch ist bereits da.",
+    "stripEmphasis": "Sie sind am Zug.",
+    "ctaButton": "Meinen Wechselplan erstellen — $19 →",
+    "experts": [
+      {
+        "name": "Dario Amodei",
+        "title": "CEO, Anthropic",
+        "imageAlt": "Nachdenklicher Tech-CEO in einem modernen Büro mit dramatischem Seitenlicht und Stadtsilhouette in der Abenddämmerung",
+        "quote": "KI wird Auswirkungen haben, die weitaus breiter sind und viel schneller eintreten als frühere Schocks am Arbeitsmarkt.",
+        "context": "Davos 2026",
+        "urgencyLabel": "50 % der Einstiegsjobs",
+        "urgencyDesc": "in 1–5 Jahren umgewälzt"
+      },
+      {
+        "name": "Geoffrey Hinton",
+        "title": "Nobelpreisträger · \"Godfather of AI\"",
+        "imageAlt": "Angesehener Professor in einer Universitätsbibliothek mit neuronalen Netzdiagrammen an einer Tafel und Licht der goldenen Stunde",
+        "quote": "Die Fähigkeiten von KI verdoppeln sich etwa alle sieben Monate — das Tempo des Wandels ist beispiellos.",
+        "context": "Nobel Lecture 2024",
+        "urgencyLabel": "2026",
+        "urgencyDesc": "der Wendepunkt für massenhafte Verdrängung"
+      },
+      {
+        "name": "Jensen Huang",
+        "title": "CEO, NVIDIA",
+        "imageAlt": "Charismatische Tech-Führungskraft auf der Bühne mit dramatischem türkisem Licht und holografischen GPU-Chip-Diagrammen",
+        "quote": "Es ist unerlässlich zu lernen, wie man KI nutzt — wie man sie lenkt, steuert, eingrenzt und bewertet.",
+        "context": "CES 2025",
+        "urgencyLabel": "Jeder Job",
+        "urgencyDesc": "wird sich grundlegend verändern"
+      },
+      {
+        "name": "Chamath Palihapitiya",
+        "title": "Gründer, Social Capital",
+        "imageAlt": "Risikokapitalgeber in einem modernen Podcast-Studio mit neonblauem Licht und Marktdaten-Monitoren",
+        "quote": "Junge Menschen, die bereit sind, KI-native zu sein, sind gut aufgestellt. Wer das nicht ist, bleibt zurück.",
+        "context": "All-In Podcast",
+        "urgencyLabel": "18 Monate",
+        "urgencyDesc": "bis sich traditionelle Rollen wandeln"
+      }
+    ]
+  },
+  "successMetrics": {
+    "eyebrow": "Bewiesene Ergebnisse",
+    "heading": "Zahlen, die für sich sprechen",
+    "metricLabels": [
+      "Fachkräfte gewechselt",
+      "berichten von Karrierefortschritt",
+      "Schneller als allein zu planen",
+      "Durchschnittliche Gehaltssteigerung"
+    ]
+  },
+  "caseStudies": {
+    "eyebrow": "Erfolgsgeschichten",
+    "headingLead": "Echte Wechsel,",
+    "headingHighlight": "echte Ergebnisse",
+    "cards": [
+      {
+        "beforeRole": "Senior Engineer",
+        "afterRole": "Product Lead",
+        "timeline": "4 Monate",
+        "keyMetric": "+40 % mehr Vergütung",
+        "quote": "Die meisten Karrieretipps ignorieren, dass man eine Hypothek, Kinder und einen Partner hat, der ebenfalls Karriere macht. AICareerPivot berücksichtigt endlich die echten Rahmenbedingungen.",
+        "name": "Sarah K."
+      },
+      {
+        "beforeRole": "Financial Analyst",
+        "afterRole": "AI Strategy Consultant",
+        "timeline": "6 Monate",
+        "keyMetric": "doppelter Stundensatz",
+        "quote": "Ich war von der Menge an KI-Zertifizierungen wie gelähmt. Der Fahrplan hat die Spreu vom Weizen getrennt und mir genau gesagt, mit welchen zwei ich für meinen Hintergrund beginnen sollte.",
+        "name": "Marcus T."
+      },
+      {
+        "beforeRole": "Marketing Manager",
+        "afterRole": "ML Ops Lead",
+        "timeline": "8 Monate",
+        "keyMetric": "25.000 $ mehr Gehalt",
+        "quote": "Als alleinerziehender Elternteil kann ich es mir nicht leisten zu kündigen und zu improvisieren. Der 6-Monats-Plan gab mir einen Weg, mich abends und am Wochenende weiterzubilden, ohne mein Einkommen zu riskieren.",
+        "name": "Priya R."
+      }
+    ]
+  },
+  "featureShowcase": {
+    "eyebrow": "Sehen Sie es in Aktion",
+    "headingLead": "Das bekommen Sie.",
+    "headingAccent": "Bevor Sie zahlen.",
+    "subtitle": "Keine vagen Versprechen. Hier ist ein echtes Beispiel des KI-generierten Plans, der Erkenntnisse und des Berichts — erstellt aus einem tatsächlichen Karrierewechsel-Profil.",
+    "tabs": {
+      "plan": {
+        "label": "Plan-Erstellung",
+        "sub": "Ihr Fahrplan für 6 Mon. / 1 Jahr / 2 Jahre"
+      },
+      "insights": {
+        "label": "KI-Erkenntnisse",
+        "sub": "Kompetenz-Match + Lückenanalyse"
+      },
+      "pdf": {
+        "label": "PDF-Bericht",
+        "sub": "Ihr Plan, der Ihnen gehört"
+      }
+    },
+    "milestones": [
+      {
+        "horizon": "6 Monate",
+        "items": [
+          "Google AI Essentials abschließen + 2 Automatisierungsprojekte in Ihrem aktuellen Job umsetzen",
+          "Ihr LinkedIn-Profil rund um 'Operations + KI' neu ausrichten — Ziel: 15 Recruiter-Aufrufe/Woche",
+          "3 Informationsgespräche mit AI Implementation Leads führen"
+        ]
+      },
+      {
+        "horizon": "1 Jahr",
+        "items": [
+          "In eine interne KI-nahe Rolle wechseln oder ein Angebot als AI Ops Analyst erhalten",
+          "Ein Portfolio aus 4 umgesetzten Workflow-Automatisierungs-Fallstudien aufbauen",
+          "Netzwerk in der Zielrolle auf 50+ persönliche Kontakte ausbauen"
+        ]
+      },
+      {
+        "horizon": "2 Jahre",
+        "items": [
+          "AI Implementation Consultant — voraussichtlich 35–45 % mehr Vergütung",
+          "Bereichsübergreifende KI-Einführung für eine Geschäftseinheit leiten",
+          "Optional: nebenberufliche unabhängige Beratung zur Einkommensdiversifizierung"
+        ]
+      }
+    ],
+    "skillGapHeading": "Kompetenzlücken-Abgleich — Ziel: AI Implementation Consultant",
+    "skillGaps": [
+      {
+        "skill": "Prozessautomatisierung",
+        "note": "Stark — 8 Jahre Operations-Erfahrung lassen sich direkt übertragen"
+      },
+      {
+        "skill": "Prompt Engineering & LLM-Tooling",
+        "note": "Lücke — wird durch AI Essentials in Monat 1 abgedeckt"
+      },
+      {
+        "skill": "Stakeholder- & Change-Management",
+        "note": "Stark — als Führung bei der KI-Einführung neu positionieren"
+      },
+      {
+        "skill": "Datenkompetenz / SQL-Grundlagen",
+        "note": "Teilweise — ein fokussierter 3-Wochen-Sprint empfohlen"
+      }
+    ],
+    "insightsHeading": "Was die KI an Ihrem Profil bemerkt hat",
+    "insights": [
+      "Ihr Operations-Hintergrund ist ein verborgener Vorteil: 71 % der AI-Implementation-Rollen priorisieren Fachwissen + Change-Management gegenüber Programmierkenntnissen.",
+      "Schnellster Einstieg in den Markt: Automatisieren Sie einen mühsamen Workflow bei Ihrem aktuellen Arbeitgeber und dokumentieren Sie den ROI als Ihre erste Fallstudie.",
+      "Größtes Risiko, das zuerst zu entschärfen ist: die Prompt-Engineering-Lücke. Sie ist am günstigsten zu schließen und eröffnet die meisten Jobtitel."
+    ],
+    "pdfHeading": "Ein ausgefeilter Bericht, den Sie wirklich behalten",
+    "pdfDescription": "Ihr vollständiger Fahrplan, die Kompetenzlücken-Analyse und die Meilenstein-Checkliste — exportiert als teilbares PDF. Bringen Sie es zu Ihrem Mentor, Ihrer Führungskraft oder Ihrem nächsten Vorstellungsgespräch. Kein Abo; es gehört für immer Ihnen.",
+    "pdfFeatures": [
+      "Vollständiger Meilenstein-Plan für 6 Mon. / 1 Jahr / 2 Jahre",
+      "Kompetenzlücken-Werte + empfohlene Kurse",
+      "Auf Ihre Finanzen & Rahmenbedingungen zugeschnitten"
+    ],
+    "sampleBadge": "Beispielausgabe",
+    "sampleNote": "— Ihr Plan wird aus Ihrem echten Lebenslauf, Ihren Finanzen und Rahmenbedingungen erstellt.",
+    "ctaPrimaryLabel": "Meinen erstellen",
+    "ctaSecondary": "Oder testen Sie zuerst die kostenlose Skill-Gap-Analyse — keine Zahlung →"
+  },
+  "trustBar": {
+    "tagline": "Entwickelt mit Technologie von",
+    "partners": {
+      "anthropic": "Anthropic",
+      "vercel": "Vercel",
+      "stripe": "Stripe"
+    }
+  },
+  "stickyCta": {
+    "cta": "Meinen Plan erhalten —"
   }
 }

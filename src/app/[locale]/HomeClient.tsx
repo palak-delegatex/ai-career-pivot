@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
@@ -122,68 +123,32 @@ function AnimatedSection({ children, className = "" }: { children: React.ReactNo
   );
 }
 
-const steps = [
+// Style-only metadata for the "how it works" steps. Copy (title/desc) comes
+// from the `home.steps` message array, merged by index.
+const stepStyles = [
   {
     number: "01",
-    title: "We Read Your Background",
-    desc: "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation.",
     accent: "from-teal-500 to-emerald-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
   },
   {
     number: "02",
-    title: "AI Builds Your Strategy",
-    desc: "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data.",
     accent: "from-teal-400 to-cyan-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
   },
   {
     number: "03",
-    title: "Execute with Confidence",
-    desc: "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today.",
     accent: "from-cyan-500 to-teal-500",
     border: "border-cyan-500/20",
     glow: "hover:shadow-cyan-500/10",
   },
 ];
 
-const personas = [
-  { label: "Burned-out professionals ready for change", tag: "Burnout" },
-  { label: "Parents who can't just quit and figure it out", tag: "Family" },
-  { label: "Earners who need income continuity", tag: "Finance" },
-  { label: "Career changers entering a new industry", tag: "Pivot" },
-  { label: "Remote workers exploring new opportunities", tag: "Remote" },
-  { label: "Ambitious employees who want faster growth", tag: "Growth" },
-];
-
-const stats = [
-  { value: "3×", label: "Faster than solo planning" },
-  { value: "6mo", label: "To your first milestone" },
-  { value: "100%", label: "Personalized to your life" },
-];
-
-const beforeAfterCards = [
-  {
-    before: "Stuck in marketing for 8 years",
-    after: "Product Manager at a Series B startup",
-    timeline: "6-month pivot",
-  },
-  {
-    before: "Burnt-out accountant with no tech background",
-    after: "Data Analytics Lead at a Fortune 500",
-    timeline: "9-month pivot",
-  },
-  {
-    before: "Retail operations manager, career plateau",
-    after: "AI Implementation Consultant, 40% salary increase",
-    timeline: "5-month pivot",
-  },
-];
-
 
 function ActivityIndicator() {
+  const t = useTranslations("home");
   const [count, setCount] = useState(14);
 
   useEffect(() => {
@@ -201,7 +166,7 @@ function ActivityIndicator() {
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
         </span>
         <p className="text-slate-400 text-sm">
-          <span className="text-white font-semibold">{count} people</span> are building their career pivot right now
+          <span className="text-white font-semibold">{t("activity.countLabel", { count })}</span> {t("activity.suffix")}
         </p>
       </div>
     </div>
@@ -209,8 +174,20 @@ function ActivityIndicator() {
 }
 
 
+type StepText = { title: string; desc: string };
+type PersonaText = { label: string; tag: string };
+type StatText = { value: string; label: string };
+type BeforeAfterText = { before: string; after: string; timeline: string };
+
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
+  const t = useTranslations("home");
   const heroRef = useRef<HTMLElement>(null);
+
+  const stepsText = t.raw("steps") as StepText[];
+  const personas = t.raw("personas") as PersonaText[];
+  const stats = t.raw("stats") as StatText[];
+  const beforeAfterCards = t.raw("beforeAfterCards") as BeforeAfterText[];
+  const courseValueProps = t.raw("courses.valueProps") as string[];
 
   const shuffledTestimonials = useMemo(() => {
     const arr = [...testimonials];
@@ -280,16 +257,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">How It Works</Link>
-            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">About</Link>
-            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link>
-            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Blog</Link>
-            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link>
+            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("nav.howItWorks")}</Link>
+            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("nav.about")}</Link>
+            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("nav.faq")}</Link>
+            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("nav.blog")}</Link>
+            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("nav.pricing")}</Link>
             <Link
               href="/pricing"
               className="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
             >
-              Get Started
+              {t("nav.getStarted")}
             </Link>
           </div>
         </motion.nav>
@@ -313,7 +290,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Intro Pricing — Just $19 (was $29) · Limited time
+            {t("hero.badge")}
           </motion.div>
 
           <motion.h1
@@ -323,10 +300,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6"
           >
             <motion.span variants={fadeUp} className="block text-white">
-              Stop feeling trapped.
+              {t("hero.titleLine1")}
             </motion.span>
             <motion.span variants={fadeUp} className="block shimmer-text mt-2">
-              Build your escape plan.
+              {t("hero.titleLine2")}
             </motion.span>
           </motion.h1>
 
@@ -337,8 +314,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             transition={{ delay: 0.35 }}
             className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6"
           >
-            Upload your resume. Get a personalized career pivot roadmap built around your
-            real skills, finances, and family constraints — in under 5 minutes.
+            {t("hero.subtitle")}
           </motion.p>
 
           {/* Social proof — positioned ABOVE CTA for trust-before-action */}
@@ -363,7 +339,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 ))}
               </div>
               <p className="text-slate-400 text-sm">
-                <span className="text-white font-semibold">127 professionals pivoted this month</span>
+                <span className="text-white font-semibold">{t("hero.socialProof", { count: 127 })}</span>
               </p>
             </div>
           </motion.div>
@@ -382,7 +358,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 onMouseEnter={handleHeroCtaHover}
                 className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
               >
-                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $19 →</span>
+                <span className="relative z-10">{t("hero.ctaPrimary")} <s className="text-white/60 font-normal">$29</s> $19 →</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
@@ -390,7 +366,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 href="#how-it-works"
                 className="px-8 py-6 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
               >
-                See How It Works
+                {t("hero.ctaSecondary")}
               </Link>
             </div>
             <div className="flex flex-col items-center gap-1.5">
@@ -399,13 +375,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 onClick={() => trackCtaClicked({ cta_text: "Try Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free" })}
                 className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
               >
-                Or try the free skill-gap snapshot — no payment required →
+                {t("hero.freeLink")}
               </Link>
               <p className="text-slate-500 text-sm">
-                Takes 3 minutes · No subscription · Full roadmap yours to keep
+                {t("hero.freeNote")}
               </p>
               <p className="text-amber-400/80 text-xs font-medium">
-                🔥 83 people viewed this page today
+                {t("hero.viewersToday", { count: 83 })}
               </p>
             </div>
           </motion.div>
@@ -436,18 +412,18 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-5xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                How It Works
+                {t("howItWorks.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                From stuck to strategic in three steps
+                {t("howItWorks.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
-                A simple process that turns your whole situation into a concrete action plan.
+                {t("howItWorks.subtitle")}
               </motion.p>
             </AnimatedSection>
 
             <AnimatedSection className="grid md:grid-cols-3 gap-5">
-              {steps.map((step) => (
+              {stepStyles.map((step, i) => (
                 <motion.div
                   key={step.number}
                   variants={fadeUp}
@@ -457,8 +433,8 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br ${step.accent} mb-5`}>
                     <span className="text-white font-bold text-sm">{step.number}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{stepsText[i]?.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{stepsText[i]?.desc}</p>
                   {/* Corner accent */}
                   <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${step.accent} opacity-5 rounded-2xl`} />
                 </motion.div>
@@ -477,16 +453,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         <section className="relative w-full py-24 overflow-hidden">
           <Image
             src="/images/dashboard.png"
-            alt="AI-powered career analytics dashboard showing skill match scores and progress tracking"
+            alt={t("dashboard.imageAlt")}
             fill
             className="object-cover object-center"
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#030712] via-[#030712]/60 to-[#030712]" />
           <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-            <p className="text-sm font-semibold tracking-widest uppercase text-teal-400 mb-4">Data-driven insights</p>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Your career strategy, powered by AI analytics</h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">Track your progress, measure skill gaps, and see exactly where you stand — all in one dashboard.</p>
+            <p className="text-sm font-semibold tracking-widest uppercase text-teal-400 mb-4">{t("dashboard.eyebrow")}</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">{t("dashboard.title")}</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">{t("dashboard.subtitle")}</p>
           </div>
         </section>
 
@@ -495,13 +471,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-4xl mx-auto">
             <AnimatedSection className="text-center mb-14">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Who It&apos;s For
+                {t("whoFor.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                Built for people like you
+                {t("whoFor.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
-                Unlike generic career advice, we read your actual background first — then factor in your whole life.
+                {t("whoFor.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -538,16 +514,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-6xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Real Pivots, Real People
+                {t("testimonials.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                They stopped waiting.{" "}
+                {t("testimonials.titleLead")}{" "}
                 <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  So can you.
+                  {t("testimonials.titleHighlight")}
                 </span>
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-lg mx-auto">
-                Early users are already using their personalized roadmaps to navigate career transitions with confidence.
+                {t("testimonials.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -610,7 +586,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $19 →
+                  {t("testimonials.cta")} <s className="text-white/60 font-normal">$29</s> $19 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -622,12 +598,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-5xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Real Transformations
+                {t("beforeAfter.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                Where they started.{" "}
+                {t("beforeAfter.titleLead")}{" "}
                 <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  Where they are now.
+                  {t("beforeAfter.titleHighlight")}
                 </span>
               </motion.h2>
             </AnimatedSection>
@@ -681,10 +657,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <div className="absolute inset-0 bg-gradient-to-r from-teal-600/5 to-cyan-600/5 animate-gradient" />
               <div className="relative z-10">
                 <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                  Your career won&apos;t wait. Neither should you.
+                  {t("finalCta.title")}
                 </motion.h2>
                 <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-8 leading-relaxed">
-                  Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.
+                  {t("finalCta.subtitle")}
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
                   <Link
@@ -693,12 +669,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $19", cta_location: "final_cta" })}
                     className="group inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Build My Pivot Plan — <s className="text-white/60 font-normal">$29</s> $19
+                    {t("finalCta.cta")} <s className="text-white/60 font-normal">$29</s> $19
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
-                  <p className="text-slate-500 text-sm">3 minutes · No subscription · Yours to keep forever</p>
+                  <p className="text-slate-500 text-sm">{t("finalCta.note")}</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -710,13 +686,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-6xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Skill Up
+                {t("courses.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                AI Skills That Actually Get You Hired
+                {t("courses.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-xl mx-auto">
-                The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.
+                {t("courses.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -792,7 +768,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     valueProp: "End-to-end ML engineering skills with hands-on projects",
                     matchScore: 78,
                   },
-                ].map((course) => (
+                ].map((course, idx) => (
                   <motion.div
                     key={course.name}
                     variants={fadeUp}
@@ -803,7 +779,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                       <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                       </svg>
-                      {course.matchScore}% match
+                      {t("courses.matchLabel", { score: course.matchScore })}
                     </div>
 
                     {/* Provider badge */}
@@ -816,7 +792,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                         {course.name}
                       </h3>
                       <p className="text-slate-400 text-sm leading-relaxed">
-                        {course.valueProp}
+                        {courseValueProps[idx]}
                       </p>
                     </div>
 
@@ -837,7 +813,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <AnimatedSection className="mt-14 text-center">
               <motion.div variants={fadeUp} className="inline-flex flex-col items-center gap-4">
                 <p className="text-slate-400 text-sm max-w-md">
-                  Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.
+                  {t("courses.footerNote")}
                 </p>
                 <Link
                   href="/pricing"
@@ -845,7 +821,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $19", cta_location: "courses" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Get My Personalized Learning Path — <s className="text-white/60 font-normal">$29</s> $19 →
+                  {t("courses.cta")} <s className="text-white/60 font-normal">$29</s> $19 →
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -857,11 +833,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight">From the blog</h2>
-                <p className="text-slate-400 text-sm mt-1">Practical guides for your career transition</p>
+                <h2 className="text-2xl font-extrabold text-white tracking-tight">{t("blogPreview.title")}</h2>
+                <p className="text-slate-400 text-sm mt-1">{t("blogPreview.subtitle")}</p>
               </div>
               <Link href="/blog" className="text-teal-400 text-sm font-semibold hover:text-teal-300 transition-colors">
-                All articles →
+                {t("blogPreview.allLink")}
               </Link>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

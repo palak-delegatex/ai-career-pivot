@@ -55,13 +55,155 @@
     }
   },
   "home": {
+    "nav": {
+      "howItWorks": "How It Works",
+      "about": "About",
+      "faq": "FAQ",
+      "blog": "Blog",
+      "pricing": "Pricing",
+      "getStarted": "Get Started"
+    },
     "hero": {
-      "eyebrow": "AI-powered career strategist",
-      "title": "Stop feeling trapped in the wrong career",
-      "subtitle": "Build a personalized career transition roadmap based on your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans.",
-      "ctaPrimary": "Get your free snapshot",
-      "ctaSecondary": "See how it works",
-      "trustNote": "No credit card required."
+      "badge": "Intro Pricing — Just $19 (was $29) · Limited time",
+      "titleLine1": "Stop feeling trapped.",
+      "titleLine2": "Build your escape plan.",
+      "subtitle": "Upload your resume. Get a personalized career pivot roadmap built around your real skills, finances, and family constraints — in under 5 minutes.",
+      "socialProof": "{count} professionals pivoted this month",
+      "ctaPrimary": "Build My Pivot Plan Now —",
+      "ctaSecondary": "See How It Works",
+      "freeLink": "Or try the free skill-gap snapshot — no payment required →",
+      "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
+      "viewersToday": "🔥 {count} people viewed this page today"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Faster than solo planning"
+      },
+      {
+        "value": "6mo",
+        "label": "To your first milestone"
+      },
+      {
+        "value": "100%",
+        "label": "Personalized to your life"
+      }
+    ],
+    "activity": {
+      "countLabel": "{count} people",
+      "suffix": "are building their career pivot right now"
+    },
+    "howItWorks": {
+      "eyebrow": "How It Works",
+      "title": "From stuck to strategic in three steps",
+      "subtitle": "A simple process that turns your whole situation into a concrete action plan."
+    },
+    "steps": [
+      {
+        "title": "We Read Your Background",
+        "desc": "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation."
+      },
+      {
+        "title": "AI Builds Your Strategy",
+        "desc": "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data."
+      },
+      {
+        "title": "Execute with Confidence",
+        "desc": "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Data-driven insights",
+      "title": "Your career strategy, powered by AI analytics",
+      "subtitle": "Track your progress, measure skill gaps, and see exactly where you stand — all in one dashboard.",
+      "imageAlt": "AI-powered career analytics dashboard showing skill match scores and progress tracking"
+    },
+    "whoFor": {
+      "eyebrow": "Who It's For",
+      "title": "Built for people like you",
+      "subtitle": "Unlike generic career advice, we read your actual background first — then factor in your whole life."
+    },
+    "personas": [
+      {
+        "label": "Burned-out professionals ready for change",
+        "tag": "Burnout"
+      },
+      {
+        "label": "Parents who can't just quit and figure it out",
+        "tag": "Family"
+      },
+      {
+        "label": "Earners who need income continuity",
+        "tag": "Finance"
+      },
+      {
+        "label": "Career changers entering a new industry",
+        "tag": "Pivot"
+      },
+      {
+        "label": "Remote workers exploring new opportunities",
+        "tag": "Remote"
+      },
+      {
+        "label": "Ambitious employees who want faster growth",
+        "tag": "Growth"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Real Pivots, Real People",
+      "titleLead": "They stopped waiting.",
+      "titleHighlight": "So can you.",
+      "subtitle": "Early users are already using their personalized roadmaps to navigate career transitions with confidence.",
+      "cta": "Start My Career Pivot —"
+    },
+    "beforeAfter": {
+      "eyebrow": "Real Transformations",
+      "titleLead": "Where they started.",
+      "titleHighlight": "Where they are now."
+    },
+    "beforeAfterCards": [
+      {
+        "before": "Stuck in marketing for 8 years",
+        "after": "Product Manager at a Series B startup",
+        "timeline": "6-month pivot"
+      },
+      {
+        "before": "Burnt-out accountant with no tech background",
+        "after": "Data Analytics Lead at a Fortune 500",
+        "timeline": "9-month pivot"
+      },
+      {
+        "before": "Retail operations manager, career plateau",
+        "after": "AI Implementation Consultant, 40% salary increase",
+        "timeline": "5-month pivot"
+      }
+    ],
+    "finalCta": {
+      "title": "Your career won't wait. Neither should you.",
+      "subtitle": "Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.",
+      "cta": "Build My Pivot Plan —",
+      "note": "3 minutes · No subscription · Yours to keep forever"
+    },
+    "courses": {
+      "eyebrow": "Skill Up",
+      "title": "AI Skills That Actually Get You Hired",
+      "subtitle": "The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.",
+      "matchLabel": "{score}% match",
+      "footerNote": "Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.",
+      "cta": "Get My Personalized Learning Path —",
+      "valueProps": [
+        "Understand how LLMs work and how to apply them in any role",
+        "Practical AI tools for workplace productivity — no coding needed",
+        "Industry-recognized cert for AI fundamentals on cloud infrastructure",
+        "Core AI and ML concepts — pairs well with any enterprise background",
+        "Andrew Ng's non-technical AI strategy course — boardroom-ready",
+        "End-to-end ML engineering skills with hands-on projects"
+      ]
+    },
+    "blogPreview": {
+      "title": "From the blog",
+      "subtitle": "Practical guides for your career transition",
+      "allLink": "All articles →"
     }
   },
   "meta": {
@@ -1678,5 +1820,186 @@
         "button": "See Pricing →"
       }
     }
+  },
+  "voices": {
+    "eyebrow": "Voices of the AI Era",
+    "headingLead": "The pioneers shaping AI agree:",
+    "headingHighlight": "act now.",
+    "subtitle": "From Nobel laureates to CEOs shaping the AI era — the message is unanimous. The window to adapt is open today, not tomorrow.",
+    "stripText": "The experts are aligned — the disruption is already here.",
+    "stripEmphasis": "Your move.",
+    "ctaButton": "Build My Pivot Plan — $19 →",
+    "experts": [
+      {
+        "name": "Dario Amodei",
+        "title": "CEO, Anthropic",
+        "imageAlt": "Thoughtful tech CEO in a modern office with dramatic side lighting and city skyline at dusk",
+        "quote": "AI will have effects that are much broader and occur much faster than previous labor market shocks.",
+        "context": "Davos 2026",
+        "urgencyLabel": "50% of entry-level jobs",
+        "urgencyDesc": "disrupted in 1–5 years"
+      },
+      {
+        "name": "Geoffrey Hinton",
+        "title": "Nobel Laureate · \"Godfather of AI\"",
+        "imageAlt": "Distinguished professor in a university library with neural network diagrams on a chalkboard and golden hour light",
+        "quote": "AI capabilities are doubling roughly every seven months — the pace of change is unlike anything we have seen before.",
+        "context": "Nobel Lecture 2024",
+        "urgencyLabel": "2026",
+        "urgencyDesc": "the tipping point for mass displacement"
+      },
+      {
+        "name": "Jensen Huang",
+        "title": "CEO, NVIDIA",
+        "imageAlt": "Charismatic tech executive on stage with dramatic teal lighting and holographic GPU chip diagrams",
+        "quote": "It is essential to learn how to use AI — how to direct it, manage it, guardrail it, evaluate it.",
+        "context": "CES 2025",
+        "urgencyLabel": "Every job",
+        "urgencyDesc": "will fundamentally change"
+      },
+      {
+        "name": "Chamath Palihapitiya",
+        "title": "Founder, Social Capital",
+        "imageAlt": "Venture capitalist in a modern podcast studio with neon blue lighting and market data monitors",
+        "quote": "Young people willing to be AI native are well placed. Those who aren't will be left behind.",
+        "context": "All-In Podcast",
+        "urgencyLabel": "18 months",
+        "urgencyDesc": "before traditional roles transform"
+      }
+    ]
+  },
+  "successMetrics": {
+    "eyebrow": "Proven Results",
+    "heading": "Numbers that speak for themselves",
+    "metricLabels": [
+      "Professionals Pivoted",
+      "Report Career Progress",
+      "Faster Than Solo Planning",
+      "Average Salary Uplift"
+    ]
+  },
+  "caseStudies": {
+    "eyebrow": "Success Stories",
+    "headingLead": "Real transitions,",
+    "headingHighlight": "real outcomes",
+    "cards": [
+      {
+        "beforeRole": "Senior Engineer",
+        "afterRole": "Product Lead",
+        "timeline": "4 months",
+        "keyMetric": "+40% comp increase",
+        "quote": "Most career advice ignores that you have a mortgage, kids, and a partner who also has a career. AICareerPivot finally accounts for the real constraints.",
+        "name": "Sarah K."
+      },
+      {
+        "beforeRole": "Financial Analyst",
+        "afterRole": "AI Strategy Consultant",
+        "timeline": "6 months",
+        "keyMetric": "2x client rate",
+        "quote": "I was paralyzed by the number of AI certifications out there. The roadmap cut through the noise and told me exactly which two to start with for my background.",
+        "name": "Marcus T."
+      },
+      {
+        "beforeRole": "Marketing Manager",
+        "afterRole": "ML Ops Lead",
+        "timeline": "8 months",
+        "keyMetric": "$25K salary uplift",
+        "quote": "As a single parent, I can't afford to quit and 'figure it out.' The 6-month plan gave me a way to upskill nights and weekends without risking my income.",
+        "name": "Priya R."
+      }
+    ]
+  },
+  "featureShowcase": {
+    "eyebrow": "See It In Action",
+    "headingLead": "This is what you get.",
+    "headingAccent": "Before you pay.",
+    "subtitle": "No vague promises. Here's a real sample of the AI-generated plan, insights, and report — built from an actual career-pivot profile.",
+    "tabs": {
+      "plan": {
+        "label": "Plan Generation",
+        "sub": "Your 6mo / 1yr / 2yr roadmap"
+      },
+      "insights": {
+        "label": "AI Insights",
+        "sub": "Skill match + gap analysis"
+      },
+      "pdf": {
+        "label": "PDF Report",
+        "sub": "Your plan, yours to keep"
+      }
+    },
+    "milestones": [
+      {
+        "horizon": "6 months",
+        "items": [
+          "Complete Google AI Essentials + ship 2 automation projects at your current job",
+          "Reposition your LinkedIn around 'operations + AI' — target 15 recruiter views/week",
+          "Land 3 informational interviews with AI Implementation Leads"
+        ]
+      },
+      {
+        "horizon": "1 year",
+        "items": [
+          "Move into an internal AI-adjacent role or land an AI Ops Analyst offer",
+          "Build a portfolio of 4 shipped workflow-automation case studies",
+          "Grow target-role network to 50+ warm connections"
+        ]
+      },
+      {
+        "horizon": "2 years",
+        "items": [
+          "AI Implementation Consultant — projected 35–45% comp increase",
+          "Lead cross-functional AI adoption for a business unit",
+          "Optional: independent consulting on the side for income diversification"
+        ]
+      }
+    ],
+    "skillGapHeading": "Skill-gap match — target: AI Implementation Consultant",
+    "skillGaps": [
+      {
+        "skill": "Process automation",
+        "note": "Strong — 8 yrs ops experience transfers directly"
+      },
+      {
+        "skill": "Prompt engineering & LLM tooling",
+        "note": "Gap — covered by AI Essentials in month 1"
+      },
+      {
+        "skill": "Stakeholder & change management",
+        "note": "Strong — reframe as AI-adoption leadership"
+      },
+      {
+        "skill": "Data literacy / SQL basics",
+        "note": "Partial — 3-week focused sprint recommended"
+      }
+    ],
+    "insightsHeading": "What the AI noticed about your profile",
+    "insights": [
+      "Your operations background is a hidden advantage: 71% of AI Implementation roles prioritize domain + change-management over coding.",
+      "Fastest wedge into the market: automate a painful workflow at your current employer and document the ROI as your first case study.",
+      "Biggest risk to de-risk first: the prompt-engineering gap. It's the cheapest to close and unlocks the most job titles."
+    ],
+    "pdfHeading": "A polished report you actually keep",
+    "pdfDescription": "Your full roadmap, skill-gap analysis, and milestone checklist — exported as a shareable PDF. Bring it to your mentor, your manager, or your next interview. No subscription; it's yours forever.",
+    "pdfFeatures": [
+      "Full 6mo / 1yr / 2yr milestone plan",
+      "Skill-gap scores + recommended courses",
+      "Personalized to your finances & constraints"
+    ],
+    "sampleBadge": "Sample output",
+    "sampleNote": "— your plan is generated from your real resume, finances, and constraints.",
+    "ctaPrimaryLabel": "Generate Mine",
+    "ctaSecondary": "Or try the free skill-gap snapshot first — no payment →"
+  },
+  "trustBar": {
+    "tagline": "Built with technology from",
+    "partners": {
+      "anthropic": "Anthropic",
+      "vercel": "Vercel",
+      "stripe": "Stripe"
+    }
+  },
+  "stickyCta": {
+    "cta": "Get My Plan —"
   }
 }

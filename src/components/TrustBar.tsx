@@ -2,44 +2,46 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-
-const partners = [
-  {
-    name: "Anthropic",
-    svg: (
-      <svg viewBox="0 0 120 24" className="h-6 w-auto" fill="currentColor">
-        <text x="0" y="18" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif">
-          Anthropic
-        </text>
-      </svg>
-    ),
-  },
-  {
-    name: "Vercel",
-    svg: (
-      <svg viewBox="0 0 76 24" className="h-5 w-auto" fill="currentColor">
-        <path d="M13 2L25 22H1L13 2Z" />
-        <text x="30" y="18" fontSize="14" fontWeight="600" fontFamily="system-ui, sans-serif">
-          Vercel
-        </text>
-      </svg>
-    ),
-  },
-  {
-    name: "Stripe",
-    svg: (
-      <svg viewBox="0 0 80 24" className="h-6 w-auto" fill="currentColor">
-        <text x="0" y="18" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif">
-          Stripe
-        </text>
-      </svg>
-    ),
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function TrustBar() {
+  const t = useTranslations("trustBar");
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
+
+  const partners = [
+    {
+      name: "Anthropic",
+      svg: (
+        <svg viewBox="0 0 120 24" className="h-6 w-auto" fill="currentColor">
+          <text x="0" y="18" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif">
+            {t("partners.anthropic")}
+          </text>
+        </svg>
+      ),
+    },
+    {
+      name: "Vercel",
+      svg: (
+        <svg viewBox="0 0 76 24" className="h-5 w-auto" fill="currentColor">
+          <path d="M13 2L25 22H1L13 2Z" />
+          <text x="30" y="18" fontSize="14" fontWeight="600" fontFamily="system-ui, sans-serif">
+            {t("partners.vercel")}
+          </text>
+        </svg>
+      ),
+    },
+    {
+      name: "Stripe",
+      svg: (
+        <svg viewBox="0 0 80 24" className="h-6 w-auto" fill="currentColor">
+          <text x="0" y="18" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif">
+            {t("partners.stripe")}
+          </text>
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <section className="py-12 px-6 border-y border-slate-800/40">
@@ -51,7 +53,7 @@ export default function TrustBar() {
         className="max-w-3xl mx-auto"
       >
         <p className="text-center text-slate-600 text-xs font-medium tracking-widest uppercase mb-6">
-          Built with technology from
+          {t("tagline")}
         </p>
         <div className="flex items-center justify-center gap-0">
           {partners.map((p, i) => (

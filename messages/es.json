@@ -55,13 +55,155 @@
     }
   },
   "home": {
+    "nav": {
+      "howItWorks": "Cómo funciona",
+      "about": "Acerca de",
+      "faq": "Preguntas frecuentes",
+      "blog": "Blog",
+      "pricing": "Precios",
+      "getStarted": "Comenzar"
+    },
     "hero": {
-      "eyebrow": "Estratega de carrera con IA",
-      "title": "Deja de sentirte atrapado en la carrera equivocada",
-      "subtitle": "Crea un plan de transición profesional personalizado según tus habilidades reales, tus finanzas y tus circunstancias familiares, con planes accionables a 6 meses, 1 año y 2 años.",
-      "ctaPrimary": "Obtén tu diagnóstico gratis",
-      "ctaSecondary": "Descubre cómo funciona",
-      "trustNote": "No se requiere tarjeta de crédito."
+      "badge": "Precio de lanzamiento — Solo $19 (antes $29) · Tiempo limitado",
+      "titleLine1": "Deja de sentirte atrapado.",
+      "titleLine2": "Construye tu plan de escape.",
+      "subtitle": "Sube tu currículum. Obtén una hoja de ruta personalizada para reorientar tu carrera, basada en tus habilidades reales, tus finanzas y tus responsabilidades familiares — en menos de 5 minutos.",
+      "socialProof": "{count} profesionales dieron el giro este mes",
+      "ctaPrimary": "Crear mi plan de giro ahora —",
+      "ctaSecondary": "Ver cómo funciona",
+      "freeLink": "O prueba el diagnóstico gratuito de brechas de habilidades — sin necesidad de pago →",
+      "freeNote": "Toma 3 minutos · Sin suscripción · La hoja de ruta completa es tuya para quedártela",
+      "viewersToday": "🔥 {count} personas vieron esta página hoy"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Más rápido que planificar por tu cuenta"
+      },
+      {
+        "value": "6mes",
+        "label": "Hasta tu primer hito"
+      },
+      {
+        "value": "100%",
+        "label": "Personalizado a tu vida"
+      }
+    ],
+    "activity": {
+      "countLabel": "{count} personas",
+      "suffix": "están construyendo su giro profesional en este momento"
+    },
+    "howItWorks": {
+      "eyebrow": "Cómo funciona",
+      "title": "De estancado a estratégico en tres pasos",
+      "subtitle": "Un proceso sencillo que convierte tu situación completa en un plan de acción concreto."
+    },
+    "steps": [
+      {
+        "title": "Analizamos tu trayectoria",
+        "desc": "Comparte tu LinkedIn, tu currículum y tu portafolio. Nuestra IA analiza tu experiencia real — tu historial laboral, habilidades transferibles y logros — antes de generar una sola recomendación."
+      },
+      {
+        "title": "La IA construye tu estrategia",
+        "desc": "Combinamos tu trayectoria real con tu situación financiera y tus responsabilidades familiares para crear una hoja de ruta de transición a tu medida. No consejos genéricos. Tu plan, construido a partir de tus datos."
+      },
+      {
+        "title": "Ejecuta con confianza",
+        "desc": "Obtén hitos concretos para 6 meses, 1 año y 2 años — con brechas de habilidades y acciones basadas en dónde te encuentras realmente hoy."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Perspectivas basadas en datos",
+      "title": "Tu estrategia profesional, impulsada por analítica de IA",
+      "subtitle": "Sigue tu progreso, mide tus brechas de habilidades y ve exactamente dónde estás — todo en un solo panel.",
+      "imageAlt": "Panel de analítica profesional impulsado por IA que muestra puntuaciones de coincidencia de habilidades y seguimiento del progreso"
+    },
+    "whoFor": {
+      "eyebrow": "Para quién es",
+      "title": "Diseñado para personas como tú",
+      "subtitle": "A diferencia de los consejos genéricos, primero analizamos tu trayectoria real — y luego tenemos en cuenta toda tu vida."
+    },
+    "personas": [
+      {
+        "label": "Profesionales agotados listos para un cambio",
+        "tag": "Agotamiento"
+      },
+      {
+        "label": "Padres y madres que no pueden simplemente renunciar e improvisar",
+        "tag": "Familia"
+      },
+      {
+        "label": "Personas que necesitan continuidad de ingresos",
+        "tag": "Finanzas"
+      },
+      {
+        "label": "Quienes cambian de carrera hacia una nueva industria",
+        "tag": "Giro"
+      },
+      {
+        "label": "Trabajadores remotos que exploran nuevas oportunidades",
+        "tag": "Remoto"
+      },
+      {
+        "label": "Empleados ambiciosos que buscan crecer más rápido",
+        "tag": "Crecimiento"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Giros reales, personas reales",
+      "titleLead": "Dejaron de esperar.",
+      "titleHighlight": "Tú también puedes.",
+      "subtitle": "Los primeros usuarios ya están usando sus hojas de ruta personalizadas para gestionar sus transiciones profesionales con confianza.",
+      "cta": "Empezar mi giro profesional —"
+    },
+    "beforeAfter": {
+      "eyebrow": "Transformaciones reales",
+      "titleLead": "Dónde empezaron.",
+      "titleHighlight": "Dónde están ahora."
+    },
+    "beforeAfterCards": [
+      {
+        "before": "Estancado en marketing durante 8 años",
+        "after": "Product Manager en una startup Serie B",
+        "timeline": "Giro en 6 meses"
+      },
+      {
+        "before": "Contador agotado sin formación tecnológica",
+        "after": "Líder de Analítica de Datos en una Fortune 500",
+        "timeline": "Giro en 9 meses"
+      },
+      {
+        "before": "Gerente de operaciones minoristas, carrera estancada",
+        "after": "Consultor de Implementación de IA, aumento salarial del 40%",
+        "timeline": "Giro en 5 meses"
+      }
+    ],
+    "finalCta": {
+      "title": "Tu carrera no va a esperar. Tú tampoco deberías.",
+      "subtitle": "Cada semana que lo pospones, la IA transforma más puestos. Consigue tu hoja de ruta de giro personalizada ahora — mientras dure el precio de lanzamiento.",
+      "cta": "Crear mi plan de giro —",
+      "note": "3 minutos · Sin suscripción · Tuyo para siempre"
+    },
+    "courses": {
+      "eyebrow": "Mejora tus habilidades",
+      "title": "Habilidades de IA que de verdad te consiguen empleo",
+      "subtitle": "Las credenciales que los responsables de contratación reconocen. Seleccionadas para profesionales que dan el giro hacia roles vinculados a la IA.",
+      "matchLabel": "{score}% de coincidencia",
+      "footerNote": "¿No sabes qué cursos encajan con tu trayectoria? Obtén una ruta de aprendizaje personalizada con tu análisis gratuito de giro profesional.",
+      "cta": "Obtener mi ruta de aprendizaje personalizada —",
+      "valueProps": [
+        "Comprende cómo funcionan los LLM y cómo aplicarlos en cualquier rol",
+        "Herramientas prácticas de IA para la productividad laboral — sin necesidad de programar",
+        "Certificación reconocida por la industria en fundamentos de IA sobre infraestructura en la nube",
+        "Conceptos clave de IA y ML — combina bien con cualquier trayectoria empresarial",
+        "El curso de estrategia de IA no técnico de Andrew Ng — listo para la sala de juntas",
+        "Habilidades de ingeniería de ML de principio a fin con proyectos prácticos"
+      ]
+    },
+    "blogPreview": {
+      "title": "Del blog",
+      "subtitle": "Guías prácticas para tu transición profesional",
+      "allLink": "Todos los artículos →"
     }
   },
   "meta": {
@@ -1678,5 +1820,186 @@
         "button": "Ver precios →"
       }
     }
+  },
+  "voices": {
+    "eyebrow": "Voces de la era de la IA",
+    "headingLead": "Los pioneros que dan forma a la IA coinciden:",
+    "headingHighlight": "actúa ahora.",
+    "subtitle": "Desde premios Nobel hasta directores ejecutivos que definen la era de la IA — el mensaje es unánime. La ventana para adaptarse está abierta hoy, no mañana.",
+    "stripText": "Los expertos están de acuerdo — la disrupción ya está aquí.",
+    "stripEmphasis": "Te toca a ti.",
+    "ctaButton": "Crear mi plan de giro — $19 →",
+    "experts": [
+      {
+        "name": "Dario Amodei",
+        "title": "CEO, Anthropic",
+        "imageAlt": "Director ejecutivo de tecnología pensativo en una oficina moderna con iluminación lateral dramática y el horizonte de la ciudad al atardecer",
+        "quote": "La IA tendrá efectos mucho más amplios y que ocurrirán mucho más rápido que las anteriores sacudidas del mercado laboral.",
+        "context": "Davos 2026",
+        "urgencyLabel": "50% de los empleos de nivel inicial",
+        "urgencyDesc": "afectados en 1–5 años"
+      },
+      {
+        "name": "Geoffrey Hinton",
+        "title": "Premio Nobel · \"Padrino de la IA\"",
+        "imageAlt": "Profesor distinguido en una biblioteca universitaria con diagramas de redes neuronales en una pizarra y luz dorada del atardecer",
+        "quote": "Las capacidades de la IA se duplican aproximadamente cada siete meses — el ritmo del cambio no se parece a nada que hayamos visto antes.",
+        "context": "Nobel Lecture 2024",
+        "urgencyLabel": "2026",
+        "urgencyDesc": "el punto de inflexión para el desplazamiento masivo"
+      },
+      {
+        "name": "Jensen Huang",
+        "title": "CEO, NVIDIA",
+        "imageAlt": "Ejecutivo de tecnología carismático en el escenario con iluminación turquesa dramática y diagramas holográficos de chips GPU",
+        "quote": "Es esencial aprender a usar la IA — cómo dirigirla, gestionarla, ponerle límites y evaluarla.",
+        "context": "CES 2025",
+        "urgencyLabel": "Todos los empleos",
+        "urgencyDesc": "cambiarán radicalmente"
+      },
+      {
+        "name": "Chamath Palihapitiya",
+        "title": "Fundador, Social Capital",
+        "imageAlt": "Inversor de capital de riesgo en un estudio de pódcast moderno con iluminación azul neón y monitores con datos de mercado",
+        "quote": "Los jóvenes dispuestos a ser nativos de la IA están bien posicionados. Quienes no lo estén se quedarán atrás.",
+        "context": "All-In Podcast",
+        "urgencyLabel": "18 meses",
+        "urgencyDesc": "antes de que se transformen los roles tradicionales"
+      }
+    ]
+  },
+  "successMetrics": {
+    "eyebrow": "Resultados comprobados",
+    "heading": "Cifras que hablan por sí solas",
+    "metricLabels": [
+      "Profesionales que dieron el giro",
+      "Reportan avances en su carrera",
+      "Más rápido que planificar por tu cuenta",
+      "Aumento salarial promedio"
+    ]
+  },
+  "caseStudies": {
+    "eyebrow": "Casos de éxito",
+    "headingLead": "Transiciones reales,",
+    "headingHighlight": "resultados reales",
+    "cards": [
+      {
+        "beforeRole": "Ingeniera Sénior",
+        "afterRole": "Líder de Producto",
+        "timeline": "4 meses",
+        "keyMetric": "+40% de aumento en la compensación",
+        "quote": "La mayoría de los consejos profesionales ignoran que tienes una hipoteca, hijos y una pareja que también tiene su carrera. AICareerPivot por fin tiene en cuenta las limitaciones reales.",
+        "name": "Sarah K."
+      },
+      {
+        "beforeRole": "Analista Financiero",
+        "afterRole": "Consultor de Estrategia de IA",
+        "timeline": "6 meses",
+        "keyMetric": "Tarifa por cliente duplicada",
+        "quote": "Estaba paralizado por la cantidad de certificaciones de IA que existen. La hoja de ruta cortó con el ruido y me dijo exactamente cuáles dos empezar según mi trayectoria.",
+        "name": "Marcus T."
+      },
+      {
+        "beforeRole": "Gerente de Marketing",
+        "afterRole": "Líder de ML Ops",
+        "timeline": "8 meses",
+        "keyMetric": "$25K de aumento salarial",
+        "quote": "Como madre soltera, no puedo permitirme renunciar e 'improvisar'. El plan de 6 meses me dio una forma de mejorar mis habilidades por las noches y los fines de semana sin arriesgar mis ingresos.",
+        "name": "Priya R."
+      }
+    ]
+  },
+  "featureShowcase": {
+    "eyebrow": "Míralo en acción",
+    "headingLead": "Esto es lo que obtienes.",
+    "headingAccent": "Antes de pagar.",
+    "subtitle": "Sin promesas vagas. Aquí tienes una muestra real del plan, las perspectivas y el informe generados por IA — construidos a partir de un perfil real de giro profesional.",
+    "tabs": {
+      "plan": {
+        "label": "Generación del plan",
+        "sub": "Tu hoja de ruta de 6mes / 1año / 2años"
+      },
+      "insights": {
+        "label": "Perspectivas de IA",
+        "sub": "Coincidencia de habilidades + análisis de brechas"
+      },
+      "pdf": {
+        "label": "Informe PDF",
+        "sub": "Tu plan, tuyo para quedártelo"
+      }
+    },
+    "milestones": [
+      {
+        "horizon": "6 meses",
+        "items": [
+          "Completa Google AI Essentials + implementa 2 proyectos de automatización en tu empleo actual",
+          "Reorienta tu LinkedIn en torno a 'operaciones + IA' — apunta a 15 visitas de reclutadores por semana",
+          "Consigue 3 entrevistas informativas con líderes de Implementación de IA"
+        ]
+      },
+      {
+        "horizon": "1 año",
+        "items": [
+          "Pasa a un rol interno vinculado a la IA o consigue una oferta de Analista de AI Ops",
+          "Crea un portafolio de 4 casos de estudio de automatización de flujos de trabajo ya implementados",
+          "Amplía tu red del rol objetivo a más de 50 contactos cercanos"
+        ]
+      },
+      {
+        "horizon": "2 años",
+        "items": [
+          "Consultor de Implementación de IA — aumento proyectado de compensación del 35–45%",
+          "Lidera la adopción de IA multifuncional para una unidad de negocio",
+          "Opcional: consultoría independiente por tu cuenta para diversificar tus ingresos"
+        ]
+      }
+    ],
+    "skillGapHeading": "Coincidencia de brechas de habilidades — objetivo: Consultor de Implementación de IA",
+    "skillGaps": [
+      {
+        "skill": "Automatización de procesos",
+        "note": "Sólida — 8 años de experiencia en operaciones se transfieren directamente"
+      },
+      {
+        "skill": "Ingeniería de prompts y herramientas de LLM",
+        "note": "Brecha — cubierta por AI Essentials en el mes 1"
+      },
+      {
+        "skill": "Gestión de partes interesadas y del cambio",
+        "note": "Sólida — replantéala como liderazgo en la adopción de IA"
+      },
+      {
+        "skill": "Alfabetización de datos / nociones básicas de SQL",
+        "note": "Parcial — se recomienda un sprint enfocado de 3 semanas"
+      }
+    ],
+    "insightsHeading": "Lo que la IA notó sobre tu perfil",
+    "insights": [
+      "Tu trayectoria en operaciones es una ventaja oculta: el 71% de los roles de Implementación de IA priorizan el dominio del área y la gestión del cambio sobre la programación.",
+      "La vía más rápida para entrar al mercado: automatiza un flujo de trabajo tedioso en tu empresa actual y documenta el retorno de la inversión como tu primer caso de estudio.",
+      "El mayor riesgo que conviene mitigar primero: la brecha en ingeniería de prompts. Es la más barata de cerrar y la que desbloquea más puestos."
+    ],
+    "pdfHeading": "Un informe pulido que de verdad conservas",
+    "pdfDescription": "Tu hoja de ruta completa, el análisis de brechas de habilidades y la lista de hitos — exportados como un PDF que puedes compartir. Llévalo a tu mentor, a tu jefe o a tu próxima entrevista. Sin suscripción; es tuyo para siempre.",
+    "pdfFeatures": [
+      "Plan de hitos completo de 6mes / 1año / 2años",
+      "Puntuaciones de brechas de habilidades + cursos recomendados",
+      "Personalizado a tus finanzas y limitaciones"
+    ],
+    "sampleBadge": "Resultado de muestra",
+    "sampleNote": "— tu plan se genera a partir de tu currículum, tus finanzas y tus limitaciones reales.",
+    "ctaPrimaryLabel": "Generar el mío",
+    "ctaSecondary": "O prueba primero el diagnóstico gratuito de brechas de habilidades — sin pago →"
+  },
+  "trustBar": {
+    "tagline": "Construido con tecnología de",
+    "partners": {
+      "anthropic": "Anthropic",
+      "vercel": "Vercel",
+      "stripe": "Stripe"
+    }
+  },
+  "stickyCta": {
+    "cta": "Obtener mi plan —"
   }
 }

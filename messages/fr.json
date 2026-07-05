@@ -55,13 +55,155 @@
     }
   },
   "home": {
+    "nav": {
+      "howItWorks": "Comment ça marche",
+      "about": "À propos",
+      "faq": "FAQ",
+      "blog": "Blog",
+      "pricing": "Tarifs",
+      "getStarted": "Commencer"
+    },
     "hero": {
-      "eyebrow": "Stratège de carrière propulsé par l'IA",
-      "title": "Ne restez plus prisonnier de la mauvaise carrière",
-      "subtitle": "Construisez une feuille de route de reconversion personnalisée en fonction de vos compétences réelles, de vos finances et de vos contraintes familiales — avec des plans concrets à 6 mois, 1 an et 2 ans.",
-      "ctaPrimary": "Obtenez votre bilan gratuit",
-      "ctaSecondary": "Découvrez comment ça marche",
-      "trustNote": "Aucune carte bancaire requise."
+      "badge": "Tarif de lancement — Seulement $19 (au lieu de $29) · Durée limitée",
+      "titleLine1": "Ne vous sentez plus piégé.",
+      "titleLine2": "Construisez votre plan d'évasion.",
+      "subtitle": "Importez votre CV. Obtenez une feuille de route de reconversion personnalisée, bâtie autour de vos compétences réelles, de vos finances et de vos contraintes familiales — en moins de 5 minutes.",
+      "socialProof": "{count} professionnels se sont reconvertis ce mois-ci",
+      "ctaPrimary": "Construire mon plan de reconversion maintenant —",
+      "ctaSecondary": "Découvrir comment ça marche",
+      "freeLink": "Ou essayez l'aperçu gratuit de vos lacunes de compétences — sans paiement →",
+      "freeNote": "Prend 3 minutes · Sans abonnement · La feuille de route complète est à vous",
+      "viewersToday": "🔥 {count} personnes ont consulté cette page aujourd'hui"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Plus rapide qu'une planification en solo"
+      },
+      {
+        "value": "6mo",
+        "label": "Jusqu'à votre première étape clé"
+      },
+      {
+        "value": "100%",
+        "label": "Personnalisé à votre vie"
+      }
+    ],
+    "activity": {
+      "countLabel": "{count} personnes",
+      "suffix": "construisent leur reconversion professionnelle en ce moment"
+    },
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "Du blocage à la stratégie en trois étapes",
+      "subtitle": "Un processus simple qui transforme toute votre situation en un plan d'action concret."
+    },
+    "steps": [
+      {
+        "title": "Nous analysons votre parcours",
+        "desc": "Partagez votre LinkedIn, votre CV et votre portfolio. Notre IA analyse votre expérience réelle — historique professionnel, compétences transférables, réalisations — avant de formuler la moindre recommandation."
+      },
+      {
+        "title": "L'IA construit votre stratégie",
+        "desc": "Nous combinons votre parcours réel avec votre situation financière et vos contraintes familiales pour créer une feuille de route de transition sur mesure. Pas de conseils génériques. Votre plan, bâti à partir de vos données."
+      },
+      {
+        "title": "Passez à l'action en confiance",
+        "desc": "Obtenez des étapes clés concrètes pour 6 mois, 1 an et 2 ans — avec des lacunes de compétences et des actions ancrées dans votre situation d'aujourd'hui."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Des analyses fondées sur les données",
+      "title": "Votre stratégie de carrière, propulsée par l'analyse IA",
+      "subtitle": "Suivez votre progression, mesurez vos lacunes de compétences et voyez exactement où vous en êtes — le tout dans un seul tableau de bord.",
+      "imageAlt": "Tableau de bord d'analyse de carrière propulsé par l'IA affichant les scores de correspondance des compétences et le suivi de progression"
+    },
+    "whoFor": {
+      "eyebrow": "Pour qui c'est fait",
+      "title": "Conçu pour des personnes comme vous",
+      "subtitle": "Contrairement aux conseils de carrière génériques, nous analysons d'abord votre parcours réel — puis nous prenons en compte toute votre vie."
+    },
+    "personas": [
+      {
+        "label": "Professionnels épuisés prêts pour le changement",
+        "tag": "Épuisement"
+      },
+      {
+        "label": "Parents qui ne peuvent pas simplement tout quitter et improviser",
+        "tag": "Famille"
+      },
+      {
+        "label": "Actifs qui ont besoin de continuité de revenu",
+        "tag": "Finances"
+      },
+      {
+        "label": "Personnes en reconversion qui entrent dans un nouveau secteur",
+        "tag": "Reconversion"
+      },
+      {
+        "label": "Télétravailleurs à la recherche de nouvelles opportunités",
+        "tag": "Télétravail"
+      },
+      {
+        "label": "Employés ambitieux qui veulent progresser plus vite",
+        "tag": "Croissance"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "De vraies reconversions, de vraies personnes",
+      "titleLead": "Ils ont cessé d'attendre.",
+      "titleHighlight": "Vous aussi, vous le pouvez.",
+      "subtitle": "Nos premiers utilisateurs utilisent déjà leurs feuilles de route personnalisées pour mener leurs transitions professionnelles en toute confiance.",
+      "cta": "Démarrer ma reconversion professionnelle —"
+    },
+    "beforeAfter": {
+      "eyebrow": "De vraies transformations",
+      "titleLead": "D'où ils sont partis.",
+      "titleHighlight": "Où ils en sont aujourd'hui."
+    },
+    "beforeAfterCards": [
+      {
+        "before": "Coincé dans le marketing depuis 8 ans",
+        "after": "Chef de produit dans une start-up en série B",
+        "timeline": "Reconversion en 6 mois"
+      },
+      {
+        "before": "Comptable épuisé, sans expérience technique",
+        "after": "Responsable analyse de données dans une entreprise du Fortune 500",
+        "timeline": "Reconversion en 9 mois"
+      },
+      {
+        "before": "Responsable des opérations de vente au détail, carrière au point mort",
+        "after": "Consultant en implémentation IA, augmentation de salaire de 40 %",
+        "timeline": "Reconversion en 5 mois"
+      }
+    ],
+    "finalCta": {
+      "title": "Votre carrière n'attendra pas. Vous non plus.",
+      "subtitle": "Chaque semaine où vous tardez, l'IA transforme davantage de métiers. Obtenez votre feuille de route de reconversion personnalisée maintenant — tant que le tarif de lancement dure.",
+      "cta": "Construire mon plan de reconversion —",
+      "note": "3 minutes · Sans abonnement · À vous pour toujours"
+    },
+    "courses": {
+      "eyebrow": "Montez en compétences",
+      "title": "Des compétences IA qui vous font vraiment embaucher",
+      "subtitle": "Les certifications que les recruteurs reconnaissent. Sélectionnées pour les professionnels en reconversion vers des métiers liés à l'IA.",
+      "matchLabel": "{score}% de correspondance",
+      "footerNote": "Vous ne savez pas quelles formations correspondent à votre parcours ? Obtenez un parcours d'apprentissage personnalisé avec votre analyse de reconversion gratuite.",
+      "cta": "Obtenir mon parcours d'apprentissage personnalisé —",
+      "valueProps": [
+        "Comprendre le fonctionnement des LLM et comment les appliquer dans n'importe quel rôle",
+        "Des outils d'IA concrets pour la productivité au travail — sans coder",
+        "Certification reconnue par le secteur sur les fondamentaux de l'IA en infrastructure cloud",
+        "Concepts fondamentaux d'IA et de ML — s'accorde bien avec tout parcours en entreprise",
+        "Le cours de stratégie IA non technique d'Andrew Ng — prêt pour le comité de direction",
+        "Compétences complètes en ingénierie ML avec des projets pratiques"
+      ]
+    },
+    "blogPreview": {
+      "title": "Depuis le blog",
+      "subtitle": "Des guides pratiques pour votre transition professionnelle",
+      "allLink": "Tous les articles →"
     }
   },
   "meta": {
@@ -1678,5 +1820,186 @@
         "button": "Voir les tarifs →"
       }
     }
+  },
+  "voices": {
+    "eyebrow": "Les voix de l'ère de l'IA",
+    "headingLead": "Les pionniers qui façonnent l'IA sont d'accord :",
+    "headingHighlight": "agissez maintenant.",
+    "subtitle": "Des lauréats du prix Nobel aux PDG qui façonnent l'ère de l'IA — le message est unanime. La fenêtre pour s'adapter est ouverte aujourd'hui, pas demain.",
+    "stripText": "Les experts sont unanimes — la disruption est déjà là.",
+    "stripEmphasis": "À vous de jouer.",
+    "ctaButton": "Construire mon plan de reconversion — $19 →",
+    "experts": [
+      {
+        "name": "Dario Amodei",
+        "title": "PDG, Anthropic",
+        "imageAlt": "PDG tech pensif dans un bureau moderne avec un éclairage latéral spectaculaire et la ligne d'horizon de la ville au crépuscule",
+        "quote": "L'IA aura des effets bien plus larges et surviendra bien plus vite que les précédents chocs du marché du travail.",
+        "context": "Davos 2026",
+        "urgencyLabel": "50 % des emplois de premier échelon",
+        "urgencyDesc": "bouleversés d'ici 1 à 5 ans"
+      },
+      {
+        "name": "Geoffrey Hinton",
+        "title": "Lauréat du prix Nobel · « Parrain de l'IA »",
+        "imageAlt": "Professeur éminent dans une bibliothèque universitaire avec des schémas de réseaux de neurones au tableau et une lumière dorée de fin de journée",
+        "quote": "Les capacités de l'IA doublent environ tous les sept mois — le rythme du changement ne ressemble à rien de ce que nous avons vu auparavant.",
+        "context": "Nobel Lecture 2024",
+        "urgencyLabel": "2026",
+        "urgencyDesc": "le point de bascule vers un remplacement massif"
+      },
+      {
+        "name": "Jensen Huang",
+        "title": "PDG, NVIDIA",
+        "imageAlt": "Dirigeant tech charismatique sur scène avec un éclairage bleu-vert spectaculaire et des schémas holographiques de puces GPU",
+        "quote": "Il est essentiel d'apprendre à utiliser l'IA — à la diriger, la gérer, la baliser, l'évaluer.",
+        "context": "CES 2025",
+        "urgencyLabel": "Chaque métier",
+        "urgencyDesc": "changera fondamentalement"
+      },
+      {
+        "name": "Chamath Palihapitiya",
+        "title": "Fondateur, Social Capital",
+        "imageAlt": "Investisseur en capital-risque dans un studio de podcast moderne avec un éclairage bleu néon et des écrans de données de marché",
+        "quote": "Les jeunes prêts à devenir natifs de l'IA sont bien positionnés. Ceux qui ne le sont pas seront laissés pour compte.",
+        "context": "All-In Podcast",
+        "urgencyLabel": "18 mois",
+        "urgencyDesc": "avant que les métiers traditionnels ne se transforment"
+      }
+    ]
+  },
+  "successMetrics": {
+    "eyebrow": "Des résultats prouvés",
+    "heading": "Des chiffres qui parlent d'eux-mêmes",
+    "metricLabels": [
+      "Professionnels reconvertis",
+      "Constatent des progrès de carrière",
+      "Plus rapide qu'une planification en solo",
+      "Hausse de salaire moyenne"
+    ]
+  },
+  "caseStudies": {
+    "eyebrow": "Témoignages de réussite",
+    "headingLead": "De vraies transitions,",
+    "headingHighlight": "de vrais résultats",
+    "cards": [
+      {
+        "beforeRole": "Ingénieure senior",
+        "afterRole": "Responsable produit",
+        "timeline": "4 mois",
+        "keyMetric": "+40 % de rémunération",
+        "quote": "La plupart des conseils de carrière ignorent que vous avez un crédit immobilier, des enfants et un partenaire qui a aussi une carrière. AICareerPivot prend enfin en compte les vraies contraintes.",
+        "name": "Sarah K."
+      },
+      {
+        "beforeRole": "Analyste financier",
+        "afterRole": "Consultant en stratégie IA",
+        "timeline": "6 mois",
+        "keyMetric": "Tarif client x2",
+        "quote": "J'étais paralysé par le nombre de certifications IA disponibles. La feuille de route a fait le tri et m'a dit exactement par lesquelles commencer selon mon parcours.",
+        "name": "Marcus T."
+      },
+      {
+        "beforeRole": "Responsable marketing",
+        "afterRole": "Responsable ML Ops",
+        "timeline": "8 mois",
+        "keyMetric": "Hausse de salaire de $25,000",
+        "quote": "En tant que parent solo, je ne peux pas me permettre de tout quitter et « d'improviser ». Le plan sur 6 mois m'a donné un moyen de monter en compétences le soir et le week-end sans risquer mon revenu.",
+        "name": "Priya R."
+      }
+    ]
+  },
+  "featureShowcase": {
+    "eyebrow": "Voyez-le en action",
+    "headingLead": "Voici ce que vous obtenez.",
+    "headingAccent": "Avant même de payer.",
+    "subtitle": "Aucune promesse vague. Voici un véritable échantillon du plan, des analyses et du rapport générés par l'IA — bâti à partir d'un vrai profil de reconversion.",
+    "tabs": {
+      "plan": {
+        "label": "Génération du plan",
+        "sub": "Votre feuille de route 6mo / 1an / 2ans"
+      },
+      "insights": {
+        "label": "Analyses IA",
+        "sub": "Correspondance des compétences + analyse des lacunes"
+      },
+      "pdf": {
+        "label": "Rapport PDF",
+        "sub": "Votre plan, à vous de le garder"
+      }
+    },
+    "milestones": [
+      {
+        "horizon": "6 mois",
+        "items": [
+          "Terminer Google AI Essentials + livrer 2 projets d'automatisation à votre poste actuel",
+          "Repositionner votre LinkedIn autour du thème « opérations + IA » — viser 15 vues de recruteurs par semaine",
+          "Décrocher 3 entretiens d'information avec des responsables d'implémentation IA"
+        ]
+      },
+      {
+        "horizon": "1 an",
+        "items": [
+          "Passer à un poste interne lié à l'IA ou décrocher une offre d'analyste AI Ops",
+          "Constituer un portfolio de 4 études de cas d'automatisation de flux de travail livrées",
+          "Développer votre réseau dans le métier visé jusqu'à 50+ contacts qualifiés"
+        ]
+      },
+      {
+        "horizon": "2 ans",
+        "items": [
+          "Consultant en implémentation IA — hausse de rémunération projetée de 35 à 45 %",
+          "Piloter l'adoption de l'IA transversale pour une unité opérationnelle",
+          "Optionnel : conseil indépendant en parallèle pour diversifier vos revenus"
+        ]
+      }
+    ],
+    "skillGapHeading": "Correspondance des lacunes de compétences — cible : consultant en implémentation IA",
+    "skillGaps": [
+      {
+        "skill": "Automatisation des processus",
+        "note": "Solide — 8 ans d'expérience en opérations transférables directement"
+      },
+      {
+        "skill": "Ingénierie de prompts et outillage LLM",
+        "note": "Lacune — couverte par AI Essentials dès le 1er mois"
+      },
+      {
+        "skill": "Gestion des parties prenantes et du changement",
+        "note": "Solide — à reformuler comme leadership de l'adoption de l'IA"
+      },
+      {
+        "skill": "Culture des données / bases de SQL",
+        "note": "Partielle — sprint ciblé de 3 semaines recommandé"
+      }
+    ],
+    "insightsHeading": "Ce que l'IA a remarqué dans votre profil",
+    "insights": [
+      "Votre parcours en opérations est un atout caché : 71 % des postes d'implémentation IA privilégient l'expertise métier et la conduite du changement plutôt que le code.",
+      "L'entrée la plus rapide sur le marché : automatiser un flux de travail pénible chez votre employeur actuel et documenter le ROI comme première étude de cas.",
+      "Le plus grand risque à réduire en premier : la lacune en ingénierie de prompts. C'est la moins coûteuse à combler et elle débloque le plus de postes."
+    ],
+    "pdfHeading": "Un rapport soigné que vous gardez vraiment",
+    "pdfDescription": "Votre feuille de route complète, votre analyse des lacunes de compétences et votre liste d'étapes clés — exportées dans un PDF partageable. Apportez-le à votre mentor, à votre manager ou à votre prochain entretien. Sans abonnement ; il est à vous pour toujours.",
+    "pdfFeatures": [
+      "Plan complet d'étapes clés 6mo / 1an / 2ans",
+      "Scores de lacunes de compétences + formations recommandées",
+      "Personnalisé selon vos finances et vos contraintes"
+    ],
+    "sampleBadge": "Exemple de résultat",
+    "sampleNote": "— votre plan est généré à partir de votre vrai CV, de vos finances et de vos contraintes.",
+    "ctaPrimaryLabel": "Générer le mien",
+    "ctaSecondary": "Ou essayez d'abord l'aperçu gratuit de vos lacunes de compétences — sans paiement →"
+  },
+  "trustBar": {
+    "tagline": "Conçu avec la technologie de",
+    "partners": {
+      "anthropic": "Anthropic",
+      "vercel": "Vercel",
+      "stripe": "Stripe"
+    }
+  },
+  "stickyCta": {
+    "cta": "Obtenir mon plan —"
   }
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   trackFeatureShowcaseViewed,
   trackFeatureShowcaseTabChanged,
@@ -23,88 +24,50 @@ const LOCATION = "landing_showcase";
 
 type TabKey = "plan" | "insights" | "pdf";
 
-const tabs: { key: TabKey; label: string; sub: string; icon: React.ReactNode }[] = [
-  {
-    key: "plan",
-    label: "Plan Generation",
-    sub: "Your 6mo / 1yr / 2yr roadmap",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-      </svg>
-    ),
-  },
-  {
-    key: "insights",
-    label: "AI Insights",
-    sub: "Skill match + gap analysis",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
-  },
-  {
-    key: "pdf",
-    label: "PDF Report",
-    sub: "Your plan, yours to keep",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
+const tabIcons: Record<TabKey, React.ReactNode> = {
+  plan: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    </svg>
+  ),
+  insights: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  ),
+  pdf: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+  ),
+};
+
+const tabKeys: TabKey[] = ["plan", "insights", "pdf"];
+
+type TabText = { label: string; sub: string };
+
+const milestoneStyles = [
+  { accent: "from-teal-500 to-emerald-500" },
+  { accent: "from-cyan-500 to-teal-500" },
+  { accent: "from-emerald-500 to-teal-400" },
 ];
 
-const milestones = [
-  {
-    horizon: "6 months",
-    accent: "from-teal-500 to-emerald-500",
-    items: [
-      "Complete Google AI Essentials + ship 2 automation projects at your current job",
-      "Reposition your LinkedIn around 'operations + AI' — target 15 recruiter views/week",
-      "Land 3 informational interviews with AI Implementation Leads",
-    ],
-  },
-  {
-    horizon: "1 year",
-    accent: "from-cyan-500 to-teal-500",
-    items: [
-      "Move into an internal AI-adjacent role or land an AI Ops Analyst offer",
-      "Build a portfolio of 4 shipped workflow-automation case studies",
-      "Grow target-role network to 50+ warm connections",
-    ],
-  },
-  {
-    horizon: "2 years",
-    accent: "from-emerald-500 to-teal-400",
-    items: [
-      "AI Implementation Consultant — projected 35–45% comp increase",
-      "Lead cross-functional AI adoption for a business unit",
-      "Optional: independent consulting on the side for income diversification",
-    ],
-  },
-];
+type MilestoneText = { horizon: string; items: string[] };
 
-const skillGaps = [
-  { skill: "Process automation", match: 82, note: "Strong — 8 yrs ops experience transfers directly" },
-  { skill: "Prompt engineering & LLM tooling", match: 41, note: "Gap — covered by AI Essentials in month 1" },
-  { skill: "Stakeholder & change management", match: 88, note: "Strong — reframe as AI-adoption leadership" },
-  { skill: "Data literacy / SQL basics", match: 55, note: "Partial — 3-week focused sprint recommended" },
-];
+const skillGapMatches = [82, 41, 88, 55];
 
-const insights = [
-  "Your operations background is a hidden advantage: 71% of AI Implementation roles prioritize domain + change-management over coding.",
-  "Fastest wedge into the market: automate a painful workflow at your current employer and document the ROI as your first case study.",
-  "Biggest risk to de-risk first: the prompt-engineering gap. It's the cheapest to close and unlocks the most job titles.",
-];
+type SkillGapText = { skill: string; note: string };
 
 function TabButton({
-  tab,
+  tabKey,
+  label,
+  sub,
   active,
   onClick,
 }: {
-  tab: (typeof tabs)[number];
+  tabKey: TabKey;
+  label: string;
+  sub: string;
   active: boolean;
   onClick: () => void;
 }) {
@@ -118,18 +81,21 @@ function TabButton({
       }`}
       aria-pressed={active}
     >
-      <span className={`shrink-0 ${active ? "text-teal-400" : "text-slate-500"}`}>{tab.icon}</span>
+      <span className={`shrink-0 ${active ? "text-teal-400" : "text-slate-500"}`}>{tabIcons[tabKey]}</span>
       <span className="min-w-0">
         <span className={`block text-sm font-semibold ${active ? "text-white" : "text-slate-300"}`}>
-          {tab.label}
+          {label}
         </span>
-        <span className="block text-xs text-slate-500 truncate">{tab.sub}</span>
+        <span className="block text-xs text-slate-500 truncate">{sub}</span>
       </span>
     </button>
   );
 }
 
 function PlanPanel() {
+  const t = useTranslations("featureShowcase");
+  const milestoneText = t.raw("milestones") as MilestoneText[];
+  const milestones = milestoneText.map((m, i) => ({ ...m, ...milestoneStyles[i] }));
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {milestones.map((m) => (
@@ -154,11 +120,15 @@ function PlanPanel() {
 }
 
 function InsightsPanel() {
+  const t = useTranslations("featureShowcase");
+  const skillGapText = t.raw("skillGaps") as SkillGapText[];
+  const skillGaps = skillGapText.map((s, i) => ({ ...s, match: skillGapMatches[i] }));
+  const insights = t.raw("insights") as string[];
   return (
     <div className="grid gap-5 md:grid-cols-2">
       {/* Skill-gap match scores */}
       <div className="rounded-xl bg-slate-900/70 border border-slate-800 p-5">
-        <h4 className="text-sm font-semibold text-white mb-4">Skill-gap match — target: AI Implementation Consultant</h4>
+        <h4 className="text-sm font-semibold text-white mb-4">{t("skillGapHeading")}</h4>
         <div className="space-y-4">
           {skillGaps.map((s) => (
             <div key={s.skill}>
@@ -187,7 +157,7 @@ function InsightsPanel() {
       <div className="rounded-xl bg-slate-900/70 border border-slate-800 p-5">
         <h4 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-          What the AI noticed about your profile
+          {t("insightsHeading")}
         </h4>
         <ul className="space-y-4">
           {insights.map((insight, i) => (
@@ -205,6 +175,8 @@ function InsightsPanel() {
 }
 
 function PdfPanel() {
+  const t = useTranslations("featureShowcase");
+  const pdfFeatures = t.raw("pdfFeatures") as string[];
   return (
     <div className="flex flex-col md:flex-row items-center gap-8 rounded-xl bg-slate-900/70 border border-slate-800 p-6">
       {/* Faux document preview */}
@@ -229,13 +201,12 @@ function PdfPanel() {
       </div>
 
       <div className="text-center md:text-left">
-        <h4 className="text-lg font-bold text-white mb-2">A polished report you actually keep</h4>
+        <h4 className="text-lg font-bold text-white mb-2">{t("pdfHeading")}</h4>
         <p className="text-slate-400 text-sm leading-relaxed mb-4 max-w-md">
-          Your full roadmap, skill-gap analysis, and milestone checklist — exported as a shareable PDF.
-          Bring it to your mentor, your manager, or your next interview. No subscription; it&apos;s yours forever.
+          {t("pdfDescription")}
         </p>
         <ul className="space-y-2 text-sm text-slate-300 inline-block text-left">
-          {["Full 6mo / 1yr / 2yr milestone plan", "Skill-gap scores + recommended courses", "Personalized to your finances & constraints"].map((f) => (
+          {pdfFeatures.map((f) => (
             <li key={f} className="flex items-center gap-2">
               <svg className="w-4 h-4 text-teal-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -250,6 +221,8 @@ function PdfPanel() {
 }
 
 export default function FeatureShowcase() {
+  const t = useTranslations("featureShowcase");
+  const tabText = t.raw("tabs") as Record<TabKey, TabText>;
   const [active, setActive] = useState<TabKey>("plan");
   const viewedRef = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -272,23 +245,29 @@ export default function FeatureShowcase() {
     <section ref={sectionRef} id="see-it-work" className="py-28 px-6 border-t border-slate-800/40">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">See It In Action</p>
+          <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">{t("eyebrow")}</p>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            This is what you get.{" "}
+            {t("headingLead")}{" "}
             <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-              Before you pay.
+              {t("headingAccent")}
             </span>
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto">
-            No vague promises. Here&apos;s a real sample of the AI-generated plan, insights, and report —
-            built from an actual career-pivot profile.
+            {t("subtitle")}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-          {tabs.map((tab) => (
-            <TabButton key={tab.key} tab={tab} active={active === tab.key} onClick={() => selectTab(tab.key)} />
+          {tabKeys.map((key) => (
+            <TabButton
+              key={key}
+              tabKey={key}
+              label={tabText[key].label}
+              sub={tabText[key].sub}
+              active={active === key}
+              onClick={() => selectTab(key)}
+            />
           ))}
         </div>
 
@@ -297,9 +276,9 @@ export default function FeatureShowcase() {
           {/* Sample banner */}
           <div className="flex items-center gap-2 mb-5 text-xs text-slate-500">
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-950/50 border border-amber-800/40 text-amber-300 font-medium">
-              Sample output
+              {t("sampleBadge")}
             </span>
-            <span>— your plan is generated from your real resume, finances, and constraints.</span>
+            <span>{t("sampleNote")}</span>
           </div>
 
           <AnimatePresence mode="wait">
@@ -326,7 +305,7 @@ export default function FeatureShowcase() {
             }
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
           >
-            Generate Mine — <s className="text-white/60 font-normal">$29</s> $19 →
+            {t("ctaPrimaryLabel")} — <s className="text-white/60 font-normal">$29</s> $19 →
           </Link>
           <Link
             href="/free"
@@ -335,7 +314,7 @@ export default function FeatureShowcase() {
             }
             className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
           >
-            Or try the free skill-gap snapshot first — no payment →
+            {t("ctaSecondary")}
           </Link>
         </div>
       </div>

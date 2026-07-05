@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface VoiceExpert {
   name: string;
@@ -19,58 +20,31 @@ interface VoiceExpert {
   urgencyDesc: string;
 }
 
-const voices: VoiceExpert[] = [
+// Style-only / non-text fields, merged by index with translated content.
+const voiceStyles = [
   {
-    name: "Dario Amodei",
-    title: "CEO, Anthropic",
     imageSrc: "/images/voices/dario-amodei.png",
-    imageAlt: "Thoughtful tech CEO in a modern office with dramatic side lighting and city skyline at dusk",
     gradient: "from-rose-500 to-pink-500",
     borderGlow: "hover:shadow-rose-500/20",
     accentBorder: "hover:border-rose-500/40",
-    quote: "AI will have effects that are much broader and occur much faster than previous labor market shocks.",
-    context: "Davos 2026",
-    urgencyLabel: "50% of entry-level jobs",
-    urgencyDesc: "disrupted in 1–5 years",
   },
   {
-    name: "Geoffrey Hinton",
-    title: 'Nobel Laureate · "Godfather of AI"',
     imageSrc: "/images/voices/geoffrey-hinton.png",
-    imageAlt: "Distinguished professor in a university library with neural network diagrams on a chalkboard and golden hour light",
     gradient: "from-amber-400 to-orange-500",
     borderGlow: "hover:shadow-amber-500/20",
     accentBorder: "hover:border-amber-500/40",
-    quote: "AI capabilities are doubling roughly every seven months — the pace of change is unlike anything we have seen before.",
-    context: "Nobel Lecture 2024",
-    urgencyLabel: "2026",
-    urgencyDesc: "the tipping point for mass displacement",
   },
   {
-    name: "Jensen Huang",
-    title: "CEO, NVIDIA",
     imageSrc: "/images/voices/jensen-huang.png",
-    imageAlt: "Charismatic tech executive on stage with dramatic teal lighting and holographic GPU chip diagrams",
     gradient: "from-emerald-400 to-teal-600",
     borderGlow: "hover:shadow-emerald-500/20",
     accentBorder: "hover:border-emerald-500/40",
-    quote: "It is essential to learn how to use AI — how to direct it, manage it, guardrail it, evaluate it.",
-    context: "CES 2025",
-    urgencyLabel: "Every job",
-    urgencyDesc: "will fundamentally change",
   },
   {
-    name: "Chamath Palihapitiya",
-    title: "Founder, Social Capital",
     imageSrc: "/images/voices/chamath-palihapitiya.png",
-    imageAlt: "Venture capitalist in a modern podcast studio with neon blue lighting and market data monitors",
     gradient: "from-sky-400 to-blue-600",
     borderGlow: "hover:shadow-sky-500/20",
     accentBorder: "hover:border-sky-500/40",
-    quote: "Young people willing to be AI native are well placed. Those who aren't will be left behind.",
-    context: "All-In Podcast",
-    urgencyLabel: "18 months",
-    urgencyDesc: "before traditional roles transform",
   },
 ];
 
@@ -204,6 +178,34 @@ function VoiceCard({ expert, index }: { expert: VoiceExpert; index: number }) {
 }
 
 export default function VoicesOfTheAIEra() {
+  const t = useTranslations("voices");
+
+  const experts: VoiceExpert[] = t
+    .raw("experts")
+    .map(
+      (
+        e: {
+          name: string;
+          title: string;
+          imageAlt: string;
+          quote: string;
+          context: string;
+          urgencyLabel: string;
+          urgencyDesc: string;
+        },
+        i: number,
+      ): VoiceExpert => ({
+        ...voiceStyles[i],
+        name: e.name,
+        title: e.title,
+        imageAlt: e.imageAlt,
+        quote: e.quote,
+        context: e.context,
+        urgencyLabel: e.urgencyLabel,
+        urgencyDesc: e.urgencyDesc,
+      }),
+    );
+
   return (
     <section className="py-28 px-6 overflow-hidden relative">
       <Image
@@ -217,21 +219,21 @@ export default function VoicesOfTheAIEra() {
       <div className="max-w-6xl mx-auto relative z-10">
         <AnimatedSection className="text-center mb-16">
           <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-            Voices of the AI Era
+            {t("eyebrow")}
           </motion.p>
           <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            The pioneers shaping AI agree:&nbsp;
+            {t("headingLead")}&nbsp;
             <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              act now.
+              {t("headingHighlight")}
             </span>
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-400 max-w-xl mx-auto">
-            From Nobel laureates to CEOs shaping the AI era — the message is unanimous. The window to adapt is open today, not tomorrow.
+            {t("subtitle")}
           </motion.p>
         </AnimatedSection>
 
         <AnimatedSection className="flex flex-col gap-6">
-          {voices.map((expert, i) => (
+          {experts.map((expert, i) => (
             <VoiceCard key={expert.name} expert={expert} index={i} />
           ))}
         </AnimatedSection>
@@ -247,15 +249,15 @@ export default function VoicesOfTheAIEra() {
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" aria-hidden="true" />
             <p className="text-slate-300 text-sm font-medium">
-              The experts are aligned — the disruption is already here.{" "}
-              <span className="text-white font-semibold">Your move.</span>
+              {t("stripText")}{" "}
+              <span className="text-white font-semibold">{t("stripEmphasis")}</span>
             </p>
           </div>
           <Link
             href="/pricing"
             className="shrink-0 px-5 py-3 min-h-[44px] inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.03]"
           >
-            Build My Pivot Plan — $19 →
+            {t("ctaButton")}
           </Link>
         </motion.div>
       </div>
