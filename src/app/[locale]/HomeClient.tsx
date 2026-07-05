@@ -188,6 +188,8 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const stats = t.raw("stats") as StatText[];
   const beforeAfterCards = t.raw("beforeAfterCards") as BeforeAfterText[];
   const courseValueProps = t.raw("courses.valueProps") as string[];
+  const courseDurations = t.raw("courses.durations") as string[];
+  const courseCosts = t.raw("courses.costs") as string[];
 
   const shuffledTestimonials = useMemo(() => {
     const arr = [...testimonials];
@@ -707,10 +709,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-orange-950 text-orange-300 border-orange-800/40",
                     providerInitial: "AN",
                     name: "AI Fluency for Professionals",
-                    duration: "4 weeks",
-                    cost: "Free",
                     costColor: "bg-emerald-950 text-emerald-400",
-                    valueProp: "Understand how LLMs work and how to apply them in any role",
                     matchScore: 94,
                   },
                   {
@@ -718,10 +717,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-blue-950 text-blue-300 border-blue-800/40",
                     providerInitial: "G",
                     name: "AI Essentials",
-                    duration: "5 weeks",
-                    cost: "Free",
                     costColor: "bg-emerald-950 text-emerald-400",
-                    valueProp: "Practical AI tools for workplace productivity — no coding needed",
                     matchScore: 89,
                   },
                   {
@@ -729,10 +725,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-amber-950 text-amber-300 border-amber-800/40",
                     providerInitial: "AWS",
                     name: "AI Practitioner",
-                    duration: "20 hours",
-                    cost: "$300 exam",
                     costColor: "bg-amber-950/60 text-amber-400",
-                    valueProp: "Industry-recognized cert for AI fundamentals on cloud infrastructure",
                     matchScore: 87,
                   },
                   {
@@ -740,10 +733,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-cyan-950 text-cyan-300 border-cyan-800/40",
                     providerInitial: "MS",
                     name: "Azure AI Fundamentals (AI-900)",
-                    duration: "6 hours",
-                    cost: "$165 exam",
                     costColor: "bg-amber-950/60 text-amber-400",
-                    valueProp: "Core AI and ML concepts — pairs well with any enterprise background",
                     matchScore: 83,
                   },
                   {
@@ -751,10 +741,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-teal-950 text-teal-300 border-teal-800/40",
                     providerInitial: "DL",
                     name: "AI for Everyone",
-                    duration: "6 hours",
-                    cost: "Free audit",
                     costColor: "bg-emerald-950 text-emerald-400",
-                    valueProp: "Andrew Ng's non-technical AI strategy course — boardroom-ready",
                     matchScore: 91,
                   },
                   {
@@ -762,10 +749,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     providerColor: "bg-indigo-950 text-indigo-300 border-indigo-800/40",
                     providerInitial: "IBM",
                     name: "AI Engineering Professional",
-                    duration: "6 months",
-                    cost: "$49/mo",
                     costColor: "bg-slate-800 text-slate-300",
-                    valueProp: "End-to-end ML engineering skills with hands-on projects",
                     matchScore: 78,
                   },
                 ].map((course, idx) => (
@@ -798,10 +782,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs text-slate-500 bg-slate-800/60 px-2 py-0.5 rounded-full">
-                        {course.duration}
+                        {courseDurations[idx]}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${course.costColor}`}>
-                        {course.cost}
+                        {courseCosts[idx]}
                       </span>
                     </div>
                   </motion.div>
