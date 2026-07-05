@@ -3,17 +3,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import {
+  trackTourStarted,
+  trackTourStepViewed,
+  trackTourCompleted,
+  trackTourDismissed,
+} from "@/lib/tracking";
 
-const TOUR_STORAGE_KEY = "tour-completed";
+const DEFAULT_STORAGE_KEY = "tour-completed";
+const DEFAULT_TOUR_ID = "onboarding";
 
-interface TourStep {
+export interface TourStep {
   title: string;
   body: string;
   targetSelector?: string;
   cta?: string;
 }
 
-const TOUR_STEPS: TourStep[] = [
+const ONBOARDING_STEPS: TourStep[] = [
   {
     title: "Welcome to AICareerPivot 👋",
     body: "We'll analyze your background and create a personalized career transition roadmap in under 5 minutes. Here's how it works:",
@@ -43,20 +50,49 @@ interface SpotlightRect {
   height: number;
 }
 
-export function FeatureTour() {
+interface FeatureTourProps {
+  /** Ordered steps to walk the user through. Defaults to the onboarding tour. */
+  steps?: TourStep[];
+  /** localStorage key used to remember that this tour was completed/dismissed. */
+  storageKey?: string;
+  /** Stable id used in analytics events (tour_started, tour_step_viewed, ...). */
+  tourId?: string;
+  /** Delay before the tour appears, letting the page settle first. */
+  startDelayMs?: number;
+}
+
+export function FeatureTour({
+  steps = ONBOARDING_STEPS,
+  storageKey = DEFAULT_STORAGE_KEY,
+  tourId = DEFAULT_TOUR_ID,
+  startDelayMs = 800,
+}: FeatureTourProps = {}) {
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [spotlightRect, setSpotlightRect] = useState<SpotlightRect | null>(null);
   const observerRef = useRef<ResizeObserver | null>(null);
 
   useEffect(() => {
-    if (localStorage.getItem(TOUR_STORAGE_KEY) === "1") return;
-    const timer = setTimeout(() => setActive(true), 800);
+    if (steps.length === 0) return;
+    if (localStorage.getItem(storageKey) === "1") return;
+    const timer = setTimeout(() => {
+      setActive(true);
+      trackTourStarted({ tour_id: tourId, total_steps: steps.length });
+    }, startDelayMs);
     return () => clearTimeout(timer);
-  }, []);
+  }, [steps.length, storageKey, tourId, startDelayMs]);
+
+  // Fire a step_viewed event whenever a step becomes visible.
+  useEffect(() => {
+    if (!active) return;
+    const current = steps[step];
+    if (current) {
+      trackTourStepViewed({ tour_id: tourId, step_index: step, step_title: current.title });
+    }
+  }, [active, step, steps, tourId]);
 
   const updateSpotlight = useCallback(() => {
-    const currentStep = TOUR_STEPS[step];
+    const currentStep = steps[step];
     if (!currentStep?.targetSelector) {
       setSpotlightRect(null);
       return;
@@ -76,16 +112,18 @@ export function FeatureTour() {
       width: rect.width + padding * 2,
       height: rect.height + padding * 2,
     });
-  }, [step]);
+  }, [step, steps]);
 
   useEffect(() => {
     if (!active) return;
-    updateSpotlight();
+    // Defer measurement out of the synchronous effect body to avoid cascading renders.
+    const raf = requestAnimationFrame(updateSpotlight);
 
-    const currentStep = TOUR_STEPS[step];
+    const currentStep = steps[step];
     if (currentStep?.targetSelector) {
       const el = document.querySelector(currentStep.targetSelector);
       if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
         observerRef.current?.disconnect();
         const observer = new ResizeObserver(updateSpotlight);
         observer.observe(el);
@@ -93,44 +131,56 @@ export function FeatureTour() {
       }
     }
 
-    return () => observerRef.current?.disconnect();
-  }, [active, step, updateSpotlight]);
+    return () => {
+      cancelAnimationFrame(raf);
+      observerRef.current?.disconnect();
+    };
+  }, [active, step, steps, updateSpotlight]);
+
+  const finish = useCallback(
+    (opts: { completed: boolean }) => {
+      localStorage.setItem(storageKey, "1");
+      if (opts.completed) {
+        trackTourCompleted({ tour_id: tourId, total_steps: steps.length });
+      } else {
+        trackTourDismissed({ tour_id: tourId, step_index: step });
+      }
+      setActive(false);
+      observerRef.current?.disconnect();
+    },
+    [storageKey, tourId, steps.length, step]
+  );
+
+  const next = useCallback(() => {
+    if (step >= steps.length - 1) {
+      finish({ completed: true });
+    } else {
+      setStep((s) => s + 1);
+    }
+  }, [step, steps.length, finish]);
+
+  const prev = useCallback(() => {
+    if (step > 0) setStep((s) => s - 1);
+  }, [step]);
 
   useEffect(() => {
     if (!active) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") dismiss();
+      if (e.key === "Escape") finish({ completed: false });
       if (e.key === "ArrowRight" || e.key === "Enter") next();
       if (e.key === "ArrowLeft") prev();
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [active, step]);
-
-  function dismiss() {
-    localStorage.setItem(TOUR_STORAGE_KEY, "1");
-    setActive(false);
-    observerRef.current?.disconnect();
-  }
-
-  function next() {
-    if (step >= TOUR_STEPS.length - 1) {
-      dismiss();
-    } else {
-      setStep((s) => s + 1);
-    }
-  }
-
-  function prev() {
-    if (step > 0) setStep((s) => s - 1);
-  }
+  }, [active, next, prev, finish]);
 
   if (!active) return null;
 
-  const currentStep = TOUR_STEPS[step];
-  const isLast = step === TOUR_STEPS.length - 1;
+  const currentStep = steps[step];
+  if (!currentStep) return null;
+  const isLast = step === steps.length - 1;
 
   const clipPath = spotlightRect
     ? `polygon(
@@ -157,7 +207,7 @@ export function FeatureTour() {
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           style={clipPath ? { clipPath } : undefined}
-          onClick={dismiss}
+          onClick={() => finish({ completed: false })}
         />
 
         {/* Spotlight glow ring */}
@@ -192,9 +242,18 @@ export function FeatureTour() {
               : undefined
           }
         >
-          <h3 className="text-lg font-semibold text-white">
-            {currentStep.title}
-          </h3>
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-lg font-semibold text-white">
+              {currentStep.title}
+            </h3>
+            <button
+              onClick={() => finish({ completed: false })}
+              aria-label="Skip tour"
+              className="shrink-0 text-xs text-slate-500 hover:text-slate-300"
+            >
+              Skip
+            </button>
+          </div>
           <p className="mt-2 text-sm leading-relaxed text-slate-300">
             {currentStep.body}
           </p>
@@ -214,7 +273,7 @@ export function FeatureTour() {
             <div className="flex items-center gap-3">
               {/* Progress dots */}
               <div className="flex gap-1.5">
-                {TOUR_STEPS.map((_, i) => (
+                {steps.map((_, i) => (
                   <span
                     key={i}
                     className={cn(
@@ -226,7 +285,7 @@ export function FeatureTour() {
               </div>
 
               <span className="text-xs text-slate-500">
-                Step {step + 1} of {TOUR_STEPS.length}
+                Step {step + 1} of {steps.length}
               </span>
             </div>
 

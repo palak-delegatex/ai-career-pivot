@@ -24,6 +24,7 @@ import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ContextualHint } from "@/components/ui/contextual-hint";
+import DashboardTour from "@/components/DashboardTour";
 
 interface Report {
   id: string;
@@ -595,6 +596,7 @@ export default function DashboardClient() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 overflow-x-hidden">
+      {activePlan && <DashboardTour />}
       <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
         Your Dashboard
       </h1>
@@ -635,17 +637,19 @@ export default function DashboardClient() {
 
           <TabsContent value="overview">
             <div className="space-y-6">
-              <DashboardHero
-                completionPercent={completionPercent}
-                status={scheduleStatus}
-                totalMilestones={totalMilestones}
-                completedMilestones={completedMilestones}
-                remainingMilestones={totalMilestones - completedMilestones}
-                targetRole={activePlan.targetRole}
-                streakDays={streakDays}
-                daysElapsed={daysElapsed}
-                currentPhaseLabel={currentPhaseLabel}
-              />
+              <div data-tour="dashboard-roadmap">
+                <DashboardHero
+                  completionPercent={completionPercent}
+                  status={scheduleStatus}
+                  totalMilestones={totalMilestones}
+                  completedMilestones={completedMilestones}
+                  remainingMilestones={totalMilestones - completedMilestones}
+                  targetRole={activePlan.targetRole}
+                  streakDays={streakDays}
+                  daysElapsed={daysElapsed}
+                  currentPhaseLabel={currentPhaseLabel}
+                />
+              </div>
 
               {progressLoaded && (
                 <>
@@ -672,7 +676,9 @@ export default function DashboardClient() {
                   />
 
                   {/* My Documents */}
-                  <DocumentsCard email={activeReport!.email} />
+                  <div data-tour="dashboard-pdf">
+                    <DocumentsCard email={activeReport!.email} />
+                  </div>
 
                   {/* Completion Badges */}
                   <CompletionBadges earnedBadges={earnedBadges} />
@@ -720,7 +726,9 @@ export default function DashboardClient() {
                 hasMockInterview={false}
               />
 
-              <ToolsGrid />
+              <div data-tour="dashboard-tools">
+                <ToolsGrid />
+              </div>
 
               <div className="flex justify-center">
                 <Link
