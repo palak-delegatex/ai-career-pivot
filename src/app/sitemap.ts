@@ -86,6 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/pricing", lastModified: pageLastModified("pricing"), changeFrequency: "monthly", priority: 0.8 },
     { path: "/success-stories", lastModified: pageLastModified("success-stories"), changeFrequency: "monthly", priority: 0.6 },
     ...toolPages,
+    { path: "/pivot", lastModified: pageLastModified("pivot"), changeFrequency: "weekly", priority: 0.8 },
     ...pivotPages,
     { path: "/free", lastModified: pageLastModified("free"), changeFrequency: "monthly", priority: 0.7 },
     { path: "/privacy", lastModified: pageLastModified("privacy"), changeFrequency: "yearly", priority: 0.3 },
