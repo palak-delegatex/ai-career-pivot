@@ -58,12 +58,225 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "AI-powered career strategist",
-      "title": "Stop feeling trapped in the wrong career",
-      "subtitle": "Build a personalized career transition roadmap based on your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans.",
-      "ctaPrimary": "Get your free snapshot",
-      "ctaSecondary": "See how it works",
-      "trustNote": "No credit card required."
+      "badge": "Intro Pricing — Just $19 (was $29) · Limited time",
+      "titleLine1": "Stop feeling trapped.",
+      "titleLine2": "Build your escape plan.",
+      "subtitle": "Upload your resume. Get a personalized career pivot roadmap built around your real skills, finances, and family constraints — in under 5 minutes.",
+      "socialProof": "127 professionals pivoted this month",
+      "ctaPrimary": "Build My Pivot Plan Now — <s>$29</s> $19 →",
+      "freeLink": "Or try the free skill-gap snapshot — no payment required →",
+      "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
+      "viewers": "🔥 83 people viewed this page today"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Faster than solo planning"
+      },
+      {
+        "value": "6mo",
+        "label": "To your first milestone"
+      },
+      {
+        "value": "100%",
+        "label": "Personalized to your life"
+      }
+    ],
+    "activity": "<b>{count} people</b> are building their career pivot right now",
+    "howItWorks": {
+      "eyebrow": "How It Works",
+      "title": "From stuck to strategic in three steps",
+      "subtitle": "A simple process that turns your whole situation into a concrete action plan."
+    },
+    "steps": [
+      {
+        "title": "We Read Your Background",
+        "desc": "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation."
+      },
+      {
+        "title": "AI Builds Your Strategy",
+        "desc": "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data."
+      },
+      {
+        "title": "Execute with Confidence",
+        "desc": "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Data-driven insights",
+      "title": "Your career strategy, powered by AI analytics",
+      "subtitle": "Track your progress, measure skill gaps, and see exactly where you stand — all in one dashboard."
+    },
+    "whoItsFor": {
+      "eyebrow": "Who It's For",
+      "title": "Built for people like you",
+      "subtitle": "Unlike generic career advice, we read your actual background first — then factor in your whole life."
+    },
+    "personas": [
+      {
+        "label": "Burned-out professionals ready for change",
+        "tag": "Burnout"
+      },
+      {
+        "label": "Parents who can't just quit and figure it out",
+        "tag": "Family"
+      },
+      {
+        "label": "Earners who need income continuity",
+        "tag": "Finance"
+      },
+      {
+        "label": "Career changers entering a new industry",
+        "tag": "Pivot"
+      },
+      {
+        "label": "Remote workers exploring new opportunities",
+        "tag": "Remote"
+      },
+      {
+        "label": "Ambitious employees who want faster growth",
+        "tag": "Growth"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Real Pivots, Real People",
+      "titleLead": "They stopped waiting.",
+      "titleAccent": "So can you.",
+      "subtitle": "Early users are already using their personalized roadmaps to navigate career transitions with confidence.",
+      "cta": "Start My Career Pivot — <s>$29</s> $19 →"
+    },
+    "transformations": {
+      "eyebrow": "Real Transformations",
+      "titleLead": "Where they started.",
+      "titleAccent": "Where they are now."
+    },
+    "beforeAfter": [
+      {
+        "before": "Stuck in marketing for 8 years",
+        "after": "Product Manager at a Series B startup",
+        "timeline": "6-month pivot"
+      },
+      {
+        "before": "Burnt-out accountant with no tech background",
+        "after": "Data Analytics Lead at a Fortune 500",
+        "timeline": "9-month pivot"
+      },
+      {
+        "before": "Retail operations manager, career plateau",
+        "after": "AI Implementation Consultant, 40% salary increase",
+        "timeline": "5-month pivot"
+      }
+    ],
+    "finalCta": {
+      "title": "Your career won't wait. Neither should you.",
+      "subtitle": "Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.",
+      "cta": "Build My Pivot Plan — <s>$29</s> $19",
+      "note": "3 minutes · No subscription · Yours to keep forever"
+    },
+    "courses": {
+      "eyebrow": "Skill Up",
+      "title": "AI Skills That Actually Get You Hired",
+      "subtitle": "The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.",
+      "match": "{score}% match",
+      "ctaNote": "Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.",
+      "cta": "Get My Personalized Learning Path — <s>$29</s> $19 →",
+      "items": [
+        {
+          "valueProp": "Understand how LLMs work and how to apply them in any role",
+          "duration": "4 weeks",
+          "cost": "Free"
+        },
+        {
+          "valueProp": "Practical AI tools for workplace productivity — no coding needed",
+          "duration": "5 weeks",
+          "cost": "Free"
+        },
+        {
+          "valueProp": "Industry-recognized cert for AI fundamentals on cloud infrastructure",
+          "duration": "20 hours",
+          "cost": "$300 exam"
+        },
+        {
+          "valueProp": "Core AI and ML concepts — pairs well with any enterprise background",
+          "duration": "6 hours",
+          "cost": "$165 exam"
+        },
+        {
+          "valueProp": "Andrew Ng's non-technical AI strategy course — boardroom-ready",
+          "duration": "6 hours",
+          "cost": "Free audit"
+        },
+        {
+          "valueProp": "End-to-end ML engineering skills with hands-on projects",
+          "duration": "6 months",
+          "cost": "$49/mo"
+        }
+      ]
+    },
+    "blog": {
+      "title": "From the blog",
+      "subtitle": "Practical guides for your career transition",
+      "all": "All articles →"
+    },
+    "successMetrics": {
+      "eyebrow": "Proven Results",
+      "title": "Numbers that speak for themselves",
+      "labels": [
+        "Professionals Pivoted",
+        "Report Career Progress",
+        "Faster Than Solo Planning",
+        "Average Salary Uplift"
+      ]
+    },
+    "voices": {
+      "eyebrow": "Voices of the AI Era",
+      "titleLead": "The pioneers shaping AI agree:",
+      "titleAccent": "act now.",
+      "subtitle": "From Nobel laureates to CEOs shaping the AI era — the message is unanimous. The window to adapt is open today, not tomorrow.",
+      "stripText": "The experts are aligned — the disruption is already here.",
+      "stripAccent": "Your move.",
+      "cta": "Build My Pivot Plan — $19 →",
+      "items": [
+        {
+          "title": "CEO, Anthropic",
+          "quote": "AI will have effects that are much broader and occur much faster than previous labor market shocks.",
+          "context": "Davos 2026",
+          "urgencyLabel": "50% of entry-level jobs",
+          "urgencyDesc": "disrupted in 1–5 years"
+        },
+        {
+          "title": "Nobel Laureate · \"Godfather of AI\"",
+          "quote": "AI capabilities are doubling roughly every seven months — the pace of change is unlike anything we have seen before.",
+          "context": "Nobel Lecture 2024",
+          "urgencyLabel": "2026",
+          "urgencyDesc": "the tipping point for mass displacement"
+        },
+        {
+          "title": "CEO, NVIDIA",
+          "quote": "It is essential to learn how to use AI — how to direct it, manage it, guardrail it, evaluate it.",
+          "context": "CES 2025",
+          "urgencyLabel": "Every job",
+          "urgencyDesc": "will fundamentally change"
+        },
+        {
+          "title": "Founder, Social Capital",
+          "quote": "Young people willing to be AI native are well placed. Those who aren't will be left behind.",
+          "context": "All-In Podcast",
+          "urgencyLabel": "18 months",
+          "urgencyDesc": "before traditional roles transform"
+        }
+      ]
+    },
+    "caseStudies": {
+      "eyebrow": "Success Stories",
+      "titleLead": "Real transitions,",
+      "titleAccent": "real outcomes"
+    },
+    "trustBar": {
+      "label": "Built with technology from"
+    },
+    "stickyCta": {
+      "cta": "Get My Plan — <s>$29</s> $19 →"
     }
   },
   "meta": {

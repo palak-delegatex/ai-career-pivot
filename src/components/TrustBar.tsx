@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const partners = [
   {
@@ -40,6 +41,7 @@ const partners = [
 export default function TrustBar() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
+  const t = useTranslations("home.trustBar");
 
   return (
     <section className="py-12 px-6 border-y border-slate-800/40">
@@ -51,7 +53,7 @@ export default function TrustBar() {
         className="max-w-3xl mx-auto"
       >
         <p className="text-center text-slate-600 text-xs font-medium tracking-widest uppercase mb-6">
-          Built with technology from
+          {t("label")}
         </p>
         <div className="flex items-center justify-center gap-0">
           {partners.map((p, i) => (

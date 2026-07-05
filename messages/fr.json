@@ -58,12 +58,225 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Stratège de carrière propulsé par l'IA",
-      "title": "Ne restez plus prisonnier de la mauvaise carrière",
-      "subtitle": "Construisez une feuille de route de reconversion personnalisée en fonction de vos compétences réelles, de vos finances et de vos contraintes familiales — avec des plans concrets à 6 mois, 1 an et 2 ans.",
-      "ctaPrimary": "Obtenez votre bilan gratuit",
-      "ctaSecondary": "Découvrez comment ça marche",
-      "trustNote": "Aucune carte bancaire requise."
+      "badge": "Tarif de lancement — Seulement 19 $ (au lieu de 29 $) · Durée limitée",
+      "titleLine1": "Arrêtez de vous sentir bloqué.",
+      "titleLine2": "Construisez votre plan d'évasion.",
+      "subtitle": "Importez votre CV. Obtenez une feuille de route de reconversion personnalisée basée sur vos compétences réelles, vos finances et vos contraintes familiales — en moins de 5 minutes.",
+      "socialProof": "127 professionnels ont pivoté ce mois-ci",
+      "ctaPrimary": "Créer mon plan de reconversion maintenant — <s>$29</s> $19 →",
+      "freeLink": "Ou essayez le bilan gratuit des écarts de compétences — sans paiement →",
+      "freeNote": "3 minutes · Sans abonnement · Feuille de route à conserver",
+      "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Plus rapide qu'une planification solo"
+      },
+      {
+        "value": "6mo",
+        "label": "Pour atteindre votre premier jalon"
+      },
+      {
+        "value": "100%",
+        "label": "Personnalisé pour votre vie"
+      }
+    ],
+    "activity": "<b>{count} personnes</b> construisent leur reconversion professionnelle en ce moment",
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "De bloqué à stratégique en trois étapes",
+      "subtitle": "Un processus simple qui transforme votre situation en un plan d'action concret."
+    },
+    "steps": [
+      {
+        "title": "Nous analysons votre parcours",
+        "desc": "Partagez votre LinkedIn, CV et portfolio. Notre IA analyse votre expérience réelle — historique professionnel, compétences transférables, réalisations — avant de formuler la moindre recommandation."
+      },
+      {
+        "title": "L'IA construit votre stratégie",
+        "desc": "Nous combinons votre parcours réel avec votre situation financière et vos contraintes familiales pour créer une feuille de route de transition sur mesure. Pas de conseils génériques. Votre plan, construit à partir de vos données."
+      },
+      {
+        "title": "Passez à l'action avec confiance",
+        "desc": "Obtenez des jalons concrets pour 6 mois, 1 an et 2 ans — avec les écarts de compétences et les actions ancrés dans votre situation actuelle."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Analyses basées sur les données",
+      "title": "Votre stratégie de carrière, propulsée par l'analytique IA",
+      "subtitle": "Suivez vos progrès, mesurez vos écarts de compétences et voyez exactement où vous en êtes — dans un seul tableau de bord."
+    },
+    "whoItsFor": {
+      "eyebrow": "Pour qui c'est fait",
+      "title": "Conçu pour des personnes comme vous",
+      "subtitle": "Contrairement aux conseils de carrière génériques, nous lisons d'abord votre parcours réel — puis prenons en compte l'ensemble de votre vie."
+    },
+    "personas": [
+      {
+        "label": "Professionnels épuisés prêts pour le changement",
+        "tag": "Burnout"
+      },
+      {
+        "label": "Parents qui ne peuvent pas tout lâcher du jour au lendemain",
+        "tag": "Famille"
+      },
+      {
+        "label": "Personnes qui ont besoin de continuité de revenus",
+        "tag": "Finances"
+      },
+      {
+        "label": "Reconvertis qui entrent dans un nouveau secteur",
+        "tag": "Pivot"
+      },
+      {
+        "label": "Travailleurs à distance explorant de nouvelles opportunités",
+        "tag": "Télétravail"
+      },
+      {
+        "label": "Employés ambitieux qui veulent évoluer plus vite",
+        "tag": "Croissance"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Vraies reconversions, vraies personnes",
+      "titleLead": "Ils ont arrêté d'attendre.",
+      "titleAccent": "Vous aussi, vous pouvez.",
+      "subtitle": "Les premiers utilisateurs se servent déjà de leurs feuilles de route personnalisées pour naviguer dans leurs transitions de carrière avec confiance.",
+      "cta": "Démarrer ma reconversion — <s>$29</s> $19 →"
+    },
+    "transformations": {
+      "eyebrow": "Vraies transformations",
+      "titleLead": "Leur point de départ.",
+      "titleAccent": "Leur situation aujourd'hui."
+    },
+    "beforeAfter": [
+      {
+        "before": "Bloqué dans le marketing depuis 8 ans",
+        "after": "Chef de produit dans une startup Series B",
+        "timeline": "Reconversion en 6 mois"
+      },
+      {
+        "before": "Comptable épuisé sans background tech",
+        "after": "Responsable Data Analytics dans un Fortune 500",
+        "timeline": "Reconversion en 9 mois"
+      },
+      {
+        "before": "Directeur des opérations en grande distribution, carrière au point mort",
+        "after": "Consultant en implémentation IA, +40 % de salaire",
+        "timeline": "Reconversion en 5 mois"
+      }
+    ],
+    "finalCta": {
+      "title": "Votre carrière n'attendra pas. Vous non plus.",
+      "subtitle": "Chaque semaine que vous attendez, l'IA remodèle davantage de métiers. Obtenez votre feuille de route de reconversion maintenant — pendant que le tarif de lancement dure.",
+      "cta": "Créer mon plan de reconversion — <s>$29</s> $19",
+      "note": "3 minutes · Sans abonnement · À conserver pour toujours"
+    },
+    "courses": {
+      "eyebrow": "Montez en compétences",
+      "title": "Les compétences IA qui font vraiment la différence",
+      "subtitle": "Les certifications que les recruteurs reconnaissent. Sélectionnées pour les professionnels se reconvertissant vers des rôles liés à l'IA.",
+      "match": "{score}% de correspondance",
+      "ctaNote": "Vous ne savez pas quelles formations correspondent à votre profil ? Obtenez un parcours d'apprentissage personnalisé avec votre analyse gratuite.",
+      "cta": "Obtenir mon parcours personnalisé — <s>$29</s> $19 →",
+      "items": [
+        {
+          "valueProp": "Comprendre le fonctionnement des LLM et les appliquer dans n'importe quel rôle",
+          "duration": "4 semaines",
+          "cost": "Gratuit"
+        },
+        {
+          "valueProp": "Outils IA pratiques pour la productivité au travail — sans programmation",
+          "duration": "5 semaines",
+          "cost": "Gratuit"
+        },
+        {
+          "valueProp": "Certification reconnue pour les fondamentaux de l'IA sur infrastructure cloud",
+          "duration": "20 heures",
+          "cost": "examen à $300"
+        },
+        {
+          "valueProp": "Concepts fondamentaux de l'IA et du ML — idéal pour tout profil en entreprise",
+          "duration": "6 heures",
+          "cost": "examen à $165"
+        },
+        {
+          "valueProp": "Cours de stratégie IA non technique d'Andrew Ng — prêt pour la direction",
+          "duration": "6 heures",
+          "cost": "Audit gratuit"
+        },
+        {
+          "valueProp": "Compétences complètes en ingénierie ML avec projets pratiques",
+          "duration": "6 mois",
+          "cost": "$49/mo"
+        }
+      ]
+    },
+    "blog": {
+      "title": "Du blog",
+      "subtitle": "Des guides pratiques pour votre reconversion professionnelle",
+      "all": "Tous les articles →"
+    },
+    "successMetrics": {
+      "eyebrow": "Résultats prouvés",
+      "title": "Des chiffres qui parlent d'eux-mêmes",
+      "labels": [
+        "Professionnels reconvertis",
+        "Rapportent des progrès de carrière",
+        "Plus rapide qu'une planification solo",
+        "Augmentation salariale moyenne"
+      ]
+    },
+    "voices": {
+      "eyebrow": "Voix de l'ère IA",
+      "titleLead": "Les pionniers qui façonnent l'IA sont unanimes :",
+      "titleAccent": "agissez maintenant.",
+      "subtitle": "Des lauréats du prix Nobel aux PDG qui façonnent l'ère IA — le message est unanime. La fenêtre pour s'adapter est ouverte aujourd'hui, pas demain.",
+      "stripText": "Les experts sont alignés — la disruption est déjà là.",
+      "stripAccent": "À vous de jouer.",
+      "cta": "Créer mon plan de reconversion — $19 →",
+      "items": [
+        {
+          "title": "CEO, Anthropic",
+          "quote": "L'IA aura des effets bien plus larges et bien plus rapides que les précédents chocs sur le marché du travail.",
+          "context": "Davos 2026",
+          "urgencyLabel": "50 % des emplois de débutants",
+          "urgencyDesc": "perturbés dans 1 à 5 ans"
+        },
+        {
+          "title": "Lauréat du prix Nobel · « Parrain de l'IA »",
+          "quote": "Les capacités de l'IA doublent environ tous les sept mois — le rythme du changement est sans précédent.",
+          "context": "Nobel Lecture 2024",
+          "urgencyLabel": "2026",
+          "urgencyDesc": "le point de bascule pour les déplacements de masse"
+        },
+        {
+          "title": "CEO, NVIDIA",
+          "quote": "Il est essentiel d'apprendre à utiliser l'IA — comment la diriger, la gérer, la contrôler, l'évaluer.",
+          "context": "CES 2025",
+          "urgencyLabel": "Chaque emploi",
+          "urgencyDesc": "va fondamentalement changer"
+        },
+        {
+          "title": "Fondateur, Social Capital",
+          "quote": "Les jeunes prêts à être natifs de l'IA sont bien placés. Ceux qui ne le sont pas seront laissés pour compte.",
+          "context": "All-In Podcast",
+          "urgencyLabel": "18 mois",
+          "urgencyDesc": "avant que les rôles traditionnels ne se transforment"
+        }
+      ]
+    },
+    "caseStudies": {
+      "eyebrow": "Histoires de réussite",
+      "titleLead": "Vraies transitions,",
+      "titleAccent": "vrais résultats"
+    },
+    "trustBar": {
+      "label": "Construit avec la technologie de"
+    },
+    "stickyCta": {
+      "cta": "Obtenir mon plan — <s>$29</s> $19 →"
     }
   },
   "meta": {

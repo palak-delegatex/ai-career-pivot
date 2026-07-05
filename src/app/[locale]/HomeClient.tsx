@@ -123,69 +123,31 @@ function AnimatedSection({ children, className = "" }: { children: React.ReactNo
   );
 }
 
-const steps = [
+const stepStyles = [
   {
     number: "01",
-    title: "We Read Your Background",
-    desc: "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation.",
     accent: "from-teal-500 to-emerald-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
   },
   {
     number: "02",
-    title: "AI Builds Your Strategy",
-    desc: "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data.",
     accent: "from-teal-400 to-cyan-500",
     border: "border-teal-500/20",
     glow: "hover:shadow-teal-500/10",
   },
   {
     number: "03",
-    title: "Execute with Confidence",
-    desc: "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today.",
     accent: "from-cyan-500 to-teal-500",
     border: "border-cyan-500/20",
     glow: "hover:shadow-cyan-500/10",
   },
 ];
 
-const personas = [
-  { label: "Burned-out professionals ready for change", tag: "Burnout" },
-  { label: "Parents who can't just quit and figure it out", tag: "Family" },
-  { label: "Earners who need income continuity", tag: "Finance" },
-  { label: "Career changers entering a new industry", tag: "Pivot" },
-  { label: "Remote workers exploring new opportunities", tag: "Remote" },
-  { label: "Ambitious employees who want faster growth", tag: "Growth" },
-];
-
-const stats = [
-  { value: "3×", label: "Faster than solo planning" },
-  { value: "6mo", label: "To your first milestone" },
-  { value: "100%", label: "Personalized to your life" },
-];
-
-const beforeAfterCards = [
-  {
-    before: "Stuck in marketing for 8 years",
-    after: "Product Manager at a Series B startup",
-    timeline: "6-month pivot",
-  },
-  {
-    before: "Burnt-out accountant with no tech background",
-    after: "Data Analytics Lead at a Fortune 500",
-    timeline: "9-month pivot",
-  },
-  {
-    before: "Retail operations manager, career plateau",
-    after: "AI Implementation Consultant, 40% salary increase",
-    timeline: "5-month pivot",
-  },
-];
-
 
 function ActivityIndicator() {
   const [count, setCount] = useState(14);
+  const th = useTranslations("home");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -202,7 +164,10 @@ function ActivityIndicator() {
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
         </span>
         <p className="text-slate-400 text-sm">
-          <span className="text-white font-semibold">{count} people</span> are building their career pivot right now
+          {th.rich("activity", {
+            count,
+            b: (chunks) => <span className="text-white font-semibold">{chunks}</span>,
+          })}
         </p>
       </div>
     </div>
@@ -214,6 +179,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const heroRef = useRef<HTMLElement>(null);
   const t = useTranslations("nav");
   const tc = useTranslations("common");
+  const th = useTranslations("home");
+  const steps = th.raw("steps") as { title: string; desc: string }[];
+  const personas = th.raw("personas") as { label: string; tag: string }[];
+  const stats = th.raw("stats") as { value: string; label: string }[];
+  const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
+  const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
 
   const shuffledTestimonials = useMemo(() => {
     const arr = [...testimonials];
@@ -317,7 +288,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-300 text-sm font-medium mb-10 backdrop-blur-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Intro Pricing — Just $19 (was $29) · Limited time
+            {th("hero.badge")}
           </motion.div>
 
           <motion.h1
@@ -327,10 +298,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6"
           >
             <motion.span variants={fadeUp} className="block text-white">
-              Stop feeling trapped.
+              {th("hero.titleLine1")}
             </motion.span>
             <motion.span variants={fadeUp} className="block shimmer-text mt-2">
-              Build your escape plan.
+              {th("hero.titleLine2")}
             </motion.span>
           </motion.h1>
 
@@ -341,8 +312,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             transition={{ delay: 0.35 }}
             className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6"
           >
-            Upload your resume. Get a personalized career pivot roadmap built around your
-            real skills, finances, and family constraints — in under 5 minutes.
+            {th("hero.subtitle")}
           </motion.p>
 
           {/* Social proof — positioned ABOVE CTA for trust-before-action */}
@@ -367,7 +337,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 ))}
               </div>
               <p className="text-slate-400 text-sm">
-                <span className="text-white font-semibold">127 professionals pivoted this month</span>
+                <span className="text-white font-semibold">{th("hero.socialProof")}</span>
               </p>
             </div>
           </motion.div>
@@ -386,7 +356,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 onMouseEnter={handleHeroCtaHover}
                 className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
               >
-                <span className="relative z-10">Build My Pivot Plan Now — <s className="text-white/60 font-normal">$29</s> $19 →</span>
+                <span className="relative z-10">{th.rich("hero.ctaPrimary", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
               </Link>
@@ -403,13 +373,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 onClick={() => trackCtaClicked({ cta_text: "Try Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free" })}
                 className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
               >
-                Or try the free skill-gap snapshot — no payment required →
+                {th("hero.freeLink")}
               </Link>
               <p className="text-slate-500 text-sm">
-                Takes 3 minutes · No subscription · Full roadmap yours to keep
+                {th("hero.freeNote")}
               </p>
               <p className="text-amber-400/80 text-xs font-medium">
-                🔥 83 people viewed this page today
+                {th("hero.viewers")}
               </p>
             </div>
           </motion.div>
@@ -440,18 +410,18 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-5xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                How It Works
+                {th("howItWorks.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                From stuck to strategic in three steps
+                {th("howItWorks.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
-                A simple process that turns your whole situation into a concrete action plan.
+                {th("howItWorks.subtitle")}
               </motion.p>
             </AnimatedSection>
 
             <AnimatedSection className="grid md:grid-cols-3 gap-5">
-              {steps.map((step) => (
+              {stepStyles.map((step, i) => (
                 <motion.div
                   key={step.number}
                   variants={fadeUp}
@@ -461,8 +431,8 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br ${step.accent} mb-5`}>
                     <span className="text-white font-bold text-sm">{step.number}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{steps[i]?.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{steps[i]?.desc}</p>
                   {/* Corner accent */}
                   <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${step.accent} opacity-5 rounded-2xl`} />
                 </motion.div>
@@ -485,9 +455,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#030712] via-[#030712]/60 to-[#030712]" />
           <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-            <p className="text-sm font-semibold tracking-widest uppercase text-teal-400 mb-4">Data-driven insights</p>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Your career strategy, powered by AI analytics</h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">Track your progress, measure skill gaps, and see exactly where you stand — all in one dashboard.</p>
+            <p className="text-sm font-semibold tracking-widest uppercase text-teal-400 mb-4">{th("dashboard.eyebrow")}</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">{th("dashboard.title")}</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">{th("dashboard.subtitle")}</p>
           </div>
         </section>
 
@@ -496,13 +466,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-4xl mx-auto">
             <AnimatedSection className="text-center mb-14">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Who It&apos;s For
+                {th("whoItsFor.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                Built for people like you
+                {th("whoItsFor.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-md mx-auto">
-                Unlike generic career advice, we read your actual background first — then factor in your whole life.
+                {th("whoItsFor.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -539,16 +509,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-6xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Real Pivots, Real People
+                {th("testimonials.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                They stopped waiting.{" "}
+                {th("testimonials.titleLead")}{" "}
                 <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  So can you.
+                  {th("testimonials.titleAccent")}
                 </span>
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-lg mx-auto">
-                Early users are already using their personalized roadmaps to navigate career transitions with confidence.
+                {th("testimonials.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -611,7 +581,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Start My Career Pivot — <s className="text-white/60 font-normal">$29</s> $19 →
+                  {th.rich("testimonials.cta", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -623,12 +593,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-5xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Real Transformations
+                {th("transformations.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                Where they started.{" "}
+                {th("transformations.titleLead")}{" "}
                 <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  Where they are now.
+                  {th("transformations.titleAccent")}
                 </span>
               </motion.h2>
             </AnimatedSection>
@@ -682,10 +652,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <div className="absolute inset-0 bg-gradient-to-r from-teal-600/5 to-cyan-600/5 animate-gradient" />
               <div className="relative z-10">
                 <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                  Your career won&apos;t wait. Neither should you.
+                  {th("finalCta.title")}
                 </motion.h2>
                 <motion.p variants={fadeUp} className="text-slate-300 text-lg mb-8 leading-relaxed">
-                  Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.
+                  {th("finalCta.subtitle")}
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
                   <Link
@@ -694,12 +664,12 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     onMouseEnter={() => trackCtaHovered({ cta_text: "Build My Pivot Plan — $19", cta_location: "final_cta" })}
                     className="group inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/30 hover:scale-[1.03] text-white"
                   >
-                    Build My Pivot Plan — <s className="text-white/60 font-normal">$29</s> $19
+                    {th.rich("finalCta.cta", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
-                  <p className="text-slate-500 text-sm">3 minutes · No subscription · Yours to keep forever</p>
+                  <p className="text-slate-500 text-sm">{th("finalCta.note")}</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -711,13 +681,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-6xl mx-auto">
             <AnimatedSection className="text-center mb-16">
               <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                Skill Up
+                {th("courses.eyebrow")}
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                AI Skills That Actually Get You Hired
+                {th("courses.title")}
               </motion.h2>
               <motion.p variants={fadeUp} className="text-slate-400 max-w-xl mx-auto">
-                The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.
+                {th("courses.subtitle")}
               </motion.p>
             </AnimatedSection>
 
@@ -793,7 +763,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                     valueProp: "End-to-end ML engineering skills with hands-on projects",
                     matchScore: 78,
                   },
-                ].map((course) => (
+                ].map((course, i) => (
                   <motion.div
                     key={course.name}
                     variants={fadeUp}
@@ -804,7 +774,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                       <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                       </svg>
-                      {course.matchScore}% match
+                      {th("courses.match", { score: course.matchScore })}
                     </div>
 
                     {/* Provider badge */}
@@ -817,16 +787,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                         {course.name}
                       </h3>
                       <p className="text-slate-400 text-sm leading-relaxed">
-                        {course.valueProp}
+                        {courseCopy[i]?.valueProp}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs text-slate-500 bg-slate-800/60 px-2 py-0.5 rounded-full">
-                        {course.duration}
+                        {courseCopy[i]?.duration}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${course.costColor}`}>
-                        {course.cost}
+                        {courseCopy[i]?.cost}
                       </span>
                     </div>
                   </motion.div>
@@ -838,7 +808,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <AnimatedSection className="mt-14 text-center">
               <motion.div variants={fadeUp} className="inline-flex flex-col items-center gap-4">
                 <p className="text-slate-400 text-sm max-w-md">
-                  Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.
+                  {th("courses.ctaNote")}
                 </p>
                 <Link
                   href="/pricing"
@@ -846,7 +816,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                   onMouseEnter={() => trackCtaHovered({ cta_text: "Get My Personalized Learning Path — $19", cta_location: "courses" })}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
                 >
-                  Get My Personalized Learning Path — <s className="text-white/60 font-normal">$29</s> $19 →
+                  {th.rich("courses.cta", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -858,11 +828,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight">From the blog</h2>
-                <p className="text-slate-400 text-sm mt-1">Practical guides for your career transition</p>
+                <h2 className="text-2xl font-extrabold text-white tracking-tight">{th("blog.title")}</h2>
+                <p className="text-slate-400 text-sm mt-1">{th("blog.subtitle")}</p>
               </div>
               <Link href="/blog" className="text-teal-400 text-sm font-semibold hover:text-teal-300 transition-colors">
-                All articles →
+                {th("blog.all")}
               </Link>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { caseStudies } from "@/lib/testimonials";
 
 const fadeUp = {
@@ -17,6 +18,7 @@ const stagger = {
 export default function CaseStudyCards() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const t = useTranslations("home.caseStudies");
 
   return (
     <section className="py-28 px-6">
@@ -32,15 +34,15 @@ export default function CaseStudyCards() {
             variants={fadeUp}
             className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3"
           >
-            Success Stories
+            {t("eyebrow")}
           </motion.p>
           <motion.h2
             variants={fadeUp}
             className="text-3xl sm:text-4xl font-extrabold text-white mb-4"
           >
-            Real transitions,{" "}
+            {t("titleLead")}{" "}
             <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-              real outcomes
+              {t("titleAccent")}
             </span>
           </motion.h2>
         </motion.div>

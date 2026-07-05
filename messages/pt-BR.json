@@ -58,12 +58,225 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Estrategista de carreira com IA",
-      "title": "Pare de se sentir preso na carreira errada",
-      "subtitle": "Crie um plano de transição de carreira personalizado com base nas suas habilidades reais, finanças e responsabilidades familiares — com planos práticos de 6 meses, 1 ano e 2 anos.",
-      "ctaPrimary": "Receba seu diagnóstico grátis",
-      "ctaSecondary": "Veja como funciona",
-      "trustNote": "Não é necessário cartão de crédito."
+      "badge": "Preço de lançamento — Apenas $19 (era $29) · Por tempo limitado",
+      "titleLine1": "Pare de se sentir preso.",
+      "titleLine2": "Monte seu plano de fuga.",
+      "subtitle": "Envie seu currículo. Receba um roteiro personalizado de transição de carreira construído em torno das suas habilidades reais, finanças e limitações familiares — em menos de 5 minutos.",
+      "socialProof": "127 profissionais fizeram a transição neste mês",
+      "ctaPrimary": "Montar meu plano de transição agora — <s>$29</s> $19 →",
+      "freeLink": "Ou experimente o diagnóstico gratuito de lacunas de habilidades — sem pagamento →",
+      "freeNote": "Leva 3 minutos · Sem assinatura · O roteiro completo é seu para guardar",
+      "viewers": "🔥 83 pessoas visualizaram esta página hoje"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Mais rápido que planejar sozinho"
+      },
+      {
+        "value": "6mo",
+        "label": "Até seu primeiro marco"
+      },
+      {
+        "value": "100%",
+        "label": "Personalizado para a sua vida"
+      }
+    ],
+    "activity": "<b>{count} pessoas</b> estão montando sua transição de carreira agora mesmo",
+    "howItWorks": {
+      "eyebrow": "Como Funciona",
+      "title": "De travado a estratégico em três passos",
+      "subtitle": "Um processo simples que transforma toda a sua situação em um plano de ação concreto."
+    },
+    "steps": [
+      {
+        "title": "Analisamos seu histórico",
+        "desc": "Compartilhe seu LinkedIn, currículo e portfólio. Nossa IA analisa a sua experiência real — histórico profissional, habilidades transferíveis, conquistas — antes de gerar qualquer recomendação."
+      },
+      {
+        "title": "A IA monta sua estratégia",
+        "desc": "Combinamos seu histórico real com sua situação financeira e suas limitações familiares para criar um roteiro de transição personalizado. Nada de conselhos genéricos. Seu plano, construído a partir dos seus dados."
+      },
+      {
+        "title": "Execute com confiança",
+        "desc": "Receba marcos concretos para 6 meses, 1 ano e 2 anos — com lacunas de habilidades e ações fundamentadas em onde você realmente está hoje."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Insights orientados por dados",
+      "title": "Sua estratégia de carreira, impulsionada por análise de IA",
+      "subtitle": "Acompanhe seu progresso, meça lacunas de habilidades e veja exatamente onde você está — tudo em um só painel."
+    },
+    "whoItsFor": {
+      "eyebrow": "Para Quem É",
+      "title": "Feito para pessoas como você",
+      "subtitle": "Ao contrário dos conselhos genéricos de carreira, primeiro analisamos o seu histórico real — e então consideramos toda a sua vida."
+    },
+    "personas": [
+      {
+        "label": "Profissionais esgotados prontos para mudar",
+        "tag": "Esgotamento"
+      },
+      {
+        "label": "Pais e mães que não podem simplesmente largar tudo e resolver depois",
+        "tag": "Família"
+      },
+      {
+        "label": "Quem precisa manter a continuidade da renda",
+        "tag": "Finanças"
+      },
+      {
+        "label": "Pessoas em transição de carreira entrando em um novo setor",
+        "tag": "Transição"
+      },
+      {
+        "label": "Trabalhadores remotos explorando novas oportunidades",
+        "tag": "Remoto"
+      },
+      {
+        "label": "Profissionais ambiciosos que querem crescer mais rápido",
+        "tag": "Crescimento"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Transições Reais, Pessoas Reais",
+      "titleLead": "Eles pararam de esperar.",
+      "titleAccent": "Você também pode.",
+      "subtitle": "Os primeiros usuários já estão usando seus roteiros personalizados para navegar por transições de carreira com confiança.",
+      "cta": "Iniciar minha transição de carreira — <s>$29</s> $19 →"
+    },
+    "transformations": {
+      "eyebrow": "Transformações Reais",
+      "titleLead": "De onde eles partiram.",
+      "titleAccent": "Onde eles estão agora."
+    },
+    "beforeAfter": [
+      {
+        "before": "Preso no marketing há 8 anos",
+        "after": "Gerente de Produto em uma startup Série B",
+        "timeline": "transição em 6 meses"
+      },
+      {
+        "before": "Contador esgotado, sem experiência em tecnologia",
+        "after": "Líder de Análise de Dados em uma Fortune 500",
+        "timeline": "transição em 9 meses"
+      },
+      {
+        "before": "Gerente de operações no varejo, carreira estagnada",
+        "after": "Consultor de Implementação de IA, aumento de 40% no salário",
+        "timeline": "transição em 5 meses"
+      }
+    ],
+    "finalCta": {
+      "title": "Sua carreira não vai esperar. Você também não deveria.",
+      "subtitle": "A cada semana que você adia, a IA remodela mais funções. Receba seu roteiro de transição personalizado agora — enquanto o preço de lançamento durar.",
+      "cta": "Montar meu plano de transição — <s>$29</s> $19",
+      "note": "3 minutos · Sem assinatura · Seu para sempre"
+    },
+    "courses": {
+      "eyebrow": "Aprimore Habilidades",
+      "title": "Habilidades de IA que realmente conseguem sua contratação",
+      "subtitle": "As credenciais que os recrutadores reconhecem. Selecionadas para profissionais em transição para funções ligadas à IA.",
+      "match": "{score}% de compatibilidade",
+      "ctaNote": "Não sabe quais cursos combinam com o seu histórico? Receba uma trilha de aprendizado personalizada com sua análise gratuita de transição de carreira.",
+      "cta": "Receber minha trilha de aprendizado personalizada — <s>$29</s> $19 →",
+      "items": [
+        {
+          "valueProp": "Entenda como os LLMs funcionam e como aplicá-los em qualquer função",
+          "duration": "4 semanas",
+          "cost": "Grátis"
+        },
+        {
+          "valueProp": "Ferramentas práticas de IA para produtividade no trabalho — sem programação",
+          "duration": "5 semanas",
+          "cost": "Grátis"
+        },
+        {
+          "valueProp": "Certificação reconhecida pelo mercado em fundamentos de IA em infraestrutura de nuvem",
+          "duration": "20 horas",
+          "cost": "$300 de exame"
+        },
+        {
+          "valueProp": "Conceitos essenciais de IA e ML — combinam bem com qualquer experiência corporativa",
+          "duration": "6 horas",
+          "cost": "$165 de exame"
+        },
+        {
+          "valueProp": "Curso de estratégia de IA não técnica de Andrew Ng — pronto para a diretoria",
+          "duration": "6 horas",
+          "cost": "Acesso gratuito"
+        },
+        {
+          "valueProp": "Habilidades completas de engenharia de ML com projetos práticos",
+          "duration": "6 meses",
+          "cost": "$49/mês"
+        }
+      ]
+    },
+    "blog": {
+      "title": "Do blog",
+      "subtitle": "Guias práticos para a sua transição de carreira",
+      "all": "Todos os artigos →"
+    },
+    "successMetrics": {
+      "eyebrow": "Resultados Comprovados",
+      "title": "Números que falam por si",
+      "labels": [
+        "Profissionais em Transição",
+        "Relatam Progresso na Carreira",
+        "Mais Rápido que Planejar Sozinho",
+        "Aumento Salarial Médio"
+      ]
+    },
+    "voices": {
+      "eyebrow": "Vozes da Era da IA",
+      "titleLead": "Os pioneiros que moldam a IA concordam:",
+      "titleAccent": "aja agora.",
+      "subtitle": "De laureados com o Nobel a CEOs que moldam a era da IA — a mensagem é unânime. A janela para se adaptar está aberta hoje, não amanhã.",
+      "stripText": "Os especialistas estão alinhados — a disrupção já chegou.",
+      "stripAccent": "Sua vez.",
+      "cta": "Montar meu plano de transição — $19 →",
+      "items": [
+        {
+          "title": "CEO, Anthropic",
+          "quote": "A IA terá efeitos muito mais amplos e ocorrerá muito mais rápido do que os choques anteriores no mercado de trabalho.",
+          "context": "Davos 2026",
+          "urgencyLabel": "50% das vagas de nível inicial",
+          "urgencyDesc": "impactadas em 1 a 5 anos"
+        },
+        {
+          "title": "Laureado com o Nobel · \"Padrinho da IA\"",
+          "quote": "As capacidades da IA estão dobrando aproximadamente a cada sete meses — o ritmo de mudança é diferente de tudo o que já vimos.",
+          "context": "Palestra do Nobel 2024",
+          "urgencyLabel": "2026",
+          "urgencyDesc": "o ponto de virada para a substituição em massa"
+        },
+        {
+          "title": "CEO, NVIDIA",
+          "quote": "É essencial aprender a usar a IA — como direcioná-la, gerenciá-la, estabelecer limites e avaliá-la.",
+          "context": "CES 2025",
+          "urgencyLabel": "Todo trabalho",
+          "urgencyDesc": "vai mudar fundamentalmente"
+        },
+        {
+          "title": "Fundador, Social Capital",
+          "quote": "Os jovens dispostos a serem nativos em IA estão bem posicionados. Os que não estão ficarão para trás.",
+          "context": "All-In Podcast",
+          "urgencyLabel": "18 meses",
+          "urgencyDesc": "antes que as funções tradicionais se transformem"
+        }
+      ]
+    },
+    "caseStudies": {
+      "eyebrow": "Histórias de Sucesso",
+      "titleLead": "Transições reais,",
+      "titleAccent": "resultados reais"
+    },
+    "trustBar": {
+      "label": "Desenvolvido com tecnologia de"
+    },
+    "stickyCta": {
+      "cta": "Receber meu plano — <s>$29</s> $19 →"
     }
   },
   "meta": {

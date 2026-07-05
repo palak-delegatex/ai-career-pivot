@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface VoiceExpert {
   name: string;
@@ -203,7 +204,18 @@ function VoiceCard({ expert, index }: { expert: VoiceExpert; index: number }) {
   );
 }
 
+interface VoiceItemCopy {
+  title: string;
+  quote: string;
+  context: string;
+  urgencyLabel: string;
+  urgencyDesc: string;
+  imageAlt?: string;
+}
+
 export default function VoicesOfTheAIEra() {
+  const t = useTranslations("home.voices");
+  const items = t.raw("items") as VoiceItemCopy[];
   return (
     <section className="py-28 px-6 overflow-hidden relative">
       <Image
@@ -217,22 +229,26 @@ export default function VoicesOfTheAIEra() {
       <div className="max-w-6xl mx-auto relative z-10">
         <AnimatedSection className="text-center mb-16">
           <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-            Voices of the AI Era
+            {t("eyebrow")}
           </motion.p>
           <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            The pioneers shaping AI agree:&nbsp;
+            {t("titleLead")}&nbsp;
             <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              act now.
+              {t("titleAccent")}
             </span>
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-400 max-w-xl mx-auto">
-            From Nobel laureates to CEOs shaping the AI era — the message is unanimous. The window to adapt is open today, not tomorrow.
+            {t("subtitle")}
           </motion.p>
         </AnimatedSection>
 
         <AnimatedSection className="flex flex-col gap-6">
           {voices.map((expert, i) => (
-            <VoiceCard key={expert.name} expert={expert} index={i} />
+            <VoiceCard
+              key={expert.name}
+              expert={{ ...expert, ...items[i], imageAlt: items[i]?.imageAlt ?? expert.imageAlt }}
+              index={i}
+            />
           ))}
         </AnimatedSection>
 
@@ -247,15 +263,15 @@ export default function VoicesOfTheAIEra() {
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" aria-hidden="true" />
             <p className="text-slate-300 text-sm font-medium">
-              The experts are aligned — the disruption is already here.{" "}
-              <span className="text-white font-semibold">Your move.</span>
+              {t("stripText")}{" "}
+              <span className="text-white font-semibold">{t("stripAccent")}</span>
             </p>
           </div>
           <Link
             href="/pricing"
             className="shrink-0 px-5 py-3 min-h-[44px] inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.03]"
           >
-            Build My Pivot Plan — $19 →
+            {t("cta")}
           </Link>
         </motion.div>
       </div>
