@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { getAllPosts } from "@/lib/blog";
+import { getAllPivotSlugs } from "@/lib/pivots";
 
 const BASE_URL = "https://ai-career-pivot.com";
 
@@ -24,6 +25,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(post.lastModified),
     changeFrequency: "monthly",
     priority: 0.8,
+  }));
+
+  // Programmatic career-pivot pages (AIC-710). English-only, so each slug
+  // maps to a single unprefixed URL.
+  const pivotLastModified = pageLastModified("pivot/[slug]");
+  const pivotPages: MetadataRoute.Sitemap = getAllPivotSlugs().map((slug) => ({
+    url: `${BASE_URL}/pivot/${slug}`,
+    lastModified: pivotLastModified,
+    changeFrequency: "monthly",
+    priority: 0.7,
   }));
 
   const toolPages: MetadataRoute.Sitemap = [
@@ -57,6 +68,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     ...blogPosts,
+    {
+      url: `${BASE_URL}/pivot`,
+      lastModified: pageLastModified("pivot"),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...pivotPages,
     {
       url: `${BASE_URL}/how-it-works`,
       lastModified: pageLastModified("how-it-works"),
