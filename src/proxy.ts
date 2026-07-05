@@ -9,6 +9,14 @@ const PROTECTED_PATHS = ["/dashboard", "/report", "/chat", "/account"];
 // next-intl locale detection + as-needed prefixing (AIC-667).
 const handleI18nRouting = createMiddleware(routing);
 
+// Next.js metadata image routes (e.g. `/report/<id>/opengraph-image`) live
+// *under* protected paths, so the matcher's root-level `opengraph-image`
+// exclusion never catches them. They must stay publicly fetchable: social
+// crawlers are unauthenticated, and the share-loop card (score + role, no PII)
+// is worthless if a crawler gets bounced to /login. Let these through the auth
+// gate while the report page itself stays protected.
+const METADATA_ROUTE = /\/(opengraph-image|twitter-image|icon|apple-icon)(-\w+)?\/?$/;
+
 // Path checks must ignore an optional leading locale segment (e.g. `/es/dashboard`).
 function stripLocale(pathname: string): string {
   const segments = pathname.split("/");
@@ -34,6 +42,11 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = stripLocale(request.nextUrl.pathname);
+
+  // Metadata image routes stay public even under a protected path (see above).
+  if (METADATA_ROUTE.test(pathname)) {
+    return response;
+  }
 
   if (PROTECTED_PATHS.some((p) => pathname.startsWith(p)) && !user) {
     const loginUrl = new URL("/login", request.url);
