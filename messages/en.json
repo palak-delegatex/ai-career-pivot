@@ -389,5 +389,11 @@
       "accessDenied": "Access was denied. You may need to grant permissions to sign in with Google.",
       "authFailed": "Authentication failed. Please try again."
     }
+  },
+  "pricing": {
+    "heroFreeCtaEyebrow": "Not ready to commit?",
+    "heroFreeCtaControl": "Get Started Free — no card required",
+    "heroFreeCtaBenefit": "See Your Free Skill-Gap Snapshot",
+    "heroFreeCtaSub": "Try it in 2 minutes. Upgrade only if you love your roadmap."
   }
 }

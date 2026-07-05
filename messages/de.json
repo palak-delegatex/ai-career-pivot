@@ -389,5 +389,11 @@
       "accessDenied": "Zugriff wurde verweigert. Möglicherweise müssen Sie Berechtigungen erteilen, um sich mit Google anzumelden.",
       "authFailed": "Authentifizierung fehlgeschlagen. Bitte erneut versuchen."
     }
+  },
+  "pricing": {
+    "heroFreeCtaEyebrow": "Noch nicht bereit, dich festzulegen?",
+    "heroFreeCtaControl": "Kostenlos starten — keine Karte nötig",
+    "heroFreeCtaBenefit": "Kostenlose Skill-Gap-Analyse ansehen",
+    "heroFreeCtaSub": "In 2 Minuten ausprobieren. Nur upgraden, wenn dir dein Plan gefällt."
   }
 }

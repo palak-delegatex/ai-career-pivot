@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
+import PricingHeroCta from "./PricingHeroCta";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Building2, Rocket, Briefcase } from "lucide-react";
@@ -187,6 +188,7 @@ export default function PricingPage() {
             </span>
             <span className="text-slate-300 text-sm font-medium">847 reports generated</span>
           </div>
+          <PricingHeroCta />
         </div>
 
         {/* Trust text badges */}
