@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { alternatesFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import NetworkingClient from "./NetworkingClient";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -11,15 +12,23 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "networking" });
   return {
-  title: "Networking CRM — AICareerPivot",
-  description: "Track your professional contacts, follow-ups, and networking relationships.",
-  alternates: alternatesFor("/networking", locale),
-};
+    title: t("page.metaTitle"),
+    description: t("page.metaDescription"),
+    alternates: alternatesFor("/networking", locale),
+  };
 }
 
-export default function NetworkingPage() {
-  const crumbs = breadcrumbSchema([{ name: "Networking", path: "/networking" }]);
+export default async function NetworkingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("networking");
+  const crumbs = breadcrumbSchema([{ name: t("page.breadcrumb"), path: "/networking" }]);
   return (
     <>
       <script

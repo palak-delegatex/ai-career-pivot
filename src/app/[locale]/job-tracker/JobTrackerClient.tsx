@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import JobTrackerKanban from "@/components/JobTrackerKanban";
 import type { TrackedJob } from "@/lib/job-tracker";
 
 export default function JobTrackerClient() {
+  const t = useTranslations("jobTracker");
   const [email, setEmail] = useState<string | null>(null);
   const [jobs, setJobs] = useState<TrackedJob[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function JobTrackerClient() {
       } = await supabase.auth.getUser();
 
       if (!user?.email) {
-        setError("Please sign in to use the Job Tracker.");
+        setError(t("client.signInToUse"));
         setLoading(false);
         return;
       }
@@ -32,7 +34,7 @@ export default function JobTrackerClient() {
         const data = await res.json();
         setJobs(data.jobs ?? []);
       } catch {
-        setError("Failed to load your tracked jobs. Please try again.");
+        setError(t("client.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -50,7 +52,7 @@ export default function JobTrackerClient() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-slate-400">Loading your job tracker...</p>
+          <p className="text-sm text-slate-400">{t("client.loadingJobs")}</p>
         </div>
       </div>
     );
