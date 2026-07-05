@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 function GoogleIcon() {
@@ -36,25 +37,28 @@ function MailIcon() {
   );
 }
 
-function getAuthErrorMessage(errorParam: string | null, errorDescription: string | null, errorCode: string | null): string {
+// Maps auth callback query params to an `error.*` translation key (or "" when
+// there is no error). Copy is resolved via next-intl inside the component.
+function getAuthErrorKey(errorParam: string | null, errorDescription: string | null, errorCode: string | null): string {
   if (!errorParam) return "";
 
   if (errorParam === "server_error" || errorParam === "exchange_failed") {
     const desc = errorDescription ?? "";
     if (desc.toLowerCase().includes("exchange") || errorCode === "unexpected_failure") {
-      return "Google sign-in is temporarily unavailable. Please try email sign-in, or try again later.";
+      return "googleUnavailable";
     }
-    return "Sign-in failed due to a server issue. Please try again or use email sign-in.";
+    return "serverError";
   }
 
   if (errorParam === "access_denied") {
-    return "Access was denied. You may need to grant permissions to sign in with Google.";
+    return "accessDenied";
   }
 
-  return "Authentication failed. Please try again.";
+  return "authFailed";
 }
 
 function LoginForm() {
+  const t = useTranslations("login");
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
@@ -62,9 +66,10 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [magicLinkSent, setMagicLinkSent] = useState(false);
-  const [error, setError] = useState(
-    getAuthErrorMessage(errorParam, errorDescription, errorCode)
-  );
+  const [error, setError] = useState(() => {
+    const key = getAuthErrorKey(errorParam, errorDescription, errorCode);
+    return key ? t(`error.${key}`) : "";
+  });
 
   async function signInWithGoogle() {
     setLoading(true);
@@ -114,16 +119,18 @@ function LoginForm() {
           <div className="w-16 h-16 rounded-2xl bg-teal-600/20 flex items-center justify-center mx-auto mb-6">
             <MailIcon />
           </div>
-          <h1 className="text-2xl font-extrabold mb-3">Check your email</h1>
+          <h1 className="text-2xl font-extrabold mb-3">{t("magicLink.heading")}</h1>
           <p className="text-slate-400 text-sm leading-relaxed mb-6">
-            We sent a sign-in link to <span className="text-white font-medium">{email}</span>.
-            Click the link to access your account.
+            {t.rich("magicLink.body", {
+              email,
+              b: (chunks) => <span className="text-white font-medium">{chunks}</span>,
+            })}
           </p>
           <button
             onClick={() => { setMagicLinkSent(false); setEmail(""); }}
             className="text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors"
           >
-            Use a different email
+            {t("magicLink.differentEmail")}
           </button>
         </div>
       </main>
@@ -134,9 +141,9 @@ function LoginForm() {
     <main className="flex items-center justify-center px-6 py-24">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold mb-3">Sign In</h1>
+          <h1 className="text-3xl font-extrabold mb-3">{t("form.heading")}</h1>
           <p className="text-slate-400 text-sm leading-relaxed">
-            Access your career pivot roadmaps and track your progress.
+            {t("form.subheading")}
           </p>
         </div>
 
@@ -147,13 +154,13 @@ function LoginForm() {
             className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-colors disabled:opacity-50"
           >
             <GoogleIcon />
-            {loading ? "Redirecting..." : "Continue with Google"}
+            {loading ? t("form.redirecting") : t("form.continueWithGoogle")}
           </button>
         </div>
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-slate-700" />
-          <span className="text-slate-500 text-xs font-medium">or</span>
+          <span className="text-slate-500 text-xs font-medium">{t("form.or")}</span>
           <div className="flex-1 h-px bg-slate-700" />
         </div>
 
@@ -162,7 +169,7 @@ function LoginForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder={t("form.emailPlaceholder")}
             required
             className="w-full px-4 py-3.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
           />
@@ -172,7 +179,7 @@ function LoginForm() {
             className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-500 transition-colors disabled:opacity-50"
           >
             <MailIcon />
-            {loading ? "Sending..." : "Continue with Email"}
+            {loading ? t("form.sending") : t("form.continueWithEmail")}
           </button>
         </form>
 
@@ -181,7 +188,7 @@ function LoginForm() {
         )}
 
         <p className="text-slate-500 text-xs text-center mt-8 leading-relaxed">
-          By signing in, you agree to our Terms of Service and Privacy Policy.
+          {t("form.terms")}
         </p>
       </div>
     </main>
