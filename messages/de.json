@@ -58,12 +58,225 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "KI-gestützter Karrierestratege",
-      "title": "Fühlen Sie sich nicht länger in der falschen Karriere gefangen",
-      "subtitle": "Erstellen Sie einen personalisierten Fahrplan für Ihren Karrierewechsel auf Basis Ihrer tatsächlichen Fähigkeiten, Finanzen und familiären Rahmenbedingungen — mit umsetzbaren Plänen für 6 Monate, 1 Jahr und 2 Jahre.",
-      "ctaPrimary": "Kostenlose Analyse erhalten",
-      "ctaSecondary": "So funktioniert's ansehen",
-      "trustNote": "Keine Kreditkarte erforderlich."
+      "badge": "Einführungspreis — Nur $19 (statt $29) · Begrenzte Zeit",
+      "titleLine1": "Schluss mit dem Gefühl, festzustecken.",
+      "titleLine2": "Bauen Sie Ihren Ausweg.",
+      "subtitle": "Laden Sie Ihren Lebenslauf hoch. Erhalten Sie einen personalisierten Karrierewechsel-Fahrplan, der auf Ihren echten Fähigkeiten, Finanzen und familiären Rahmenbedingungen basiert — in unter 5 Minuten.",
+      "socialProof": "127 Fachleute haben diesen Monat gewechselt",
+      "ctaPrimary": "Meinen Plan jetzt erstellen — <s>$29</s> $19 →",
+      "freeLink": "Oder die kostenlose Kompetenzlücken-Analyse testen — keine Zahlung nötig →",
+      "freeNote": "3 Minuten · Kein Abo · Kompletter Fahrplan gehört Ihnen",
+      "viewers": "🔥 83 Personen haben diese Seite heute angesehen"
+    },
+    "stats": [
+      {
+        "value": "3×",
+        "label": "Schneller als eigenständige Planung"
+      },
+      {
+        "value": "6mo",
+        "label": "Bis zu Ihrem ersten Meilenstein"
+      },
+      {
+        "value": "100%",
+        "label": "Auf Ihr Leben zugeschnitten"
+      }
+    ],
+    "activity": "<b>{count} Personen</b> erstellen gerade ihren Karrierewechselplan",
+    "howItWorks": {
+      "eyebrow": "So funktioniert's",
+      "title": "In drei Schritten von feststeckend zu strategisch",
+      "subtitle": "Ein einfacher Prozess, der Ihre gesamte Situation in einen konkreten Aktionsplan verwandelt."
+    },
+    "steps": [
+      {
+        "title": "Wir lesen Ihren Hintergrund",
+        "desc": "Teilen Sie Ihr LinkedIn-Profil, Ihren Lebenslauf und Ihr Portfolio. Unsere KI analysiert Ihre tatsächliche Erfahrung — Berufshistorie, übertragbare Fähigkeiten, Erfolge — bevor sie eine einzige Empfehlung generiert."
+      },
+      {
+        "title": "KI entwickelt Ihre Strategie",
+        "desc": "Wir verbinden Ihren realen Hintergrund mit Ihrer finanziellen Situation und familiären Rahmenbedingungen, um einen individuellen Übergangs-Fahrplan zu erstellen. Keine allgemeinen Ratschläge. Ihr Plan, aus Ihren Daten."
+      },
+      {
+        "title": "Mit Zuversicht umsetzen",
+        "desc": "Erhalten Sie konkrete Meilensteine für 6 Monate, 1 Jahr und 2 Jahre — mit Kompetenzlücken und Maßnahmen, die auf Ihrem heutigen Stand basieren."
+      }
+    ],
+    "dashboard": {
+      "eyebrow": "Datengestützte Einblicke",
+      "title": "Ihre Karrierestrategie, angetrieben von KI-Analysen",
+      "subtitle": "Verfolgen Sie Ihren Fortschritt, messen Sie Kompetenzlücken und sehen Sie genau, wo Sie stehen — alles in einem Dashboard."
+    },
+    "whoItsFor": {
+      "eyebrow": "Für wen ist es",
+      "title": "Gebaut für Menschen wie Sie",
+      "subtitle": "Anders als allgemeine Karriereberatung lesen wir zuerst Ihren echten Hintergrund — und berücksichtigen dann Ihr gesamtes Leben."
+    },
+    "personas": [
+      {
+        "label": "Ausgebrannte Fachleute, die bereit für Veränderung sind",
+        "tag": "Burnout"
+      },
+      {
+        "label": "Eltern, die nicht einfach kündigen und improvisieren können",
+        "tag": "Familie"
+      },
+      {
+        "label": "Verdiener, die Einkommenskontinuität brauchen",
+        "tag": "Finanzen"
+      },
+      {
+        "label": "Karrierewechsler, die in eine neue Branche einsteigen",
+        "tag": "Wechsel"
+      },
+      {
+        "label": "Remote-Arbeitende, die neue Chancen erkunden",
+        "tag": "Remote"
+      },
+      {
+        "label": "Ehrgeizige Mitarbeitende, die schneller wachsen wollen",
+        "tag": "Wachstum"
+      }
+    ],
+    "testimonials": {
+      "eyebrow": "Echte Wechsel, echte Menschen",
+      "titleLead": "Sie haben aufgehört zu warten.",
+      "titleAccent": "Sie auch.",
+      "subtitle": "Frühe Nutzer verwenden bereits ihre personalisierten Fahrpläne, um Karrierewechsel selbstbewusst zu meistern.",
+      "cta": "Meinen Karrierewechsel starten — <s>$29</s> $19 →"
+    },
+    "transformations": {
+      "eyebrow": "Echte Veränderungen",
+      "titleLead": "Wo sie anfingen.",
+      "titleAccent": "Wo sie jetzt sind."
+    },
+    "beforeAfter": [
+      {
+        "before": "Seit 8 Jahren im Marketing feststeckend",
+        "after": "Product Manager bei einem Series-B-Startup",
+        "timeline": "6-Monats-Wechsel"
+      },
+      {
+        "before": "Ausgebrannter Buchhalter ohne Tech-Hintergrund",
+        "after": "Data Analytics Lead bei einem Fortune-500-Unternehmen",
+        "timeline": "9-Monats-Wechsel"
+      },
+      {
+        "before": "Betriebsleiter im Einzelhandel, Karriereplateau",
+        "after": "KI-Implementierungsberater, 40 % Gehaltserhöhung",
+        "timeline": "5-Monats-Wechsel"
+      }
+    ],
+    "finalCta": {
+      "title": "Ihre Karriere wartet nicht. Sie auch nicht.",
+      "subtitle": "Jede Woche, die Sie zögern, verändert KI mehr Stellen. Holen Sie sich jetzt Ihren personalisierten Wechselplan — solange der Einführungspreis gilt.",
+      "cta": "Meinen Plan erstellen — <s>$29</s> $19",
+      "note": "3 Minuten · Kein Abo · Für immer Ihres"
+    },
+    "courses": {
+      "eyebrow": "Fähigkeiten ausbauen",
+      "title": "KI-Fähigkeiten, die Sie wirklich eingestellt bekommen",
+      "subtitle": "Die Zertifikate, die Personalverantwortliche kennen. Kuratiert für Fachleute, die in KI-nahe Rollen wechseln.",
+      "match": "{score}% Übereinstimmung",
+      "ctaNote": "Nicht sicher, welche Kurse zu Ihrem Hintergrund passen? Erhalten Sie einen personalisierten Lernpfad mit Ihrer kostenlosen Karrierewechsel-Analyse.",
+      "cta": "Meinen personalisierten Lernpfad erhalten — <s>$29</s> $19 →",
+      "items": [
+        {
+          "valueProp": "Verstehen, wie LLMs funktionieren und wie man sie in jeder Rolle einsetzt",
+          "duration": "4 Wochen",
+          "cost": "Kostenlos"
+        },
+        {
+          "valueProp": "Praktische KI-Tools für Produktivität am Arbeitsplatz — kein Coding nötig",
+          "duration": "5 Wochen",
+          "cost": "Kostenlos"
+        },
+        {
+          "valueProp": "Branchenweit anerkanntes Zertifikat für KI-Grundlagen auf Cloud-Infrastruktur",
+          "duration": "20 Stunden",
+          "cost": "300 $ Prüfung"
+        },
+        {
+          "valueProp": "Kern-KI- und ML-Konzepte — ergänzt jeden Unternehmenshintergrund",
+          "duration": "6 Stunden",
+          "cost": "165 $ Prüfung"
+        },
+        {
+          "valueProp": "Andrew Ngs nicht-technischer KI-Strategiekurs — boardroomtauglich",
+          "duration": "6 Stunden",
+          "cost": "Kostenlos (Gasthörer)"
+        },
+        {
+          "valueProp": "ML-Engineering-Kenntnisse von A bis Z mit praxisnahen Projekten",
+          "duration": "6 Monate",
+          "cost": "$49/mo"
+        }
+      ]
+    },
+    "blog": {
+      "title": "Aus dem Blog",
+      "subtitle": "Praktische Leitfäden für Ihren Karrierewechsel",
+      "all": "Alle Artikel →"
+    },
+    "successMetrics": {
+      "eyebrow": "Bewiesene Ergebnisse",
+      "title": "Zahlen, die für sich sprechen",
+      "labels": [
+        "Gewechselte Fachleute",
+        "Berichten von Karrierefortschritt",
+        "Schneller als eigenständige Planung",
+        "Durchschnittliches Gehaltsplus"
+      ]
+    },
+    "voices": {
+      "eyebrow": "Stimmen des KI-Zeitalters",
+      "titleLead": "Die Pioniere, die KI prägen, sind einig:",
+      "titleAccent": "jetzt handeln.",
+      "subtitle": "Von Nobelpreisträgern bis zu CEOs, die das KI-Zeitalter gestalten — die Botschaft ist eindeutig. Das Zeitfenster zur Anpassung ist heute offen, nicht morgen.",
+      "stripText": "Die Experten sind sich einig — die Disruption ist bereits da.",
+      "stripAccent": "Ihr Zug.",
+      "cta": "Meinen Plan erstellen — $19 →",
+      "items": [
+        {
+          "title": "CEO, Anthropic",
+          "quote": "KI wird Auswirkungen haben, die viel breiter und viel schneller eintreten als frühere Arbeitsmarktschocks.",
+          "context": "Davos 2026",
+          "urgencyLabel": "50 % der Einstiegsstellen",
+          "urgencyDesc": "gestört in 1–5 Jahren"
+        },
+        {
+          "title": "Nobelpreisträger · \"Pate der KI\"",
+          "quote": "KI-Fähigkeiten verdoppeln sich etwa alle sieben Monate — das Veränderungstempo ist anders als alles, was wir je erlebt haben.",
+          "context": "Nobelvorlesung 2024",
+          "urgencyLabel": "2026",
+          "urgencyDesc": "der Kipppunkt für Massenverdrängung"
+        },
+        {
+          "title": "CEO, NVIDIA",
+          "quote": "Es ist unerlässlich zu lernen, wie man KI einsetzt — wie man sie steuert, verwaltet, absichert und bewertet.",
+          "context": "CES 2025",
+          "urgencyLabel": "Jede Stelle",
+          "urgencyDesc": "wird sich grundlegend verändern"
+        },
+        {
+          "title": "Founder, Social Capital",
+          "quote": "Wer bereit ist, KI-nativ zu sein, ist gut aufgestellt. Wer es nicht ist, wird zurückgelassen.",
+          "context": "All-In Podcast",
+          "urgencyLabel": "18 Monate",
+          "urgencyDesc": "bevor traditionelle Rollen sich wandeln"
+        }
+      ]
+    },
+    "caseStudies": {
+      "eyebrow": "Erfolgsgeschichten",
+      "titleLead": "Echte Übergänge,",
+      "titleAccent": "echte Ergebnisse"
+    },
+    "trustBar": {
+      "label": "Entwickelt mit Technologie von"
+    },
+    "stickyCta": {
+      "cta": "Meinen Plan erhalten — <s>$29</s> $19 →"
     }
   },
   "meta": {
