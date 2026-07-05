@@ -67,8 +67,23 @@ export async function generateMetadata({
   // the layout itself calls notFound() for those below.
   const safeLocale = (hasLocale(routing.locales, locale) ? locale : routing.defaultLocale) as Locale;
 
+  // Search-engine ownership verification (AIC-698). Tokens are provided by the
+  // site owner via env vars; when unset the corresponding <meta> is omitted, so
+  // this is a safe no-op until the human operator pastes the tokens. Once set,
+  // verifying GSC/Bing is a zero-code-change deploy.
+  const gscToken = process.env.GSC_SITE_VERIFICATION;
+  const bingToken = process.env.BING_SITE_VERIFICATION;
+  const verification =
+    gscToken || bingToken
+      ? {
+          ...(gscToken ? { google: gscToken } : {}),
+          ...(bingToken ? { other: { "msvalidate.01": bingToken } } : {}),
+        }
+      : undefined;
+
   return {
     metadataBase: new URL(BASE_URL),
+    ...(verification ? { verification } : {}),
     title: {
       default: "AICareerPivot — Your Personal Career Strategist",
       template: "%s | AICareerPivot",
