@@ -277,6 +277,92 @@
     },
     "stickyCta": {
       "cta": "Obtenir mon plan — <s>$29</s> $19 →"
+    },
+    "featureShowcase": {
+      "eyebrow": "Voyez-le En Action",
+      "headingLead": "Voici ce que vous obtenez.",
+      "headingAccent": "Avant de payer.",
+      "subheading": "Pas de promesses vagues. Voici un vrai échantillon du plan, des insights et du rapport générés par l'IA — construits à partir d'un vrai profil de reconversion.",
+      "sampleBadge": "Exemple de résultat",
+      "sampleNote": "— votre plan est généré à partir de votre vrai CV, de vos finances et de vos contraintes.",
+      "tabs": {
+        "plan": {
+          "label": "Génération de plan",
+          "sub": "Votre feuille de route à 6 mois / 1 an / 2 ans"
+        },
+        "insights": {
+          "label": "Insights IA",
+          "sub": "Correspondance de compétences + analyse des écarts"
+        },
+        "pdf": {
+          "label": "Rapport PDF",
+          "sub": "Votre plan, à garder pour toujours"
+        }
+      },
+      "milestones": [
+        {
+          "horizon": "6 mois",
+          "items": [
+            "Terminez Google AI Essentials + livrez 2 projets d'automatisation dans votre poste actuel",
+            "Repositionnez votre LinkedIn autour de « opérations + IA » — objectif : 15 vues de recruteurs/semaine",
+            "Obtenez 3 entretiens informatifs avec des responsables de l'implémentation de l'IA"
+          ]
+        },
+        {
+          "horizon": "1 an",
+          "items": [
+            "Passez à un rôle interne proche de l'IA ou décrochez une offre d'Analyste AI Ops",
+            "Construisez un portfolio de 4 études de cas d'automatisation de flux livrées",
+            "Développez votre réseau dans le rôle cible à plus de 50 contacts chaleureux"
+          ]
+        },
+        {
+          "horizon": "2 ans",
+          "items": [
+            "Consultant en implémentation de l'IA — hausse de rémunération projetée de 35–45 %",
+            "Pilotez l'adoption transversale de l'IA pour une unité commerciale",
+            "Optionnel : conseil indépendant en parallèle pour diversifier vos revenus"
+          ]
+        }
+      ],
+      "skillGapTitle": "Correspondance des écarts — cible : Consultant en implémentation de l'IA",
+      "skillGaps": [
+        {
+          "skill": "Automatisation des processus",
+          "match": 82,
+          "note": "Fort — 8 ans d'expérience en opérations se transfèrent directement"
+        },
+        {
+          "skill": "Prompt engineering & outils LLM",
+          "match": 41,
+          "note": "Écart — couvert par AI Essentials dès le 1er mois"
+        },
+        {
+          "skill": "Gestion des parties prenantes & du changement",
+          "match": 88,
+          "note": "Fort — reformulez-le en leadership d'adoption de l'IA"
+        },
+        {
+          "skill": "Culture des données / bases de SQL",
+          "match": 55,
+          "note": "Partiel — un sprint ciblé de 3 semaines est recommandé"
+        }
+      ],
+      "insightsTitle": "Ce que l'IA a remarqué sur votre profil",
+      "insights": [
+        "Votre expérience en opérations est un atout caché : 71 % des rôles d'implémentation de l'IA privilégient l'expertise métier + la gestion du changement plutôt que le code.",
+        "L'entrée la plus rapide sur le marché : automatisez un flux de travail pénible chez votre employeur actuel et documentez le ROI comme première étude de cas.",
+        "Le plus grand risque à réduire d'abord : l'écart en prompt engineering. C'est le moins cher à combler et il débloque le plus de postes."
+      ],
+      "pdfTitle": "Un rapport soigné que vous gardez vraiment",
+      "pdfBody": "Votre feuille de route complète, l'analyse des écarts de compétences et la checklist des jalons — exportées en PDF partageable. Apportez-le à votre mentor, votre manager ou votre prochain entretien. Sans abonnement ; il est à vous pour toujours.",
+      "pdfFeatures": [
+        "Plan de jalons complet à 6 mois / 1 an / 2 ans",
+        "Scores d'écarts de compétences + cours recommandés",
+        "Personnalisé selon vos finances et vos contraintes"
+      ],
+      "ctaPrimary": "Générer le mien",
+      "ctaSecondary": "Ou essayez d'abord l'aperçu gratuit des écarts de compétences — sans paiement"
     }
   },
   "meta": {
