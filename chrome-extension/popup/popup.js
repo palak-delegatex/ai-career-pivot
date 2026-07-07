@@ -479,6 +479,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           company: jobData.company,
           url: jobData.url,
           source: jobData.source,
+          source_type: "extension_clip",
           stage: "saved",
           match_score: scoreData?.score || 0,
           job_description: jobData.description || "",
@@ -588,6 +589,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         company,
         url: url || tab?.url || "",
         source: "manual",
+        source_type: "extension_clip",
         stage: "saved",
         match_score: 0,
       });

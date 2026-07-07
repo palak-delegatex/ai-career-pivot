@@ -22,6 +22,8 @@
     "https://*.icims.com/*",
     "https://*.taleo.net/*",
     "https://*.oraclecloud.com/*",
+    "https://ai-career-pivot.com/*",
+    "https://*.ai-career-pivot.com/*",
     "https://ai-career-pivot.vercel.app/*",
     "https://*.supabase.co/*"
   ],
@@ -30,6 +32,15 @@
     "type": "module"
   },
   "content_scripts": [
+    {
+      "matches": [
+        "https://ai-career-pivot.com/*",
+        "https://*.ai-career-pivot.com/*",
+        "https://ai-career-pivot.vercel.app/*"
+      ],
+      "js": ["content/site-flag.js"],
+      "run_at": "document_start"
+    },
     {
       "matches": [
         "https://*.linkedin.com/jobs/*",
