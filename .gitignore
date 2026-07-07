@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 .gstack/
 .env*.local
+
+# Chrome extension build output
+chrome-extension/dist/

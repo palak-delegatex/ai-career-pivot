@@ -91,11 +91,25 @@ and can autofill application forms from the user's saved profile.
 - [ ] Bump `manifest.json` version if re-submitting after a rejection.
 - [ ] Confirm `https://ai-career-pivot.vercel.app/privacy` returns 200 (Web Store
       rejects listings whose privacy URL 404s).
-- [ ] Verify Google OAuth redirect URL (`chrome.identity.getRedirectURL()`) is in
-      Supabase → Auth → URL Configuration → Redirect URLs for the PUBLISHED
-      extension ID (it changes from the unpacked dev ID on first publish — may need
-      a follow-up manifest `key` to pin the ID, or update Supabase after publish).
-- [ ] Zip the `chrome-extension/` folder (exclude `__tests__/`, `store-assets/`).
+- [ ] Build the package: run `bash chrome-extension/package.sh`. It produces
+      `chrome-extension/dist/aicareerpivot-extension-v<version>.zip` with the
+      correct contents (`__tests__/` and `store-assets/` are excluded
+      automatically — do **not** hand-zip). Upload *this* file.
+- [ ] **Google OAuth redirect — do this as part of the upload, in order:**
+  1. In the developer dashboard, click **Add new item** and upload the zip. The
+     dashboard shows the **assigned extension ID immediately, as a draft — you do
+     NOT need to publish first to see it.**
+  2. Copy that ID and add `https://<EXTENSION_ID>.chromiumapp.org/` to
+     Supabase → Auth → URL Configuration → **Redirect URLs**.
+  3. *Then* fill sections 1–6 and click **Publish**. Doing it in this order means
+     Google sign-in works the instant the listing goes live — no post-publish
+     breakage window.
+  - ⚠️ Do **NOT** add a `key` field to `manifest.json` to try to pin the ID.
+    Chrome assigns the ID from its own key on first upload and **rejects** a
+    first submission that contains a `key` field. The ID cannot be chosen in
+    advance; the draft-upload step above is how you learn it. (`key` is only for
+    keeping a stable ID across *local* dev loads, and for re-uploads after the
+    first publish.)
 
 ## 8. Publish gate — needs CEO / board
 
