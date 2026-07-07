@@ -15,12 +15,16 @@ export function getFeatureFlagVariant(flagKey: string, fallback = "control"): st
   return fallback;
 }
 
+// `experiment_key` is the canonical, explicitly-named segmentation property for
+// A/B events (AIC-740): it mirrors the PostHog feature-flag key so viewed/
+// conversion events can be split by experiment once more than one is live. We
+// keep the older `flag` property too for continuity with events already ingested.
 export function trackExperimentViewed(props: { flag: string; variant: string; page: string }) {
-  capture("experiment_viewed", props);
+  capture("experiment_viewed", { ...props, experiment_key: props.flag });
 }
 
 export function trackExperimentConversion(props: { flag: string; variant: string; event: string; page: string }) {
-  capture("experiment_conversion", props);
+  capture("experiment_conversion", { ...props, experiment_key: props.flag });
 }
 
 // Onboarding funnel
