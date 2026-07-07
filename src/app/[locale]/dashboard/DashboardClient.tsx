@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import DashboardHero from "@/components/DashboardHero";
@@ -9,6 +10,7 @@ import MilestoneChecklist from "@/components/MilestoneChecklist";
 import WeeklyProgressStrip from "@/components/WeeklyProgressStrip";
 import type { PhaseData, MilestoneState } from "@/components/MilestoneChecklist";
 import NextActionsWidget from "@/components/NextActionsWidget";
+import PrimaryNextAction from "@/components/PrimaryNextAction";
 import JobBoard from "@/components/JobBoard";
 import MomentumCard from "@/components/MomentumCard";
 import StreakCalendar from "@/components/StreakCalendar";
@@ -282,6 +284,18 @@ export default function DashboardClient() {
   const [savedBadges, setSavedBadges] = useState<Set<string>>(new Set());
   const [celebratedPhases, setCelebratedPhases] = useState<Set<string>>(new Set());
   const [celebratingPhase, setCelebratingPhase] = useState<{ label: string; color: "emerald" | "teal" | "cyan" } | null>(null);
+  // Secondary "full dashboard" tier is collapsed by default so the single
+  // primary next-action dominates the fold. First-run users (who haven't seen
+  // the guided tour yet) get it expanded so the tour's anchors are visible.
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem("dashboard-tour-completed")) {
+        setShowAll(true);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     async function loadReports() {
@@ -637,107 +651,151 @@ export default function DashboardClient() {
 
           <TabsContent value="overview">
             <div className="space-y-6">
-              <div data-tour="dashboard-roadmap">
-                <DashboardHero
-                  completionPercent={completionPercent}
-                  status={scheduleStatus}
-                  totalMilestones={totalMilestones}
-                  completedMilestones={completedMilestones}
-                  remainingMilestones={totalMilestones - completedMilestones}
-                  targetRole={activePlan.targetRole}
-                  streakDays={streakDays}
-                  daysElapsed={daysElapsed}
-                  currentPhaseLabel={currentPhaseLabel}
-                />
-              </div>
-
-              {progressLoaded && (
-                <>
-                  {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <MomentumCard
-                      weeklyActivity={weeklyActivity}
-                      monthlyCompleted={thisMonthCount}
-                      previousMonthCompleted={lastMonthCount}
-                    />
-                    <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
-                    <StreakCalendar
-                      activeDays={activeDays}
-                      phaseForDay={phaseForDay}
-                      streakDays={streakDays}
-                    />
-                  </div>
-
-                  {/* Phase Progress Cards */}
-                  <PhaseProgressCards
-                    phases={phases}
-                    statuses={milestoneStatuses}
-                    reportId={activeReport!.id}
-                  />
-
-                  {/* My Documents */}
-                  <div data-tour="dashboard-pdf">
-                    <DocumentsCard email={activeReport!.email} />
-                  </div>
-
-                  {/* Completion Badges */}
-                  <CompletionBadges earnedBadges={earnedBadges} />
-
-                  {/* Shareable Progress Card */}
-                  <ShareableProgressCard
-                    currentRole={activeReport!.profile.currentTitle || "Current Role"}
-                    targetRole={activePlan.targetRole}
+              {/* PRIMARY TIER — one unmissable next action + a single progress
+                  signal. This dominates the fold. */}
+              {progressLoaded ? (
+                <div data-tour="dashboard-roadmap">
+                  <PrimaryNextAction
+                    nextAction={nextActions[0] ?? null}
                     completionPercent={completionPercent}
                     completedMilestones={completedMilestones}
                     totalMilestones={totalMilestones}
                     streakDays={streakDays}
-                    earnedBadgeCount={earnedBadges.size}
+                    status={scheduleStatus}
+                    daysElapsed={daysElapsed}
+                    targetRole={activePlan.targetRole}
                     reportId={activeReport!.id}
+                    onMarkDone={handleMarkDone}
                   />
-
-                  <WeeklyProgressStrip
-                    phases={phases}
-                    statuses={milestoneStatuses}
-                    reportCreatedAt={activeReport!.created_at}
-                  />
-
-                  <MilestoneChecklist
-                    phases={phases}
-                    statuses={milestoneStatuses}
-                    onToggle={handleToggle}
-                    savingKey={savingKey}
-                  />
-                </>
+                </div>
+              ) : (
+                <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-8 flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                </div>
               )}
 
-              <JobBoard
-                targetRole={activePlan.targetRole}
-                location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
-                userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
-                profile={activeReport.profile}
-                plan={activePlan}
-              />
+              {progressLoaded && (
+                <>
+                  {/* SECONDARY TIER — everything else, demoted behind a toggle. */}
+                  <button
+                    onClick={() => setShowAll((v) => !v)}
+                    aria-expanded={showAll}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-sm font-semibold text-slate-300 transition-colors min-h-[44px]"
+                  >
+                    {showAll ? (
+                      <>
+                        <ChevronUp className="h-4 w-4" />
+                        Hide full dashboard
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        Show full dashboard — progress, tools &amp; milestones
+                      </>
+                    )}
+                  </button>
 
-              <QuickActions
-                hasResume={false}
-                hasGapAnalysis={false}
-                hasJobsTracked={false}
-                hasLinkedIn={false}
-                hasMockInterview={false}
-              />
+                  {showAll && (
+                    <div className="space-y-6">
+                      <DashboardHero
+                        completionPercent={completionPercent}
+                        status={scheduleStatus}
+                        totalMilestones={totalMilestones}
+                        completedMilestones={completedMilestones}
+                        remainingMilestones={totalMilestones - completedMilestones}
+                        targetRole={activePlan.targetRole}
+                        streakDays={streakDays}
+                        daysElapsed={daysElapsed}
+                        currentPhaseLabel={currentPhaseLabel}
+                      />
 
-              <div data-tour="dashboard-tools">
-                <ToolsGrid />
-              </div>
+                      {/* 3-column grid: Momentum | Next Actions | Streak Calendar */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <MomentumCard
+                          weeklyActivity={weeklyActivity}
+                          monthlyCompleted={thisMonthCount}
+                          previousMonthCompleted={lastMonthCount}
+                        />
+                        <NextActionsWidget items={nextActions} onMarkDone={handleMarkDone} />
+                        <StreakCalendar
+                          activeDays={activeDays}
+                          phaseForDay={phaseForDay}
+                          streakDays={streakDays}
+                        />
+                      </div>
 
-              <div className="flex justify-center">
-                <Link
-                  href={`/report/${activeReport!.id}`}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
-                >
-                  View Full Report
-                </Link>
-              </div>
+                      {/* Phase Progress Cards */}
+                      <PhaseProgressCards
+                        phases={phases}
+                        statuses={milestoneStatuses}
+                        reportId={activeReport!.id}
+                      />
+
+                      {/* My Documents */}
+                      <div data-tour="dashboard-pdf">
+                        <DocumentsCard email={activeReport!.email} />
+                      </div>
+
+                      {/* Completion Badges */}
+                      <CompletionBadges earnedBadges={earnedBadges} />
+
+                      {/* Shareable Progress Card */}
+                      <ShareableProgressCard
+                        currentRole={activeReport!.profile.currentTitle || "Current Role"}
+                        targetRole={activePlan.targetRole}
+                        completionPercent={completionPercent}
+                        completedMilestones={completedMilestones}
+                        totalMilestones={totalMilestones}
+                        streakDays={streakDays}
+                        earnedBadgeCount={earnedBadges.size}
+                        reportId={activeReport!.id}
+                      />
+
+                      <WeeklyProgressStrip
+                        phases={phases}
+                        statuses={milestoneStatuses}
+                        reportCreatedAt={activeReport!.created_at}
+                      />
+
+                      <MilestoneChecklist
+                        phases={phases}
+                        statuses={milestoneStatuses}
+                        onToggle={handleToggle}
+                        savingKey={savingKey}
+                      />
+
+                      <JobBoard
+                        targetRole={activePlan.targetRole}
+                        location={[activeReport.profile.location?.city, activeReport.profile.location?.country].filter(Boolean).join(", ") || undefined}
+                        userSkills={[...activeReport.profile.skills.slice(0, 10), ...activeReport.profile.transferableSkills.slice(0, 5)]}
+                        profile={activeReport.profile}
+                        plan={activePlan}
+                      />
+
+                      <QuickActions
+                        hasResume={false}
+                        hasGapAnalysis={false}
+                        hasJobsTracked={false}
+                        hasLinkedIn={false}
+                        hasMockInterview={false}
+                      />
+
+                      <div data-tour="dashboard-tools">
+                        <ToolsGrid />
+                      </div>
+
+                      <div className="flex justify-center">
+                        <Link
+                          href={`/report/${activeReport!.id}`}
+                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold text-sm transition-all text-slate-300"
+                        >
+                          View Full Report
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </TabsContent>
 
