@@ -217,3 +217,19 @@ export function trackAssessmentShared(props: {
 }) {
   capture("assessment_shared", props);
 }
+
+// Live JD-targeted ATS match scoring (resume tailor) — AIC-735
+export function trackLiveMatchScoreUpdated(props: {
+  score: number;
+  matched: number;
+  missing: number;
+}) {
+  capture("live_match_score_updated", props);
+}
+
+export function trackLiveMatchSuggestionInserted(props: {
+  keyword: string;
+  section: "skills" | "experience" | "summary";
+}) {
+  capture("live_match_suggestion_inserted", props);
+}
