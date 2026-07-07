@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { email, role, company, company_color, url, source, stage, match_score, next_action, notes } = body;
+  const { email, role, company, company_color, url, source, stage, match_score, next_action, notes, job_description } = body;
 
   if (!email || !role || !company) {
     return NextResponse.json({ error: "email, role, company required" }, { status: 400 });
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
       match_score: typeof match_score === "number" ? match_score : 0,
       next_action: next_action ?? "",
       notes: notes ?? "",
+      job_description: typeof job_description === "string" && job_description.trim() ? job_description : null,
       source_type: body.source_type ?? "manual",
       applied_at: validStage !== "exploring" ? now : null,
       stage_changed_at: now,
@@ -100,6 +101,7 @@ export async function PATCH(req: NextRequest) {
   if (typeof updates.company === "string") allowed.company = updates.company;
   if (typeof updates.url === "string") allowed.url = updates.url;
   if (typeof updates.notes === "string") allowed.notes = updates.notes;
+  if (typeof updates.job_description === "string") allowed.job_description = updates.job_description;
   if (typeof updates.next_action === "string") allowed.next_action = updates.next_action;
   if (typeof updates.match_score === "number") allowed.match_score = updates.match_score;
   if (updates.source && VALID_SOURCES.includes(updates.source)) allowed.source = updates.source;

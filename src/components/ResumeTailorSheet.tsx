@@ -30,6 +30,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { ScoreRing } from "@/components/ScoreRing";
+import { LiveMatchPanel } from "@/components/LiveMatchPanel";
+import { JobTrackerJDPicker } from "@/components/JobTrackerJDPicker";
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import type { TailorResponse } from "@/app/api/resume/tailor/route";
@@ -379,13 +381,12 @@ export default function ResumeTailorSheet({
     setAcceptedChanges([]);
   }
 
-  async function handleDownload() {
-    if (!result) return;
+  async function downloadResumePdf(markdown: string) {
     try {
       const res = await fetch("/api/resume/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markdown: result.tailoredContent }),
+        body: JSON.stringify({ markdown }),
       });
       if (!res.ok) throw new Error("PDF generation failed");
       const blob = await res.blob();
@@ -396,10 +397,15 @@ export default function ResumeTailorSheet({
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      navigator.clipboard.writeText(result.tailoredContent);
+      navigator.clipboard.writeText(markdown);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  }
+
+  async function handleDownload() {
+    if (!result) return;
+    await downloadResumePdf(result.tailoredContent);
   }
 
   const acceptedCount = acceptedChanges.filter(Boolean).length;
@@ -450,6 +456,15 @@ export default function ResumeTailorSheet({
             {hasResume && phase === "input" && (
               <>
                 <div>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                      Job description
+                    </p>
+                    <JobTrackerJDPicker
+                      email={profile.email}
+                      onSelect={(jd) => setJdInput(jd.slice(0, 6000))}
+                    />
+                  </div>
                   <textarea
                     value={jdInput}
                     onChange={(e) => setJdInput(e.target.value)}
@@ -574,6 +589,9 @@ export default function ResumeTailorSheet({
                     </TabsTrigger>
                     <TabsTrigger value="changes" className="flex-1 text-xs">
                       Changes ({totalChanges})
+                    </TabsTrigger>
+                    <TabsTrigger value="live" className="flex-1 text-xs">
+                      Live Match
                     </TabsTrigger>
                     <TabsTrigger value="preview" className="flex-1 text-xs">
                       Preview
@@ -747,6 +765,21 @@ export default function ResumeTailorSheet({
                         onToggle={() => toggleChange(i)}
                       />
                     ))}
+                  </TabsContent>
+
+                  {/* Live Match Tab — edit the draft, watch ATS match update live */}
+                  <TabsContent value="live" className="mt-4">
+                    <LiveMatchPanel
+                      initialResume={result.tailoredContent}
+                      jdKeywords={{
+                        required: result.jdAnalysis.requiredSkills,
+                        preferred: result.jdAnalysis.preferredSkills,
+                        keywords: result.jdAnalysis.keywords,
+                      }}
+                      jobDescription={effectiveJD}
+                      locale={locale}
+                      onDownload={downloadResumePdf}
+                    />
                   </TabsContent>
 
                   {/* Preview Tab */}

@@ -14,7 +14,12 @@ import FeatureShowcase from "@/components/FeatureShowcase";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 import StickyCtaBar from "@/components/StickyCtaBar";
-import { testimonials } from "@/lib/testimonials";
+import { testimonials, caseStudies } from "@/lib/testimonials";
+import OutcomeHeroBadge from "@/components/OutcomeHeroBadge";
+import MicroProofStrip from "@/components/MicroProofStrip";
+import HeroTestimonial from "@/components/HeroTestimonial";
+import PivotJourneyTimeline from "@/components/PivotJourneyTimeline";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -186,6 +191,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const stats = th.raw("stats") as { value: string; label: string }[];
   const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
+  const microProof = th.raw("hero.microProof") as { rating: string; recommend: string; salary: string };
+  const journeySteps = th.raw("journey.steps") as { label: string; deliverable: string; phase: string }[];
+  // Featured case study (Sarah K.) drives the hero testimonial + journey annotation.
+  const heroCase = caseStudies[0];
 
   const shuffledTestimonials = useMemo(() => {
     const arr = [...testimonials];
@@ -316,31 +325,22 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             {th("hero.subtitle")}
           </motion.p>
 
-          {/* Social proof — positioned ABOVE CTA for trust-before-action */}
+          {/* Outcome proof — micro-proof strip + aggregate outcome badge, above CTA
+              for trust-before-action (AIC-753, replaces the generic avatar pill) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
-            className="mb-6 max-w-md mx-auto"
+            className="flex flex-col items-center gap-3.5 mb-8"
           >
-            <div className="flex items-center justify-center gap-3 bg-slate-900/70 backdrop-blur-sm border border-slate-800/60 rounded-xl px-5 py-3">
-              <div className="flex -space-x-2 shrink-0">
-                {[
-                  { initials: "SK", gradient: "from-teal-500 to-emerald-500" },
-                  { initials: "MT", gradient: "from-sky-500 to-blue-600" },
-                  { initials: "PR", gradient: "from-violet-500 to-purple-600" },
-                  { initials: "JL", gradient: "from-amber-500 to-orange-500" },
-                  { initials: "EV", gradient: "from-rose-500 to-pink-500" },
-                ].map((a) => (
-                  <div key={a.initials} className={`w-7 h-7 rounded-full bg-gradient-to-br ${a.gradient} flex items-center justify-center text-white text-[10px] font-bold ring-2 ring-slate-900`}>
-                    {a.initials}
-                  </div>
-                ))}
-              </div>
-              <p className="text-slate-400 text-sm">
-                <span className="text-white font-semibold">{th("hero.socialProof")}</span>
-              </p>
-            </div>
+            <MicroProofStrip
+              metrics={[
+                { value: PROOF_METRICS.avgRating, label: microProof.rating, star: true },
+                { value: PROOF_METRICS.recommendRate, label: microProof.recommend },
+                { value: PROOF_METRICS.salaryUplift, label: microProof.salary },
+              ]}
+            />
+            <OutcomeHeroBadge count={PROOF_METRICS.pivotsDelivered} label={th("hero.outcomeBadge")} />
           </motion.div>
 
           {/* Primary CTA — larger, animated ring for attention */}
@@ -383,6 +383,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 {th("hero.viewers")}
               </p>
             </div>
+          </motion.div>
+
+          {/* Featured hero testimonial — answers "will this work for me?" at peak intent (AIC-753) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.4 }}
+            className="mb-10 w-full"
+          >
+            <HeroTestimonial testimonial={heroCase} />
           </motion.div>
 
           {/* Stats */}
@@ -441,6 +451,17 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             </AnimatedSection>
           </div>
         </section>
+
+        {/* Pivot journey timeline — visualize the full pipeline before signup (AIC-753) */}
+        <PivotJourneyTimeline
+          eyebrow={th("journey.eyebrow")}
+          titleLead={th("journey.titleLead")}
+          titleAccent={th("journey.titleAccent")}
+          subtitle={th("journey.subtitle")}
+          steps={journeySteps}
+          caseHeading={th("journey.caseHeading", { name: heroCase.name })}
+          caseStudy={heroCase}
+        />
 
         {/* AI feature showcase — surface plan gen / insights / PDF before signup (AIC-532) */}
         <FeatureShowcase />

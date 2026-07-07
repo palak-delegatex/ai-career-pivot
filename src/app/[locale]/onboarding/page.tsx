@@ -393,6 +393,15 @@ export default function OnboardingPage() {
 
   async function handleSubmit() {
     const hasCircumstancesData = Object.values(circumstances).some(Boolean);
+    // Identify the PostHog person by email so this web signup joins the same
+    // person the browser extension emits against (extension_installed →
+    // extension_job_captured → web signup funnel, AIC-747). The extension keys
+    // its distinct_id on the signed-in email too, so both surfaces merge.
+    if (email) {
+      import("posthog-js").then(({ default: posthog }) => {
+        if (posthog.__loaded) posthog.identify(email, { email });
+      });
+    }
     trackExperimentConversion({ flag: "onboarding_cta_copy", variant: ctaVariant, event: "form_submitted", page: "onboarding" });
     trackOnboardingStarted({
       has_resume: !!resumeFile,

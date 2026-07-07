@@ -481,6 +481,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           source: jobData.source,
           stage: "saved",
           match_score: scoreData?.score || 0,
+          job_description: jobData.description || "",
         });
 
         if (result.ok) {

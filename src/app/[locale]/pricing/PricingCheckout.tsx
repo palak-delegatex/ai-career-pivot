@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { trackCheckoutStarted, trackCheckoutError, getPosthogDistinctId } from "@/lib/tracking";
+import { useRef, useState } from "react";
+import { trackCheckoutStarted, trackCheckoutError, trackPricingPlanSelected, pageSource, getPosthogDistinctId } from "@/lib/tracking";
 
 // Transient failures (network blips, 5xx, rate-limits) are worth retrying
 // automatically before showing the user an error — a single checkout attempt
@@ -35,6 +35,16 @@ export default function PricingCheckout({
   const [discountCode, setDiscountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Fire `pricing_plan_selected` once per plan card, the first time the visitor
+  // engages that card's form — the mid-funnel step immediately before
+  // checkout_started (AIC-742). A ref (not state) so re-renders never re-emit.
+  const selectedTracked = useRef(false);
+
+  function handlePlanEngaged() {
+    if (selectedTracked.current) return;
+    selectedTracked.current = true;
+    trackPricingPlanSelected({ plan, source: sourceFeature ?? pageSource() });
+  }
 
   const labels: Record<string, string> = {
     report: "Get My Report — $19",
@@ -81,6 +91,9 @@ export default function PricingCheckout({
       setError("Please enter your email address.");
       return;
     }
+    // Ensures the plan-selected step is recorded before checkout_started even
+    // when the email was prefilled and the field never received focus.
+    handlePlanEngaged();
     trackCheckoutStarted({ plan, has_discount: !!discountCode });
     setLoading(true);
     setError("");
@@ -114,6 +127,7 @@ export default function PricingCheckout({
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        onFocus={handlePlanEngaged}
         placeholder="Your email address"
         required
         className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"

@@ -66,20 +66,26 @@
       "ctaPrimary": "Crea mi plan ahora — <s>$29</s> $19 →",
       "freeLink": "O prueba el diagnóstico gratuito de brechas — sin pago requerido →",
       "freeNote": "3 minutos · Sin suscripción · Tu plan completo para siempre",
-      "viewers": "🔥 83 personas vieron esta página hoy"
+      "viewers": "🔥 83 personas vieron esta página hoy",
+      "outcomeBadge": "cambios de carrera logrados — y sumando",
+      "microProof": {
+        "rating": "valoración media",
+        "recommend": "recomiendan",
+        "salary": "aumento salarial medio"
+      }
     },
     "stats": [
       {
-        "value": "3×",
-        "label": "Más rápido que planificar solo"
+        "value": "847+",
+        "label": "Cambios de carrera logrados"
       },
       {
-        "value": "6mo",
-        "label": "Hasta tu primer hito"
+        "value": "92%",
+        "label": "Reportan progreso"
       },
       {
-        "value": "100%",
-        "label": "Personalizado para tu vida"
+        "value": "$15K",
+        "label": "Aumento salarial medio"
       }
     ],
     "activity": "<b>{count} personas</b> están construyendo su plan de cambio de carrera ahora mismo",
@@ -363,6 +369,40 @@
       ],
       "ctaPrimary": "Generar el mío",
       "ctaSecondary": "O prueba primero la instantánea gratuita de brechas de skills — sin pago"
+    },
+    "journey": {
+      "eyebrow": "El recorrido completo",
+      "titleLead": "De la evaluación a la oferta.",
+      "titleAccent": "Un camino claro.",
+      "subtitle": "Mira exactamente lo que obtienes en cada etapa, ilustrado con una transición profesional real.",
+      "caseHeading": "El recorrido de {name}",
+      "steps": [
+        {
+          "label": "Evaluar",
+          "deliverable": "La IA extrae 20-40 habilidades transferibles de tu currículum",
+          "phase": "Semana 1"
+        },
+        {
+          "label": "Planificar",
+          "deliverable": "2-3 rutas de cambio priorizadas con hitos a 6 meses/1 año/2 años",
+          "phase": "Semana 1"
+        },
+        {
+          "label": "Formarte",
+          "deliverable": "Hoja de ruta de certificaciones + acciones para cerrar brechas",
+          "phase": "Meses 1-3"
+        },
+        {
+          "label": "Postular",
+          "deliverable": "Currículum optimizado para ATS + cartas de presentación a medida",
+          "phase": "Meses 3-5"
+        },
+        {
+          "label": "Oferta",
+          "deliverable": "Preparación para negociar el salario + cronograma de transición",
+          "phase": "La recompensa"
+        }
+      ]
     }
   },
   "meta": {
