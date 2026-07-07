@@ -24,6 +24,7 @@ import QuickActions from "@/components/QuickActions";
 import GapAnalysisTab from "@/components/GapAnalysisTab";
 import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
+import SalaryNegotiationTab from "@/components/SalaryNegotiationTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ContextualHint } from "@/components/ui/contextual-hint";
 import DashboardTour from "@/components/DashboardTour";
@@ -649,6 +650,7 @@ export default function DashboardClient() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="resumes">Resumes</TabsTrigger>
             <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
+            <TabsTrigger value="negotiation">Salary Negotiation</TabsTrigger>
             <TabsTrigger value="network">Network</TabsTrigger>
           </TabsList>
 
@@ -812,6 +814,10 @@ export default function DashboardClient() {
 
           <TabsContent value="gap-analysis">
             <GapAnalysisTab profile={activeReport!.profile} plan={activePlan} />
+          </TabsContent>
+
+          <TabsContent value="negotiation">
+            <SalaryNegotiationTab profile={activeReport!.profile} plan={activePlan} />
           </TabsContent>
 
           <TabsContent value="network">
