@@ -1,3 +1,5 @@
+import { track, identifyByEmail, markFirstCaptureIfNew } from "./analytics.js";
+
 const SUPABASE_URL = "https://aqukrcnzdrhkohdjibwy.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdWtyY256ZHJoa29oZGppYnd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMjI5MzgsImV4cCI6MjA5MTY5ODkzOH0.Iwy3onpZdAvl3_jYCx0mVA3fp7_PuKRYlM70e_okZp4";
@@ -76,6 +78,11 @@ async function signInWithGoogle() {
   await chrome.storage.local.set({ supabase_session: session });
   await chrome.storage.sync.set({ userEmail: data.user.email });
   scheduleTokenRefresh(data.expires_in);
+
+  // Merge the anonymous extension person into the email-keyed person and mark
+  // the sign-in (the extension→web-account link, AIC-747).
+  await identifyByEmail(data.user.email);
+  track("extension_signed_in", { provider: "google" });
 
   return session;
 }
@@ -248,10 +255,27 @@ async function apiRequest(path, options = {}, retries = 3) {
 async function saveJob(jobData) {
   const config = await getConfig();
   if (!config.userEmail) throw new Error("Not signed in");
-  return apiRequest("/api/job-tracker", {
+  const result = await apiRequest("/api/job-tracker", {
     method: "POST",
-    body: JSON.stringify({ email: config.userEmail, ...jobData }),
+    // source_type="extension" tags the row so the web job-tracker and PostHog
+    // can attribute captures to the extension channel (vs manual web entry).
+    body: JSON.stringify({
+      email: config.userEmail,
+      source_type: "extension",
+      ...jobData,
+    }),
   });
+
+  // Funnel: install → first-capture → web signup (AIC-747).
+  const isFirst = await markFirstCaptureIfNew();
+  track("extension_job_captured", {
+    source: jobData.source || "unknown",
+    match_score: typeof jobData.match_score === "number" ? jobData.match_score : null,
+    is_first_capture: isFirst,
+  });
+  if (isFirst) track("extension_first_capture", { source: jobData.source || "unknown" });
+
+  return result;
 }
 
 async function getJobs() {
@@ -685,7 +709,10 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
+    track("extension_installed");
     chrome.tabs.create({ url: "onboarding/onboarding.html" });
+  } else if (details.reason === "update") {
+    track("extension_updated", { previous_version: details.previousVersion });
   }
 });
 
