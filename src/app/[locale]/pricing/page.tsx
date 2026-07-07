@@ -5,6 +5,7 @@ import SiteNav from "@/components/SiteNav";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
 import PricingHeroCta from "./PricingHeroCta";
+import PricingPageTracker from "./PricingPageTracker";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Building2, Rocket, Briefcase } from "lucide-react";
@@ -153,6 +154,7 @@ export default function PricingPage() {
         }}
       />
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <PricingPageTracker />
       <SiteNav />
 
       <main className="max-w-6xl mx-auto px-6 py-16">

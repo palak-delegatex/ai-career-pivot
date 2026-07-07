@@ -74,6 +74,46 @@ export function trackPdfDownloadError(props: { source: "onboarding" | "report"; 
   capture("pdf_download_error", props);
 }
 
+// Mid-funnel instrumentation (AIC-742) — the CTA-click → checkout_started leg
+// was a black box: 6 cta_clicked but only 1 checkout_started in a week, with no
+// events in between to locate the drop-off. These two events make that leg
+// observable so the next PostHog review can see where CTA-clickers fall out.
+//
+// `source` records where the visitor arrived from (an internal path like "/" or
+// "/onboarding/plan", or "external"/"direct") so drop-off can be attributed to a
+// specific upstream CTA. All events fire client-side through the same anonymous
+// distinct_id as cta_clicked / checkout_started, so the funnel stitches without
+// any identify() call.
+//
+// Note: the pricing-page plan-engagement event is intentionally named
+// `pricing_plan_selected`, NOT `plan_selected` — the latter already exists
+// (trackPlanSelected) for pivot-plan picks on the free results page and carries
+// a different shape (plan_index/target_role). Keeping them separate avoids
+// mixing two unrelated series in one funnel step.
+export function trackPricingViewed(props: { source: string }) {
+  capture("pricing_viewed", props);
+}
+
+export function trackPricingPlanSelected(props: { plan: string; source: string }) {
+  capture("pricing_plan_selected", props);
+}
+
+// Best-effort "where did this visitor come from" for mid-funnel events. Returns
+// the internal pathname when the referrer is same-origin (which upstream CTA
+// landed them here), "external" for off-site referrers, or "direct" when there
+// is no referrer. Safe to call during render/effects — guards on window.
+export function pageSource(): string {
+  if (typeof document === "undefined") return "direct";
+  const ref = document.referrer;
+  if (!ref) return "direct";
+  try {
+    const url = new URL(ref);
+    return url.origin === window.location.origin ? url.pathname : "external";
+  } catch {
+    return "direct";
+  }
+}
+
 // Checkout funnel
 export function trackCheckoutStarted(props: { plan: string; has_discount: boolean }) {
   capture("checkout_started", props);
