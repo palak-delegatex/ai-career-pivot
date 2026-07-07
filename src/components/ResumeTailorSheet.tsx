@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { ScoreRing } from "@/components/ScoreRing";
 import { LiveMatchPanel } from "@/components/LiveMatchPanel";
+import { JobTrackerJDPicker } from "@/components/JobTrackerJDPicker";
 import type { EnrichedJob } from "@/lib/job-match";
 import type { UserProfile, PivotPlan } from "@/lib/intake";
 import type { TailorResponse } from "@/app/api/resume/tailor/route";
@@ -455,6 +456,15 @@ export default function ResumeTailorSheet({
             {hasResume && phase === "input" && (
               <>
                 <div>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                      Job description
+                    </p>
+                    <JobTrackerJDPicker
+                      email={profile.email}
+                      onSelect={(jd) => setJdInput(jd.slice(0, 6000))}
+                    />
+                  </div>
                   <textarea
                     value={jdInput}
                     onChange={(e) => setJdInput(e.target.value)}
