@@ -28,6 +28,9 @@ create index if not exists idx_extension_promo_pending
 alter table extension_promo_emails enable row level security;
 
 -- Service-role only (the cron uses the service-role key); no anon access.
+-- drop-then-create keeps the whole migration idempotent (CREATE POLICY has no
+-- IF NOT EXISTS), so re-running against an already-migrated DB is a safe no-op.
+drop policy if exists "service_role_full_access_extension_promo" on extension_promo_emails;
 create policy "service_role_full_access_extension_promo"
   on extension_promo_emails for all
   using (true)
