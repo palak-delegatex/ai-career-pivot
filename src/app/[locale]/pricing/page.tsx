@@ -12,6 +12,7 @@ import { Building2, Rocket, Briefcase } from "lucide-react";
 import { testimonials } from "@/lib/testimonials";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import OutcomeProofStrip from "@/components/OutcomeProofStrip";
+import PricingComparisonTable from "@/components/PricingComparisonTable";
 import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
 import GuaranteeCard from "@/components/GuaranteeCard";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
@@ -214,24 +215,9 @@ export default function PricingPage() {
           Trusted by professionals from leading organizations
         </p>
 
-        {/* Value comparison strip */}
-        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-6">
-          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-            <h3 className="text-sm font-semibold text-slate-300 mb-1">Career Coach</h3>
-            <p className="text-2xl font-bold text-white">$750–$1,250</p>
-            <p className="text-xs text-slate-500 mt-2">3–5 sessions before actionable advice</p>
-          </div>
-          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-            <h3 className="text-sm font-semibold text-slate-300 mb-1">ChatGPT</h3>
-            <p className="text-2xl font-bold text-white">Free</p>
-            <p className="text-xs text-slate-500 mt-2">Generic advice, 30–45 min prompting per session</p>
-          </div>
-          <div className="bg-teal-950/20 border-2 border-teal-500 rounded-2xl p-6">
-            <h3 className="text-sm font-semibold text-teal-400 mb-1">AICareerPivot</h3>
-            <p className="text-2xl font-bold text-white">$19</p>
-            <p className="text-xs text-slate-400 mt-2">Personalized roadmap in minutes, not sessions</p>
-          </div>
-        </div>
+        {/* Feature-comparison table — us vs. status quo (coach) vs. free (ChatGPT),
+            AICareerPivot column visually anchored (AIC-738) */}
+        <PricingComparisonTable />
 
         {/* Value prop callout */}
         <p className="text-slate-400 text-sm italic max-w-md mx-auto text-center mb-12">
