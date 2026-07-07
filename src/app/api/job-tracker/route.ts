@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
-import type { JobStage, JobSource } from "@/lib/job-tracker";
+import type { JobStage, JobSource, JobPriority } from "@/lib/job-tracker";
+
+const VALID_PRIORITIES: JobPriority[] = ["hot", "warm", "cool"];
+
+// Accepts an ISO date (yyyy-mm-dd) or null; anything else is rejected so a bad
+// value can't reach the DATE column and 500 the request.
+function normalizeDate(value: unknown): string | null | undefined {
+  if (value === null) return null;
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  return undefined;
+}
 
 const VALID_STAGES: JobStage[] = [
   "exploring",
@@ -105,6 +115,15 @@ export async function PATCH(req: NextRequest) {
   if (typeof updates.next_action === "string") allowed.next_action = updates.next_action;
   if (typeof updates.match_score === "number") allowed.match_score = updates.match_score;
   if (updates.source && VALID_SOURCES.includes(updates.source)) allowed.source = updates.source;
+  // next_action_date / priority accept null so the user can clear them (AIC-501).
+  if ("next_action_date" in updates) {
+    const date = normalizeDate(updates.next_action_date);
+    if (date !== undefined) allowed.next_action_date = date;
+  }
+  if ("priority" in updates) {
+    if (updates.priority === null) allowed.priority = null;
+    else if (VALID_PRIORITIES.includes(updates.priority)) allowed.priority = updates.priority;
+  }
 
   if (Object.keys(allowed).length === 0) {
     return NextResponse.json({ error: "no valid fields to update" }, { status: 400 });
