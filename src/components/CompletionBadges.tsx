@@ -52,6 +52,12 @@ function markBadgeSeen(key: string) {
 
 interface CompletionBadgesProps {
   earnedBadges: Set<string>;
+  /**
+   * "card" (default) renders the standalone titled card with wrapping badges.
+   * "scroll" renders a bare, horizontally-scrolling badge row for embedding
+   * inside the roadmap momentum strip (AIC-687).
+   */
+  layout?: "card" | "scroll";
 }
 
 function ParticleBurst() {
@@ -81,6 +87,7 @@ function ParticleBurst() {
 
 export default function CompletionBadges({
   earnedBadges,
+  layout = "card",
 }: CompletionBadgesProps) {
   const t = useTranslations("completionBadges");
   const [animatingBadges, setAnimatingBadges] = useState<Set<string>>(new Set());
@@ -123,11 +130,25 @@ export default function CompletionBadges({
           100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)); opacity: 0; }
         }
       `}</style>
-      <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5">
-        <h3 className="text-sm font-bold text-slate-300 mb-4">{t("title")}</h3>
+      <div
+        className={
+          layout === "scroll"
+            ? ""
+            : "bg-slate-800/60 border border-slate-700 rounded-2xl p-5"
+        }
+      >
+        {layout !== "scroll" && (
+          <h3 className="text-sm font-bold text-slate-300 mb-4">{t("title")}</h3>
+        )}
 
         <TooltipProvider delayDuration={100}>
-          <div className="flex flex-wrap gap-3">
+          <div
+            className={
+              layout === "scroll"
+                ? "flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                : "flex flex-wrap gap-3"
+            }
+          >
             {BADGE_DEFINITIONS.map((badge) => {
               const earned = earnedBadges.has(badge.key);
               const isAnimating = animatingBadges.has(badge.key);
@@ -138,7 +159,7 @@ export default function CompletionBadges({
                   <TooltipTrigger asChild>
                     <button
                       type="button"
-                      className={`relative w-14 h-14 rounded-xl flex items-center justify-center transition-all cursor-default ${
+                      className={`relative w-14 h-14 shrink-0 rounded-xl flex items-center justify-center transition-all cursor-default ${
                         earned
                           ? "bg-slate-800 border-2 border-[hsl(var(--accent))] text-teal-400 shadow-lg shadow-teal-900/30 hover:animate-[badge-float_1.5s_ease-in-out_infinite]"
                           : "bg-slate-800/40 border border-slate-700 text-slate-600"

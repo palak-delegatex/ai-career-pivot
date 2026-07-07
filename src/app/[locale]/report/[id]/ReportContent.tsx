@@ -43,6 +43,9 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
           planIndex={selected}
           skillGaps={plan.skillGaps}
           recommendedResources={plan.recommendedResources}
+          greetingName={profile?.name?.split(" ")[0]}
+          subtitle={profile?.currentTitle ? `${profile.currentTitle} → ${plan.targetRole}` : plan.targetRole}
+          transferableSkillsCount={profile?.transferableSkills?.length ?? 0}
           pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label="Download Static Report (PDF)" />}
         />
 
