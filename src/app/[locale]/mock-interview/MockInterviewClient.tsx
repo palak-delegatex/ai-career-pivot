@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Keyboard, Play, Pause, Square, Volume2 } from "lucide-react";
+import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Keyboard, Play, Pause, Square, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
+import { useSpeechSynthesis } from "./useSpeechSynthesis";
 import { useLocale } from "next-intl";
 
 type InterviewType = "behavioral" | "technical" | "situational";
@@ -137,7 +138,29 @@ export default function MockInterviewClient() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const voice = useVoiceRecorder();
+  const tts = useSpeechSynthesis();
+  // AIC-334: speak the interviewer's questions aloud in voice mode. On by
+  // default when voice is available; user can mute at any time.
+  const [speakEnabled, setSpeakEnabled] = useState(true);
   const allMetricsRef = useRef<SpeechMetrics[]>([]);
+
+  // Speak an interviewer question if voice mode + TTS are active and unmuted.
+  const speakQuestion = useCallback(
+    (text: string) => {
+      if (inputMode === "voice" && speakEnabled && tts.supported) {
+        tts.speak(text);
+      }
+    },
+    [inputMode, speakEnabled, tts]
+  );
+
+  // Mute immediately stops any in-progress speech.
+  const toggleSpeak = useCallback(() => {
+    setSpeakEnabled((prev) => {
+      if (prev) tts.cancel();
+      return !prev;
+    });
+  }, [tts]);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -206,6 +229,7 @@ export default function MockInterviewClient() {
 
       setMessages([{ role: "assistant", content, timestamp: ts }]);
       setQuestionCount(1);
+      speakQuestion(content);
     } catch {
       setMessages([{
         role: "assistant",
@@ -289,6 +313,7 @@ export default function MockInterviewClient() {
       } else {
         setQuestionCount(nextQuestionCount);
         if (nextQuestionCount >= 3) setShowEndOption(true);
+        speakQuestion(assistantContent);
       }
     } catch {
       setMessages((prev) => [
@@ -695,15 +720,30 @@ export default function MockInterviewClient() {
                 ) : (
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={voice.startRecording}
+                      onClick={() => { tts.cancel(); voice.startRecording(); }}
                       disabled={streaming}
                       className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-800/60 border border-slate-600 hover:border-purple-500 rounded-xl text-sm text-slate-300 hover:text-white transition-colors disabled:opacity-40"
                     >
                       <Mic2 className="w-4 h-4 text-purple-400" />
                       Tap to speak your answer
                     </button>
+                    {tts.supported && (
+                      <button
+                        onClick={toggleSpeak}
+                        className="p-2.5 text-slate-400 hover:text-white rounded-xl transition-colors hover:bg-slate-800"
+                        aria-label={speakEnabled ? "Mute interviewer voice" : "Unmute interviewer voice"}
+                        aria-pressed={speakEnabled}
+                        title={speakEnabled ? "Interviewer voice on" : "Interviewer voice off"}
+                      >
+                        {speakEnabled ? (
+                          <Volume2 className="w-4 h-4 text-purple-400" />
+                        ) : (
+                          <VolumeX className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
                     <button
-                      onClick={() => setInputMode("text")}
+                      onClick={() => { tts.cancel(); setInputMode("text"); }}
                       className="p-2.5 text-slate-400 hover:text-white rounded-xl transition-colors hover:bg-slate-800"
                       aria-label="Switch to text input"
                     >
@@ -712,7 +752,11 @@ export default function MockInterviewClient() {
                   </div>
                 )}
                 <p className="text-[10px] text-slate-600 text-center">
-                  {voice.isRecording ? "Speak naturally — click Stop & Send when done" : "Uses browser speech recognition · Works best in Chrome"}
+                  {voice.isRecording
+                    ? "Speak naturally — click Stop & Send when done"
+                    : tts.supported
+                      ? "Browser speech recognition + spoken questions · Works best in Chrome"
+                      : "Uses browser speech recognition · Works best in Chrome"}
                 </p>
               </div>
             ) : (
