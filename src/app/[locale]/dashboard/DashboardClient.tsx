@@ -27,6 +27,7 @@ import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ContextualHint } from "@/components/ui/contextual-hint";
 import DashboardTour from "@/components/DashboardTour";
+import { ExtensionPromoBanner } from "@/components/ExtensionPromoBanner";
 
 interface Report {
   id: string;
@@ -621,6 +622,8 @@ export default function DashboardClient() {
       <ContextualHint id="hint-dashboard" className="mb-6">
         Click any report to see your full roadmap. Reports are saved permanently — come back anytime.
       </ContextualHint>
+
+      <ExtensionPromoBanner />
 
       {activeReport && activeReport.plans.length > 1 && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">

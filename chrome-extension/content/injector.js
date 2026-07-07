@@ -74,6 +74,7 @@
         company: currentJobData.company,
         url: currentJobData.url,
         source: currentJobData.source,
+        source_type: "extension_clip",
         stage: "saved",
         match_score: scoreData?.score || 0,
         // Persist the captured JD so it's selectable in the resume tailor /

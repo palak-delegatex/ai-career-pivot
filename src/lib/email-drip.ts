@@ -825,3 +825,110 @@ export async function sendLaunchEmail(
   }
   return true;
 }
+
+// ---------------------------------------------------------------------------
+// Extension adoption drip (AIC-758 / AIC-389 §3) — a NEW, standalone 3-email arc
+// aimed at existing authenticated users who don't have the Chrome extension.
+// Deliberately separate from the waitlist `email_step` nurture state machine
+// above: enrollment + scheduling lives in its own `extension_promo_emails` table
+// and the `/api/cron/extension-promo` route. One-time Day 0 / Day 3 / Day 7 send,
+// suppressed the moment a user's first extension-sourced event fires.
+// ---------------------------------------------------------------------------
+
+// step 1..3 → CTA carries banner-vs-email + per-email attribution into PostHog.
+function extCta(step: number) {
+  return `${SITE}/chrome-extension?utm_source=email&utm_medium=drip&utm_campaign=ext_adoption&utm_content=email${step}`;
+}
+
+export function getExtensionPromoTemplate(
+  step: number,
+  firstName: string
+): EmailTemplate | null {
+  const name = firstName || "there";
+
+  switch (step) {
+    case 1:
+      return {
+        subject: "The part of the job hunt you're doing by hand",
+        previewText: "Score any posting in one click — without leaving the page.",
+        html: baseHtml(`
+          ${h1("The part of the job hunt you're doing by hand")}
+          ${p(`Hi ${name},`)}
+          ${p("You built your pivot plan on AICareerPivot. Here's the tool that makes the daily grind — finding and vetting roles — take seconds instead of hours.")}
+          ${p("The AICareerPivot Chrome extension sits on top of LinkedIn, Indeed, Greenhouse, Lever and more. On any job posting it gives you:")}
+          <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
+            <li>An <strong style="color:#f1f5f9;">instant ATS match score</strong> for your resume vs. that exact role</li>
+            <li><strong style="color:#f1f5f9;">One-click save</strong> — the job syncs straight to your dashboard here</li>
+            <li>The <strong style="color:#f1f5f9;">skill gaps</strong> to close before you apply</li>
+          </ul>
+          ${p("No copy-paste. No new tab. It's the same analysis you already trust, right where the jobs are.")}
+          <div style="margin:32px 0;">
+            ${cta("Add to Chrome — Free", extCta(1))}
+          </div>
+          ${sig()}
+        `),
+      };
+
+    case 2:
+      return {
+        subject: "Most applications never reach a human",
+        previewText: "ATS filters cut ~75% of resumes before a recruiter looks. Here's how to beat them.",
+        html: baseHtml(`
+          ${h1("Most applications never reach a human")}
+          ${p(`Hi ${name},`)}
+          ${p("Roughly three of every four resumes are filtered out by ATS software before a person ever reads them. The fix isn't applying to more jobs — it's applying to the <em>right</em> ones, tailored the <em>right</em> way.")}
+          ${p("The AICareerPivot extension shows you, on every posting, exactly how your resume scores and which keywords you're missing — before you hit apply. Users who tailor to the score get callbacks on roles they'd have been auto-rejected from.")}
+          ${p("It takes about 30 seconds to install and works on every major job board.")}
+          <div style="margin:32px 0;">
+            ${cta("Get instant ATS scores", extCta(2))}
+          </div>
+          ${sig()}
+        `),
+      };
+
+    case 3:
+      return {
+        subject: "Still applying the hard way?",
+        previewText: "30 seconds to install. Then every job board works for you.",
+        html: baseHtml(`
+          ${h1("Still applying the hard way?")}
+          ${p(`Hi ${name},`)}
+          ${p("Quick one. If you're still opening a new tab to check whether a job fits your pivot, the extension does that automatically — on the page, in one click, free.")}
+          ${p("Install it once and every LinkedIn, Indeed and Greenhouse posting comes with an ATS score and a one-click save to your dashboard.")}
+          ${p("If it's not for you, no worries — this is the last you'll hear about it.")}
+          <div style="margin:32px 0;">
+            ${cta("Add to Chrome — Free", extCta(3))}
+          </div>
+          ${sig()}
+        `),
+      };
+
+    default:
+      return null;
+  }
+}
+
+export async function sendExtensionPromoEmail(
+  to: string,
+  firstName: string,
+  step: number
+): Promise<boolean> {
+  if (!process.env.RESEND_API_KEY) return false;
+  const template = getExtensionPromoTemplate(step, firstName);
+  if (!template) return false;
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    replyTo: REPLY_TO,
+    to,
+    subject: template.subject,
+    html: template.html,
+  });
+
+  if (error) {
+    console.error(`Extension promo email error (step ${step}, ${to}):`, error);
+    return false;
+  }
+  return true;
+}

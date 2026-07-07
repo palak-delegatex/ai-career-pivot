@@ -252,3 +252,19 @@ export function trackLiveMatchSuggestionInserted(props: {
 }) {
   capture("live_match_suggestion_inserted", props);
 }
+
+// Extension adoption campaign (AIC-758 / AIC-389) — dashboard promo banner.
+// These extend the AIC-747 install → first-capture → web-signup funnel with the
+// in-app promotion surface. The CTA carries utm_medium=banner so PostHog can
+// split install attribution between the banner and the email drip.
+export function trackExtBannerShown(props: { detection: "not-installed" | "unknown" }) {
+  capture("ext_banner_shown", props);
+}
+
+export function trackExtBannerDismissed() {
+  capture("ext_banner_dismissed");
+}
+
+export function trackExtBannerCtaClicked(props: { cta: "primary" | "secondary" }) {
+  capture("ext_banner_cta_clicked", props);
+}
