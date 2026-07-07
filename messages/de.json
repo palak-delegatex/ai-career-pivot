@@ -66,20 +66,26 @@
       "ctaPrimary": "Meinen Plan jetzt erstellen — <s>$29</s> $19 →",
       "freeLink": "Oder die kostenlose Kompetenzlücken-Analyse testen — keine Zahlung nötig →",
       "freeNote": "3 Minuten · Kein Abo · Kompletter Fahrplan gehört Ihnen",
-      "viewers": "🔥 83 Personen haben diese Seite heute angesehen"
+      "viewers": "🔥 83 Personen haben diese Seite heute angesehen",
+      "outcomeBadge": "Karrierewechsel begleitet — Tendenz steigend",
+      "microProof": {
+        "rating": "Ø Bewertung",
+        "recommend": "Weiterempfehlung",
+        "salary": "Ø Gehaltsplus"
+      }
     },
     "stats": [
       {
-        "value": "3×",
-        "label": "Schneller als eigenständige Planung"
+        "value": "847+",
+        "label": "Karrierewechsel begleitet"
       },
       {
-        "value": "6mo",
-        "label": "Bis zu Ihrem ersten Meilenstein"
+        "value": "92%",
+        "label": "Melden Fortschritt"
       },
       {
-        "value": "100%",
-        "label": "Auf Ihr Leben zugeschnitten"
+        "value": "$15K",
+        "label": "Ø Gehaltsplus"
       }
     ],
     "activity": "<b>{count} Personen</b> erstellen gerade ihren Karrierewechselplan",
@@ -363,6 +369,40 @@
       ],
       "ctaPrimary": "Meinen erstellen",
       "ctaSecondary": "Oder probiere zuerst den kostenlosen Skill-Lücken-Schnappschuss — ohne Zahlung"
+    },
+    "journey": {
+      "eyebrow": "Der komplette Weg",
+      "titleLead": "Von der Analyse zum Angebot.",
+      "titleAccent": "Ein klarer Weg.",
+      "subtitle": "Sieh genau, was du in jeder Phase bekommst — illustriert an einem echten Karrierewechsel.",
+      "caseHeading": "{name}s Weg",
+      "steps": [
+        {
+          "label": "Analysieren",
+          "deliverable": "KI extrahiert 20-40 übertragbare Fähigkeiten aus deinem Lebenslauf",
+          "phase": "Woche 1"
+        },
+        {
+          "label": "Planen",
+          "deliverable": "2-3 priorisierte Wechsel-Pfade mit Meilensteinen für 6 Mon./1 J./2 J.",
+          "phase": "Woche 1"
+        },
+        {
+          "label": "Weiterbilden",
+          "deliverable": "Gezielter Zertifikats-Fahrplan + Maßnahmen für Kompetenzlücken",
+          "phase": "Monate 1-3"
+        },
+        {
+          "label": "Bewerben",
+          "deliverable": "ATS-optimierter Lebenslauf + maßgeschneiderte Anschreiben",
+          "phase": "Monate 3-5"
+        },
+        {
+          "label": "Angebot",
+          "deliverable": "Gehaltsverhandlung + Übergangs-Zeitplan",
+          "phase": "Das Ergebnis"
+        }
+      ]
     }
   },
   "meta": {

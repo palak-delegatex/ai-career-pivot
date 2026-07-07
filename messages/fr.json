@@ -66,20 +66,26 @@
       "ctaPrimary": "Créer mon plan de reconversion maintenant — <s>$29</s> $19 →",
       "freeLink": "Ou essayez le bilan gratuit des écarts de compétences — sans paiement →",
       "freeNote": "3 minutes · Sans abonnement · Feuille de route à conserver",
-      "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui"
+      "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui",
+      "outcomeBadge": "reconversions réussies — et ça continue",
+      "microProof": {
+        "rating": "note moyenne",
+        "recommend": "recommandent",
+        "salary": "hausse de salaire moy."
+      }
     },
     "stats": [
       {
-        "value": "3×",
-        "label": "Plus rapide qu'une planification solo"
+        "value": "847+",
+        "label": "Reconversions réussies"
       },
       {
-        "value": "6mo",
-        "label": "Pour atteindre votre premier jalon"
+        "value": "92%",
+        "label": "Constatent des progrès"
       },
       {
-        "value": "100%",
-        "label": "Personnalisé pour votre vie"
+        "value": "$15K",
+        "label": "Hausse de salaire moy."
       }
     ],
     "activity": "<b>{count} personnes</b> construisent leur reconversion professionnelle en ce moment",
@@ -363,6 +369,40 @@
       ],
       "ctaPrimary": "Générer le mien",
       "ctaSecondary": "Ou essayez d'abord l'aperçu gratuit des écarts de compétences — sans paiement"
+    },
+    "journey": {
+      "eyebrow": "Le parcours complet",
+      "titleLead": "De l'évaluation à l'offre.",
+      "titleAccent": "Un chemin clair.",
+      "subtitle": "Voyez exactement ce que vous obtenez à chaque étape — illustré par une vraie reconversion.",
+      "caseHeading": "Le parcours de {name}",
+      "steps": [
+        {
+          "label": "Évaluer",
+          "deliverable": "L'IA extrait 20 à 40 compétences transférables de votre CV",
+          "phase": "Semaine 1"
+        },
+        {
+          "label": "Planifier",
+          "deliverable": "2-3 pistes de reconversion classées, avec jalons à 6 mois/1 an/2 ans",
+          "phase": "Semaine 1"
+        },
+        {
+          "label": "Se former",
+          "deliverable": "Feuille de route de certifications + actions ciblées",
+          "phase": "Mois 1-3"
+        },
+        {
+          "label": "Postuler",
+          "deliverable": "CV optimisé ATS + lettres de motivation personnalisées",
+          "phase": "Mois 3-5"
+        },
+        {
+          "label": "Offre",
+          "deliverable": "Préparation à la négociation salariale + calendrier de transition",
+          "phase": "La récompense"
+        }
+      ]
     }
   },
   "meta": {

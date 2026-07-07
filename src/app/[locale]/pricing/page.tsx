@@ -11,6 +11,10 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Building2, Rocket, Briefcase } from "lucide-react";
 import { testimonials } from "@/lib/testimonials";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import OutcomeProofStrip from "@/components/OutcomeProofStrip";
+import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
+import GuaranteeCard from "@/components/GuaranteeCard";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 export async function generateMetadata({
   params,
@@ -234,6 +238,18 @@ export default function PricingPage() {
           The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills.
         </p>
 
+        {/* Outcome proof strip — anchor the value frame before the price (AIC-753) */}
+        <div className="max-w-4xl mx-auto mb-10">
+          <OutcomeProofStrip
+            metrics={[
+              { value: PROOF_METRICS.pivotsDelivered, label: "Pivots delivered" },
+              { value: PROOF_METRICS.avgRating, label: "Avg rating", accent: "text-teal-400", star: true },
+              { value: PROOF_METRICS.recommendRate, label: "Would recommend" },
+              { value: PROOF_METRICS.salaryUplift, label: "Avg salary uplift", accent: "text-emerald-400" },
+            ]}
+          />
+        </div>
+
         {/* Pricing cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8 items-start max-w-4xl mx-auto">
           {/* Report — $19 intro pricing */}
@@ -265,7 +281,20 @@ export default function PricingPage() {
             </CardContent>
             <CardFooter className="px-8 pb-8 flex-col gap-2">
               <PricingCheckout plan="report" />
-              <p className="text-slate-500 text-xs text-center">Secure payment via Stripe</p>
+              <CheckoutTrustBlock
+                items={[
+                  { icon: "shield", text: "30-day refund, no questions" },
+                  { icon: "lock", text: "Secure checkout via Stripe" },
+                  {
+                    icon: "users",
+                    text: (
+                      <>
+                        Join <strong className="text-slate-200 font-semibold">{PROOF_METRICS.pivotsDelivered} professionals</strong> who&rsquo;ve pivoted
+                      </>
+                    ),
+                  },
+                ]}
+              />
             </CardFooter>
           </Card>
 
@@ -300,23 +329,42 @@ export default function PricingPage() {
               </CardContent>
               <CardFooter className="px-8 pb-8 flex-col gap-2">
                 <PricingCheckout plan="lifetime" />
-                <p className="text-slate-500 text-xs text-center">
-                  Secure payment via Stripe. Have a discount code? Enter it above.
-                </p>
+                <CheckoutTrustBlock
+                  items={[
+                    { icon: "shield", text: "30-day refund, no questions" },
+                    { icon: "lock", text: "Secure checkout via Stripe" },
+                    {
+                      icon: "check",
+                      text: (
+                        <>
+                          One payment. <strong className="text-slate-200 font-semibold">No subscription, ever.</strong>
+                        </>
+                      ),
+                    },
+                  ]}
+                />
+                <p className="text-slate-500 text-xs text-center">Have a discount code? Enter it above.</p>
               </CardFooter>
             </Card>
           </div>
         </div>
 
-        {/* Pricing testimonials */}
-        <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-10">
+        {/* Pricing testimonials — 3 outcome-specific cards with star ratings (AIC-753) */}
+        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-10">
           {testimonials
-            .filter((t) => t.name === "Sarah K." || t.name === "James L.")
+            .filter((t) => ["James L.", "Priya R.", "David C."].includes(t.name))
             .map((t) => (
               <div
                 key={t.name}
                 className="bg-slate-900/60 border border-slate-800 rounded-xl p-5"
               >
+                <div className="flex gap-0.5 mb-2.5">
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <svg key={s} className="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  ))}
+                </div>
                 <p className="text-sm text-slate-300 italic leading-relaxed mb-3">
                   &ldquo;{t.quote}&rdquo;
                 </p>
@@ -335,26 +383,12 @@ export default function PricingPage() {
             ))}
         </div>
 
-        {/* Trust badge row */}
-        <div className="flex flex-wrap items-center justify-center gap-6 mb-16">
-          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
-            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            30-day money-back guarantee
-          </div>
-          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
-            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            256-bit encrypted
-          </div>
-          <div className="inline-flex items-center gap-2 text-slate-400 text-sm">
-            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-            No recurring charges
-          </div>
+        {/* Visual guarantee card — replaces the flat text-badge row (AIC-753) */}
+        <div className="mb-16">
+          <GuaranteeCard
+            title="30-Day Money-Back Guarantee"
+            body="If the report isn't useful to you, email us and we'll refund you immediately. No questions asked, no hoops to jump through. Your career pivot shouldn't start with a risk."
+          />
         </div>
 
         {/* FAQ */}
