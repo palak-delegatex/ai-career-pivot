@@ -39,7 +39,7 @@ async function trackOrderPersistFailed(props: {
 }
 
 export async function POST(req: NextRequest) {
-  const { email, discountCode, plan: planKey = "report" } = await req.json();
+  const { email, discountCode, plan: planKey = "report", posthogDistinctId } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
@@ -140,7 +140,15 @@ export async function POST(req: NextRequest) {
       line_items: [{ price_data: priceData as never, quantity: 1 }],
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/pricing`,
-      metadata: { email, plan: planKey, discountCode: discountCode ?? "" },
+      // posthog_distinct_id lets the Stripe webhook emit payment_verified against
+      // the same PostHog person who fired checkout_started, keeping the funnel
+      // stitched. Empty string when the browser SDK hadn't loaded at submit time.
+      metadata: {
+        email,
+        plan: planKey,
+        discountCode: discountCode ?? "",
+        posthog_distinct_id: typeof posthogDistinctId === "string" ? posthogDistinctId : "",
+      },
     };
 
     if (discountCode) {
