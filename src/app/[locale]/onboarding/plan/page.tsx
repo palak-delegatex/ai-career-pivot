@@ -12,6 +12,16 @@ import SkillGapChart from "@/components/SkillGapChart";
 import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
+import SocialProofStrip from "@/components/SocialProofStrip";
+import { testimonials } from "@/lib/testimonials";
+
+// Trust metrics shown beside the plan-page CTA — same numbers used on
+// /free-results so the social proof reads consistently across the funnel.
+const CHECKOUT_TRUST_METRICS = [
+  { value: "500+", label: "Pivots" },
+  { value: "92%", label: "Progress" },
+  { value: "$15K+", label: "Avg uplift" },
+];
 
 export default function PivotPlanPage() {
   const router = useRouter();
@@ -249,6 +259,16 @@ export default function PivotPlanPage() {
 
         {/* CTA */}
         <div className="mt-10 text-center bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
+          {/* Social proof at the checkout-decision moment — reassurance right
+              before the upgrade CTA, targeting the drop-off where users leave
+              the plan page and never return (AIC-437). */}
+          <div className="max-w-md mx-auto mb-6 text-left">
+            <SocialProofStrip
+              testimonial={testimonials[0]}
+              metrics={CHECKOUT_TRUST_METRICS}
+              variant="featured"
+            />
+          </div>
           <h3 className="text-xl font-bold mb-3">Want the full detailed roadmap?</h3>
           <p className="text-slate-400 mb-6">
             Get a comprehensive week-by-week plan, salary research, and personalized networking scripts.
