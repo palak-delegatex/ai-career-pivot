@@ -76,6 +76,10 @@
         source: currentJobData.source,
         stage: "saved",
         match_score: scoreData?.score || 0,
+        // Persist the captured JD so it's selectable in the resume tailor /
+        // Live Match (AIC-757 reads tracked_jobs.job_description). Cap length to
+        // keep the payload sane; the tailor only needs the posting text.
+        job_description: (currentJobData.description || "").slice(0, 20000),
       });
 
       if (result.ok) {
