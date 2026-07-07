@@ -66,20 +66,26 @@
       "ctaPrimary": "Build My Pivot Plan Now — <s>$29</s> $19 →",
       "freeLink": "Or try the free skill-gap snapshot — no payment required →",
       "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
-      "viewers": "🔥 83 people viewed this page today"
+      "viewers": "🔥 83 people viewed this page today",
+      "outcomeBadge": "career pivots delivered — and counting",
+      "microProof": {
+        "rating": "avg rating",
+        "recommend": "recommend",
+        "salary": "avg salary uplift"
+      }
     },
     "stats": [
       {
-        "value": "3×",
-        "label": "Faster than solo planning"
+        "value": "847+",
+        "label": "Career pivots delivered"
       },
       {
-        "value": "6mo",
-        "label": "To your first milestone"
+        "value": "92%",
+        "label": "Report career progress"
       },
       {
-        "value": "100%",
-        "label": "Personalized to your life"
+        "value": "$15K",
+        "label": "Avg salary uplift"
       }
     ],
     "activity": "<b>{count} people</b> are building their career pivot right now",
@@ -363,6 +369,40 @@
       ],
       "ctaPrimary": "Generate Mine",
       "ctaSecondary": "Or try the free skill-gap snapshot first — no payment"
+    },
+    "journey": {
+      "eyebrow": "See The Full Journey",
+      "titleLead": "From assessment to offer.",
+      "titleAccent": "One clear path.",
+      "subtitle": "See exactly what you get at each stage — illustrated with a real career transition.",
+      "caseHeading": "{name}'s journey",
+      "steps": [
+        {
+          "label": "Assess",
+          "deliverable": "AI extracts 20-40 transferable skills from your resume",
+          "phase": "Week 1"
+        },
+        {
+          "label": "Plan",
+          "deliverable": "2-3 ranked pivot paths with 6mo/1yr/2yr milestones",
+          "phase": "Week 1"
+        },
+        {
+          "label": "Upskill",
+          "deliverable": "Targeted cert roadmap + skill gap actions",
+          "phase": "Months 1-3"
+        },
+        {
+          "label": "Apply",
+          "deliverable": "ATS-scored resume + tailored cover letters",
+          "phase": "Months 3-5"
+        },
+        {
+          "label": "Offer",
+          "deliverable": "Salary negotiation prep + transition timeline",
+          "phase": "The payoff"
+        }
+      ]
     }
   },
   "meta": {

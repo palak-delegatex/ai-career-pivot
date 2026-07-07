@@ -66,20 +66,26 @@
       "ctaPrimary": "Montar meu plano de transição agora — <s>$29</s> $19 →",
       "freeLink": "Ou experimente o diagnóstico gratuito de lacunas de habilidades — sem pagamento →",
       "freeNote": "Leva 3 minutos · Sem assinatura · O roteiro completo é seu para guardar",
-      "viewers": "🔥 83 pessoas visualizaram esta página hoje"
+      "viewers": "🔥 83 pessoas visualizaram esta página hoje",
+      "outcomeBadge": "transições de carreira realizadas — e contando",
+      "microProof": {
+        "rating": "avaliação média",
+        "recommend": "recomendam",
+        "salary": "aumento salarial médio"
+      }
     },
     "stats": [
       {
-        "value": "3×",
-        "label": "Mais rápido que planejar sozinho"
+        "value": "847+",
+        "label": "Transições realizadas"
       },
       {
-        "value": "6mo",
-        "label": "Até seu primeiro marco"
+        "value": "92%",
+        "label": "Relatam progresso"
       },
       {
-        "value": "100%",
-        "label": "Personalizado para a sua vida"
+        "value": "$15K",
+        "label": "Aumento salarial médio"
       }
     ],
     "activity": "<b>{count} pessoas</b> estão montando sua transição de carreira agora mesmo",
@@ -363,6 +369,40 @@
       ],
       "ctaPrimary": "Gerar o meu",
       "ctaSecondary": "Ou experimente primeiro o retrato gratuito de lacunas de skills — sem pagamento"
+    },
+    "journey": {
+      "eyebrow": "Veja a jornada completa",
+      "titleLead": "Da avaliação à oferta.",
+      "titleAccent": "Um caminho claro.",
+      "subtitle": "Veja exatamente o que você recebe em cada etapa — ilustrado com uma transição de carreira real.",
+      "caseHeading": "A jornada de {name}",
+      "steps": [
+        {
+          "label": "Avaliar",
+          "deliverable": "A IA extrai de 20 a 40 habilidades transferíveis do seu currículo",
+          "phase": "Semana 1"
+        },
+        {
+          "label": "Planejar",
+          "deliverable": "2-3 caminhos de transição priorizados com marcos de 6 meses/1 ano/2 anos",
+          "phase": "Semana 1"
+        },
+        {
+          "label": "Qualificar",
+          "deliverable": "Roteiro de certificações direcionado + ações para lacunas",
+          "phase": "Meses 1-3"
+        },
+        {
+          "label": "Candidatar",
+          "deliverable": "Currículo otimizado para ATS + cartas de apresentação sob medida",
+          "phase": "Meses 3-5"
+        },
+        {
+          "label": "Oferta",
+          "deliverable": "Preparação para negociação salarial + cronograma de transição",
+          "phase": "A recompensa"
+        }
+      ]
     }
   },
   "meta": {
