@@ -28,6 +28,8 @@ export interface TrackedJob {
   match_score: number;
   next_action?: string;
   notes?: string;
+  /** Raw job description text, used to seed the resume tailor's Live Match tab. */
+  job_description?: string;
   applied_at?: string;
   stage_changed_at: string;
   created_at: string;

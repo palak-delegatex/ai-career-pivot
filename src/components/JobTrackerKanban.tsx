@@ -915,22 +915,25 @@ function QuickAddModal({
     source: JobSource;
     stage: JobStage;
     notes: string;
+    job_description: string;
   }) => void;
 }) {
   const [url, setUrl] = useState("");
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
   const [notes, setNotes] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [stage, setStage] = useState<JobStage>("exploring");
 
   function handleSubmit() {
     if (!role.trim() || !company.trim()) return;
     const source = url ? detectSource(url) : "other";
-    onAdd({ role: role.trim(), company: company.trim(), url, source, stage, notes });
+    onAdd({ role: role.trim(), company: company.trim(), url, source, stage, notes, job_description: jobDescription.trim() });
     setUrl("");
     setRole("");
     setCompany("");
     setNotes("");
+    setJobDescription("");
     setStage("exploring");
     onClose();
   }
@@ -1013,6 +1016,24 @@ function QuickAddModal({
               placeholder="Referral from Sarah, deadline Jun 15..."
               className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors"
             />
+          </div>
+
+          {/* Job description — powers the Live Match tab in the resume tailor */}
+          <div className="mb-3.5">
+            <label className="block text-[12px] font-medium text-slate-400 mb-1.5">
+              Job description <span className="text-slate-600 font-normal">(optional)</span>
+            </label>
+            <textarea
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Paste the full job description to tailor your resume against it later…"
+              rows={4}
+              maxLength={12000}
+              className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-slate-800 rounded-lg text-[13px] text-gray-50 placeholder:text-slate-600 focus:border-teal-500 focus:outline-none transition-colors resize-none"
+            />
+            <p className="text-[11px] text-slate-600 mt-1">
+              Stored with the job so you can pick it in the resume tailor&apos;s Live Match tab.
+            </p>
           </div>
 
           {/* Stage selector */}
@@ -1186,6 +1207,7 @@ export default function JobTrackerKanban({
       source: JobSource;
       stage: JobStage;
       notes: string;
+      job_description: string;
     }) => {
       const res = await fetch("/api/job-tracker", {
         method: "POST",
