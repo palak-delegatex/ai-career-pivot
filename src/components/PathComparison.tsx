@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import type { PivotPlan, MarketData } from "@/lib/intake";
 
 const difficultyColor = {
@@ -72,9 +73,11 @@ const tagColors: Record<string, string> = {
   "Easiest Transition": "bg-blue-900/40 border-blue-600/40 text-blue-300",
 };
 
-function fmtSalary(n: number): string {
+// Market salaries are US BLS data (USD); the `$` symbol is fixed, only the
+// grouping separator follows the active locale.
+function fmtSalary(n: number, locale: string): string {
   if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n.toLocaleString()}`;
+  return `$${n.toLocaleString(locale)}`;
 }
 
 function growthColor(pct: number | null): string {
@@ -87,6 +90,7 @@ function growthColor(pct: number | null): string {
 
 export default function PathComparison({ plans, onSelectPlan, marketData }: { plans: PivotPlan[]; onSelectPlan?: (index: number) => void; marketData?: Record<string, MarketData> }) {
   const [expanded, setExpanded] = useState(true);
+  const locale = useLocale();
   const plansWithTradeoffs = plans.filter((p) => p.tradeoffs);
   if (plansWithTradeoffs.length < 2) return null;
 
@@ -200,10 +204,10 @@ export default function PathComparison({ plans, onSelectPlan, marketData }: { pl
                     if (!md) return <span key={p.targetRole} className="text-xs text-slate-500">—</span>;
                     return (
                       <div key={p.targetRole}>
-                        <span className="text-xs font-medium text-teal-300">{fmtSalary(md.salaryMedian)}</span>
+                        <span className="text-xs font-medium text-teal-300">{fmtSalary(md.salaryMedian, locale)}</span>
                         <span className="text-[10px] text-slate-500 ml-1">median</span>
                         <p className="text-[10px] text-slate-500 mt-0.5">
-                          {fmtSalary(md.salaryP25)} – {fmtSalary(md.salaryP75)}
+                          {fmtSalary(md.salaryP25, locale)} – {fmtSalary(md.salaryP75, locale)}
                         </p>
                       </div>
                     );

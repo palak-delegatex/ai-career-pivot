@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale } from "next-intl";
 import { TrendingUp, DollarSign, Users, BarChart3, Loader2 } from "lucide-react";
 import type { MarketData } from "@/lib/intake";
 
-function fmt(n: number): string {
+// Salary/employment figures are US BLS market data (USD); only the grouping
+// separator is localized — the `$` symbol stays regardless of locale.
+function fmt(n: number, locale: string): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
-  return n.toLocaleString();
+  return n.toLocaleString(locale);
 }
 
-function fmtSalary(n: number): string {
-  return `$${fmt(n)}`;
+function fmtSalary(n: number, locale: string): string {
+  return `$${fmt(n, locale)}`;
 }
 
 function growthColor(pct: number | null): string {
@@ -37,6 +40,7 @@ export default function MarketDataBanner({
   marketData: MarketData | null | undefined;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const locale = useLocale();
 
   if (!marketData) return null;
 
@@ -54,14 +58,14 @@ export default function MarketDataBanner({
             Market Signal: <span className="text-white">{marketData.role}</span>
           </p>
           <p className="text-[11px] text-slate-500 mt-0.5">
-            {fmtSalary(salaryMedian)} median
+            {fmtSalary(salaryMedian, locale)} median
             {growthPercent !== null && (
               <span className={`ml-2 ${growthColor(growthPercent)}`}>
                 {growthPercent > 0 ? "+" : ""}{growthPercent}% projected growth
               </span>
             )}
             {totalEmployment > 0 && (
-              <span className="ml-2 text-slate-500">{fmt(totalEmployment)} employed</span>
+              <span className="ml-2 text-slate-500">{fmt(totalEmployment, locale)} employed</span>
             )}
           </p>
         </div>
@@ -78,19 +82,19 @@ export default function MarketDataBanner({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3">
             <div className="bg-slate-900/60 rounded-lg p-3 text-center">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">25th %ile</p>
-              <p className="text-sm font-bold text-slate-300">{fmtSalary(salaryP25)}</p>
+              <p className="text-sm font-bold text-slate-300">{fmtSalary(salaryP25, locale)}</p>
             </div>
             <div className="bg-slate-900/60 border border-teal-700/30 rounded-lg p-3 text-center">
               <p className="text-[10px] text-teal-500 uppercase tracking-wider mb-1">Median</p>
-              <p className="text-sm font-bold text-teal-300">{fmtSalary(salaryMedian)}</p>
+              <p className="text-sm font-bold text-teal-300">{fmtSalary(salaryMedian, locale)}</p>
             </div>
             <div className="bg-slate-900/60 rounded-lg p-3 text-center">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">75th %ile</p>
-              <p className="text-sm font-bold text-slate-300">{fmtSalary(salaryP75)}</p>
+              <p className="text-sm font-bold text-slate-300">{fmtSalary(salaryP75, locale)}</p>
             </div>
             <div className="bg-slate-900/60 rounded-lg p-3 text-center">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">90th %ile</p>
-              <p className="text-sm font-bold text-emerald-300">{fmtSalary(salaryP90)}</p>
+              <p className="text-sm font-bold text-emerald-300">{fmtSalary(salaryP90, locale)}</p>
             </div>
           </div>
 
@@ -109,7 +113,7 @@ export default function MarketDataBanner({
               <div className="flex items-center gap-1.5">
                 <Users className="h-3.5 w-3.5 text-slate-500" />
                 <span className="text-slate-400">Total employed:</span>
-                <span className="text-slate-300 font-medium">{totalEmployment.toLocaleString()}</span>
+                <span className="text-slate-300 font-medium">{totalEmployment.toLocaleString(locale)}</span>
               </div>
             )}
           </div>
