@@ -42,8 +42,8 @@ import {
   Code2,
   CheckCircle2,
 } from "lucide-react";
-import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
-import { STAGES } from "@/lib/job-tracker";
+import type { TrackedJob, JobStage, JobSource, JobPriority } from "@/lib/job-tracker";
+import { STAGES, JOB_PRIORITIES } from "@/lib/job-tracker";
 import { useLocale } from "next-intl";
 
 // ─── Types ───
@@ -832,6 +832,27 @@ export default function JobDetailView({
   const [source, setSource] = useState<JobSource>(job.source);
   const [notes, setNotes] = useState(job.notes ?? "");
   const [nextAction, setNextAction] = useState(job.next_action ?? "");
+  const [followUpDate, setFollowUpDate] = useState(job.next_action_date ?? "");
+  const [priority, setPriority] = useState<JobPriority | null>(job.priority ?? null);
+
+  const handleFollowUpDateChange = useCallback(
+    (value: string) => {
+      setFollowUpDate(value);
+      // Empty string clears the date (sends null so the DATE column is nulled).
+      queue("next_action_date", value || null);
+    },
+    [queue]
+  );
+
+  const handlePriorityChange = useCallback(
+    (value: JobPriority) => {
+      // Tapping the active pill again clears the priority.
+      const next = priority === value ? null : value;
+      setPriority(next);
+      queue("priority", next);
+    },
+    [priority, queue]
+  );
 
   const handleFieldChange = useCallback(
     (field: string, value: string) => {
@@ -1056,6 +1077,52 @@ export default function JobDetailView({
                 placeholder="Follow up on Monday..."
                 className="w-full px-3 py-2 bg-white/[0.04] border border-border rounded-lg text-[13px] text-foreground placeholder:text-slate-600 focus:border-primary focus:outline-none transition-colors"
               />
+            </div>
+
+            {/* Follow-up Date (AIC-501) */}
+            <div>
+              <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                Follow-up Date
+              </label>
+              <input
+                type="date"
+                value={followUpDate}
+                onChange={(e) => handleFollowUpDateChange(e.target.value)}
+                className="w-full px-3 py-2 bg-white/[0.04] border border-border rounded-lg text-[13px] text-foreground placeholder:text-slate-600 focus:border-primary focus:outline-none transition-colors [color-scheme:dark]"
+              />
+            </div>
+
+            {/* Priority (AIC-501) */}
+            <div>
+              <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                Priority
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {JOB_PRIORITIES.map((p) => {
+                  const isActive = priority === p;
+                  const activeStyle =
+                    p === "hot"
+                      ? "border-red-500 bg-red-500/10 text-red-300"
+                      : p === "warm"
+                        ? "border-amber-500 bg-amber-500/10 text-amber-300"
+                        : "border-sky-500 bg-sky-500/10 text-sky-300";
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => handlePriorityChange(p)}
+                      aria-pressed={isActive}
+                      className={`px-3 py-2 rounded-lg text-[12px] font-semibold capitalize border transition-colors ${
+                        isActive
+                          ? activeStyle
+                          : "border-border bg-white/[0.04] text-slate-400 hover:text-slate-200 hover:border-slate-600"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Notes */}

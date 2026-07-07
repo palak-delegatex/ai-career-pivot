@@ -43,6 +43,7 @@ import {
   ExternalLink,
   Zap,
   MessageSquare,
+  Flame,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -60,7 +61,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TrackedJob, JobStage, JobSource } from "@/lib/job-tracker";
+import type { TrackedJob, JobStage, JobSource, JobPriority } from "@/lib/job-tracker";
 import {
   STAGES,
   STAGE_CTAS,
@@ -156,6 +157,57 @@ function ClippedBadge() {
       Clipped
     </span>
   );
+}
+
+// ─── DeadlineBadge (AIC-501) ───
+
+// Whole-day difference between a yyyy-mm-dd follow-up date and today, in the
+// local timezone. Negative = overdue.
+function daysUntil(dateStr: string): number {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const target = new Date(y, (m ?? 1) - 1, d ?? 1);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
+function DeadlineBadge({ dateStr }: { dateStr?: string | null }) {
+  if (!dateStr) return null;
+  const days = daysUntil(dateStr);
+  // Only surface follow-ups that need attention soon; hide anything > 3 days out.
+  if (days > 3) return null;
+
+  let style: string;
+  let label: string;
+  if (days < 0) {
+    style = "bg-red-500/10 border-red-500/30 text-red-300";
+    label = `Overdue ${Math.abs(days)}d`;
+  } else if (days === 0) {
+    style = "bg-amber-500/10 border-amber-500/30 text-amber-300";
+    label = "Due today";
+  } else {
+    style = "bg-white/[0.04] border-white/[0.06] text-slate-300";
+    label = `Due in ${days}d`;
+  }
+
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${style}`}>
+      <Clock className="h-2.5 w-2.5" />
+      {label}
+    </span>
+  );
+}
+
+// ─── PriorityIndicator (AIC-501) ───
+
+function PriorityIndicator({ priority }: { priority?: JobPriority | null }) {
+  if (priority === "hot") {
+    return <Flame className="h-3.5 w-3.5 text-red-400 shrink-0" aria-label="High priority" />;
+  }
+  if (priority === "warm") {
+    return <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" aria-label="Medium priority" />;
+  }
+  return null;
 }
 
 // ─── StageActionCTA ───
@@ -299,8 +351,11 @@ function SortableJobCard({
           {job.company.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
-            {job.role}
+          <div className="flex items-center gap-1.5">
+            <PriorityIndicator priority={job.priority} />
+            <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
+              {job.role}
+            </div>
           </div>
           <div className="text-[11px] text-slate-400 mt-0.5">
             {job.company}
@@ -318,10 +373,11 @@ function SortableJobCard({
         </div>
       </div>
 
-      {/* Badges row: match + days-in-stage + clipped */}
+      {/* Badges row: match + days-in-stage + deadline + clipped */}
       <div className="flex items-center flex-wrap gap-1.5 mb-2.5">
         <MatchBadge score={job.match_score} />
         <DaysInStageBadge stageChangedAt={job.stage_changed_at} />
+        <DeadlineBadge dateStr={job.next_action_date} />
         {job.source_type === "extension_clip" && <ClippedBadge />}
       </div>
 
@@ -564,8 +620,11 @@ function MobileJobCard({
           {job.company.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
-            {job.role}
+          <div className="flex items-center gap-1.5">
+            <PriorityIndicator priority={job.priority} />
+            <div className="text-[13px] font-semibold text-gray-50 leading-tight line-clamp-2">
+              {job.role}
+            </div>
           </div>
           <div className="text-[11px] text-slate-400 mt-0.5">
             {job.company}
@@ -580,6 +639,7 @@ function MobileJobCard({
       <div className="flex items-center flex-wrap gap-1.5 mb-2.5">
         <MatchBadge score={job.match_score} />
         <DaysInStageBadge stageChangedAt={job.stage_changed_at} />
+        <DeadlineBadge dateStr={job.next_action_date} />
         {job.source_type === "extension_clip" && <ClippedBadge />}
       </div>
 

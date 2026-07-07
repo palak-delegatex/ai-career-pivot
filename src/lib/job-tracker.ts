@@ -15,6 +15,9 @@ export type JobSource =
 
 export type SourceType = "manual" | "extension_clip";
 
+/** How urgently the user wants to pursue a tracked job (AIC-501). */
+export type JobPriority = "hot" | "warm" | "cool";
+
 export interface TrackedJob {
   id: string;
   user_email: string;
@@ -27,6 +30,10 @@ export interface TrackedJob {
   stage: JobStage;
   match_score: number;
   next_action?: string;
+  /** Follow-up / deadline date (ISO yyyy-mm-dd), nullable (AIC-501). */
+  next_action_date?: string | null;
+  /** User-set priority, nullable (AIC-501). */
+  priority?: JobPriority | null;
   notes?: string;
   /** Raw job description text, used to seed the resume tailor's Live Match tab. */
   job_description?: string;
@@ -34,6 +41,8 @@ export interface TrackedJob {
   stage_changed_at: string;
   created_at: string;
 }
+
+export const JOB_PRIORITIES: JobPriority[] = ["hot", "warm", "cool"];
 
 export const STAGES: {
   key: JobStage;
