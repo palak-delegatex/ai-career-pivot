@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { trackCheckoutStarted, trackCheckoutError } from "@/lib/tracking";
+import { trackCheckoutStarted, trackCheckoutError, getPosthogDistinctId } from "@/lib/tracking";
 
 // Transient failures (network blips, 5xx, rate-limits) are worth retrying
 // automatically before showing the user an error — a single checkout attempt
@@ -47,7 +47,7 @@ export default function PricingCheckout({
       res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature }),
+        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature, posthogDistinctId: getPosthogDistinctId() }),
       });
     } catch {
       // fetch rejects only on network-level failure — always transient

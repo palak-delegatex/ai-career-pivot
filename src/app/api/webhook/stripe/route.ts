@@ -1,6 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseClient } from "@/lib/supabase";
+import { PostHog } from "posthog-node";
+
+// Emit the terminal revenue event server-side, from the one place a payment is
+// authoritatively known to have completed (checkout.session.completed). The
+// client-side payment_verified on /checkout/success is best-effort and drops
+// silently on adblock, redirect failure, or tab-close-after-pay — which is why
+// the funnel showed 0 payment_verified for the app's entire history (AIC-739).
+// distinctId prefers the browser's PostHog id (threaded via session metadata)
+// so this stitches onto the same person who fired checkout_started; it falls
+// back to email, then the session id. Best-effort: never let telemetry failure
+// affect the webhook 200 (Stripe would otherwise retry the whole webhook).
+async function trackPaymentVerified(props: {
+  distinctId: string;
+  sessionId: string;
+  plan: string;
+  amountCents: number | null;
+  email: string | null;
+  paymentIntent: string | null;
+  subscriptionId: string | null;
+}) {
+  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
+  if (!token) return;
+  try {
+    const ph = new PostHog(token, {
+      host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+      flushAt: 1,
+    });
+    ph.capture({
+      distinctId: props.distinctId,
+      event: "payment_verified",
+      properties: {
+        session_id: props.sessionId,
+        plan: props.plan,
+        amount_cents: props.amountCents,
+        email: props.email,
+        stripe_payment_intent: props.paymentIntent,
+        stripe_subscription_id: props.subscriptionId,
+        source: "stripe_webhook",
+      },
+    });
+    await ph.shutdown();
+  } catch (err) {
+    console.error("Failed to capture payment_verified event:", err);
+  }
+}
 
 export async function POST(req: NextRequest) {
   const stripe = getStripeClient();
@@ -40,6 +85,25 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: subscriptionId,
       })
       .eq("stripe_session_id", session.id);
+
+    const meta = (session.metadata ?? {}) as Record<string, string>;
+    const email = session.customer_email ?? meta.email ?? null;
+    const distinctId =
+      (meta.posthog_distinct_id && meta.posthog_distinct_id.length > 0
+        ? meta.posthog_distinct_id
+        : null) ??
+      email ??
+      session.id;
+
+    await trackPaymentVerified({
+      distinctId,
+      sessionId: session.id,
+      plan: meta.plan ?? "unknown",
+      amountCents: session.amount_total ?? null,
+      email,
+      paymentIntent,
+      subscriptionId,
+    });
   }
 
   return NextResponse.json({ received: true });

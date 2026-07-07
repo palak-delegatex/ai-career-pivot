@@ -83,8 +83,23 @@ export function trackCheckoutError(props: { plan: string; error: string; attempt
   capture("checkout_error", props);
 }
 
+// The PostHog browser distinct id, so server-side events (the authoritative
+// Stripe webhook payment_verified — see api/webhook/stripe) can be attributed to
+// the same person who fired checkout_started, keeping the funnel stitched.
+// Returns undefined before the SDK loads; the server falls back to email then
+// the Stripe session id.
+export function getPosthogDistinctId(): string | undefined {
+  if (typeof window === "undefined" || !posthog.__loaded) return undefined;
+  return posthog.get_distinct_id();
+}
+
+// Fired client-side on the success page. The authoritative copy is emitted
+// server-side from the Stripe webhook (source: "stripe_webhook"); this one
+// (source: "client_success_page") is best-effort and drops silently on adblock,
+// redirect failure, or tab-close-after-pay. Filter by `source` to avoid
+// double-counting; the webhook copy is the reliable revenue signal.
 export function trackPaymentVerified(props: { session_id: string }) {
-  capture("payment_verified", props);
+  capture("payment_verified", { ...props, source: "client_success_page" });
 }
 
 export function trackPaymentVerificationFailed(props: { session_id: string }) {
