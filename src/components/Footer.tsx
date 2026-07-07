@@ -29,6 +29,7 @@ export function Footer() {
             <h3 className="text-slate-300 font-semibold mb-3 text-xs uppercase tracking-wider">{t("productHeading")}</h3>
             <ul className="space-y-2">
               <li><Link href="/how-it-works" className="text-slate-400 hover:text-teal-400 transition-colors">{l("howItWorks")}</Link></li>
+              <li><Link href="/chrome-extension" className="text-slate-400 hover:text-teal-400 transition-colors">{l("chromeExtension")}</Link></li>
               <li><Link href="/pricing" className="text-slate-400 hover:text-teal-400 transition-colors">{l("pricing")}</Link></li>
               <li><Link href="/free" className="text-slate-400 hover:text-teal-400 transition-colors">{l("freeAssessment")}</Link></li>
               <li><Link href="/mock-interview" className="text-slate-400 hover:text-teal-400 transition-colors">{l("mockInterview")}</Link></li>

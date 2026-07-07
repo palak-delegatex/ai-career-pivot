@@ -81,6 +81,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog", lastModified: pageLastModified("blog"), changeFrequency: "weekly", priority: 0.85 },
     ...blogPosts,
     { path: "/how-it-works", lastModified: pageLastModified("how-it-works"), changeFrequency: "monthly", priority: 0.7 },
+    { path: "/chrome-extension", lastModified: pageLastModified("chrome-extension"), changeFrequency: "monthly", priority: 0.7 },
     { path: "/about", lastModified: pageLastModified("about"), changeFrequency: "monthly", priority: 0.6 },
     { path: "/faq", lastModified: pageLastModified("faq"), changeFrequency: "monthly", priority: 0.6 },
     { path: "/pricing", lastModified: pageLastModified("pricing"), changeFrequency: "monthly", priority: 0.8 },
