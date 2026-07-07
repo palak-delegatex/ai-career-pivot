@@ -119,7 +119,7 @@ export function pageSource(): string {
 }
 
 // Checkout funnel
-export function trackCheckoutStarted(props: { plan: string; has_discount: boolean }) {
+export function trackCheckoutStarted(props: { plan: string; has_discount: boolean; cta_location?: string }) {
   capture("checkout_started", props);
 }
 
