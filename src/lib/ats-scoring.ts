@@ -1329,3 +1329,120 @@ export function computeMultiDimensionalScore(
     },
   };
 }
+
+// ── Live (client-side, JD-independent) Resume Health ────────────────────────
+// Fast, LLM-free score for "live as you type" editing. Blends the three
+// deterministic analyzers that need no job description: formatting,
+// searchability, and recruiter tips. Safe to run on every keystroke (debounced).
+
+export interface LiveResumeHealth {
+  score: number;
+  label: "Excellent" | "Good" | "Needs Work" | "Poor";
+  breakdown: { formatting: number; searchability: number; recruiterTips: number };
+  stats: {
+    actionVerbRate: number;
+    measurableResultRate: number;
+    bulletsWithMetrics: number;
+    totalBullets: number;
+    estimatedPages: number;
+    contactFieldsFound: number;
+    contactFieldsTotal: number;
+    standardSectionsFound: number;
+    standardSectionsTotal: number;
+    wordCount: number;
+  };
+  topFixes: string[];
+}
+
+// JD-independent subset of CATEGORY_WEIGHTS, renormalized to sum to 1.
+const LIVE_WEIGHTS = {
+  searchability: 0.4,
+  formatting: 0.3,
+  recruiterTips: 0.3,
+};
+
+const SEVERITY_RANK: Record<string, number> = { critical: 0, warning: 1, minor: 2 };
+
+export function computeLiveResumeHealth(resumeText: string): LiveResumeHealth {
+  const text = resumeText || "";
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+  // Empty / near-empty resume: return a neutral zero state rather than misleading 100s.
+  if (wordCount < 15) {
+    return {
+      score: 0,
+      label: "Poor",
+      breakdown: { formatting: 0, searchability: 0, recruiterTips: 0 },
+      stats: {
+        actionVerbRate: 0,
+        measurableResultRate: 0,
+        bulletsWithMetrics: 0,
+        totalBullets: 0,
+        estimatedPages: 0,
+        contactFieldsFound: 0,
+        contactFieldsTotal: 5,
+        standardSectionsFound: 0,
+        standardSectionsTotal: REQUIRED_HEADINGS.length,
+        wordCount,
+      },
+      topFixes: ["Start writing your resume to see live ATS feedback."],
+    };
+  }
+
+  const sections = parseResumeIntoSections(text);
+  const formatting = computeStandaloneFormattingScore(text);
+  const searchability = analyzeSearchability(text, sections);
+  const recruiterTips = analyzeRecruiterTips(text, sections);
+
+  const score = Math.round(
+    formatting.score * LIVE_WEIGHTS.formatting +
+      searchability.score * LIVE_WEIGHTS.searchability +
+      recruiterTips.score * LIVE_WEIGHTS.recruiterTips
+  );
+
+  const label: LiveResumeHealth["label"] =
+    score >= 80 ? "Excellent" : score >= 60 ? "Good" : score >= 40 ? "Needs Work" : "Poor";
+
+  // Collect the highest-impact fixes: formatting issues (by severity) first,
+  // then failed searchability/recruiter checks. Dedup, cap at 3.
+  const fixes: string[] = [];
+  const seen = new Set<string>();
+  const push = (fix: string | null | undefined) => {
+    if (!fix) return;
+    const key = fix.trim().toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    fixes.push(fix.trim());
+  };
+
+  [...formatting.issues]
+    .sort((a, b) => (SEVERITY_RANK[a.severity] ?? 3) - (SEVERITY_RANK[b.severity] ?? 3))
+    .forEach(i => push(i.fix));
+  searchability.checks.filter(c => !c.passed).forEach(c => push(c.fix));
+  recruiterTips.checks.filter(c => !c.passed).forEach(c => push(c.fix));
+
+  const contactFieldsFound = Object.values(searchability.contactFields).filter(Boolean).length;
+
+  return {
+    score,
+    label,
+    breakdown: {
+      formatting: formatting.score,
+      searchability: searchability.score,
+      recruiterTips: recruiterTips.score,
+    },
+    stats: {
+      actionVerbRate: recruiterTips.actionVerbRate,
+      measurableResultRate: recruiterTips.measurableResultRate,
+      bulletsWithMetrics: recruiterTips.bulletsWithMetrics,
+      totalBullets: recruiterTips.totalBullets,
+      estimatedPages: recruiterTips.estimatedPages,
+      contactFieldsFound,
+      contactFieldsTotal: 5,
+      standardSectionsFound: searchability.standardHeadings.filter(h => h.present).length,
+      standardSectionsTotal: REQUIRED_HEADINGS.length,
+      wordCount,
+    },
+    topFixes: fixes.slice(0, 3),
+  };
+}

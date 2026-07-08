@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
+import LiveResumeScore from "@/components/LiveResumeScore";
 import {
   FileText,
   Mail,
@@ -341,21 +342,36 @@ export default function ResumeGeneratorClient() {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-6 py-8">
-            <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
-              {editing ? (
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
-                />
-              ) : output ? (
-                renderMarkdownBasic(output)
-              ) : (
-                <div className="flex items-center justify-center h-48">
-                  <Loader2 className="w-6 h-6 text-teal-400 animate-spin" />
+            {editing && mode === "resume" ? (
+              <div className="grid lg:grid-cols-[1fr_300px] gap-4 items-start">
+                <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
+                  />
                 </div>
-              )}
-            </div>
+                <div className="lg:sticky lg:top-4">
+                  <LiveResumeScore text={editContent} />
+                </div>
+              </div>
+            ) : (
+              <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 min-h-[400px]">
+                {editing ? (
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full min-h-[500px] bg-transparent text-sm text-slate-300 font-sans leading-relaxed resize-y focus:outline-none"
+                  />
+                ) : output ? (
+                  renderMarkdownBasic(output)
+                ) : (
+                  <div className="flex items-center justify-center h-48">
+                    <Loader2 className="w-6 h-6 text-teal-400 animate-spin" />
+                  </div>
+                )}
+              </div>
+            )}
 
             {phase === "done" && !editing && (
               <div className="mt-6">
