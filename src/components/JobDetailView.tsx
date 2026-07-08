@@ -54,6 +54,7 @@ import {
   trackWarmIntroPaywallHit,
   trackWarmIntroUnlock,
 } from "@/lib/tracking";
+import { WarmIntroSection } from "@/components/warm-intro";
 
 // ─── Types ───
 
@@ -62,15 +63,6 @@ interface JobDetailViewProps {
   email: string;
   onBack: () => void;
   onJobUpdate: (updated: TrackedJob) => void;
-}
-
-interface Contact {
-  id: string;
-  name: string;
-  role: string | null;
-  company: string | null;
-  strength_tier: string;
-  strength_score: number;
 }
 
 // ─── Constants ───
@@ -291,73 +283,6 @@ function ActivityTimeline({ job }: { job: TrackedJob }) {
           );
         })}
       </div>
-    </div>
-  );
-}
-
-// ─── JobContactsList ───
-
-function JobContactsList({ company, email }: { company: string; email: string }) {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [fetched, setFetched] = useState(false);
-
-  useEffect(() => {
-    if (fetched) return;
-    setLoading(true);
-    setFetched(true);
-    fetch(`/api/contacts?search=${encodeURIComponent(company)}`)
-      .then((r) => (r.ok ? r.json() : { contacts: [] }))
-      .then((data) => {
-        const filtered = (data.contacts ?? []).filter(
-          (c: Contact) =>
-            c.company?.toLowerCase() === company.toLowerCase()
-        );
-        setContacts(filtered);
-      })
-      .catch(() => setContacts([]))
-      .finally(() => setLoading(false));
-  }, [company, email, fetched]);
-
-  return (
-    <div className="space-y-3">
-      <h3 className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-        <Users className="h-3.5 w-3.5" />
-        Contacts at {company}
-      </h3>
-      {loading && (
-        <div className="flex items-center gap-2 text-[11px] text-slate-600">
-          <Loader2 className="h-3 w-3 animate-spin" /> Loading...
-        </div>
-      )}
-      {!loading && contacts.length === 0 && (
-        <p className="text-[11px] text-slate-600 italic">
-          No contacts at {company} yet
-        </p>
-      )}
-      {contacts.map((c) => (
-        <div
-          key={c.id}
-          className="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]"
-        >
-          <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0">
-            <User className="h-3.5 w-3.5 text-slate-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-medium text-slate-200 truncate">
-              {c.name}
-            </p>
-            {c.role && (
-              <p className="text-[10px] text-slate-500 truncate">{c.role}</p>
-            )}
-          </div>
-          <span
-            className={`px-2 py-0.5 rounded-full text-[9px] font-semibold border ${STRENGTH_BADGE[c.strength_tier] ?? STRENGTH_BADGE.cold}`}
-          >
-            {c.strength_tier}
-          </span>
-        </div>
-      ))}
     </div>
   );
 }
@@ -1483,9 +1408,13 @@ export default function JobDetailView({
             </div>
           </div>
 
-          {/* ─── Contacts ─── */}
+          {/* ─── Warm-Intro / Insider Connections (AIC-772) ─── */}
           <div className="mb-6">
-            <JobContactsList company={job.company} email={email} />
+            <WarmIntroSection
+              company={job.company}
+              jobId={job.id}
+              email={email}
+            />
           </div>
 
           {/* ─── Activity Timeline ─── */}
