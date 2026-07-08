@@ -322,7 +322,7 @@ export default function FreeResultsClient() {
   const shareText = topPath
     ? `I'm a ${topPath.matchScore}% match for ${topPath.targetRole}! See where your career could go:`
     : "See where your career could go:";
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/free` : "https://aicareerpivot.com/free";
+  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/free` : "https://ai-career-pivot.com/free";
 
   const handleShare = useCallback(async () => {
     if (!snapshot) return;

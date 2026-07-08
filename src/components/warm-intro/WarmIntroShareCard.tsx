@@ -28,7 +28,7 @@ export default function WarmIntroShareCard({
   const [copied, setCopied] = useState(false);
   const ctx = { company, job_id: jobId };
 
-  const shareLink = "https://aicareerpivot.dev/?utm_source=warm_intro_share";
+  const shareLink = "https://ai-career-pivot.com/?utm_source=warm_intro_share";
   const shareText =
     "Referrals make you 4x more likely to get hired. AI just found mine in seconds.";
 
