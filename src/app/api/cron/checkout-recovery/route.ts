@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendCheckoutRecoveryEmail } from "@/lib/email-drip";
+import { isSchemaDriftError } from "@/lib/schema-drift";
 
 // An order sits in 'pending' from the moment we create the Stripe session until
 // the webhook (or verify endpoint) marks it 'paid'. If it's still pending after
@@ -41,6 +42,12 @@ export async function GET(req: NextRequest) {
     .limit(50);
 
   if (error) {
+    // Prod schema hasn't caught up to the migration yet (e.g. orders.plan_type
+    // not present). Skip cleanly; the cron self-heals once the DDL is applied.
+    if (isSchemaDriftError(error)) {
+      console.warn("checkout-recovery: schema drift, skipping run:", error.message);
+      return NextResponse.json({ sent: 0, skipped: "schema_drift" });
+    }
     console.error("checkout-recovery query error:", error);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }

@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendPlanRecoveryEmail } from "@/lib/email-drip";
+import { isSchemaDriftError } from "@/lib/schema-drift";
 
 // A plan_lead is created the moment someone generates a free career plan. If
 // they never start checkout (no order row at all) within the window, nudge them
@@ -41,6 +42,12 @@ export async function GET(req: NextRequest) {
     .limit(50);
 
   if (error) {
+    // plan_leads table not present until the migration is applied in prod.
+    // Skip cleanly; the cron self-heals once the DDL lands.
+    if (isSchemaDriftError(error)) {
+      console.warn("plan-recovery: schema drift, skipping run:", error.message);
+      return NextResponse.json({ sent: 0, skipped: "schema_drift" });
+    }
     console.error("plan-recovery query error:", error);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }

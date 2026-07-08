@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendDripEmail } from "@/lib/email-drip";
+import { isSchemaDriftError } from "@/lib/schema-drift";
 
 const DIGEST_INTERVAL_DAYS = 7;
 
@@ -25,6 +26,10 @@ export async function GET(req: NextRequest) {
     .limit(200);
 
   if (error) {
+    if (isSchemaDriftError(error)) {
+      console.warn("weekly-digest: schema drift, skipping run:", error.message);
+      return NextResponse.json({ sent: 0, skipped: "schema_drift" });
+    }
     console.error("Weekly digest query error:", error);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }
