@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendDripEmail } from "@/lib/email-drip";
+import { isSchemaDriftError } from "@/lib/schema-drift";
 
 const NUDGE_DELAY_DAYS = 14;
 const CHECKIN_EMAIL_STEP = 13;
@@ -29,6 +30,10 @@ export async function GET(req: NextRequest) {
     .limit(50);
 
   if (fetchError) {
+    if (isSchemaDriftError(fetchError)) {
+      console.warn("milestone-emails: schema drift, skipping run:", fetchError.message);
+      return NextResponse.json({ sent: 0, skipped: "schema_drift" });
+    }
     console.error("Milestone email query error:", fetchError);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }

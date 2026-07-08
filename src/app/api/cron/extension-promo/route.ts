@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { sendExtensionPromoEmail } from "@/lib/email-drip";
+import { isSchemaDriftError } from "@/lib/schema-drift";
 
 // Extension-adoption email drip (AIC-758 / AIC-389 §3).
 //
@@ -121,6 +122,10 @@ export async function GET(req: NextRequest) {
     .limit(SEND_LIMIT);
 
   if (dueError) {
+    if (isSchemaDriftError(dueError)) {
+      console.warn("extension-promo: schema drift, skipping run:", dueError.message);
+      return NextResponse.json({ enrolled, sent: 0, skipped: "schema_drift" });
+    }
     console.error("Extension-promo due query error:", dueError.message);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }
