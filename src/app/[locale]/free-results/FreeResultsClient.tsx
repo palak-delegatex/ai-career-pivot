@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback, type ReactNode, type ComponentType } from "react";
 import Link from "next/link";
-import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Lock, Layers, CalendarClock, LineChart } from "lucide-react";
+import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Lock, Layers, CalendarClock, LineChart, Mail } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
+import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
+import { trackFreeEmailCaptured } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -189,6 +191,97 @@ function ValuePropCallout() {
   );
 }
 
+/**
+ * Deferred email capture (AIC-618 D1 / AIC-776). Email is no longer asked for
+ * on the upload form — the user sees value first, then opts in here to have the
+ * snapshot (and the follow-up nurture) sent to them. Purely additive: skipping
+ * it never blocks access to the results already on screen.
+ */
+function EmailCaptureCard({
+  snapshot,
+  profile,
+}: {
+  snapshot: FreeSnapshot;
+  profile: UserProfile | null;
+}) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setStatus("error");
+      return;
+    }
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/intake/free-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed, snapshot, profile }),
+      });
+      if (!res.ok) throw new Error("failed");
+      setStatus("sent");
+      trackFreeEmailCaptured({ source: "free_results" });
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (status === "sent") {
+    return (
+      <div className="rounded-2xl bg-teal-950/30 border border-teal-800/40 p-5 text-center">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-teal-600/20 border border-teal-600/40 mb-2">
+          <Check className="w-5 h-5 text-teal-300" />
+        </div>
+        <p className="text-sm font-semibold text-white">Sent — check your inbox</p>
+        <p className="text-xs text-slate-400 mt-1">
+          Your snapshot is on its way. We&apos;ll only send what&apos;s useful.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Mail className="w-4 h-4 text-teal-400 shrink-0" />
+        <p className="text-sm font-semibold text-white">Email me this snapshot</p>
+      </div>
+      <p className="text-xs text-slate-400 mb-3">
+        Get your results and matched paths sent to your inbox so you can pick this back up later.
+      </p>
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (status === "error") setStatus("idle");
+          }}
+          placeholder="you@example.com"
+          aria-label="Email address"
+          disabled={status === "sending"}
+          className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all disabled:opacity-60"
+        />
+        <button
+          type="submit"
+          disabled={status === "sending"}
+          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-semibold text-sm transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {status === "sending" ? "Sending…" : "Email it to me"}
+        </button>
+      </form>
+      {status === "error" && (
+        <p className="text-red-400 text-xs mt-2">
+          Please enter a valid email and try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
 function buildShareUrl(snapshot: FreeSnapshot) {
   const paths = snapshot.paths.map((p) => ({
     role: p.targetRole,
@@ -204,6 +297,7 @@ function buildShareUrl(snapshot: FreeSnapshot) {
 
 export default function FreeResultsClient() {
   const [snapshot, setSnapshot] = useState<FreeSnapshot | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [jobCount, setJobCount] = useState(0);
@@ -236,6 +330,10 @@ export default function FreeResultsClient() {
     try {
       const parsed = JSON.parse(raw);
       setSnapshot(parsed);
+      const rawProfile = sessionStorage.getItem("free_profile");
+      if (rawProfile) {
+        try { setProfile(JSON.parse(rawProfile)); } catch {}
+      }
       if (parsed.paths?.[0]?.targetRole) {
         fetch(`/api/jobs?role=${encodeURIComponent(parsed.paths[0].targetRole)}`)
           .then((r) => r.json())
@@ -480,6 +578,11 @@ export default function FreeResultsClient() {
         </div>
         <p className="text-slate-500 text-xs mt-3">One-time payment. 30-day money-back guarantee.</p>
         <ValuePropCallout />
+      </div>
+
+      {/* Deferred email capture (D1) — offered after the user has seen value */}
+      <div className="mt-6">
+        <EmailCaptureCard snapshot={snapshot} profile={profile} />
       </div>
 
       {/* Social proof strip */}

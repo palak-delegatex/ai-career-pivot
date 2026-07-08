@@ -201,6 +201,12 @@ export function trackFreeSignup(props: { source: string }) {
   capture("free_signup", props);
 }
 
+// Deferred email capture on /free-results (AIC-618 D1 / AIC-776) — the user
+// opts in to have their snapshot emailed AFTER seeing results.
+export function trackFreeEmailCaptured(props: { source: string }) {
+  capture("free_email_captured", props);
+}
+
 // Guided tour / coach-marks
 export function trackTourStarted(props: { tour_id: string; total_steps: number }) {
   capture("tour_started", props);
