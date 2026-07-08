@@ -207,6 +207,19 @@ export function trackFreeEmailCaptured(props: { source: string }) {
   capture("free_email_captured", props);
 }
 
+// Upgrade comparison sheet (AIC-618 D3 / AIC-777) — the personalized free-vs-paid
+// comparison drawer opened from the /free-results contextual prompts + upsell CTA.
+// `source` records which surface opened it (e.g. "prompt_paths", "prompt_salary",
+// "cta_full_report") so the CMO can see which unlock hook drives the most
+// comparison views and — via the CTA event → checkout_started leg — conversions.
+export function trackUpgradeSheetOpened(props: { source: string; target_role?: string }) {
+  capture("upgrade_sheet_opened", props);
+}
+
+export function trackUpgradeSheetCtaClicked(props: { source: string; plan: string; target_role?: string }) {
+  capture("upgrade_sheet_cta_clicked", props);
+}
+
 // Guided tour / coach-marks
 export function trackTourStarted(props: { tour_id: string; total_steps: number }) {
   capture("tour_started", props);

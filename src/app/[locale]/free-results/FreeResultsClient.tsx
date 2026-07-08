@@ -7,7 +7,8 @@ import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
-import { trackFreeEmailCaptured } from "@/lib/tracking";
+import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
+import { trackFreeEmailCaptured, trackUpgradeSheetOpened } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -71,11 +72,14 @@ function ContextualUpgradePrompt({
   hook,
   icon: Icon,
   children,
+  onUnlock,
 }: {
   title: string;
   hook: string;
   icon: ComponentType<{ className?: string }>;
   children: ReactNode;
+  /** Opens the free-vs-paid comparison sheet (AIC-777) instead of leaving for /pricing. */
+  onUnlock: () => void;
 }) {
   return (
     <div className="relative rounded-xl overflow-hidden border border-slate-700/50">
@@ -88,13 +92,14 @@ function ContextualUpgradePrompt({
         </div>
         <p className="text-sm font-semibold text-white">{title}</p>
         <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
-        <Link
-          href="/pricing"
+        <button
+          type="button"
+          onClick={onUnlock}
           className="mt-1.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition-colors"
         >
           <Lock className="w-3 h-3" />
           Unlock for $19
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -301,6 +306,17 @@ export default function FreeResultsClient() {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [jobCount, setJobCount] = useState(0);
+  // Personalized free-vs-paid comparison drawer (AIC-777). `upgradeSource` is
+  // non-null while open and records which surface opened it (funnel attribution).
+  const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
+
+  const openUpgrade = useCallback(
+    (source: string) => {
+      setUpgradeSource(source);
+      trackUpgradeSheetOpened({ source, target_role: snapshot?.paths[0]?.targetRole });
+    },
+    [snapshot],
+  );
 
   const topPath = snapshot?.paths[0];
   const shareText = topPath
@@ -507,6 +523,7 @@ export default function FreeResultsClient() {
               title="Your personalized milestone roadmap"
               hook="The step-by-step plan to close these gaps — 6-month, 1-year & 2-year milestones."
               icon={CalendarClock}
+              onUnlock={() => openUpgrade("prompt_roadmap")}
             >
               <GhostMilestoneTimeline />
             </ContextualUpgradePrompt>
@@ -525,6 +542,7 @@ export default function FreeResultsClient() {
             title={`${otherPaths.length} more career path${otherPaths.length > 1 ? "s" : ""} matched to you`}
             hook="You have additional strong-fit pivots. Unlock to compare every match side by side."
             icon={Layers}
+            onUnlock={() => openUpgrade("prompt_paths")}
           >
             <GhostPathCards paths={otherPaths} />
           </ContextualUpgradePrompt>
@@ -538,6 +556,7 @@ export default function FreeResultsClient() {
           title="Salary trajectory & financial bridge plan"
           hook={`Estimated +$${salaryUplift}K uplift. See the full current → target model, bridge budget & ROI breakeven.`}
           icon={LineChart}
+          onUnlock={() => openUpgrade("prompt_salary")}
         >
           <GhostSalaryTrajectory uplift={salaryUplift} />
         </ContextualUpgradePrompt>
@@ -563,12 +582,13 @@ export default function FreeResultsClient() {
           ))}
         </ul>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/pricing"
+          <button
+            type="button"
+            onClick={() => openUpgrade("cta_full_report")}
             className="px-6 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors shadow-lg shadow-teal-900/30"
           >
             Get Full Report — $19 →
-          </Link>
+          </button>
           <Link
             href="/free"
             className="px-6 py-3.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold text-sm transition-colors"
@@ -600,10 +620,22 @@ export default function FreeResultsClient() {
       {/* Bottom nudge */}
       <p className="text-center text-slate-500 text-xs mt-6">
         Seeing a path you like?{" "}
-        <Link href="/pricing" className="text-teal-400 hover:text-teal-300 underline">
+        <button
+          type="button"
+          onClick={() => openUpgrade("bottom_nudge")}
+          className="text-teal-400 hover:text-teal-300 underline"
+        >
           Get the complete plan with milestones, salary data, and AI coaching for $19.
-        </Link>
+        </button>
       </p>
+
+      {/* Personalized free-vs-paid comparison drawer (AIC-777) */}
+      <UpgradeComparisonSheet
+        open={upgradeSource !== null}
+        onOpenChange={(o) => !o && setUpgradeSource(null)}
+        snapshot={snapshot}
+        source={upgradeSource ?? "unknown"}
+      />
     </main>
   );
 }
