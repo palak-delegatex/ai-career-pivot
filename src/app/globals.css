@@ -170,6 +170,25 @@ html {
   animation: banner-slide-in 2s ease-out forwards;
 }
 
+/* Warm-Intro (AIC-772): scanning three-dot shimmer + one-shot teaser pulse. */
+@keyframes shimmer-dot {
+  0%, 100% { opacity: 0.25; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.shimmer-dot {
+  animation: shimmer-dot 1s ease-in-out infinite;
+}
+
+@keyframes warm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-warm-pulse {
+  animation: warm-pulse 1s ease-in-out 2;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phase-confetti::after {
     animation: none;
@@ -182,6 +201,12 @@ html {
     animation: none;
   }
   .phase-complete-banner {
+    animation: none;
+  }
+  .shimmer-dot {
+    animation: none;
+  }
+  .animate-warm-pulse {
     animation: none;
   }
 }

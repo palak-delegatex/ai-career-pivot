@@ -303,3 +303,57 @@ export function trackWarmIntroUnlock(props: {
 }) {
   capture("warm_intro_unlock", props);
 }
+
+// Warm-Intro reveal section taxonomy (AIC-772) — the sidebar reveal/paywall UX
+// in JobDetailView. These carry `company` + `job_id` so the CMO can attribute
+// the funnel per tracked job (dashboard 1809774). A `surface: "sidebar"` tag
+// keeps them separable from the older Insider-Connections tab events above.
+type WarmIntroCtx = { company: string; job_id: string };
+
+export function trackWarmIntroScanned(
+  props: WarmIntroCtx & { result: "found" | "not_found"; scan_duration_ms: number },
+) {
+  capture("warm_intro_scanned", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroTeaserSeen(
+  props: WarmIntroCtx & { connection_degree: number; confidence_score: number },
+) {
+  capture("warm_intro_teaser_viewed", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroUpgradeClicked(
+  props: WarmIntroCtx & { connection_degree: number; confidence_score: number },
+) {
+  capture("warm_intro_upgrade_clicked", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroRevealed(props: WarmIntroCtx & { contact_name: string }) {
+  capture("warm_intro_revealed", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroCopied(props: WarmIntroCtx & { channel: "clipboard" }) {
+  capture("warm_intro_copied", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroSent(props: WarmIntroCtx & { channel: "linkedin" | "email" }) {
+  capture("warm_intro_sent", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroEdited(props: WarmIntroCtx) {
+  capture("warm_intro_edited", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroShareOpened(props: WarmIntroCtx) {
+  capture("warm_intro_share_opened", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroShared(
+  props: WarmIntroCtx & { channel: "linkedin" | "x" | "copy" },
+) {
+  capture("warm_intro_shared", { ...props, surface: "sidebar" });
+}
+
+export function trackWarmIntroImportNudge(props: WarmIntroCtx) {
+  capture("warm_intro_import_nudge_clicked", { ...props, surface: "sidebar" });
+}
