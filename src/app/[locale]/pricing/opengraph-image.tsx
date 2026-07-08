@@ -33,7 +33,7 @@ export default function Image() {
             marginBottom: 24,
           }}
         >
-          $49/month vs $250/hour
+          $149 for life vs $250/hour
         </div>
         <div
           style={{
@@ -46,7 +46,7 @@ export default function Image() {
           }}
         >
           <div>Career coaching that actually reads your background.</div>
-          <div>Founding cohort pricing. Limited to 100 users.</div>
+          <div>Free snapshot to start. Full plan for $19, or $149 lifetime.</div>
         </div>
         <div
           style={{
@@ -66,7 +66,7 @@ export default function Image() {
               borderRadius: 8,
             }}
           >
-            Join Founding Cohort →
+            See your free snapshot →
           </div>
           <div style={{ color: "#64748b", fontSize: 20 }}>ai-career-pivot.com/pricing</div>
         </div>
