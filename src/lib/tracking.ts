@@ -268,3 +268,38 @@ export function trackExtBannerDismissed() {
 export function trackExtBannerCtaClicked(props: { cta: "primary" | "secondary" }) {
   capture("ext_banner_cta_clicked", props);
 }
+
+// Warm-Intro / Insider Connections (AIC-769) — surface a known contact + drafted
+// referral ask per tracked job, gated behind paid to drive free→paid conversion.
+// Funnel (dashboard 1809774): surface_shown → teaser_viewed → reveal_clicked →
+// paywall_hit → (payment_verified) → unlock. `top_tier` lets CMO segment lift by
+// connection strength.
+export function trackWarmIntroSurfaceShown(props: {
+  connection_count: number;
+  has_connections: boolean;
+  paid: boolean;
+}) {
+  capture("warm_intro_surface_shown", props);
+}
+
+export function trackWarmIntroTeaserViewed(props: {
+  connection_count: number;
+  top_tier: string | null;
+}) {
+  capture("warm_intro_teaser_viewed", props);
+}
+
+export function trackWarmIntroRevealClicked(props: { connection_count: number }) {
+  capture("warm_intro_reveal_clicked", props);
+}
+
+export function trackWarmIntroPaywallHit(props: { connection_count: number }) {
+  capture("warm_intro_paywall_hit", props);
+}
+
+export function trackWarmIntroUnlock(props: {
+  connection_count: number;
+  drafted: boolean;
+}) {
+  capture("warm_intro_unlock", props);
+}
