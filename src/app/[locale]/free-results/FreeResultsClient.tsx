@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type ReactNode, type ComponentType } from "react";
 import Link from "next/link";
-import { Share2, Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon } from "lucide-react";
+import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Lock, Layers, CalendarClock, LineChart } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
@@ -58,69 +58,107 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
   );
 }
 
-function GatedSection({ label, variant }: { label: string; variant: "milestones" | "financial" | "coaching" }) {
-  const variantContent: Record<string, { lines: string[]; icon: string }> = {
-    milestones: {
-      lines: ["Month 1-2: Complete foundational cert...", "Month 3-4: Build portfolio project in...", "Month 6: Apply to target roles with..."],
-      icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-    },
-    financial: {
-      lines: ["Current salary: $XXX,XXX → Target: $XX...", "Bridge budget: $X,XXX over 6 months", "ROI breakeven: month 4 of new role"],
-      icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-    },
-    coaching: {
-      lines: ["Week 1: Skill gap assessment & plan...", "Weekly AI coaching: personalized feed...", "Action items auto-generated from your..."],
-      icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
-    },
-  };
-
-  const content = variantContent[variant];
-
+/**
+ * Contextual upgrade prompt (AIC-618 D2). Placed inline WHERE the gated content
+ * would appear, showing a blurred preview of the real data type underneath a
+ * lock overlay + inline CTA. Loss aversion: users see the value exists but
+ * cannot read it, so the upgrade closes a concrete, visible gap.
+ */
+function ContextualUpgradePrompt({
+  title,
+  hook,
+  icon: Icon,
+  children,
+}: {
+  title: string;
+  hook: string;
+  icon: ComponentType<{ className?: string }>;
+  children: ReactNode;
+}) {
   return (
-    <div className="relative rounded-xl overflow-hidden">
-      <div className="blur-sm select-none pointer-events-none">
-        <div className="space-y-2 p-4 bg-slate-800/40 rounded-xl">
-          {content.lines.map((line, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <svg className="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d={content.icon} />
-              </svg>
-              <span className="text-xs text-slate-500 truncate">{line}</span>
-            </div>
-          ))}
-        </div>
+    <div className="relative rounded-xl overflow-hidden border border-slate-700/50">
+      <div className="blur-[5px] select-none pointer-events-none" aria-hidden="true">
+        {children}
       </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/70 backdrop-blur-[1px] rounded-xl gap-2">
-        <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-        <span className="text-xs text-slate-300 font-medium">{label} — Unlock for $19</span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-slate-900/60 backdrop-blur-[1px] gap-1.5">
+        <div className="flex items-center justify-center w-9 h-9 rounded-full bg-teal-600/20 border border-teal-600/40">
+          <Icon className="w-4 h-4 text-teal-300" />
+        </div>
+        <p className="text-sm font-semibold text-white">{title}</p>
+        <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
+        <Link
+          href="/pricing"
+          className="mt-1.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition-colors"
+        >
+          <Lock className="w-3 h-3" />
+          Unlock for $19
+        </Link>
       </div>
     </div>
   );
 }
 
-function SalaryInsightTeaser({ uplift }: { uplift: number }) {
+/** Blurred preview: the other matched paths as ghost cards (D2 prompt #1). */
+function GhostPathCards({ paths }: { paths: { targetRole: string; matchScore: number }[] }) {
   return (
-    <Link
-      href="/pricing"
-      className="block rounded-xl bg-gradient-to-r from-emerald-950/40 to-teal-950/30 border border-emerald-800/30 p-4 hover:border-emerald-700/50 transition-colors"
-    >
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-900/50 border border-emerald-700/40 shrink-0">
-          <DollarSign className="h-5 w-5 text-emerald-400" />
+    <div className="space-y-2 p-4 bg-slate-800/40">
+      {paths.map((p, i) => (
+        <div key={i} className="flex items-center gap-3 rounded-lg bg-slate-700/40 border border-slate-600/40 p-3">
+          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-teal-900/40 border border-teal-700/30 text-xs font-bold text-teal-300 shrink-0">
+            {p.matchScore}
+          </div>
+          <span className="text-sm font-semibold text-slate-200">{p.targetRole}</span>
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-white">
-            Estimated +${uplift}K salary uplift
-          </p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Based on market data for your target role. Full salary trajectory in report →
-          </p>
+      ))}
+    </div>
+  );
+}
+
+/** Blurred preview: 3-phase milestone timeline (D2 prompt #2). */
+function GhostMilestoneTimeline() {
+  const phases = [
+    { label: "6 months", body: "Foundational certification + first portfolio project" },
+    { label: "1 year", body: "Land transitional role, ship shippable AI work" },
+    { label: "2 years", body: "Full pivot complete at target comp band" },
+  ];
+  return (
+    <div className="p-4 bg-slate-800/40 space-y-3">
+      {phases.map((ph) => (
+        <div key={ph.label} className="flex items-start gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-2.5 h-2.5 rounded-full bg-teal-400" />
+            <div className="w-px flex-1 bg-slate-600 mt-1 min-h-[18px]" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-teal-300">{ph.label}</p>
+            <p className="text-xs text-slate-300">{ph.body}</p>
+          </div>
         </div>
-        <TrendingUp className="h-4 w-4 text-emerald-400 shrink-0" />
+      ))}
+    </div>
+  );
+}
+
+/** Blurred preview: salary trajectory current → target (D2 prompt #3). */
+function GhostSalaryTrajectory({ uplift }: { uplift: number }) {
+  return (
+    <div className="p-4 bg-slate-800/40">
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-center">
+          <p className="text-[10px] uppercase tracking-wider text-slate-400">Current</p>
+          <p className="text-lg font-bold text-slate-300">$XXX,XXX</p>
+        </div>
+        <div className="flex-1 flex flex-col items-center">
+          <span className="text-xs font-bold text-emerald-400">+${uplift}K</span>
+          <div className="w-full h-1.5 rounded-full bg-gradient-to-r from-slate-600 to-emerald-500 mt-1" />
+        </div>
+        <div className="text-center">
+          <p className="text-[10px] uppercase tracking-wider text-slate-400">Target</p>
+          <p className="text-lg font-bold text-emerald-300">$XXX,XXX</p>
+        </div>
       </div>
-    </Link>
+      <p className="text-xs text-slate-400 mt-3">Bridge budget + ROI breakeven timeline included</p>
+    </div>
   );
 }
 
@@ -166,7 +204,6 @@ function buildShareUrl(snapshot: FreeSnapshot) {
 
 export default function FreeResultsClient() {
   const [snapshot, setSnapshot] = useState<FreeSnapshot | null>(null);
-  const [selectedPath, setSelectedPath] = useState(0);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [jobCount, setJobCount] = useState(0);
@@ -230,7 +267,9 @@ export default function FreeResultsClient() {
     );
   }
 
-  const activePath = snapshot.paths[selectedPath];
+  // Single best-match focus (Hick's Law) — always show the #1 ranked path.
+  const activePath = snapshot.paths[0];
+  const otherPaths = snapshot.paths.slice(1).map((p) => ({ targetRole: p.targetRole, matchScore: p.matchScore }));
   const salaryUplift = snapshot.estimatedSalaryUplift ?? 15;
   const marcusTestimonial = testimonials.find((t) => t.name === "Marcus T.")!;
 
@@ -244,7 +283,7 @@ export default function FreeResultsClient() {
           </div>
           <ReportCounterBadge />
         </div>
-        <h1 className="text-3xl font-extrabold mb-2">Your Career Pivot Matches</h1>
+        <h1 className="text-3xl font-extrabold mb-2">Your Top Career Pivot Match</h1>
         {snapshot.profileSummary && (
           <p className="text-slate-400 text-sm">{snapshot.profileSummary}</p>
         )}
@@ -316,26 +355,7 @@ export default function FreeResultsClient() {
         </div>
       )}
 
-      {/* Path selector tabs */}
-      {snapshot.paths.length > 1 && (
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-          {snapshot.paths.map((path, i) => (
-            <button
-              key={i}
-              onClick={() => setSelectedPath(i)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
-                i === selectedPath
-                  ? "bg-teal-600 text-white"
-                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-              }`}
-            >
-              {path.targetRole}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Active path card */}
+      {/* Single best-match hero card */}
       {activePath && (
         <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 mb-6">
           <div className="flex items-start gap-4 mb-4">
@@ -379,22 +399,51 @@ export default function FreeResultsClient() {
             </div>
           </div>
 
+          {/* Contextual prompt #2 — milestone roadmap, placed right after the gaps
+              the user now wants to close (progressive disclosure). */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Your Milestone Roadmap
+            </p>
+            <ContextualUpgradePrompt
+              title="Your personalized milestone roadmap"
+              hook="The step-by-step plan to close these gaps — 6-month, 1-year & 2-year milestones."
+              icon={CalendarClock}
+            >
+              <GhostMilestoneTimeline />
+            </ContextualUpgradePrompt>
+          </div>
+
           {/* Job teaser */}
           <JobTeaser targetRole={activePath.targetRole} jobCount={jobCount} />
-
-          {/* Salary insight teaser */}
-          <div className="mt-3">
-            <SalaryInsightTeaser uplift={salaryUplift} />
-          </div>
-
-          {/* Gated sections */}
-          <div className="space-y-3 mt-4">
-            <GatedSection label="6-month / 1-year / 2-year milestones" variant="milestones" />
-            <GatedSection label="Financial bridge — salary trajectory & ROI" variant="financial" />
-            <GatedSection label="AI coaching + weekly action plan" variant="coaching" />
-          </div>
         </div>
       )}
+
+      {/* Contextual prompt #1 — the other matched paths as blurred ghost cards
+          (loss aversion: they exist, but you can't read them). */}
+      {otherPaths.length > 0 && (
+        <div className="mb-6">
+          <ContextualUpgradePrompt
+            title={`${otherPaths.length} more career path${otherPaths.length > 1 ? "s" : ""} matched to you`}
+            hook="You have additional strong-fit pivots. Unlock to compare every match side by side."
+            icon={Layers}
+          >
+            <GhostPathCards paths={otherPaths} />
+          </ContextualUpgradePrompt>
+        </div>
+      )}
+
+      {/* Contextual prompt #3 — salary trajectory, placed last (anchoring on the
+          partially visible numbers). */}
+      <div className="mb-6">
+        <ContextualUpgradePrompt
+          title="Salary trajectory & financial bridge plan"
+          hook={`Estimated +$${salaryUplift}K uplift. See the full current → target model, bridge budget & ROI breakeven.`}
+          icon={LineChart}
+        >
+          <GhostSalaryTrajectory uplift={salaryUplift} />
+        </ContextualUpgradePrompt>
+      </div>
 
       {/* Upsell CTA */}
       <div className="rounded-2xl bg-gradient-to-br from-teal-900/40 to-slate-800/60 border border-teal-700/40 p-6 text-center">
