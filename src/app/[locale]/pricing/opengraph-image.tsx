@@ -35,10 +35,18 @@ export default function Image() {
         >
           $49/month vs $250/hour
         </div>
-        <div style={{ color: "#94a3b8", fontSize: 28, lineHeight: 1.4, marginBottom: 40 }}>
-          Career coaching that actually reads your background.
-          <br />
-          Founding cohort pricing. Limited to 100 users.
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            color: "#94a3b8",
+            fontSize: 28,
+            lineHeight: 1.4,
+            marginBottom: 40,
+          }}
+        >
+          <div>Career coaching that actually reads your background.</div>
+          <div>Founding cohort pricing. Limited to 100 users.</div>
         </div>
         <div
           style={{
