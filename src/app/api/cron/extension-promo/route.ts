@@ -83,10 +83,21 @@ export async function GET(req: NextRequest) {
     const candidateEmails = [...byEmail.keys()];
 
     // Exclude anyone already enrolled...
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from("extension_promo_emails")
       .select("email")
       .in("email", candidateEmails);
+    // The extension_promo_emails table lands via a human-applied migration
+    // (019). Until then this query drifts — skip enrollment quietly rather than
+    // erroring; the send path below drift-skips too, so the whole run is a no-op.
+    if (existingError) {
+      if (isSchemaDriftError(existingError)) {
+        console.warn("extension-promo: schema drift, skipping run:", existingError.message);
+        return NextResponse.json({ enrolled: 0, sent: 0, skipped: "schema_drift" });
+      }
+      console.error("Extension-promo enroll lookup error:", existingError.message);
+      return NextResponse.json({ error: "DB error" }, { status: 500 });
+    }
     const enrolledSet = new Set((existing ?? []).map((r) => (r.email as string).toLowerCase()));
 
     // ...and anyone who already has the extension.
