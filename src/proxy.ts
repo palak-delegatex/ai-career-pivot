@@ -41,10 +41,21 @@ export async function proxy(request: NextRequest) {
 
   // 2. Refresh the Supabase session and apply auth gating on top of that same
   //    response so both the locale cookie and refreshed auth cookies survive.
-  const supabase = createSupabaseProxyClient(request, response);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  //    The proxy runs on every non-API route, so a Supabase client-init or
+  //    network failure here must never 500 the whole site (incl. the public
+  //    homepage). On failure we treat the user as unknown/null: protected paths
+  //    then fail CLOSED (redirect to /login below) while public routes serve
+  //    normally. Seen in prod as a transient edge env-propagation glitch
+  //    ("URL and Key are required to create a Supabase client!"), AIC-780.
+  let user = null;
+  try {
+    const supabase = createSupabaseProxyClient(request, response);
+    ({
+      data: { user },
+    } = await supabase.auth.getUser());
+  } catch (error) {
+    console.error("[proxy] Supabase session refresh failed:", error);
+  }
 
   const pathname = stripLocale(request.nextUrl.pathname);
 
