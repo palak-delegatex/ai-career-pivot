@@ -5,6 +5,7 @@ import SiteNav from "@/components/SiteNav";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
 import PricingHeroCta from "./PricingHeroCta";
+import PricingFreeCta from "./PricingFreeCta";
 import PricingPageTracker from "./PricingPageTracker";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { testimonials } from "@/lib/testimonials";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import OutcomeProofStrip from "@/components/OutcomeProofStrip";
 import PricingComparisonTable from "@/components/PricingComparisonTable";
+import PlanComparisonTable from "@/components/PlanComparisonTable";
 import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
 import GuaranteeCard from "@/components/GuaranteeCard";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
@@ -40,8 +42,12 @@ export async function generateMetadata({
 
 const FAQ_ITEMS = [
   {
-    q: "What do I get with the $19 report?",
-    a: "A complete personalized career pivot report: 2-3 realistic pivot paths ranked by fit, with 6-month, 1-year, and 2-year milestones for each. Plus skill gap analysis, AI certifications roadmap tailored to your pivot, key actions, and financial considerations — all based on your actual resume and LinkedIn profile, not generic advice. The $19 intro price is a limited-time offer.",
+    q: "What do I get for free?",
+    a: "A complete career pivot snapshot: your #1 best-fit career path with a match score, your top 3 skill gaps to close, and the transferable strengths you already have. No credit card, no account, results in about 30 seconds. It's the honest preview of where AI could take your career before you decide to go deeper.",
+  },
+  {
+    q: "What does the $19 report add on top of the free snapshot?",
+    a: "The full report expands your snapshot into a complete career pivot plan: all 3 career paths ranked by fit with detailed analysis, your complete skill-gap map (15+ gaps) with how to close each, 6/12/24-month milestone roadmaps, financial bridge planning with salary trajectories and ROI, AI coaching with a weekly action plan, an AI resume builder, and a job board with personalized match scores. The $19 intro price is a limited-time offer.",
   },
   {
     q: "What does Lifetime ($149) include?",
@@ -61,13 +67,28 @@ const FAQ_ITEMS = [
   },
 ];
 
+// Free tier (the anchor). `have` = revealed in the free snapshot; `missing` =
+// gated behind an upgrade — shown muted so the value gap reads at a glance.
+const FREE_FEATURES = {
+  have: [
+    "#1 career-path match with fit score",
+    "Top 3 skill gaps identified",
+    "Transferable strengths revealed",
+    "No credit card, no account needed",
+  ],
+  missing: [
+    "Full milestone roadmap",
+    "Financial bridge & salary plan",
+  ],
+};
+
 const REPORT_FEATURES = [
-  "2-3 personalized career pivot paths ranked by fit",
-  "6-month, 1-year, and 2-year milestone roadmaps",
-  "Transferable skills analysis (20-40 skills extracted)",
-  "Skill gap identification with action steps",
-  "AI certifications roadmap tailored to your pivot",
-  "Financial considerations for each path",
+  "3 career paths ranked by fit",
+  "Complete skill-gap analysis (15+ gaps)",
+  "6/12/24-month milestone roadmap",
+  "Financial bridge & salary trajectory",
+  "AI coaching & weekly action plan",
+  "AI resume builder + job board with match scores",
   "Constraint-aware planning (salary, family, location)",
   "Permanent access to your report",
 ];
@@ -179,9 +200,9 @@ export default function PricingPage() {
             Choose Your Plan
           </p>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-            Your personalized career pivot roadmap.
+            See where AI could take your career — free.
             <br className="hidden sm:block" />
-            <span className="text-teal-400"> Two simple plans. No surprises.</span>
+            <span className="text-teal-400"> Upgrade when you&apos;re ready to commit.</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
             The average career coach charges $250/hour. You&apos;ll need 3-5 sessions
@@ -236,76 +257,71 @@ export default function PricingPage() {
           />
         </div>
 
-        {/* Pricing cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8 items-start max-w-4xl mx-auto">
-          {/* Report — $19 intro pricing */}
+        {/* Pricing cards — three tiers, Free anchoring the ladder on the left
+            so the paid tiers read as upgrades of what you already saw (AIC-778).
+            Report ($19) is the visually-anchored conversion target. */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8 items-start max-w-5xl mx-auto">
+          {/* Free Snapshot — the $0 anchor. Routes to /free, no checkout. */}
           <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
             <CardHeader className="px-8 pt-8 pb-0">
-              <span className="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
-                Intro Pricing
+              <span className="inline-block bg-slate-600 text-slate-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+                Start Here
               </span>
-              <h2 className="text-2xl font-bold text-white mb-1">Report</h2>
-              <p className="text-slate-400 text-sm">One-time career pivot roadmap</p>
+              <h2 className="text-2xl font-bold text-white mb-1">Free Snapshot</h2>
+              <p className="text-slate-400 text-sm">See where you could go</p>
               <div className="flex items-end gap-2 mt-4 mb-1">
-                <span className="text-4xl font-extrabold text-white font-serif">$19</span>
-                <span className="text-slate-500 line-through text-lg mb-1">$29</span>
-                <span className="text-slate-400 mb-1">one-time</span>
+                <span className="text-4xl font-extrabold text-white font-serif">$0</span>
+                <span className="text-slate-400 mb-1">forever free</span>
               </div>
-              <p className="text-teal-400 text-sm font-semibold pb-6">
-                30-day money-back guarantee
+              <p className="text-slate-400 text-sm font-semibold pb-6">
+                No credit card required
               </p>
             </CardHeader>
             <CardContent className="px-8">
               <ul className="space-y-3 mb-8">
-                {REPORT_FEATURES.map((f) => (
+                {FREE_FEATURES.have.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
                     <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                    {f}
+                  </li>
+                ))}
+                {FREE_FEATURES.missing.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-slate-500">
+                    <span className="text-slate-600 mt-0.5 shrink-0">✕</span>
                     {f}
                   </li>
                 ))}
               </ul>
             </CardContent>
             <CardFooter className="px-8 pb-8 flex-col gap-2">
-              <PricingCheckout plan="report" />
-              <CheckoutTrustBlock
-                items={[
-                  { icon: "shield", text: "30-day refund, no questions" },
-                  { icon: "lock", text: "Secure checkout via Stripe" },
-                  {
-                    icon: "users",
-                    text: (
-                      <>
-                        Join <strong className="text-slate-200 font-semibold">{PROOF_METRICS.pivotsDelivered} professionals</strong> who&rsquo;ve pivoted
-                      </>
-                    ),
-                  },
-                ]}
-              />
+              <PricingFreeCta />
+              <p className="text-slate-500 text-xs text-center">Results in ~30 seconds. Upgrade anytime.</p>
             </CardFooter>
           </Card>
 
-          {/* Lifetime — $149 */}
+          {/* Career Report — $19 intro pricing, the recommended conversion target */}
           <div className="relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
               <span className="bg-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-                Product Hunt Exclusive
+                Recommended
               </span>
             </div>
             <Card className="bg-slate-800 border-2 border-teal-500 text-white rounded-2xl shadow-xl shadow-teal-900/30 gap-0 py-0">
               <CardHeader className="px-8 pt-10 pb-0">
-                <h2 className="text-2xl font-bold text-white mb-1">Lifetime</h2>
-                <p className="text-slate-400 text-sm">All features, forever</p>
-                <div className="flex items-end gap-1 mt-4 mb-1">
-                  <span className="text-4xl font-extrabold text-white font-serif">$149</span>
+                <h2 className="text-2xl font-bold text-white mb-1">Career Report</h2>
+                <p className="text-slate-400 text-sm">Your complete pivot roadmap</p>
+                <div className="flex items-end gap-2 mt-4 mb-1">
+                  <span className="text-4xl font-extrabold text-white font-serif">$19</span>
+                  <span className="text-slate-500 line-through text-lg mb-1">$29</span>
                   <span className="text-slate-400 mb-1">one-time</span>
                 </div>
                 <p className="text-teal-400 text-sm font-semibold pb-6">
-                  Limited to first 100 supporters
+                  30-day money-back guarantee
                 </p>
               </CardHeader>
               <CardContent className="px-8">
                 <ul className="space-y-3 mb-8">
-                  {LIFETIME_FEATURES.map((f) => (
+                  {REPORT_FEATURES.map((f) => (
                     <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
                       <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
                       {f}
@@ -314,26 +330,74 @@ export default function PricingPage() {
                 </ul>
               </CardContent>
               <CardFooter className="px-8 pb-8 flex-col gap-2">
-                <PricingCheckout plan="lifetime" />
+                <PricingCheckout plan="report" />
                 <CheckoutTrustBlock
                   items={[
                     { icon: "shield", text: "30-day refund, no questions" },
                     { icon: "lock", text: "Secure checkout via Stripe" },
                     {
-                      icon: "check",
+                      icon: "users",
                       text: (
                         <>
-                          One payment. <strong className="text-slate-200 font-semibold">No subscription, ever.</strong>
+                          Join <strong className="text-slate-200 font-semibold">{PROOF_METRICS.pivotsDelivered} professionals</strong> who&rsquo;ve pivoted
                         </>
                       ),
                     },
                   ]}
                 />
-                <p className="text-slate-500 text-xs text-center">Have a discount code? Enter it above.</p>
               </CardFooter>
             </Card>
           </div>
+
+          {/* Lifetime — $149 */}
+          <Card className="bg-slate-800 border-slate-700 text-white rounded-2xl shadow-xl gap-0 py-0">
+            <CardHeader className="px-8 pt-8 pb-0">
+              <span className="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+                Early Adopter
+              </span>
+              <h2 className="text-2xl font-bold text-white mb-1">Lifetime</h2>
+              <p className="text-slate-400 text-sm">All features, forever</p>
+              <div className="flex items-end gap-1 mt-4 mb-1">
+                <span className="text-4xl font-extrabold text-white font-serif">$149</span>
+                <span className="text-slate-400 mb-1">one-time</span>
+              </div>
+              <p className="text-teal-400 text-sm font-semibold pb-6">
+                Limited to first 100 supporters
+              </p>
+            </CardHeader>
+            <CardContent className="px-8">
+              <ul className="space-y-3 mb-8">
+                {LIFETIME_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="text-teal-400 mt-0.5 shrink-0">✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter className="px-8 pb-8 flex-col gap-2">
+              <PricingCheckout plan="lifetime" />
+              <CheckoutTrustBlock
+                items={[
+                  { icon: "shield", text: "30-day refund, no questions" },
+                  { icon: "lock", text: "Secure checkout via Stripe" },
+                  {
+                    icon: "check",
+                    text: (
+                      <>
+                        One payment. <strong className="text-slate-200 font-semibold">No subscription, ever.</strong>
+                      </>
+                    ),
+                  },
+                ]}
+              />
+              <p className="text-slate-500 text-xs text-center">Have a discount code? Enter it above.</p>
+            </CardFooter>
+          </Card>
         </div>
+
+        {/* Tier-by-tier comparison — Free column anchors the ladder (AIC-778) */}
+        <PlanComparisonTable />
 
         {/* Pricing testimonials — 3 outcome-specific cards with star ratings (AIC-753) */}
         <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-10">
