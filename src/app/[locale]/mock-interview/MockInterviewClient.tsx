@@ -7,9 +7,36 @@ import NextStepCTA from "@/components/NextStepCTA";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 import { useSpeechSynthesis } from "./useSpeechSynthesis";
 import { useLocale } from "next-intl";
+import PrepSheet from "./PrepSheet";
 
+type Mode = "live" | "prep";
 type InterviewType = "behavioral" | "technical" | "situational";
 type InputMode = "text" | "voice";
+
+function ModeTabs({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
+  return (
+    <div className="max-w-lg mx-auto px-6 pt-8">
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-800/60 border border-slate-700">
+        {([
+          { key: "live", label: "Live Interview" },
+          { key: "prep", label: "Prep Sheet" },
+        ] as { key: Mode; label: string }[]).map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setMode(key)}
+            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+              mode === key
+                ? "bg-purple-600 text-white"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 type Phase = "setup" | "interview" | "done";
 
 interface Message {
@@ -123,6 +150,7 @@ function SpeechMetricsDisplay({ metrics }: { metrics: SpeechMetrics }) {
 
 export default function MockInterviewClient() {
   const locale = useLocale();
+  const [mode, setMode] = useState<Mode>("live");
   const [phase, setPhase] = useState<Phase>("setup");
   const [targetRole, setTargetRole] = useState("");
   const [customRole, setCustomRole] = useState("");
@@ -382,10 +410,23 @@ export default function MockInterviewClient() {
 
   const displayRole = targetRole === "custom" ? customRole : targetRole;
 
+  // Prep Sheet mode — a self-contained tool alongside the live interview.
+  // Only offered from the setup screen so we never interrupt an in-progress interview.
+  if (mode === "prep" && phase === "setup") {
+    return (
+      <>
+        <ModeTabs mode={mode} setMode={setMode} />
+        <PrepSheet />
+      </>
+    );
+  }
+
   // Setup screen
   if (phase === "setup") {
     return (
-      <main className="max-w-lg mx-auto px-6 py-16">
+      <>
+      <ModeTabs mode={mode} setMode={setMode} />
+      <main className="max-w-lg mx-auto px-6 pt-6 pb-16">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-600/20 border border-purple-600/30 text-purple-400 text-xs font-semibold mb-4">
             <Mic2 className="w-3.5 h-3.5" />
@@ -544,6 +585,7 @@ export default function MockInterviewClient() {
           </p>
         </div>
       </main>
+      </>
     );
   }
 

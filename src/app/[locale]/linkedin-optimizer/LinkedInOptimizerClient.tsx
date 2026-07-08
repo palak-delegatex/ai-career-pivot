@@ -23,9 +23,34 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { LinkedInOptimizeResult } from "@/app/api/linkedin/optimize/route";
+import PostGenerator from "./PostGenerator";
 
+type Mode = "optimize" | "post";
 type Phase = "input" | "loading" | "results";
 type InputTab = "url" | "paste" | "onboarding";
+
+function ModeTabs({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
+  return (
+    <div className="max-w-5xl mx-auto px-6 pt-8">
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-800/60 border border-slate-700 max-w-md mx-auto">
+        {([
+          { key: "optimize", label: "Optimize Profile" },
+          { key: "post", label: "Post Generator" },
+        ] as { key: Mode; label: string }[]).map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setMode(key)}
+            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+              mode === key ? "bg-teal-600 text-white" : "text-slate-400 hover:text-white"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface ProfileData {
   headline?: string;
@@ -161,6 +186,7 @@ function highlightChanges(original: string, suggested: string) {
 
 export default function LinkedInOptimizerClient() {
   const locale = useLocale();
+  const [mode, setMode] = useState<Mode>("optimize");
   const [phase, setPhase] = useState<Phase>("input");
   const [inputTab, setInputTab] = useState<InputTab>("url");
   const [linkedinUrl, setLinkedinUrl] = useState("");
@@ -307,6 +333,20 @@ export default function LinkedInOptimizerClient() {
       );
       setPhase("input");
     }
+  }
+
+  // --- Post Generator mode — a distinct tool alongside the profile optimizer ---
+  if (mode === "post") {
+    return (
+      <>
+        <ModeTabs mode={mode} setMode={setMode} />
+        <PostGenerator
+          defaultTargetRole={targetRole}
+          defaultCurrentRole={intakeProfile?.currentTitle ?? ""}
+          defaultIndustry={targetIndustry || intakeProfile?.currentIndustry || ""}
+        />
+      </>
+    );
   }
 
   // --- Loading Phase ---
@@ -600,7 +640,9 @@ export default function LinkedInOptimizerClient() {
   ];
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-12">
+    <>
+    <ModeTabs mode={mode} setMode={setMode} />
+    <main className="max-w-5xl mx-auto px-6 pt-6 pb-12">
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
           <Sparkles className="w-3.5 h-3.5" />
@@ -929,5 +971,6 @@ export default function LinkedInOptimizerClient() {
         </div>
       </div>
     </main>
+    </>
   );
 }
