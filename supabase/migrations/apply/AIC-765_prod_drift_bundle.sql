@@ -10,6 +10,11 @@
 -- trigger + policy). Applied by hand, a partial/duplicate run would error. Every
 -- statement below is wrapped to be safe to run any number of times.
 --
+-- Security note (AIC-766): 007 + 020 shipped `using (true)` RLS policies that
+-- exposed their PII (email, first_name) to the public anon key. Both are
+-- tightened below to `auth.role() = 'service_role'` (see migration 021). The
+-- crons use the service-role key, so this is behaviour-preserving.
+--
 -- Order matters (010 backfills against milestone_progress; 017's trigger needs
 -- set_updated_at()). Run top-to-bottom, in a single transaction.
 --
@@ -66,11 +71,15 @@ create index if not exists idx_milestone_emails_report
 
 alter table milestone_emails enable row level security;
 
+-- NOTE: source 007 used `using (true)` here, which grants the public anon key
+-- read/write on this PII table (RLS gates anon/authenticated; service_role
+-- bypasses it). Tightened to service_role-only to match the rest of the schema
+-- and incorporate migration 021 (AIC-766). The crons use the service-role key,
+-- so this is behaviour-preserving.
 drop policy if exists "Service role full access on milestone_emails" on milestone_emails;
 create policy "Service role full access on milestone_emails"
   on milestone_emails for all
-  using (true)
-  with check (true);
+  using (auth.role() = 'service_role');
 
 -- -----------------------------------------------------------------------------
 -- 010_last_active_at.sql  →  /api/cron/weekly-digest (42703 reports.last_active_at)
@@ -141,11 +150,14 @@ create index if not exists idx_extension_promo_pending
 
 alter table extension_promo_emails enable row level security;
 
+-- NOTE: source 020's comment said "service-role only; no anon access", but its
+-- `using (true)` predicate granted the public anon key full access to this PII
+-- table. Tightened to service_role-only to match documented intent + migration
+-- 021 (AIC-766). Behaviour-preserving — the cron uses the service-role key.
 drop policy if exists "service_role_full_access_extension_promo" on extension_promo_emails;
 create policy "service_role_full_access_extension_promo"
   on extension_promo_emails for all
-  using (true)
-  with check (true);
+  using (auth.role() = 'service_role');
 
 commit;
 
