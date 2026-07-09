@@ -16,14 +16,14 @@ const FreeSnapshotSchema = z.object({
       skill: z.string(),
       priority: z.enum(["high", "medium", "low"]),
       transferabilityScore: z.number(),
-    })).max(3),
-  })).max(3),
+    })).describe("The 3 most important skill gaps to close"),
+  })).describe("2-3 career pivot paths, ranked by matchScore descending"),
   profileSummary: z.string(),
   topTransferableStrengths: z.array(z.object({
     skill: z.string(),
     confidence: z.number().min(0).max(100),
     aiBoostExplanation: z.string(),
-  })).max(3),
+  })).describe("Exactly 3 hidden transferable strengths career changers overlook"),
   estimatedSalaryUplift: z.number().optional(),
 });
 

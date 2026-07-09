@@ -22,7 +22,7 @@ const LinkedInPostSchema = z.object({
       estimatedEngagement: z.enum(["high", "medium", "low"]).describe("Expected engagement level based on post type and content"),
       tips: z.array(z.string()).describe("2-3 tips for maximizing this post's impact"),
     })
-  ).min(2).max(3),
+  ).describe("2-3 distinct post variants"),
 });
 
 export type LinkedInPostResult = z.infer<typeof LinkedInPostSchema>;
