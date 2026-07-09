@@ -299,8 +299,12 @@ export default function PricingPage() {
             </CardFooter>
           </Card>
 
-          {/* Career Report — $19 intro pricing, the recommended conversion target */}
-          <div className="relative">
+          {/* Career Report — $19 intro pricing, the recommended conversion target.
+              `id=get-report` + scroll-margin is the deep-link target for high-intent
+              arrivals from the UpgradeComparisonSheet CTA (AIC-785): a visitor who
+              already chose "Get Full Report — $19" in the sheet lands directly on
+              this checkout instead of re-deciding at the top of the three-tier page. */}
+          <div id="get-report" className="relative scroll-mt-24">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
               <span className="bg-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
                 Recommended

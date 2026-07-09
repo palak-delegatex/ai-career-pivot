@@ -208,9 +208,15 @@ export default function UpgradeComparisonSheet({
             ))}
           </div>
 
-          {/* Primary CTA */}
+          {/* Primary CTA — deep-links to the Report checkout on /pricing rather
+              than the top of the page (AIC-785). The user has already made the
+              free-vs-paid comparison + plan choice here, so #get-report drops them
+              straight onto the $19 checkout form instead of re-deciding across
+              three tiers (removes a redundant decision step for the highest-intent
+              segment). Measured via the upgrade_sheet_opened → pricing_viewed →
+              checkout_started legs of the canonical funnel (dashboard 1809774). */}
           <Link
-            href="/pricing"
+            href="/pricing#get-report"
             onClick={() =>
               trackUpgradeSheetCtaClicked({
                 source,

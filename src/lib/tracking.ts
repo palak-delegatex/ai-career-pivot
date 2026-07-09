@@ -201,6 +201,31 @@ export function trackFreeSignup(props: { source: string }) {
   capture("free_signup", props);
 }
 
+// Canonical free→paid funnel — top of chain (AIC-785). These two events were the
+// missing steps: /free (upload) fired nothing, and /free-results had no "viewed"
+// signal, so the funnel could only be measured from upgrade_sheet_opened onward.
+// The full ordered chain (dashboard 1809774) is:
+//   free_upload_started → free_results_viewed → upgrade_sheet_opened →
+//   pricing_viewed → checkout_started → payment_verified
+// See marketing/analytics/aic-785-free-paid-funnel-taxonomy.md for the canonical
+// definition. All events fire client-side on the same anonymous distinct_id, so
+// the funnel stitches without an identify() call (payment_verified is stitched
+// server-side via the Stripe webhook — see trackPaymentVerified).
+
+// Fired when the visitor submits their resume on /free (the true top of the
+// free→paid funnel). `has_file` is always true at submit today but is recorded
+// so a future "started without a file" variant stays comparable.
+export function trackFreeUploadStarted(props: { has_file: boolean }) {
+  capture("free_upload_started", props);
+}
+
+// Fired once when /free-results successfully renders a snapshot. `path_count` and
+// `top_match_score` let the CMO segment drop-off by snapshot quality (a weak top
+// match may explain non-conversion independent of the funnel UX).
+export function trackFreeResultsViewed(props: { path_count: number; top_match_score: number }) {
+  capture("free_results_viewed", props);
+}
+
 // Deferred email capture on /free-results (AIC-618 D1 / AIC-776) — the user
 // opts in to have their snapshot emailed AFTER seeing results.
 export function trackFreeEmailCaptured(props: { source: string }) {
