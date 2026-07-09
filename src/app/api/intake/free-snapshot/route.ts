@@ -21,7 +21,7 @@ const FreeSnapshotSchema = z.object({
   profileSummary: z.string(),
   topTransferableStrengths: z.array(z.object({
     skill: z.string(),
-    confidence: z.number().min(0).max(100),
+    confidence: z.number().describe("0-100"),
     aiBoostExplanation: z.string(),
   })).describe("Exactly 3 hidden transferable strengths career changers overlook"),
   estimatedSalaryUplift: z.number().optional(),

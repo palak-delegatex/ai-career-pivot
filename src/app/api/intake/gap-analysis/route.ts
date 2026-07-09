@@ -5,7 +5,7 @@ import { z } from "zod";
 import { localeSystemPrompt } from "@/lib/locale";
 
 const GapAnalysisSchema = z.object({
-  overallFitScore: z.number().min(0).max(100),
+  overallFitScore: z.number().describe("0-100"),
   fitLabel: z.enum([
     "Strong Match",
     "Good Match",

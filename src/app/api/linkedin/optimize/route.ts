@@ -12,7 +12,7 @@ const SectionRewriteSchema = z.object({
     "Skills",
     "Education",
   ]),
-  score: z.number().min(0).max(100),
+  score: z.number().describe("0-100"),
   scoreLabel: z.enum(["Excellent", "Good", "Needs Work", "Weak", "Missing"]),
   current: z.string(),
   suggested: z.string(),
@@ -21,7 +21,7 @@ const SectionRewriteSchema = z.object({
 });
 
 const LinkedInOptimizeSchema = z.object({
-  overallScore: z.number().min(0).max(100),
+  overallScore: z.number().describe("0-100"),
   overallLabel: z.enum([
     "Pivot-Ready",
     "Almost There",

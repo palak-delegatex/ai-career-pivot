@@ -23,13 +23,13 @@ const DirectMatchSchema = z.object({
   userSkill: z.string(),
   targetSkill: z.string(),
   proficiency: z.string(),
-  matchConfidence: z.number().min(0).max(100),
+  matchConfidence: z.number().describe("0-100"),
 });
 
 const TransferableMatchSchema = z.object({
   userSkill: z.string(),
   targetSkill: z.string(),
-  transferScore: z.number().min(0).max(100),
+  transferScore: z.number().describe("0-100"),
   explanation: z.string(),
   bridgeActions: z.array(z.string()),
 });
@@ -46,14 +46,14 @@ const GapSkillSchema = z.object({
 const SkillsEngineSchema = z.object({
   userSkillGraph: z.array(ExtractedSkillSchema),
   targetRoleSkills: z.array(TargetRoleSkillSchema),
-  overlapScore: z.number().min(0).max(100),
+  overlapScore: z.number().describe("0-100"),
   directMatches: z.array(DirectMatchSchema),
   transferableMatches: z.array(TransferableMatchSchema),
   gaps: z.array(GapSkillSchema),
   summary: z.object({
-    directMatchPercent: z.number().min(0).max(100),
-    transferablePercent: z.number().min(0).max(100),
-    gapPercent: z.number().min(0).max(100),
+    directMatchPercent: z.number().describe("0-100"),
+    transferablePercent: z.number().describe("0-100"),
+    gapPercent: z.number().describe("0-100"),
     readinessLabel: z.string(),
     topTransferNarrative: z.string(),
   }),
