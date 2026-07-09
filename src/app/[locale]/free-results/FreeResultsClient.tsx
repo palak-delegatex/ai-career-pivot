@@ -8,7 +8,7 @@ import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
-import { trackFreeEmailCaptured, trackUpgradeSheetOpened } from "@/lib/tracking";
+import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -95,9 +95,9 @@ function ContextualUpgradePrompt({
         <button
           type="button"
           onClick={onUnlock}
-          className="mt-1.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition-colors"
+          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
         >
-          <Lock className="w-3 h-3" />
+          <Lock className="w-3.5 h-3.5" />
           Unlock for $19
         </button>
       </div>
@@ -346,6 +346,12 @@ export default function FreeResultsClient() {
     try {
       const parsed = JSON.parse(raw);
       setSnapshot(parsed);
+      // Canonical funnel step 2 (AIC-785) — the visitor reached a rendered
+      // snapshot. Fired here (not in render) so it emits exactly once per load.
+      trackFreeResultsViewed({
+        path_count: parsed.paths?.length ?? 0,
+        top_match_score: parsed.paths?.[0]?.matchScore ?? 0,
+      });
       const rawProfile = sessionStorage.getItem("free_profile");
       if (rawProfile) {
         try { setProfile(JSON.parse(rawProfile)); } catch {}
@@ -401,44 +407,6 @@ export default function FreeResultsClient() {
         {snapshot.profileSummary && (
           <p className="text-slate-400 text-sm">{snapshot.profileSummary}</p>
         )}
-      </div>
-
-      {/* Share buttons */}
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
-        >
-          {copied ? (
-            <>
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400">Copied!</span>
-            </>
-          ) : (
-            <>
-              <LinkIcon className="w-4 h-4" />
-              Copy Link
-            </>
-          )}
-        </button>
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          Share on X
-        </a>
-        <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          Share on LinkedIn
-        </a>
       </div>
 
       {/* OG image preview (hidden, for social sharing meta) */}
@@ -534,6 +502,44 @@ export default function FreeResultsClient() {
         </div>
       )}
 
+      {/* Share buttons — placed after the "aha" moment so users share with conviction */}
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-400">Copied!</span>
+            </>
+          ) : (
+            <>
+              <LinkIcon className="w-4 h-4" />
+              Copy Link
+            </>
+          )}
+        </button>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on X
+        </a>
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Share on LinkedIn
+        </a>
+      </div>
+
       {/* Contextual prompt #1 — the other matched paths as blurred ghost cards
           (loss aversion: they exist, but you can't read them). */}
       {otherPaths.length > 0 && (
@@ -617,15 +623,15 @@ export default function FreeResultsClient() {
         />
       </div>
 
-      {/* Bottom nudge */}
+      {/* Bottom nudge — distinct from the main CTA above to avoid redundancy */}
       <p className="text-center text-slate-500 text-xs mt-6">
-        Seeing a path you like?{" "}
+        Still deciding?{" "}
         <button
           type="button"
           onClick={() => openUpgrade("bottom_nudge")}
           className="text-teal-400 hover:text-teal-300 underline"
         >
-          Get the complete plan with milestones, salary data, and AI coaching for $19.
+          Compare what&apos;s in the free snapshot vs. the full report.
         </button>
       </p>
 

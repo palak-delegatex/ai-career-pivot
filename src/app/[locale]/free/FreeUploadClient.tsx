@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
+import { trackFreeUploadStarted } from "@/lib/tracking";
 
 // Outcome-focused benefits — lead with what the user walks away knowing, not
 // the mechanics of the analysis (AIC-618 D1).
@@ -49,6 +50,11 @@ export default function FreeUploadClient() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!resumeFile) return;
+
+    // Top of the canonical free→paid funnel (AIC-785) — fired at submit intent,
+    // before the network round-trip, so the funnel counts everyone who committed
+    // to the upload regardless of a slow or failed analysis.
+    trackFreeUploadStarted({ has_file: true });
 
     setLoading(true);
     setError("");
