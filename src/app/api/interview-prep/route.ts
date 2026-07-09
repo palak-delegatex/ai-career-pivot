@@ -21,7 +21,7 @@ const PrepQuestionSchema = z.object({
 
 const InterviewPrepSchema = z.object({
   roleSummary: z.string().describe("One-paragraph summary of what the interviewer is looking for"),
-  questions: z.array(PrepQuestionSchema).min(10).max(15),
+  questions: z.array(PrepQuestionSchema).describe("10-15 interview questions covering a mix of categories"),
   companyResearchTips: z.array(z.string()).describe("3-5 specific things to research about the company before the interview"),
   closingQuestions: z.array(
     z.object({
