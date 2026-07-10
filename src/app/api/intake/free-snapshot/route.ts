@@ -62,9 +62,14 @@ export async function POST(req: NextRequest) {
     const parsed = await parseRes.json();
     profile = { ...parsed.profile, email: email || parsed.profile.email };
   } else {
-    const body = await req.json();
-    profile = body.profile;
-    locale = body.locale;
+    let body: { profile?: UserProfile; locale?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid or empty request body" }, { status: 400 });
+    }
+    profile = body?.profile as UserProfile;
+    locale = body?.locale;
   }
 
   if (!profile?.skills?.length) {
@@ -118,8 +123,8 @@ USER PROFILE:
 - Industry: ${profile.currentIndustry ?? "Not specified"}
 - Years experience: ${profile.yearsExperience ?? "Not specified"}
 - Top skills: ${profile.skills.slice(0, 10).join(", ")}
-- Transferable skills: ${profile.transferableSkills.slice(0, 8).join(", ")}
-- Education: ${profile.education.map(e => `${e.degree} in ${e.field}`).join("; ") || "Not specified"}
+- Transferable skills: ${(profile.transferableSkills ?? []).slice(0, 8).join(", ") || "Not specified"}
+- Education: ${(profile.education ?? []).map(e => `${e.degree} in ${e.field}`).join("; ") || "Not specified"}
 
 Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.${localeSystemPrompt(locale)}`,
   });
