@@ -226,6 +226,16 @@ export function trackFreeResultsViewed(props: { path_count: number; top_match_sc
   capture("free_results_viewed", props);
 }
 
+// Time-to-first-value diagnostic (AIC-796). Fired once, the moment the streamed
+// snapshot yields its first usable insight (a career path or profile summary) on
+// /free — replacing the old blank 10-30s spinner with a live reveal. This is NOT
+// a funnel step; `ms_to_first_insight` lets the CMO measure whether faster
+// perceived time-to-value lifts the free_upload_started → free_results_viewed
+// conversion on dashboard 1809774.
+export function trackFreeSnapshotStreaming(props: { ms_to_first_insight: number }) {
+  capture("free_snapshot_streaming", props);
+}
+
 // Deferred email capture on /free-results (AIC-618 D1 / AIC-776) — the user
 // opts in to have their snapshot emailed AFTER seeing results.
 export function trackFreeEmailCaptured(props: { source: string }) {

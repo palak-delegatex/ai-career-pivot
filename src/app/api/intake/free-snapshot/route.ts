@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateText, Output } from "ai";
+import { streamObject } from "ai";
 import { z } from "zod";
 import type { UserProfile } from "@/lib/intake";
 import { sendDripEmail } from "@/lib/email-drip";
 import { localeSystemPrompt } from "@/lib/locale";
+
+// Haiku snapshot is fast, but streaming means the first career-path insight can
+// render on /free in a few seconds instead of the user staring at a blank
+// spinner for the full 10-30s blocking call (AIC-796 time-to-value).
+export const maxDuration = 60;
 
 const FreeSnapshotSchema = z.object({
   paths: z.array(z.object({
@@ -66,9 +71,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not extract skills from resume" }, { status: 400 });
   }
 
-  const { output } = await generateText({
+  const result = streamObject({
     model: anthropic("claude-haiku-4-5-20251001"),
-    output: Output.object({ schema: FreeSnapshotSchema }),
+    schema: FreeSnapshotSchema,
+    // A snapshot that fails silently after headers flush would leave the client
+    // with a truncated stream; the client detects that and surfaces a retry.
+    onError: ({ error }) => {
+      console.error("Free snapshot stream error:", error);
+    },
+    // Fire the drip email once the full object is available (parity with the old
+    // blocking behavior). Only sends if an email was provided — deferred-email
+    // uploads (AIC-776) pass no email here, so this is a no-op for /free today.
+    onFinish: ({ object: output }) => {
+      if (profile.email && output?.paths?.length) {
+        const firstName = profile.experience?.[0]?.title
+          ? profile.currentTitle?.split(" ")[0] ?? "there"
+          : "there";
+        sendDripEmail(profile.email, firstName, 17, {
+          freeSnapshotPaths: output.paths.map((p) => ({
+            targetRole: p.targetRole,
+            targetIndustry: p.targetIndustry,
+            matchScore: p.matchScore,
+            rationale: p.rationale,
+          })),
+          topStrengths: output.topTransferableStrengths.map((s) => s.skill),
+        }).catch(() => {});
+      }
+    },
     prompt: `You are an elite career strategist who specializes in AI-era career pivots. Based on this professional's background, generate 2-3 compelling career pivot paths as a free skill-gap snapshot. Your goal: make the user feel excited about their potential AND aware that a detailed plan would accelerate their transition.
 
 For each path:
@@ -95,20 +124,16 @@ USER PROFILE:
 Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.${localeSystemPrompt(locale)}`,
   });
 
-  if (profile.email && output?.paths?.length) {
-    const firstName = profile.experience?.[0]?.title
-      ? profile.currentTitle?.split(" ")[0] ?? "there"
-      : "there";
-    sendDripEmail(profile.email, firstName, 17, {
-      freeSnapshotPaths: output.paths.map((p) => ({
-        targetRole: p.targetRole,
-        targetIndustry: p.targetIndustry,
-        matchScore: p.matchScore,
-        rationale: p.rationale,
-      })),
-      topStrengths: output.topTransferableStrengths.map((s) => s.skill),
-    }).catch(() => {});
-  }
+  // The snapshot object streams in the response body (progressive reveal on
+  // /free). The parsed profile is needed client-side for the deferred email
+  // capture on /free-results, so it rides along in a base64 header rather than
+  // the body — keeping the body a single streamed JSON object the client can
+  // parse incrementally, exactly like the paid plan stream.
+  const profileHeader = Buffer.from(JSON.stringify(profile), "utf-8").toString("base64");
 
-  return NextResponse.json({ snapshot: output, profile });
+  return result.toTextStreamResponse({
+    headers: {
+      "x-free-profile": profileHeader,
+    },
+  });
 }
