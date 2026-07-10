@@ -851,7 +851,39 @@ const ACTION_VERBS = new Set([
   "validated", "verified", "volunteered",
 ]);
 
+// Strong-signal metric: an explicit unit suffix, currency amount, or a known
+// quantity keyword. High precision — anything matching here is a metric.
 const METRIC_RE = /\b(\d+[%$kKmMbB]|\$[\d,.]+|[\d,.]+\s*(?:percent|%|users|clients|customers|projects|team members|employees|revenue|savings|hours|days|weeks|months|years|increase|decrease|reduction|growth|improvement))\b/i;
+
+// Numbers that quantify nothing about achievement — dates, ranges, phones, zips.
+// Masked out before we look for a "bare" quantifying number so a resume date
+// ("Jan 2024", "2021–2024") or contact digit (phone/zip) is never miscounted.
+const NON_METRIC_NUMBER_RES: RegExp[] = [
+  /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}\b/gi, // "Jan 2024"
+  /\b\d{1,2}\/\d{1,4}(?:\/\d{2,4})?\b/g, // "01/2024", "1/2/2024"
+  /\b(?:19|20)\d{2}\s*[-–—]\s*(?:(?:19|20)\d{2}|present|current)\b/gi, // "2021–2024"
+  /\b(?:19|20)\d{2}\b/g, // bare four-digit year
+  /\+?\d[\d\s\-().]{7,}\d/g, // phone numbers
+  /\b\d{5}(?:-\d{4})?\b/g, // US zip / zip+4
+];
+
+// A standalone integer or decimal (commas allowed) that survives date/phone/zip
+// masking — e.g. "12 engineers", "10 steps to 3", "200 tickets".
+const BARE_NUMBER_RE = /\b\d[\d,]*(?:\.\d+)?\b/;
+
+/**
+ * True when a résumé bullet quantifies its impact with any number, not just the
+ * fixed suffix/keyword list. Keeps the high-precision strong-signal check, then
+ * falls back to a bare number after masking dates, ranges, phones, and zips so
+ * quantified-but-unlisted units ("engineers", "steps", "releases") still count.
+ */
+export function bulletHasMetric(bullet: string): boolean {
+  if (METRIC_RE.test(bullet)) return true;
+  let masked = bullet;
+  for (const re of NON_METRIC_NUMBER_RES) masked = masked.replace(re, " ");
+  return BARE_NUMBER_RE.test(masked);
+}
+
 const FIRST_PERSON_RE = /\b(I|me|my|mine|myself)\b/gi;
 const WEAK_PHRASES_RE = /\b(responsible for|duties include|helped with|assisted with|worked on|tasked with|in charge of)\b/gi;
 
@@ -892,7 +924,7 @@ export function analyzeRecruiterTips(
 
   let bulletsWithMetrics = 0;
   for (const bullet of expBullets) {
-    if (METRIC_RE.test(bullet)) bulletsWithMetrics++;
+    if (bulletHasMetric(bullet)) bulletsWithMetrics++;
   }
   const measurableResultRate = bulletsWithMetrics / totalBullets;
   checks.push({
