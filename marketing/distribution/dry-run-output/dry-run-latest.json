@@ -1,0 +1,812 @@
+{
+  "meta": {
+    "stamp": "2026-07-11T12:01:57.075Z",
+    "selfServe": 10,
+    "account": 10,
+    "approval": 0
+  },
+  "product": "AICareerPivot",
+  "url": "https://ai-career-pivot.com",
+  "payloads": [
+    {
+      "slug": "futuretools",
+      "name": "Future Tools",
+      "submitUrl": "https://www.futuretools.io/submit-a-tool",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Future Tools (futuretools)\nnew_tab(\"https://www.futuretools.io/submit-a-tool\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Future Tools\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "topai-tools",
+      "name": "TopAI.tools",
+      "submitUrl": "https://topai.tools/submit",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for TopAI.tools (topai-tools)\nnew_tab(\"https://topai.tools/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"TopAI.tools\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aiscout",
+      "name": "AI Scout",
+      "submitUrl": "https://aiscout.net/tool/submit",
+      "access": "self-serve",
+      "category": "Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Productivity"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for AI Scout (aiscout)\nnew_tab(\"https://aiscout.net/tool/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"AI Scout\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Productivity\")  # role=category\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "easywithai",
+      "name": "Easy With AI",
+      "submitUrl": "https://easywithai.com/submit-ai-tool/",
+      "access": "self-serve",
+      "category": "Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Productivity"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Easy With AI (easywithai)\nnew_tab(\"https://easywithai.com/submit-ai-tool/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Easy With AI\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"Productivity\")  # role=category\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aitoolhunt",
+      "name": "AI Tool Hunt",
+      "submitUrl": "https://www.aitoolhunt.com/submit",
+      "access": "self-serve",
+      "category": "Career",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Career"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for AI Tool Hunt (aitoolhunt)\nnew_tab(\"https://www.aitoolhunt.com/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"AI Tool Hunt\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Career\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aixploria",
+      "name": "Aixploria",
+      "submitUrl": "https://www.aixploria.com/en/add-your-ai/",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Aixploria (aixploria)\nnew_tab(\"https://www.aixploria.com/en/add-your-ai/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Aixploria\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "insanelycooltools",
+      "name": "Insanely Cool Tools",
+      "submitUrl": "https://insanelycooltools.com/submit-a-tool/",
+      "access": "self-serve",
+      "category": "Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Productivity"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Insanely Cool Tools (insanelycooltools)\nnew_tab(\"https://insanelycooltools.com/submit-a-tool/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Insanely Cool Tools\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Productivity\")  # role=category\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aitoolsdirectory",
+      "name": "AI Tools Directory",
+      "submitUrl": "https://aitoolsdirectory.com/submit",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for AI Tools Directory (aitoolsdirectory)\nnew_tab(\"https://aitoolsdirectory.com/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"AI Tools Directory\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "dang-ai",
+      "name": "Dang.ai",
+      "submitUrl": "https://dang.ai/submit",
+      "access": "account",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "longDescription",
+          "label": "Full description",
+          "value": "AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "logoUrl",
+          "label": "Logo URL",
+          "value": "https://ai-career-pivot.com/og-home.png"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Dang.ai (dang-ai)\nnew_tab(\"https://dang.ai/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Dang.ai\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Full description\", value=\"AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription.\")  # role=longDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Logo URL\", value=\"https://ai-career-pivot.com/og-home.png\")  # role=logoUrl\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "toolify",
+      "name": "Toolify.ai",
+      "submitUrl": "https://www.toolify.ai/submit",
+      "access": "account",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Toolify.ai (toolify)\nnew_tab(\"https://www.toolify.ai/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Toolify.ai\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "futurepedia",
+      "name": "Futurepedia",
+      "submitUrl": "https://www.futurepedia.io/submit-tool",
+      "access": "account",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Futurepedia (futurepedia)\nnew_tab(\"https://www.futurepedia.io/submit-tool\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Futurepedia\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "uneed",
+      "name": "Uneed",
+      "submitUrl": "https://www.uneed.best/submit-a-tool",
+      "access": "account",
+      "category": "Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "tagline",
+          "label": "Tagline",
+          "value": "Your Personal Career Strategist"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Productivity"
+        },
+        {
+          "role": "logoUrl",
+          "label": "Logo URL",
+          "value": "https://ai-career-pivot.com/og-home.png"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Uneed (uneed)\nnew_tab(\"https://www.uneed.best/submit-a-tool\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Uneed\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Tagline\", value=\"Your Personal Career Strategist\")  # role=tagline\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Productivity\")  # role=category\nfill_field(label=\"Logo URL\", value=\"https://ai-career-pivot.com/og-home.png\")  # role=logoUrl\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "openfuture",
+      "name": "Open Future AI",
+      "submitUrl": "https://openfuture.ai/",
+      "access": "account",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "longDescription",
+          "label": "Full description",
+          "value": "AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "logoUrl",
+          "label": "Logo URL",
+          "value": "https://ai-career-pivot.com/og-home.png"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Open Future AI (openfuture)\nnew_tab(\"https://openfuture.ai/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Open Future AI\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Full description\", value=\"AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription.\")  # role=longDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Logo URL\", value=\"https://ai-career-pivot.com/og-home.png\")  # role=logoUrl\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aitoolmall",
+      "name": "AIToolMall",
+      "submitUrl": "https://www.aitoolmall.com/submit/",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for AIToolMall (aitoolmall)\nnew_tab(\"https://www.aitoolmall.com/submit/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"AIToolMall\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "saashub",
+      "name": "SaaSHub",
+      "submitUrl": "https://www.saashub.com/submit",
+      "access": "account",
+      "category": "Career & Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "longDescription",
+          "label": "Full description",
+          "value": "AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Career & Productivity"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        }
+      ],
+      "_harness": "# browser-harness script for SaaSHub (saashub)\nnew_tab(\"https://www.saashub.com/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"SaaSHub\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Full description\", value=\"AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription.\")  # role=longDescription\nfill_field(label=\"Category\", value=\"Career & Productivity\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "saasworthy",
+      "name": "SaaSworthy",
+      "submitUrl": "https://www.saasworthy.com/product/add",
+      "access": "account",
+      "category": "Career & Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Career & Productivity"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for SaaSworthy (saasworthy)\nnew_tab(\"https://www.saasworthy.com/product/add\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"SaaSworthy\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Career & Productivity\")  # role=category\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "alternativeto",
+      "name": "AlternativeTo",
+      "submitUrl": "https://alternativeto.net/manage/suggest-app/",
+      "access": "account",
+      "category": "Career & Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "mediumDescription",
+          "label": "Description",
+          "value": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Career & Productivity"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "logoUrl",
+          "label": "Logo URL",
+          "value": "https://ai-career-pivot.com/og-home.png"
+        }
+      ],
+      "_harness": "# browser-harness script for AlternativeTo (alternativeto)\nnew_tab(\"https://alternativeto.net/manage/suggest-app/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"AlternativeTo\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Description\", value=\"Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.\")  # role=mediumDescription\nfill_field(label=\"Category\", value=\"Career & Productivity\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Logo URL\", value=\"https://ai-career-pivot.com/og-home.png\")  # role=logoUrl\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "startupstash",
+      "name": "Startup Stash",
+      "submitUrl": "https://startupstash.com/add-listing/",
+      "access": "account",
+      "category": "Career & Productivity",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "Career & Productivity"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for Startup Stash (startupstash)\nnew_tab(\"https://startupstash.com/add-listing/\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"Startup Stash\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"Career & Productivity\")  # role=category\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "toolpilot",
+      "name": "ToolPilot AI",
+      "submitUrl": "https://www.toolpilot.ai/pages/sell-on-toolpilot",
+      "access": "account",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "longDescription",
+          "label": "Full description",
+          "value": "AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "pricing",
+          "label": "Pricing",
+          "value": "Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription)."
+        },
+        {
+          "role": "logoUrl",
+          "label": "Logo URL",
+          "value": "https://ai-career-pivot.com/og-home.png"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for ToolPilot AI (toolpilot)\nnew_tab(\"https://www.toolpilot.ai/pages/sell-on-toolpilot\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"ToolPilot AI\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Full description\", value=\"AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription.\")  # role=longDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Pricing\", value=\"Freemium — Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).\")  # role=pricing\nfill_field(label=\"Logo URL\", value=\"https://ai-career-pivot.com/og-home.png\")  # role=logoUrl\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    },
+    {
+      "slug": "aitools-fyi",
+      "name": "aitools.fyi",
+      "submitUrl": "https://aitools.fyi/submit",
+      "access": "self-serve",
+      "category": "AI Career Assistant",
+      "fields": [
+        {
+          "role": "productName",
+          "label": "Product / tool name",
+          "value": "AICareerPivot"
+        },
+        {
+          "role": "websiteUrl",
+          "label": "Website URL",
+          "value": "https://ai-career-pivot.com"
+        },
+        {
+          "role": "shortDescription",
+          "label": "Short description",
+          "value": "AI career strategist that turns your resume into a personalized career-pivot roadmap."
+        },
+        {
+          "role": "category",
+          "label": "Category",
+          "value": "AI Career Assistant"
+        },
+        {
+          "role": "tags",
+          "label": "Tags / keywords",
+          "value": "career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy"
+        },
+        {
+          "role": "email",
+          "label": "Contact email",
+          "value": "hello@ai-career-pivot.com"
+        }
+      ],
+      "_harness": "# browser-harness script for aitools.fyi (aitools-fyi)\nnew_tab(\"https://aitools.fyi/submit\")\nwait_for_load()\nensure_real_tab()\nprint(\"== \" + \"aitools.fyi\" + \" submit page ==\")\nprint(page_info())\ncapture_screenshot()  # before — confirms the form is present / not moved\n# Field plan — match each label to its input and type the value:\nfill_field(label=\"Product / tool name\", value=\"AICareerPivot\")  # role=productName\nfill_field(label=\"Website URL\", value=\"https://ai-career-pivot.com\")  # role=websiteUrl\nfill_field(label=\"Short description\", value=\"AI career strategist that turns your resume into a personalized career-pivot roadmap.\")  # role=shortDescription\nfill_field(label=\"Category\", value=\"AI Career Assistant\")  # role=category\nfill_field(label=\"Tags / keywords\", value=\"career pivot, career change, career transition, career roadmap, AI career advice, career planning, job change, career strategy\")  # role=tags\nfill_field(label=\"Contact email\", value=\"hello@ai-career-pivot.com\")  # role=email\ncapture_screenshot()  # after fill — verify values landed\n# submit intentionally NOT clicked (pass --submit to enable)"
+    }
+  ]
+}
