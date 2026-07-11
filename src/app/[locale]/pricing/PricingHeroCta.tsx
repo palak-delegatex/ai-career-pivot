@@ -42,7 +42,7 @@ export default function PricingHeroCta() {
       <Link
         href={DESTINATION}
         onClick={handleClick}
-        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-base transition-colors shadow-lg shadow-teal-900/50"
+        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl border-2 border-teal-500 text-teal-400 hover:bg-teal-500/10 font-bold text-base transition-colors"
       >
         {ctaLabel}
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
