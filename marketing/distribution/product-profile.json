@@ -1,0 +1,32 @@
+{
+  "$schema": "./product-profile.schema.notes.md",
+  "_source": "All copy below is lifted from committed site metadata (src/app/[locale]/layout.tsx generateMetadata, src/app/[locale]/free/page.tsx) and Footer.tsx. No placeholders. Update here when the canonical site copy changes.",
+  "name": "AICareerPivot",
+  "tagline": "Your Personal Career Strategist",
+  "url": "https://ai-career-pivot.com",
+  "submitLandingUrl": "https://ai-career-pivot.com/free",
+  "logoUrl": "https://ai-career-pivot.com/og-home.png",
+  "contactEmail": "hello@ai-career-pivot.com",
+  "supportEmail": "support@ai-career-pivot.com",
+  "twitter": "@aicareer_pivot",
+  "pricing": "Freemium",
+  "pricingDetail": "Free resume-based skill-gap analysis; full personalized roadmap is a $19 one-time unlock (no subscription).",
+  "primaryCategory": "Career & Productivity",
+  "aiCategory": "AI Career Assistant",
+  "tags": [
+    "career pivot",
+    "career change",
+    "career transition",
+    "career roadmap",
+    "AI career advice",
+    "career planning",
+    "job change",
+    "career strategy"
+  ],
+  "blurbs": {
+    "oneLiner": "Your Personal Career Strategist.",
+    "short": "AI career strategist that turns your resume into a personalized career-pivot roadmap.",
+    "medium": "Stop feeling trapped. Build a personalized career transition roadmap based on your skills, finances, and family constraints. Actionable 6-month, 1-year, and 2-year plans.",
+    "long": "AICareerPivot is your personal AI career strategist. Upload your resume for a free skill-gap analysis, see which career pivots fit you best, and unlock a personalized transition roadmap built around your real skills, finances, and family constraints — with actionable 6-month, 1-year, and 2-year plans. Intro pricing is a $19 one-time unlock, no subscription."
+  }
+}
