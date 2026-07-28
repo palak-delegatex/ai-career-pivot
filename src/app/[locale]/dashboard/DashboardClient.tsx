@@ -26,6 +26,7 @@ import NetworkingCRM from "@/components/NetworkingCRM";
 import ResumeVersionsTab from "@/components/ResumeVersionsTab";
 import SalaryNegotiationTab from "@/components/SalaryNegotiationTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { ContextualHint } from "@/components/ui/contextual-hint";
 import DashboardTour from "@/components/DashboardTour";
 import { ExtensionPromoBanner } from "@/components/ExtensionPromoBanner";
@@ -629,17 +630,15 @@ export default function DashboardClient() {
       {activeReport && activeReport.plans.length > 1 && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {activeReport.plans.map((plan, i) => (
-            <button
+            <Button
               key={i}
+              type="button"
+              variant={i === selectedPlanIndex ? "default" : "secondary"}
               onClick={() => setSelectedPlanIndex(i)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
-                i === selectedPlanIndex
-                  ? "bg-teal-600 text-white"
-                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-              }`}
+              className="h-auto min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap"
             >
               {plan.targetRole}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -682,10 +681,12 @@ export default function DashboardClient() {
               {progressLoaded && (
                 <>
                   {/* SECONDARY TIER — everything else, demoted behind a toggle. */}
-                  <button
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setShowAll((v) => !v)}
                     aria-expanded={showAll}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-sm font-semibold text-slate-300 transition-colors min-h-[44px]"
+                    className="h-auto min-h-[44px] w-full rounded-xl py-3 text-sm font-semibold text-muted-foreground"
                   >
                     {showAll ? (
                       <>
@@ -698,7 +699,7 @@ export default function DashboardClient() {
                         Show full dashboard — progress, tools &amp; milestones
                       </>
                     )}
-                  </button>
+                  </Button>
 
                   {showAll && (
                     <div className="space-y-6">

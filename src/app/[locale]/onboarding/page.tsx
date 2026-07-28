@@ -7,6 +7,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StepIndicator } from "@/components/StepIndicator";
 import { ContextualHint } from "@/components/ui/contextual-hint";
 import { FeatureTour } from "@/components/ui/feature-tour";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { UserProfile, UserCircumstances, UserLocation, PivotPlan, ValuesAssessment } from "@/lib/intake";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
 import { trackOnboardingStarted, trackOnboardingCompleted, trackOnboardingError, trackAiInsightsReceived, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
@@ -544,27 +554,29 @@ export default function OnboardingPage() {
               : "The plan builder hit a snag after several automatic retries. Your details are saved — let's give it another go."}
           </p>
           {error && (
-            <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3 mb-8">
+            <p className="text-destructive text-sm bg-destructive/10 border border-destructive/40 rounded-lg px-4 py-3 mb-8">
               {error}
             </p>
           )}
           <div className="flex flex-col gap-3">
             {canRetry && (
-              <button
+              <Button
                 type="button"
+                size="lg"
                 onClick={handleRetryGeneration}
-                className="w-full px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                className="h-auto w-full rounded-xl px-10 py-4 text-lg font-bold shadow-lg shadow-primary/30"
               >
                 Try Again
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => { setError(""); setPageStep("form"); }}
-              className="w-full px-10 py-4 rounded-xl border border-slate-600 hover:border-slate-400 text-slate-300 font-medium transition-colors"
+              className="h-auto w-full rounded-xl px-10 py-4 font-medium"
             >
               Start Over
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -831,26 +843,24 @@ export default function OnboardingPage() {
                 className="flex flex-col gap-5"
               >
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Email address <span className="text-teal-400">*</span>
-                  </label>
-                  <input
+                  <Label htmlFor="onboarding-email" className="mb-2 text-foreground">
+                    Email address <span className="text-accent">*</span>
+                  </Label>
+                  <Input
+                    id="onboarding-email"
                     type="email"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); if (emailTouched) setEmailError(validateEmail(e.target.value)); }}
                     onBlur={() => { setEmailTouched(true); setEmailError(validateEmail(email)); }}
                     placeholder="you@example.com"
                     required
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
-                      emailTouched && emailError
-                        ? "border-[var(--destructive)] focus:border-[var(--destructive)]"
-                        : emailTouched && email && !emailError
-                          ? "border-teal-500/70 focus:border-teal-400"
-                          : "border-slate-600 focus:border-teal-500"
+                    aria-invalid={emailTouched && !!emailError}
+                    className={`h-auto rounded-xl bg-secondary px-4 py-3 ${
+                      emailTouched && email && !emailError ? "border-primary/70" : ""
                     }`}
                   />
                   {emailTouched && emailError && (
-                    <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{emailError}</p>
+                    <p className="mt-1.5 text-xs text-destructive">{emailError}</p>
                   )}
                   {emailTouched && email && !emailError && (
                     <p className="mt-1.5 text-xs" style={{ color: "var(--chart-3)" }}>&#10003; Valid email</p>
@@ -861,17 +871,17 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <span className="block text-sm font-medium text-slate-300 mb-2">
-                    Resume upload <span className="text-teal-400">*</span>
-                    <span className="text-slate-500 font-normal ml-2">(PDF or DOCX)</span>
-                  </span>
+                  <Label htmlFor="onboarding-resume" className="mb-2 text-foreground">
+                    Resume upload <span className="text-accent">*</span>
+                    <span className="text-muted-foreground font-normal ml-2">(PDF or DOCX)</span>
+                  </Label>
                   <label
-                    className={`block w-full px-4 py-4 rounded-xl bg-slate-800 border border-dashed cursor-pointer text-center transition-all duration-200 ${
+                    className={`block w-full px-4 py-4 rounded-xl bg-secondary border border-dashed cursor-pointer text-center transition-all duration-200 ${
                       dropActive
-                        ? "border-teal-400 bg-teal-950/30 scale-[1.01]"
+                        ? "border-accent bg-accent/10 scale-[1.01]"
                         : resumeFile
-                          ? "border-teal-600"
-                          : "border-slate-600 hover:border-teal-500"
+                          ? "border-primary"
+                          : "border-input hover:border-ring"
                     }`}
                     onDragOver={(e) => { e.preventDefault(); setDropActive(true); }}
                     onDragLeave={() => setDropActive(false)}
@@ -888,13 +898,14 @@ export default function OnboardingPage() {
                     }}
                   >
                     {resumeFile ? (
-                      <span className="text-teal-400 font-medium">{resumeFile.name}</span>
+                      <span className="text-accent font-medium">{resumeFile.name}</span>
                     ) : (
-                      <span className="text-slate-400">
+                      <span className="text-muted-foreground">
                         {dropActive ? "Drop your resume here" : "Click or drag to upload resume"}
                       </span>
                     )}
                     <input
+                      id="onboarding-resume"
                       ref={fileRef}
                       type="file"
                       accept=".pdf,.docx,.doc,.txt"
@@ -911,7 +922,7 @@ export default function OnboardingPage() {
                     />
                   </label>
                   {resumeError && (
-                    <p className="mt-1.5 text-xs" style={{ color: "var(--destructive)" }}>{resumeError}</p>
+                    <p className="mt-1.5 text-xs text-destructive">{resumeError}</p>
                   )}
                   <ContextualHint id="hint-resume" className="mt-2">
                     PDF or DOCX works best. Our AI extracts your skills, experience, and education automatically — no manual entry needed.
@@ -919,13 +930,14 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <Label htmlFor="onboarding-linkedin" className="mb-2 text-foreground">
                     LinkedIn URL
-                    <span className="text-slate-500 font-normal ml-2">(improves accuracy)</span>
-                  </label>
+                    <span className="text-muted-foreground font-normal ml-2">(improves accuracy)</span>
+                  </Label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <input
+                      <Input
+                        id="onboarding-linkedin"
                         type="text"
                         value={linkedinUrl}
                         onChange={(e) => setLinkedinUrl(e.target.value)}
@@ -942,27 +954,28 @@ export default function OnboardingPage() {
                           }
                         }}
                         placeholder="linkedin.com/in/yourname"
-                        className={`w-full px-4 py-3 pr-10 rounded-xl bg-slate-800 border focus:outline-none text-white placeholder-slate-500 transition-colors ${
+                        className={`h-auto rounded-xl bg-secondary px-4 py-3 pr-10 ${
                           linkedinUrlStatus(linkedinUrl) === "valid"
-                            ? "border-teal-500/70 focus:border-teal-400"
+                            ? "border-primary/70"
                             : linkedinUrlStatus(linkedinUrl) === "invalid"
-                            ? "border-amber-500/60 focus:border-amber-400"
-                            : "border-slate-600 focus:border-teal-500"
+                            ? "border-amber-500/60"
+                            : ""
                         }`}
                       />
                       {linkedinUrlStatus(linkedinUrl) === "valid" && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-400 text-xs font-medium pointer-events-none">&#10003;</span>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-accent text-xs font-medium pointer-events-none">&#10003;</span>
                       )}
                       {linkedinUrlStatus(linkedinUrl) === "invalid" && (
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs pointer-events-none">?</span>
                       )}
                     </div>
                     {!linkedinUrl && (
-                      <button
+                      <Button
                         type="button"
+                        variant="secondary"
                         onClick={pasteLinkedinFromClipboard}
                         disabled={linkedinPasting}
-                        className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+                        className="h-auto rounded-xl px-4 py-3 text-sm font-medium"
                         title="Paste LinkedIn URL from clipboard"
                       >
                         {linkedinPasting ? (
@@ -975,7 +988,7 @@ export default function OnboardingPage() {
                             <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                           </svg>
                         )}
-                      </button>
+                      </Button>
                     )}
                   </div>
                   {linkedinUrlStatus(linkedinUrl) === "invalid" && (
@@ -984,13 +997,13 @@ export default function OnboardingPage() {
                     </p>
                   )}
                   {linkedinPreview && linkedinUrlStatus(linkedinUrl) === "valid" && (
-                    <div className="mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-teal-950/30 border border-teal-800/30">
-                      <div className="w-7 h-7 rounded-full bg-teal-600/30 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                    <div className="mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-accent/10 border border-accent/30">
+                      <div className="w-7 h-7 rounded-full bg-primary/30 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                         </svg>
                       </div>
-                      <span className="text-sm text-teal-300/90 capitalize truncate">{linkedinPreview.username}</span>
+                      <span className="text-sm text-accent/90 capitalize truncate">{linkedinPreview.username}</span>
                     </div>
                   )}
                   <ContextualHint id="hint-linkedin" variant="info" className="mt-2">
@@ -999,19 +1012,20 @@ export default function OnboardingPage() {
                 </div>
 
                 {error && (
-                  <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+                  <p className="text-destructive text-sm bg-destructive/10 border border-destructive/40 rounded-lg px-4 py-3">
                     {error}
                   </p>
                 )}
 
                 <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
-                  <button
+                  <Button
                     type="button"
+                    size="lg"
                     onClick={handleStep1Next}
-                    className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-auto w-full rounded-xl px-8 py-4 text-lg font-bold shadow-lg shadow-primary/30"
                   >
                     Next &rarr;
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -1028,16 +1042,17 @@ export default function OnboardingPage() {
                 className="flex flex-col gap-5"
               >
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <Label htmlFor="onboarding-website" className="mb-2 text-foreground">
                     Portfolio or personal site
-                    <span className="text-slate-500 font-normal ml-2">(optional)</span>
-                  </label>
-                  <input
+                    <span className="text-muted-foreground font-normal ml-2">(optional)</span>
+                  </Label>
+                  <Input
+                    id="onboarding-website"
                     type="url"
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     placeholder="https://yoursite.com"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                    className="h-auto rounded-xl bg-secondary px-4 py-3"
                   />
                   <ContextualHint id="hint-portfolio" variant="info" className="mt-2">
                     Have a personal site or GitHub? We&apos;ll scan it for skills and projects that strengthen your pivot case.
@@ -1045,23 +1060,25 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <Label htmlFor="onboarding-location" className="mb-2 text-foreground">
                     Your location
-                    <span className="text-slate-500 font-normal ml-2">(improves job market accuracy)</span>
-                  </label>
+                    <span className="text-muted-foreground font-normal ml-2">(improves job market accuracy)</span>
+                  </Label>
                   <div className="flex gap-2">
-                    <input
+                    <Input
+                      id="onboarding-location"
                       type="text"
                       value={locationText}
                       onChange={(e) => handleLocationManualChange(e.target.value)}
                       placeholder="City, State, Country"
-                      className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500"
+                      className="h-auto flex-1 rounded-xl bg-secondary px-4 py-3"
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="secondary"
                       onClick={detectLocation}
                       disabled={detectingLocation}
-                      className="px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 hover:border-teal-500 text-slate-300 hover:text-teal-400 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+                      className="h-auto rounded-xl px-4 py-3 text-sm font-medium"
                     >
                       {detectingLocation ? (
                         <span className="inline-flex items-center gap-1.5">
@@ -1075,44 +1092,48 @@ export default function OnboardingPage() {
                           initial={{ scale: 0.8 }}
                           animate={{ scale: [0.8, 1.2, 1] }}
                           transition={{ duration: 0.4 }}
-                          className="text-teal-400"
+                          className="text-accent"
                         >
                           &#10003; Found
                         </motion.span>
                       ) : (
                         "Use GPS"
                       )}
-                    </button>
+                    </Button>
                   </div>
                   {location?.source === "gps" && !gpsResolved && (
-                    <p className="text-teal-500 text-xs mt-1.5">Detected via GPS — edit above to override</p>
+                    <p className="text-primary text-xs mt-1.5">Detected via GPS — edit above to override</p>
                   )}
                 </div>
 
                 <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
                   <div className="flex gap-3">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="lg"
                       onClick={goBack}
-                      className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                      className="h-auto flex-1 rounded-xl px-8 py-4 text-lg font-bold"
                     >
                       &larr; Back
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      size="lg"
                       onClick={handleStep2Next}
-                      className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                      className="h-auto flex-1 rounded-xl px-8 py-4 text-lg font-bold shadow-lg shadow-primary/30"
                     >
                       Next &rarr;
-                    </button>
+                    </Button>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={goNext}
-                    className="w-full min-h-[44px] text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors text-center mt-1"
+                    className="w-full min-h-[44px] text-muted-foreground hover:text-foreground text-sm font-medium mt-1"
                   >
                     Skip this step
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -1128,106 +1149,129 @@ export default function OnboardingPage() {
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="flex flex-col gap-4"
               >
-                <p className="text-slate-400 text-sm mb-1">
+                <p className="text-muted-foreground text-sm mb-1">
                   Fine-tune your plan with real-life constraints. Smart defaults are pre-selected.
                 </p>
 
                 {/* Financial cluster */}
-                <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Financial</h3>
+                <div className="rounded-xl bg-secondary/40 border border-border/50 p-4">
+                  <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Financial</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Minimum salary requirement</label>
-                      <select
+                      <Label htmlFor="onboarding-salary" className="mb-1.5 text-muted-foreground font-normal">Minimum salary requirement</Label>
+                      <Select
                         value={circumstances.salaryFloor ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, salaryFloor: e.target.value || undefined })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                        onValueChange={(val) => setCircumstances({ ...circumstances, salaryFloor: val || undefined })}
                       >
-                        {SALARY_RANGES.map((r) => (
-                          <option key={r.value} value={r.value}>{r.label}</option>
-                        ))}
-                      </select>
+                        <SelectTrigger id="onboarding-salary" className="w-full rounded-xl bg-secondary px-4 data-[size=default]:h-auto data-[size=default]:py-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SALARY_RANGES.map((r) => (
+                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Dependents</label>
-                      <select
+                      <Label htmlFor="onboarding-dependents" className="mb-1.5 text-muted-foreground font-normal">Dependents</Label>
+                      <Select
                         value={circumstances.dependents ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, dependents: (e.target.value || undefined) as UserCircumstances["dependents"] })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                        onValueChange={(val) => setCircumstances({ ...circumstances, dependents: (val || undefined) as UserCircumstances["dependents"] })}
                       >
-                        <option value="">Prefer not to say</option>
-                        <option value="none">No dependents</option>
-                        <option value="partner">Partner</option>
-                        <option value="children">Children</option>
-                        <option value="caretaker">Caretaker for family</option>
-                      </select>
+                        <SelectTrigger id="onboarding-dependents" className="w-full rounded-xl bg-secondary px-4 data-[size=default]:h-auto data-[size=default]:py-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Prefer not to say</SelectItem>
+                          <SelectItem value="none">No dependents</SelectItem>
+                          <SelectItem value="partner">Partner</SelectItem>
+                          <SelectItem value="children">Children</SelectItem>
+                          <SelectItem value="caretaker">Caretaker for family</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
 
                 {/* Preferences cluster */}
-                <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Preferences</h3>
+                <div className="rounded-xl bg-secondary/40 border border-border/50 p-4">
+                  <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Preferences</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Transition timeline</label>
-                      <select
+                      <Label htmlFor="onboarding-timeline" className="mb-1.5 text-muted-foreground font-normal">Transition timeline</Label>
+                      <Select
                         value={circumstances.timeline ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, timeline: (e.target.value || undefined) as UserCircumstances["timeline"] })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                        onValueChange={(val) => setCircumstances({ ...circumstances, timeline: (val || undefined) as UserCircumstances["timeline"] })}
                       >
-                        <option value="">No preference</option>
-                        <option value="asap">As soon as possible</option>
-                        <option value="3-6 months">3-6 months</option>
-                        <option value="6-12 months">6-12 months</option>
-                        <option value="1-2 years">1-2 years</option>
-                      </select>
+                        <SelectTrigger id="onboarding-timeline" className="w-full rounded-xl bg-secondary px-4 data-[size=default]:h-auto data-[size=default]:py-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No preference</SelectItem>
+                          <SelectItem value="asap">As soon as possible</SelectItem>
+                          <SelectItem value="3-6 months">3-6 months</SelectItem>
+                          <SelectItem value="6-12 months">6-12 months</SelectItem>
+                          <SelectItem value="1-2 years">1-2 years</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Risk tolerance</label>
-                      <select
+                      <Label htmlFor="onboarding-risk" className="mb-1.5 text-muted-foreground font-normal">Risk tolerance</Label>
+                      <Select
                         value={circumstances.riskTolerance ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, riskTolerance: (e.target.value || undefined) as UserCircumstances["riskTolerance"] })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                        onValueChange={(val) => setCircumstances({ ...circumstances, riskTolerance: (val || undefined) as UserCircumstances["riskTolerance"] })}
                       >
-                        <option value="">No preference</option>
-                        <option value="conservative">Conservative — keep income stable</option>
-                        <option value="moderate">Moderate — some income gap OK</option>
-                        <option value="aggressive">Aggressive — willing to take a leap</option>
-                      </select>
+                        <SelectTrigger id="onboarding-risk" className="w-full rounded-xl bg-secondary px-4 data-[size=default]:h-auto data-[size=default]:py-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No preference</SelectItem>
+                          <SelectItem value="conservative">Conservative — keep income stable</SelectItem>
+                          <SelectItem value="moderate">Moderate — some income gap OK</SelectItem>
+                          <SelectItem value="aggressive">Aggressive — willing to take a leap</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-slate-400 mb-1.5">Willingness to relocate</label>
-                      <select
+                      <Label htmlFor="onboarding-relocate" className="mb-1.5 text-muted-foreground font-normal">Willingness to relocate</Label>
+                      <Select
                         value={circumstances.willingnessToRelocate ?? ""}
-                        onChange={(e) => setCircumstances({ ...circumstances, willingnessToRelocate: (e.target.value || undefined) as UserCircumstances["willingnessToRelocate"] })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white appearance-none"
+                        onValueChange={(val) => setCircumstances({ ...circumstances, willingnessToRelocate: (val || undefined) as UserCircumstances["willingnessToRelocate"] })}
                       >
-                        <option value="">No preference</option>
-                        <option value="yes">Yes, open to relocating</option>
-                        <option value="no">No, staying in current area</option>
-                        <option value="remote-preferred">Remote work preferred</option>
-                      </select>
+                        <SelectTrigger id="onboarding-relocate" className="w-full rounded-xl bg-secondary px-4 data-[size=default]:h-auto data-[size=default]:py-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No preference</SelectItem>
+                          <SelectItem value="yes">Yes, open to relocating</SelectItem>
+                          <SelectItem value="no">No, staying in current area</SelectItem>
+                          <SelectItem value="remote-preferred">Remote work preferred</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
 
                 <div className="sticky bottom-0 z-10 mt-2 -mx-1 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent md:static md:bg-none md:p-0">
                   <div className="flex gap-3">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="lg"
                       onClick={goBack}
-                      className="flex-1 px-8 py-4 rounded-xl border border-slate-600 hover:border-slate-500 font-bold text-lg transition-colors text-slate-300"
+                      className="h-auto flex-1 rounded-xl px-8 py-4 text-lg font-bold"
                     >
                       &larr; Back
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      size="lg"
                       onClick={handleSubmit}
-                      className="flex-1 px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+                      className="h-auto flex-1 rounded-xl px-8 py-4 text-lg font-bold shadow-lg shadow-primary/30"
                     >
                       {ctaVariant === "urgency"
                         ? "Reveal My Plan"
@@ -1235,16 +1279,16 @@ export default function OnboardingPage() {
                           ? "Show My Best Move"
                           : "Analyze My Background"}
                       {" "}&rarr;
-                    </button>
+                    </Button>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="link"
                     onClick={handleSubmit}
-                    className="w-full min-h-[44px] text-sm font-medium transition-colors text-center mt-1 underline"
-                    style={{ color: "var(--muted-foreground)" }}
+                    className="w-full min-h-[44px] text-sm font-medium mt-1 text-muted-foreground"
                   >
                     Skip &mdash; I&apos;ll let the AI decide
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}

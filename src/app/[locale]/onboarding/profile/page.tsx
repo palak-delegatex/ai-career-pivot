@@ -7,6 +7,7 @@ import type { ValuesAssessment } from "@/lib/intake";
 import { trackProfileReviewed, trackPlanGenerationStarted, trackPlanGenerationCompleted, trackPlanGenerationError } from "@/lib/tracking";
 import { MatchScoreCard } from "@/components/MatchScoreCard";
 import StreamingPlanGeneration from "@/components/StreamingPlanGeneration";
+import { Button } from "@/components/ui/button";
 
 export default function ProfileReviewPage() {
   return (
@@ -231,37 +232,42 @@ function ProfileReviewContent() {
         <MatchScoreCard profile={profile} />
 
         {error && (
-          <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3 mb-6">
+          <p className="text-destructive text-sm bg-destructive/10 border border-destructive/40 rounded-lg px-4 py-3 mb-6">
             {error}
           </p>
         )}
 
-        <div className="bg-slate-800/60 border border-teal-700/30 rounded-2xl p-6 mb-6">
-          <h2 className="text-lg font-bold text-teal-400 mb-2">Personalize Your Roadmap</h2>
-          <p className="text-slate-400 text-sm mb-4">
+        <div className="bg-secondary/60 border border-primary/30 rounded-2xl p-6 mb-6">
+          <h2 className="text-lg font-bold text-accent mb-2">Personalize Your Roadmap</h2>
+          <p className="text-muted-foreground text-sm mb-4">
             Take a quick values assessment (5-8 min) to get more tailored career recommendations.
           </p>
-          <button
+          <Button
+            type="button"
             onClick={() => router.push("/assessment")}
-            className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-sm transition-colors shadow-lg shadow-teal-900/50"
+            className="h-auto rounded-xl px-6 py-3 text-sm font-bold shadow-lg shadow-primary/30"
           >
             Take Values Assessment →
-          </button>
+          </Button>
         </div>
 
         <div className="flex gap-4">
-          <button
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => router.push("/onboarding")}
-            className="flex-1 px-6 py-4 rounded-xl border border-slate-600 hover:border-slate-400 text-slate-300 font-medium transition-colors"
+            className="h-auto flex-1 rounded-xl px-6 py-4 font-medium"
           >
             ← Re-upload
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            size="lg"
             onClick={handleGenerate}
-            className="flex-[2] px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
+            className="h-auto flex-[2] rounded-xl px-8 py-4 text-lg font-bold shadow-lg shadow-primary/30"
           >
             Skip Assessment & Generate →
-          </button>
+          </Button>
         </div>
 
         <p className="text-slate-500 text-xs text-center mt-6">
