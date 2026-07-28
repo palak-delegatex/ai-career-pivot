@@ -164,7 +164,7 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        <main className="max-w-4xl mx-auto px-6 py-20">
+        <main id="main-content" className="max-w-4xl mx-auto px-6 py-20">
 
           {/* TL;DR */}
           <section className="mb-12 bg-slate-900/60 border border-slate-800 rounded-xl p-6">

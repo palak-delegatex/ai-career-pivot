@@ -182,7 +182,7 @@ export default function ChromeExtensionPage() {
           </div>
         </section>
 
-        <main className="max-w-5xl mx-auto px-6 pb-20">
+        <main id="main-content" className="max-w-5xl mx-auto px-6 pb-20">
           {/* Supported platforms strip */}
           <section className="mb-24 bg-slate-900/60 border border-slate-800 rounded-2xl p-8" aria-labelledby="platforms-heading">
             <h2 id="platforms-heading" className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-4 text-center">

@@ -296,7 +296,7 @@ export default function FreeUploadClient() {
   }
 
   return (
-    <main className="max-w-lg mx-auto px-6 py-16">
+    <main id="main-content" className="max-w-lg mx-auto px-6 py-16">
       {/* Entry-mode toggle — hidden once an upload analysis is streaming so the
           reveal owns the viewport. Quick-check is the default zero-upload path. */}
       {!loading && (

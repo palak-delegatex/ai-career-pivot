@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import SiteNav from "@/components/SiteNav";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
 import CaseStudyCards from "@/components/CaseStudyCards";
@@ -184,7 +184,6 @@ function ActivityIndicator() {
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
   const t = useTranslations("nav");
-  const tc = useTranslations("common");
   const th = useTranslations("home");
   const steps = th.raw("steps") as { title: string; desc: string }[];
   const personas = th.raw("personas") as { label: string; tag: string }[];
@@ -249,38 +248,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
       <div className="relative z-10 flex flex-col min-h-screen dot-grid">
         {/* Nav */}
-        <motion.nav
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
-              </svg>
-            </div>
-            <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("howItWorks")}</Link>
-            <Link href="/about" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("about")}</Link>
-            <Link href="/faq" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("faq")}</Link>
-            <Link href="/blog" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("blog")}</Link>
-            <Link href="/pricing" className="hidden md:inline-flex items-center min-h-[44px] px-2 text-sm text-slate-400 hover:text-white transition-colors">{t("pricing")}</Link>
-            <LanguageSwitcher />
-            <Link
-              href="/pricing"
-              className="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/25 text-white"
-            >
-              {tc("getStartedFree")}
-            </Link>
-          </div>
-        </motion.nav>
+        <SiteNav />
 
         {/* Hero */}
-        <main ref={heroRef} className="relative flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center w-full overflow-hidden">
+        <main id="main-content" ref={heroRef} className="relative flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center w-full overflow-hidden">
           <Image
             src="/images/hero-career-pivot.png"
             alt=""

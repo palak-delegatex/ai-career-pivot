@@ -371,7 +371,7 @@ export default function FreeResultsClient() {
     : [];
 
   return (
-    <main className="max-w-2xl mx-auto px-6 py-12">
+    <main id="main-content" className="max-w-2xl mx-auto px-6 py-12">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-2 mb-3">

@@ -91,7 +91,7 @@ export default function SiteNav() {
       >
         {t("skipToContent")}
       </a>
-    <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
+    <nav aria-label="Main" className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
       <Logo />
 
       {/* Desktop nav */}

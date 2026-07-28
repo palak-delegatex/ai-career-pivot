@@ -37,7 +37,9 @@ export default async function NetworkingPage({
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <SiteNav />
-        <NetworkingClient />
+        <main id="main-content">
+          <NetworkingClient />
+        </main>
       </div>
     </>
   );

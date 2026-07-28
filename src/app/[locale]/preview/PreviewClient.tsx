@@ -149,7 +149,7 @@ export default function PreviewClient() {
   );
 
   return (
-    <main className="max-w-2xl mx-auto px-4 pt-24 pb-20 sm:px-6">
+    <main id="main-content" className="max-w-2xl mx-auto px-4 pt-24 pb-20 sm:px-6">
       {/* Header */}
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-900/30 border border-teal-700/30 text-teal-300 text-xs font-medium mb-4">

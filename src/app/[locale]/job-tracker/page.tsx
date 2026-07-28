@@ -37,7 +37,9 @@ export default async function JobTrackerPage({
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <SiteNav />
-        <JobTrackerClient />
+        <main id="main-content">
+          <JobTrackerClient />
+        </main>
       </div>
     </>
   );

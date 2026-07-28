@@ -78,7 +78,7 @@ export default async function ReportPage({ params }: Props) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
       <ActivityTracker reportId={id} />
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main id="main-content" className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-3">
             {isOwner ? "Your Career Pivot Report" : "AI Career Pivot Report"}

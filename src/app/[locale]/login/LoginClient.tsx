@@ -138,7 +138,7 @@ function LoginForm() {
   }
 
   return (
-    <main className="flex items-center justify-center px-6 py-24">
+    <main id="main-content" className="flex items-center justify-center px-6 py-24">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold mb-3">{t("form.heading")}</h1>
