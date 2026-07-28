@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import {
   Loader2,
   Copy,
@@ -195,6 +197,8 @@ export default function LinkedInOptimizerClient() {
   const [targetIndustry, setTargetIndustry] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<LinkedInOptimizeResult | null>(null);
+  // Metered free-tier scarcity (AIC-844). Soft nudge only — never blocks a run.
+  const { state: usage, consume: consumeUsage } = useFreeUsage("linkedin-optimizer");
 
   // Paste sections
   const [pasteHeadline, setPasteHeadline] = useState("");
@@ -328,6 +332,9 @@ export default function LinkedInOptimizerClient() {
       const data: LinkedInOptimizeResult = await res.json();
       setResult(data);
       setPhase("results");
+      // Record the run against the free monthly allowance only after it
+      // succeeds, so a failed run never burns a credit.
+      void consumeUsage();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Something went wrong. Try again."
@@ -659,6 +666,17 @@ export default function LinkedInOptimizerClient() {
           missing keywords, and match how recruiters actually search.
         </p>
       </div>
+
+      {usage && (
+        <FreeUsageMeter
+          used={usage.used}
+          limit={usage.limit}
+          noun={usage.noun}
+          period={usage.period}
+          resetsAt={usage.resetsAt}
+          className="mb-6"
+        />
+      )}
 
       <div className="grid lg:grid-cols-5 gap-8">
         {/* Left Column — Input */}

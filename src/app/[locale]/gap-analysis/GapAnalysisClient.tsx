@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
 import LearningResources from "@/components/LearningResources";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import {
   Search,
   CheckCircle2,
@@ -124,6 +126,7 @@ export default function GapAnalysisClient() {
     { degree: string; field: string; institution: string }[]
   >([]);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const { state: usage, consume: consumeUsage } = useFreeUsage("gap-analysis");
 
   useEffect(() => {
     try {
@@ -191,6 +194,7 @@ export default function GapAnalysisClient() {
       const data: GapAnalysisResult = await res.json();
       setResult(data);
       setPhase("results");
+      void consumeUsage();
     } catch {
       setError("Something went wrong. Please try again.");
       setPhase("input");
@@ -480,6 +484,17 @@ export default function GapAnalysisClient() {
           match, which you&apos;re missing, and how to close every gap.
         </p>
       </div>
+
+      {usage && (
+        <FreeUsageMeter
+          used={usage.used}
+          limit={usage.limit}
+          noun={usage.noun}
+          period={usage.period}
+          resetsAt={usage.resetsAt}
+          className="mb-6"
+        />
+      )}
 
       {!profileLoaded && (
         <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">
