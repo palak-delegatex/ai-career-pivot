@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import {
   Loader2,
   Copy,
@@ -617,6 +618,8 @@ export default function LinkedInOptimizerClient() {
             </p>
           </div>
         </section>
+
+        <ToolEmailCapture tool="linkedin-optimizer" className="mb-6" />
 
         <NextStepCTA fromTool="linkedin-optimizer" />
 

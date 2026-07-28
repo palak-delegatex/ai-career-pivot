@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Keyboard, Play, Pause, Square, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 import { useSpeechSynthesis } from "./useSpeechSynthesis";
 import { useLocale } from "next-intl";
@@ -793,6 +794,7 @@ export default function MockInterviewClient() {
                   Practice Again
                 </button>
               </div>
+              <ToolEmailCapture tool="mock-interview" className="mb-6" />
               <NextStepCTA fromTool="mock-interview" />
               <div className="flex justify-center mt-4">
                 <Link
