@@ -1,5 +1,26 @@
 import { Resend } from "resend";
 
+/**
+ * DESIGN TOKEN REFERENCE (email-safe hex ← src/app/globals.css)
+ *
+ * Email clients don't reliably support CSS custom properties, so these
+ * templates hard-code hex values. Keep them aligned with the design tokens
+ * below — when a token changes in globals.css, update the matching hex here.
+ *
+ *   #030712  → --background            (body background)
+ *   #f9fafb  → --foreground            (headings, strong text, card copy)
+ *   #0f172a  → --card                  (card/panel background)
+ *   #0d9488  → --primary               (CTA background, callout border, badge)
+ *   #ffffff  → --primary-foreground    (text on --primary: CTA label, badge)
+ *   #2dd4bf  → --accent                (links, callout eyebrow labels)
+ *   #94a3b8  → --muted-foreground      (body paragraph text)
+ *   #64748b  → slate-500               (footer / fine-print text; no dedicated token)
+ *   #334155  → --border               (footer + card borders)
+ *   #042f2e  → teal-950 callout tint   (highlight/callout card background)
+ *   border-radius:11px → --radius-xl   (calc(--radius * 1.4) = 0.7rem; card radius)
+ *   border-radius:8px  → --radius-lg   (--radius = 0.5rem; CTA button radius)
+ */
+
 const FROM = "AICareerPivot Team <team@ai-career-pivot.com>";
 const REPLY_TO = "founders@ai-career-pivot.com";
 const SITE = "https://ai-career-pivot.com";
@@ -26,10 +47,10 @@ function baseHtml(content: string) {
       <span style="color:#2dd4bf;font-weight:700;font-size:18px;">AICareerPivot</span>
     </div>
     ${content}
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid #1e293b;">
-      <p style="color:#475569;font-size:12px;line-height:1.6;margin:0;">
+    <div style="margin-top:48px;padding-top:24px;border-top:1px solid #334155;">
+      <p style="color:#64748b;font-size:12px;line-height:1.6;margin:0;">
         You're receiving this because you joined the AICareerPivot waitlist.<br>
-        <a href="${utmLink("/", "unsubscribe")}" style="color:#475569;">Unsubscribe</a>
+        <a href="${utmLink("/", "unsubscribe")}" style="color:#64748b;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -42,11 +63,11 @@ function p(text: string) {
 }
 
 function h1(text: string) {
-  return `<h1 style="color:#f1f5f9;font-size:26px;font-weight:700;line-height:1.3;margin:0 0 24px 0;">${text}</h1>`;
+  return `<h1 style="color:#f9fafb;font-size:26px;font-weight:700;line-height:1.3;margin:0 0 24px 0;">${text}</h1>`;
 }
 
 function cta(text: string, href: string) {
-  return `<a href="${href}" style="display:inline-block;margin-top:8px;padding:14px 28px;background:#0d9488;color:#f9fafb;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;">${text}</a>`;
+  return `<a href="${href}" style="display:inline-block;margin-top:8px;padding:14px 28px;background:#0d9488;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;">${text}</a>`;
 }
 
 function sig() {
@@ -101,7 +122,7 @@ export function getEmailTemplate(
           ${p("Thank you for joining the AICareerPivot waitlist.")}
           ${p("Here's what we're building — and why it's different from every other career tool you've tried:")}
           ${p("Most career advice is useless for people with real responsibilities. It tells you to \"save 6 months of expenses and make the leap\" — without asking about your mortgage. It says \"do a bootcamp\" — without asking about your kids' daycare schedule. It says \"network your way in\" — without asking how much runway you actually have.")}
-          ${p("<strong style=\"color:#f1f5f9;\">But there's a deeper problem: generic advice ignores your actual background.</strong>")}
+          ${p("<strong style=\"color:#f9fafb;\">But there's a deeper problem: generic advice ignores your actual background.</strong>")}
           ${p("ChatGPT will tell any software engineer to \"pivot into product management.\" It doesn't know that you spent 3 years leading cross-functional teams, that you have domain expertise in healthcare, or that your side project already has paying users.")}
           ${p("AICareerPivot does something different. Before we generate a single recommendation, we run a personalized research phase:")}
           <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
@@ -110,13 +131,13 @@ export function getEmailTemplate(
             <li>We review your portfolio or personal site if you have one</li>
           </ul>
           ${p("Then we build your roadmap from <em>your actual experience</em> — not a template.")}
-          ${p("<strong style=\"color:#f1f5f9;\">One question while you're here:</strong> What's the single biggest thing that's kept you from making a career change so far?")}
+          ${p("<strong style=\"color:#f9fafb;\">One question while you're here:</strong> What's the single biggest thing that's kept you from making a career change so far?")}
           ${p("Hit reply — we read every response.")}
           ${referralLink ? `
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:32px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:32px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:17px;margin:0 0 8px 0;">Want to move up the list?</p>
             <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 12px 0;">Share your personal link and skip the queue.</p>
-            <p style="color:#f1f5f9;font-size:14px;margin:0 0 16px 0;word-break:break-all;">→ <a href="${referralLink}" style="color:#2dd4bf;">${referralLink}</a></p>
+            <p style="color:#f9fafb;font-size:14px;margin:0 0 16px 0;word-break:break-all;">→ <a href="${referralLink}" style="color:#2dd4bf;">${referralLink}</a></p>
             <p style="color:#64748b;font-size:13px;margin:0;">1 referral = skip 50 spots &nbsp;·&nbsp; 5 referrals = first cohort + 1 month free</p>
           </div>
           <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0 0 16px 0;"><strong style="color:#94a3b8;">Copy to share:</strong> "I'm on the waitlist for AICareerPivot — an AI tool that builds career change roadmaps around your real constraints (mortgage, kids, financial obligations). Way more useful than generic advice. If this sounds like you: ${referralLink}"</p>
@@ -138,7 +159,7 @@ export function getEmailTemplate(
           ${p(`Hi ${name},`)}
           ${p("I want to share something we've learned from talking to hundreds of people who are stuck in their careers.")}
           ${p("Almost none of them are stuck because they're lazy, lack ambition, or don't know what they want.")}
-          ${p("They're stuck because <strong style=\"color:#f1f5f9;\">every career change framework was designed for someone who doesn't exist.</strong>")}
+          ${p("They're stuck because <strong style=\"color:#f9fafb;\">every career change framework was designed for someone who doesn't exist.</strong>")}
           ${p("The mythical \"pivotable professional\" has:")}
           <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
             <li>No mortgage (or a partner who can cover it alone)</li>
@@ -150,12 +171,12 @@ export function getEmailTemplate(
           ${p("For most people considering a career change, none of that is true.")}
           ${p("So they do what anyone rational does: they wait. \"When the timing is better.\" \"After the kids are in school.\" \"Once we pay off the car.\"")}
           ${p("And years pass.")}
-          ${p("But there's a second problem nobody talks about: <strong style=\"color:#f1f5f9;\">even when people are finally ready to act, the advice they get ignores who they actually are.</strong>")}
+          ${p("But there's a second problem nobody talks about: <strong style=\"color:#f9fafb;\">even when people are finally ready to act, the advice they get ignores who they actually are.</strong>")}
           ${p("Generic tools ask \"what field do you want to enter?\" They don't ask what you've spent a decade getting really good at. They don't identify the transferable skills buried in your job history that are worth real money in a new context.")}
           ${p("That's why we built a research phase before any recommendation. We read your actual experience first.")}
           ${p("More on exactly how that works in a few days.")}
           ${sig()}
-          ${p("<strong style=\"color:#f1f5f9;\">P.S.</strong> — Unlike every other career tool, we actually read your background. Not a quiz. Your real resume. Your actual LinkedIn. We built this because we hate generic advice as much as you do.")}
+          ${p("<strong style=\"color:#f9fafb;\">P.S.</strong> — Unlike every other career tool, we actually read your background. Not a quiz. Your real resume. Your actual LinkedIn. We built this because we hate generic advice as much as you do.")}
         `),
       };
 
@@ -181,9 +202,9 @@ export function getEmailTemplate(
           ${p("We also ask about what surrounds you: monthly obligations, your financial floor, family situation, and risk tolerance. This isn't to talk you out of a change — it's to build a plan that's actually executable.")}
           <p style="color:#2dd4bf;font-size:18px;font-weight:600;margin:24px 0 8px 0;">Step 3 — Build the phased roadmap from your real data</p>
           <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
-            <li><strong style="color:#f1f5f9;">6 months:</strong> What you can do without leaving your job, based on what you already have</li>
-            <li><strong style="color:#f1f5f9;">12 months:</strong> The transition point — when the math makes sense to move</li>
-            <li><strong style="color:#f1f5f9;">24 months:</strong> Where you're targeting to be, with checkpoints tied to your specific situation</li>
+            <li><strong style="color:#f9fafb;">6 months:</strong> What you can do without leaving your job, based on what you already have</li>
+            <li><strong style="color:#f9fafb;">12 months:</strong> The transition point — when the math makes sense to move</li>
+            <li><strong style="color:#f9fafb;">24 months:</strong> Where you're targeting to be, with checkpoints tied to your specific situation</li>
           </ul>
           ${p("Every recommendation is grounded in your actual experience and actual constraints. Not a template. Not generic advice.")}
           <p style="color:#2dd4bf;font-size:18px;font-weight:600;margin:24px 0 8px 0;">Here is what we do when you are ready:</p>
@@ -231,8 +252,8 @@ export function getEmailTemplate(
           ${h1("Early cohort is opening — you're invited")}
           ${p(`Hi ${name},`)}
           ${p("We're opening our first cohort of AICareerPivot — and because you've been on the waitlist, you get first access.")}
-          <div style="background:#0f172a;border:1px solid #1e293b;padding:24px;border-radius:12px;margin:24px 0;">
-            <p style="color:#f1f5f9;font-weight:600;font-size:17px;margin:0 0 16px 0;">What's included:</p>
+          <div style="background:#0f172a;border:1px solid #334155;padding:24px;border-radius:11px;margin:24px 0;">
+            <p style="color:#f9fafb;font-weight:600;font-size:17px;margin:0 0 16px 0;">What's included:</p>
             <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0;">
               <li>Full constraint-aware career roadmap (6/12/24 months)</li>
               <li>Personalized to your financial situation, family constraints, and target direction</li>
@@ -240,7 +261,7 @@ export function getEmailTemplate(
               <li>Direct access to give feedback that shapes the product</li>
             </ul>
           </div>
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:20px;margin:0 0 8px 0;">Founding member pricing: $49/month</p>
             <p style="color:#94a3b8;font-size:14px;margin:0;">Regular pricing will be $99/month. Founding members lock in $49 forever.</p>
           </div>
@@ -251,7 +272,7 @@ export function getEmailTemplate(
           ${p("If the timing isn't right, no worries — you'll stay on the waitlist and hear about future cohorts.")}
           ${p("Either way, thank you for being here from the beginning.")}
           ${sig()}
-          ${p("<strong style=\"color:#f1f5f9;\">P.S.</strong> Have questions before signing up? Hit reply. We're answering every one today.")}
+          ${p("<strong style=\"color:#f9fafb;\">P.S.</strong> Have questions before signing up? Hit reply. We're answering every one today.")}
         `),
       };
 
@@ -264,7 +285,7 @@ export function getEmailTemplate(
           ${h1(`Your profile is ready, ${name}.`)}
           ${p("We finished analyzing your background.")}
           ${intakeSkillCount
-            ? `<div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;text-align:center;">
+            ? `<div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;text-align:center;">
                 <p style="color:#2dd4bf;font-weight:700;font-size:32px;margin:0 0 8px 0;">${intakeSkillCount}</p>
                 <p style="color:#94a3b8;font-size:15px;margin:0;">transferable skills identified from your experience</p>
               </div>`
@@ -321,12 +342,12 @@ export function getEmailTemplate(
         html: baseHtml(`
           ${h1(`${referralName} just joined through your link.`)}
           ${p(`Quick note: ${referralName} just joined the AICareerPivot waitlist through your referral link.`)}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;text-align:center;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;text-align:center;">
             <p style="color:#2dd4bf;font-weight:700;font-size:32px;margin:0 0 4px 0;">${count}</p>
             <p style="color:#94a3b8;font-size:15px;margin:0;">total referral${count === 1 ? "" : "s"} — you've moved up ${count * 50} spots</p>
           </div>
           ${nextTierCount && nextTierName
-            ? p(`You're <strong style="color:#f1f5f9;">${nextTierCount - count} referral${nextTierCount - count === 1 ? "" : "s"} away</strong> from unlocking <strong style="color:#f1f5f9;">${nextTierName}</strong> tier.`)
+            ? p(`You're <strong style="color:#f9fafb;">${nextTierCount - count} referral${nextTierCount - count === 1 ? "" : "s"} away</strong> from unlocking <strong style="color:#f9fafb;">${nextTierName}</strong> tier.`)
             : p("You've reached the top tier. Thank you for spreading the word.")}
           ${p(`→ Share your link again: <a href="${referralLink}" style="color:#2dd4bf;word-break:break-all;">${referralLink}</a>`)}
           ${sig()}
@@ -342,11 +363,11 @@ export function getEmailTemplate(
         html: baseHtml(`
           ${h1(`You've unlocked Mover tier, ${name}.`)}
           ${p("You referred your first person to AICareerPivot.")}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:17px;margin:0 0 8px 0;">✓ You've earned:</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0;">Skip 50 people on the waitlist</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0;">Skip 50 people on the waitlist</p>
           </div>
-          ${p("2 more referrals unlocks <strong style=\"color:#f1f5f9;\">Trailblazer</strong> — skip 200 people and guarantee your spot in the first cohort.")}
+          ${p("2 more referrals unlocks <strong style=\"color:#f9fafb;\">Trailblazer</strong> — skip 200 people and guarantee your spot in the first cohort.")}
           ${opts?.referralCode ? p(`→ Keep sharing: <a href="${SITE}?ref=${opts.referralCode}" style="color:#2dd4bf;word-break:break-all;">${SITE}?ref=${opts.referralCode}</a>`) : ""}
           ${sig()}
         `),
@@ -360,12 +381,12 @@ export function getEmailTemplate(
         html: baseHtml(`
           ${h1(`Trailblazer tier, ${name}.`)}
           ${p("You've referred 3 people to AICareerPivot.")}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:17px;margin:0 0 12px 0;">✓ You've earned:</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0 0 8px 0;">Skip 200 people on the waitlist</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0;">Guaranteed spot in our first cohort</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0 0 8px 0;">Skip 200 people on the waitlist</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0;">Guaranteed spot in our first cohort</p>
           </div>
-          ${p("2 more referrals unlocks <strong style=\"color:#f1f5f9;\">Pioneer</strong> — first cohort + 1 month free ($49 value).")}
+          ${p("2 more referrals unlocks <strong style=\"color:#f9fafb;\">Pioneer</strong> — first cohort + 1 month free ($49 value).")}
           ${opts?.referralCode ? p(`→ Keep sharing: <a href="${SITE}?ref=${opts.referralCode}" style="color:#2dd4bf;word-break:break-all;">${SITE}?ref=${opts.referralCode}</a>`) : ""}
           ${sig()}
         `),
@@ -379,14 +400,14 @@ export function getEmailTemplate(
         html: baseHtml(`
           ${h1(`Pioneer tier, ${name}.`)}
           ${p("You've referred 5 people to AICareerPivot.")}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:17px;margin:0 0 12px 0;">✓ You've earned:</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0 0 8px 0;">Guaranteed spot in our first cohort</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0;">1 month free when you join ($49 value)</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0 0 8px 0;">Guaranteed spot in our first cohort</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0;">1 month free when you join ($49 value)</p>
           </div>
           ${p("We'll reach out personally when the cohort opens.")}
           ${p("Thank you — referrals from people who genuinely believe in this make an enormous difference for an early-stage product.")}
-          ${opts?.referralCode ? p(`5 more referrals unlocks <strong style="color:#f1f5f9;">Architect</strong> — lifetime founding member pricing ($49/mo locked forever). Keep sharing: <a href="${SITE}?ref=${opts.referralCode}" style="color:#2dd4bf;word-break:break-all;">${SITE}?ref=${opts.referralCode}</a>`) : ""}
+          ${opts?.referralCode ? p(`5 more referrals unlocks <strong style="color:#f9fafb;">Architect</strong> — lifetime founding member pricing ($49/mo locked forever). Keep sharing: <a href="${SITE}?ref=${opts.referralCode}" style="color:#2dd4bf;word-break:break-all;">${SITE}?ref=${opts.referralCode}</a>`) : ""}
           ${sig()}
         `),
       };
@@ -399,9 +420,9 @@ export function getEmailTemplate(
         html: baseHtml(`
           ${h1(`Architect tier, ${name}.`)}
           ${p("You've referred 10 people to AICareerPivot.")}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#2dd4bf;font-weight:700;font-size:17px;margin:0 0 12px 0;">✓ You've earned:</p>
-            <p style="color:#f1f5f9;font-size:16px;margin:0;">Lifetime founding member pricing — $49/month locked forever</p>
+            <p style="color:#f9fafb;font-size:16px;margin:0;">Lifetime founding member pricing — $49/month locked forever</p>
           </div>
           ${p("You're in a very small group. We'll reach out personally before cohort launch.")}
           ${p("Thank you for going this far. It means more than you know.")}
@@ -422,7 +443,7 @@ export function getEmailTemplate(
           ${h1(`Time for a check-in, ${name}.`)}
           ${p(`When we built your roadmap, you planned to start this milestone by now:`)}
           <div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:24px 0;border-radius:0 8px 8px 0;">
-            <p style="color:#f1f5f9;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
+            <p style="color:#f9fafb;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
           </div>
           ${p("How's it going? Whether you're ahead of schedule, right on track, or need to adjust — your roadmap is there to help.")}
           ${p("You can mark this milestone complete, update your goals, or explore what's next.")}
@@ -474,15 +495,15 @@ export function getEmailTemplate(
         previewText: nextAction ? `Next up: ${nextAction}` : "Progress made. Your roadmap is updating.",
         html: baseHtml(`
           ${h1(`Nice work, ${name}.`)}
-          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:24px 0;">
+          <div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:24px 0;">
             <p style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Milestone completed</p>
-            <p style="color:#f1f5f9;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
+            <p style="color:#f9fafb;font-size:17px;font-weight:600;margin:0;">${milestone}</p>
           </div>
           ${p("Every step forward is real movement — not just planning.")}
           ${nextAction
             ? `<div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:0 0 24px 0;border-radius:0 8px 8px 0;">
                 <p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Your next milestone</p>
-                <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
+                <p style="color:#f9fafb;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
               </div>`
             : p("Your roadmap has updated. Check what's next and keep the momentum going.")
           }
@@ -511,7 +532,7 @@ export function getEmailTemplate(
           ${h1(`Weekly check-in, ${name}.`)}
           ${targetRole ? `<p style="color:#64748b;font-size:14px;margin:0 0 24px 0;">Roadmap: ${targetRole}</p>` : ""}
           ${completedCount > 0
-            ? `<div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:12px;margin:0 0 24px 0;text-align:center;">
+            ? `<div style="background:#042f2e;border:1px solid #0d9488;padding:20px 24px;border-radius:11px;margin:0 0 24px 0;text-align:center;">
                 <p style="color:#2dd4bf;font-weight:700;font-size:32px;margin:0 0 4px 0;">${completedCount}</p>
                 <p style="color:#94a3b8;font-size:15px;margin:0;">milestone${completedCount > 1 ? "s" : ""} completed this week</p>
               </div>`
@@ -520,7 +541,7 @@ export function getEmailTemplate(
           ${nextAction
             ? `<div style="background:#0f172a;border-left:3px solid #2dd4bf;padding:20px 24px;margin:0 0 24px 0;border-radius:0 8px 8px 0;">
                 <p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">Recommended next action</p>
-                <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
+                <p style="color:#f9fafb;font-size:16px;font-weight:600;margin:0;">${nextAction}</p>
               </div>`
             : ""
           }
@@ -539,10 +560,10 @@ export function getEmailTemplate(
       const surprisePath = paths.length > 1 ? paths[paths.length - 1] : null;
 
       const pathCards = paths.map((p) =>
-        `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:20px 24px;margin:0 0 12px 0;">
+        `<div style="background:#0f172a;border:1px solid #334155;border-radius:11px;padding:20px 24px;margin:0 0 12px 0;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0;">${p.targetRole}</p>
-            <span style="background:#0d9488;color:#f9fafb;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;">${p.matchScore}% match</span>
+            <p style="color:#f9fafb;font-weight:700;font-size:17px;margin:0;">${p.targetRole}</p>
+            <span style="background:#0d9488;color:#ffffff;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;">${p.matchScore}% match</span>
           </div>
           <p style="color:#64748b;font-size:13px;margin:0 0 8px 0;">${p.targetIndustry}</p>
           <p style="color:#94a3b8;font-size:14px;line-height:1.6;margin:0;">${p.rationale}</p>
@@ -551,7 +572,7 @@ export function getEmailTemplate(
 
       const strengthsList = strengths.length > 0
         ? `<div style="margin:24px 0;">
-            <p style="color:#f1f5f9;font-weight:700;font-size:15px;margin:0 0 12px 0;">Your top transferable strengths:</p>
+            <p style="color:#f9fafb;font-weight:700;font-size:15px;margin:0 0 12px 0;">Your top transferable strengths:</p>
             ${strengths.map(s => `<span style="display:inline-block;background:#042f2e;border:1px solid #0d9488;color:#2dd4bf;font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;margin:0 6px 6px 0;">${s}</span>`).join("")}
           </div>`
         : "";
@@ -571,9 +592,9 @@ export function getEmailTemplate(
 
           ${strengthsList}
 
-          ${surprisePath ? `<div style="background:#1e1b4b;border:1px solid #4338ca;border-radius:12px;padding:20px 24px;margin:24px 0;">
-            <p style="color:#a5b4fc;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">One you might not have considered</p>
-            <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 8px 0;">${surprisePath.targetRole} — ${surprisePath.matchScore}% match</p>
+          ${surprisePath ? `<div style="background:#042f2e;border:1px solid #0d9488;border-radius:11px;padding:20px 24px;margin:24px 0;">
+            <p style="color:#2dd4bf;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;">One you might not have considered</p>
+            <p style="color:#f9fafb;font-weight:700;font-size:17px;margin:0 0 8px 0;">${surprisePath.targetRole} — ${surprisePath.matchScore}% match</p>
             <p style="color:#94a3b8;font-size:14px;line-height:1.6;margin:0;">${surprisePath.rationale}</p>
           </div>` : ""}
 
@@ -770,8 +791,8 @@ export function getLaunchEmailTemplate(
     ${p("Upload your resume or LinkedIn profile. Our AI extracts 20-40 transferable skills from your actual work history — then builds a personalized career pivot roadmap around your real constraints: salary floor, family, location, timeline.")}
     ${p("No quiz. No generic advice. Your background, your plan.")}
 
-    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;">
-      <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 16px 0;">What you get:</p>
+    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:11px;border:1px solid #334155;">
+      <p style="color:#f9fafb;font-weight:700;font-size:17px;margin:0 0 16px 0;">What you get:</p>
       <ul style="color:#94a3b8;font-size:15px;line-height:2;margin:0;padding:0 0 0 20px;">
         <li>Full resume + LinkedIn analysis (20-40 transferable skills extracted)</li>
         <li>Constraint-aware planning (salary, family, location, timeline)</li>
@@ -781,8 +802,8 @@ export function getLaunchEmailTemplate(
       </ul>
     </div>
 
-    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;">
-      <p style="color:#f1f5f9;font-weight:700;font-size:17px;margin:0 0 16px 0;">Early-bird pricing for waitlist members only:</p>
+    <div style="margin:32px 0;padding:24px;background:#0f172a;border-radius:11px;border:1px solid #334155;">
+      <p style="color:#f9fafb;font-weight:700;font-size:17px;margin:0 0 16px 0;">Early-bird pricing for waitlist members only:</p>
       ${p("You were here first, so you get access at our lowest price ever:")}
       <p style="color:#2dd4bf;font-size:16px;line-height:2;margin:0;">
         🔹 <strong>$19 report</strong> — one-time career pivot roadmap with AI certifications<br>
@@ -857,9 +878,9 @@ export function getExtensionPromoTemplate(
           ${p("You built your pivot plan on AICareerPivot. Here's the tool that makes the daily grind — finding and vetting roles — take seconds instead of hours.")}
           ${p("The AICareerPivot Chrome extension sits on top of LinkedIn, Indeed, Greenhouse, Lever and more. On any job posting it gives you:")}
           <ul style="color:#94a3b8;font-size:16px;line-height:1.7;padding-left:20px;margin:0 0 16px 0;">
-            <li>An <strong style="color:#f1f5f9;">instant ATS match score</strong> for your resume vs. that exact role</li>
-            <li><strong style="color:#f1f5f9;">One-click save</strong> — the job syncs straight to your dashboard here</li>
-            <li>The <strong style="color:#f1f5f9;">skill gaps</strong> to close before you apply</li>
+            <li>An <strong style="color:#f9fafb;">instant ATS match score</strong> for your resume vs. that exact role</li>
+            <li><strong style="color:#f9fafb;">One-click save</strong> — the job syncs straight to your dashboard here</li>
+            <li>The <strong style="color:#f9fafb;">skill gaps</strong> to close before you apply</li>
           </ul>
           ${p("No copy-paste. No new tab. It's the same analysis you already trust, right where the jobs are.")}
           <div style="margin:32px 0;">
