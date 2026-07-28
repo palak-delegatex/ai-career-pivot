@@ -244,6 +244,34 @@ export function trackFreeEmailCaptured(props: { source: string }) {
   capture("free_email_captured", props);
 }
 
+// ── Anonymous ATS quick-check (AIC-830 / AIC-825 Path A) ─────────────────────
+// The zero-upload "taste" that sits above the existing upload funnel: a
+// logged-out visitor pastes a job posting and gets role + top skills + a LOCKED
+// match score. These three events measure the new activation entry path and its
+// hand-off into the existing free_upload_started → free_results_viewed funnel.
+
+// Fired at paste-submit intent, before the network round-trip, so it counts
+// everyone who committed to a quick-check regardless of a slow/failed analysis.
+export function trackAtsQuickcheckStarted(props: { source: "free_page" | "landing" }) {
+  capture("ats_quickcheck_started", props);
+}
+
+// Fired once the quick-check result renders. `ms_to_result` is the perceived
+// time-to-value; `role_extracted`/`skill_count` let the CMO segment by quality.
+export function trackAtsQuickcheckCompleted(props: {
+  role_extracted: string;
+  skill_count: number;
+  ms_to_result: number;
+}) {
+  capture("ats_quickcheck_completed", props);
+}
+
+// Fired when the user clicks "upload resume" from the quick-check result — the
+// bridge event from the zero-upload taste into the existing upload flow.
+export function trackAtsQuickcheckToUpload(props: { role: string }) {
+  capture("ats_quickcheck_to_upload", props);
+}
+
 // Upgrade comparison sheet (AIC-618 D3 / AIC-777) — the personalized free-vs-paid
 // comparison drawer opened from the /free-results contextual prompts + upsell CTA.
 // `source` records which surface opened it (e.g. "prompt_paths", "prompt_salary",

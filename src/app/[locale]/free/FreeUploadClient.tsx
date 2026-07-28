@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { trackFreeUploadStarted, trackFreeSnapshotStreaming } from "@/lib/tracking";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
+import AtsQuickCheck from "./AtsQuickCheck";
+
+// Two logged-out entry modes on /free (AIC-830). The zero-upload quick-check is
+// the default so a visitor gets value before ever handling a file (the activation
+// leak the ticket fixes); "upload" is one tap away and unchanged.
+type EntryMode = "quickcheck" | "upload";
 
 // The snapshot streams in as partial JSON, so every field is optional until the
 // stream completes. Mirrors the paid plan's partial-object rendering.
@@ -172,12 +178,36 @@ export default function FreeUploadClient() {
   const locale = useLocale();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<EntryMode>("quickcheck");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [dropActive, setDropActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [partial, setPartial] = useState<PartialSnapshot | null>(null);
   const liveCount = useLiveSnapshotCount();
+
+  // Honor a `?mode=upload` deep-link (used by the landing "I have a resume ready"
+  // card) so high-intent visitors skip the quick-check. Read after mount to keep
+  // the SSR/first-client render identical (default quick-check) and avoid a
+  // hydration mismatch; the switch is a one-frame flip only on that deep-link.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (new URLSearchParams(window.location.search).get("mode") === "upload") {
+      setMode("upload");
+    }
+  }, []);
+
+  // Hand-off from the quick-check "upload your resume" CTA: carry the pasted JD
+  // forward (so /free-results can reference the role the user was checking) and
+  // switch to the upload mode where the personalized snapshot is generated.
+  function handleQuickCheckToUpload(jobDescription: string) {
+    try {
+      sessionStorage.setItem("quickcheck_jd", jobDescription);
+    } catch {
+      /* sessionStorage may be unavailable (private mode) — non-fatal */
+    }
+    setMode("upload");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -267,6 +297,33 @@ export default function FreeUploadClient() {
 
   return (
     <main className="max-w-lg mx-auto px-6 py-16">
+      {/* Entry-mode toggle — hidden once an upload analysis is streaming so the
+          reveal owns the viewport. Quick-check is the default zero-upload path. */}
+      {!loading && (
+        <div className="flex p-1 mb-8 rounded-xl bg-slate-800/60 border border-slate-700 text-sm font-semibold">
+          {([
+            { id: "quickcheck", label: "Check a job posting" },
+            { id: "upload", label: "Upload your resume" },
+          ] as const).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setMode(t.id)}
+              aria-pressed={mode === t.id}
+              className={`flex-1 px-3 py-2 rounded-lg transition-colors ${
+                mode === t.id ? "bg-teal-600 text-white" : "text-slate-300 hover:text-white"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {mode === "quickcheck" && !loading ? (
+        <AtsQuickCheck source="free_page" onUploadResume={(jd) => handleQuickCheckToUpload(jd)} />
+      ) : (
+      <>
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
           Free — No credit card required
@@ -388,6 +445,8 @@ export default function FreeUploadClient() {
         Your resume is processed securely and never shared. Want the full roadmap?
         The complete report is just $19.
       </p>
+      </>
+      )}
     </main>
   );
 }
