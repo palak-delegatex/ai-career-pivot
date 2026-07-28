@@ -450,6 +450,11 @@
       "lastUpdatedLabel": "Dernière mise à jour :"
     },
     "cta": {
+      "free": {
+        "heading": "Obtenez votre bilan de carrière IA gratuit",
+        "subheading": "Découvrez vos rôles IA les plus adaptés et vos principales lacunes de compétences en 2 minutes — gratuit, sans inscription. Importez simplement votre CV ou LinkedIn.",
+        "button": "Obtenir mon bilan gratuit →"
+      },
       "waitlist": {
         "heading": "Prêt à construire votre propre feuille de route ?",
         "subheading": "Obtenez un plan de reconversion personnalisé propulsé par l'IA, basé sur vos compétences, vos finances et votre situation familiale.",

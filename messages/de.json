@@ -450,6 +450,11 @@
       "lastUpdatedLabel": "Zuletzt aktualisiert:"
     },
     "cta": {
+      "free": {
+        "heading": "Hol dir deine kostenlose KI-Karriereanalyse",
+        "subheading": "Entdecke in 2 Minuten deine passendsten KI-nahen Rollen und größten Kompetenzlücken – kostenlos, ohne Anmeldung. Lade einfach deinen Lebenslauf oder LinkedIn hoch.",
+        "button": "Kostenlose Analyse starten →"
+      },
       "waitlist": {
         "heading": "Bereit, Ihren eigenen Fahrplan zu erstellen?",
         "subheading": "Erhalten Sie einen personalisierten KI-gestützten Karrierewechselplan basierend auf Ihren Fähigkeiten, Ihrer finanziellen Situation und Ihrer familiären Lage.",

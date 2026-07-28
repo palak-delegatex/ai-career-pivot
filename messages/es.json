@@ -450,6 +450,11 @@
       "lastUpdatedLabel": "Última actualización:"
     },
     "cta": {
+      "free": {
+        "heading": "Obtén tu diagnóstico de carrera con IA gratis",
+        "subheading": "Descubre tus roles más afines a la IA y tus mayores brechas de habilidades en 2 minutos: gratis y sin registro. Solo sube tu currículum o LinkedIn.",
+        "button": "Obtener mi diagnóstico gratis →"
+      },
       "waitlist": {
         "heading": "¿Listo para crear tu propia hoja de ruta?",
         "subheading": "Obtén un plan personalizado de cambio de carrera impulsado por IA basado en tus habilidades, finanzas y situación familiar.",

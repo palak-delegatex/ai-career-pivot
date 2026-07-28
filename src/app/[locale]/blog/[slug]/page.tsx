@@ -100,6 +100,36 @@ function PricingCTA({
   );
 }
 
+// Free-tool CTA — routes cold blog readers to the free AI snapshot (/free)
+// instead of straight to the paywall. Added in AIC-814: high-traffic blog
+// posts were bouncing at 90–100% with every CTA pointing at /pricing.
+function FreeSnapshotCTA({
+  heading = "Get your free AI career snapshot",
+  subheading = "See your best-fit AI-adjacent roles and biggest skill gaps in 2 minutes — free, no signup. Just upload your resume or LinkedIn.",
+  buttonText = "Get My Free Snapshot →",
+}: {
+  heading?: string;
+  subheading?: string;
+  buttonText?: string;
+} = {}) {
+  return (
+    <div className="my-10 p-6 rounded-2xl bg-gradient-to-br from-teal-900 to-emerald-950 border border-teal-600/50 text-center not-prose">
+      <p className="text-white font-semibold text-lg mb-2">
+        {heading}
+      </p>
+      <p className="text-slate-300 text-sm mb-5">
+        {subheading}
+      </p>
+      <Link
+        href="/free"
+        className="inline-block px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-bold rounded-xl transition-all"
+      >
+        {buttonText}
+      </Link>
+    </div>
+  );
+}
+
 export default async function BlogPost({
   params,
 }: {
@@ -114,6 +144,14 @@ export default async function BlogPost({
   // MDX CTA components with localized default copy; MDX-supplied props (if any)
   // still override these defaults.
   const components = {
+    FreeSnapshotCTA: (props: Record<string, unknown>) => (
+      <FreeSnapshotCTA
+        heading={t("cta.free.heading")}
+        subheading={t("cta.free.subheading")}
+        buttonText={t("cta.free.button")}
+        {...props}
+      />
+    ),
     WaitlistCTA: (props: Record<string, unknown>) => (
       <WaitlistCTA
         heading={t("cta.waitlist.heading")}
