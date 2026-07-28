@@ -12,6 +12,7 @@ import {
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import ContextualTestimonial from "@/components/ContextualTestimonial";
 import AtsQuickCheck from "./AtsQuickCheck";
+import { Button } from "@/components/ui/button";
 
 // Two logged-out entry modes on /free (AIC-830). The zero-upload quick-check is
 // the default so a visitor gets value before ever handling a file (the activation
@@ -362,17 +363,18 @@ export default function FreeUploadClient() {
             { id: "quickcheck", label: "Check a job posting" },
             { id: "upload", label: "Upload your resume" },
           ] as const).map((t) => (
-            <button
+            <Button
               key={t.id}
               type="button"
+              variant={mode === t.id ? "default" : "ghost"}
               onClick={() => setMode(t.id)}
               aria-pressed={mode === t.id}
-              className={`flex-1 px-3 py-2 rounded-lg transition-colors ${
-                mode === t.id ? "bg-teal-600 text-white" : "text-slate-300 hover:text-white"
+              className={`h-auto flex-1 rounded-lg px-3 py-2 ${
+                mode === t.id ? "" : "text-slate-300 hover:text-white"
               }`}
             >
               {t.label}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -469,23 +471,32 @@ export default function FreeUploadClient() {
           )}
           <input
             ref={fileRef}
+            id="resume-file"
             type="file"
             accept=".pdf,.docx,.doc,.txt"
             className="sr-only"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? "resume-error" : undefined}
             onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
           />
         </label>
 
         {error && (
-          <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+          <p
+            id="resume-error"
+            role="alert"
+            className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
             {error}
           </p>
         )}
 
-        <button
+        <Button
           type="submit"
+          size="lg"
           disabled={!resumeFile || loading}
-          className="w-full px-6 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-busy={loading}
+          className="h-auto w-full rounded-xl px-6 py-4 text-lg font-bold shadow-lg shadow-primary/30"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
@@ -497,7 +508,7 @@ export default function FreeUploadClient() {
           ) : (
             "Get My Free Snapshot →"
           )}
-        </button>
+        </Button>
       </form>
 
       {liveCount != null && (
