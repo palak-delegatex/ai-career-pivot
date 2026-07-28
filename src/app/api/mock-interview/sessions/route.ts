@@ -16,6 +16,14 @@ function toIntOrNull(value: unknown, min: number, max: number): number | null {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
+// Migration 022_interview_sessions is applied to prod by a human after this code
+// ships, so there is a window where the table does not yet exist. Treat Postgres
+// "undefined_table" (42P01) as a soft no-op instead of a 500 so the trend panel
+// and end-of-mock save degrade quietly rather than spamming error tracking.
+function isMissingTable(error: { code?: string } | null): boolean {
+  return error?.code === "42P01";
+}
+
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get("email");
   if (!email) {
@@ -31,6 +39,9 @@ export async function GET(req: NextRequest) {
     .limit(HISTORY_LIMIT);
 
   if (error) {
+    if (isMissingTable(error)) {
+      return NextResponse.json({ sessions: [] });
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
@@ -67,6 +78,9 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
+    if (isMissingTable(error)) {
+      return NextResponse.json({ session: null, deferred: true });
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
