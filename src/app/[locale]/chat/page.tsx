@@ -7,6 +7,8 @@ import Link from "next/link";
 import WeeklyCheckIn from "@/components/WeeklyCheckIn";
 import SuggestedTopics from "@/components/SuggestedTopics";
 import SessionSelector from "@/components/SessionSelector";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 
 interface Message {
   role: "user" | "assistant";
@@ -146,6 +148,7 @@ export default function ChatPage() {
   const [showCheckIn, setShowCheckIn] = useState(false);
   const [lastSessionDate, setLastSessionDate] = useState<string | null>(null);
   const [sessionSelectorOpen, setSessionSelectorOpen] = useState(false);
+  const { state: usage, consume: consumeUsage } = useFreeUsage("career-coach");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -366,6 +369,9 @@ export default function ChatPage() {
       ];
       setMessages(finalMessages);
       saveMessages(finalMessages, sessionId);
+      // Record one message against the free daily allowance only after a
+      // successful assistant reply — a failed/aborted stream never burns a credit.
+      void consumeUsage();
 
       setSessions((prev) =>
         prev.map((s) =>
@@ -492,6 +498,17 @@ export default function ChatPage() {
                 Your AI coaching partner for the {planContext.targetRole} pivot. Ask about your progress, get advice on next steps, or work through challenges.
               </p>
             </div>
+          )}
+
+          {messages.length === 0 && usage && (
+            <FreeUsageMeter
+              used={usage.used}
+              limit={usage.limit}
+              noun={usage.noun}
+              period={usage.period}
+              resetsAt={usage.resetsAt}
+              className="mb-4"
+            />
           )}
 
           {messages.length === 0 && (

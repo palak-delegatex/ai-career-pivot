@@ -5,6 +5,8 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import {
   FileSignature,
   Loader2,
@@ -162,6 +164,7 @@ export default function CoverLetterClient() {
   >([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+  const { state: usage, consume: consumeUsage } = useFreeUsage("cover-letter");
 
   useEffect(() => {
     try {
@@ -275,6 +278,9 @@ export default function CoverLetterClient() {
 
       setOutput(content);
       setPhase("done");
+      // Record against the free allowance only after a letter is produced,
+      // so a failed generation never burns a credit.
+      void consumeUsage();
 
       saveDocument({
         type: "cover-letter",
@@ -804,6 +810,17 @@ export default function CoverLetterClient() {
           cover letter that highlights your pivot story.
         </p>
       </div>
+
+      {usage && (
+        <FreeUsageMeter
+          used={usage.used}
+          limit={usage.limit}
+          noun={usage.noun}
+          period={usage.period}
+          resetsAt={usage.resetsAt}
+          className="mb-6"
+        />
+      )}
 
       {!profileLoaded && (
         <div className="max-w-lg mx-auto bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">

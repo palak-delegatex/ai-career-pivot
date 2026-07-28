@@ -5,6 +5,8 @@ import { Send, ArrowLeft, Mic2, RotateCcw, FileText, ChevronDown, ChevronUp, Key
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 import { useSpeechSynthesis } from "./useSpeechSynthesis";
 import { useLocale } from "next-intl";
@@ -185,6 +187,8 @@ export default function MockInterviewClient() {
   // the Supabase session — saving requires an authed user, same as the tracker.
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
+  // Metered free-tier scarcity (AIC-844). Soft nudge only — never blocks a session.
+  const { state: usage, consume: consumeUsage } = useFreeUsage("mock-interview");
 
   // Speak an interviewer question if voice mode + TTS are active and unmuted.
   const speakQuestion = useCallback(
@@ -349,6 +353,10 @@ export default function MockInterviewClient() {
       setMessages([{ role: "assistant", content, timestamp: ts }]);
       setQuestionCount(1);
       speakQuestion(content);
+      // Session has successfully started (first question obtained). Record it
+      // against the free monthly allowance exactly once, on the success path
+      // only — a failed start never burns a credit.
+      void consumeUsage();
     } catch {
       setMessages([{
         role: "assistant",
@@ -536,6 +544,17 @@ export default function MockInterviewClient() {
             Get role-specific questions, real-time feedback, and a performance scorecard.
           </p>
         </div>
+
+        {usage && (
+          <FreeUsageMeter
+            used={usage.used}
+            limit={usage.limit}
+            noun={usage.noun}
+            period={usage.period}
+            resetsAt={usage.resetsAt}
+            className="mb-6"
+          />
+        )}
 
         <div className="space-y-6">
           {/* Role selection */}

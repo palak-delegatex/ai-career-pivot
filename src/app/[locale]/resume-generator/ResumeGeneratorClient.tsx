@@ -5,6 +5,8 @@ import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
 import LiveResumeScore from "@/components/LiveResumeScore";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import {
   FileText,
   Mail,
@@ -107,6 +109,7 @@ export default function ResumeGeneratorClient() {
   const [editContent, setEditContent] = useState("");
   const [saving, setSaving] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { state: usage, consume: consumeUsage } = useFreeUsage("resume-generator");
 
   useEffect(() => {
     try {
@@ -167,6 +170,9 @@ export default function ResumeGeneratorClient() {
 
       setOutput(content);
       setPhase("done");
+      // Record against the free monthly allowance only after a successful
+      // generation, so a failed run never burns a credit.
+      void consumeUsage();
 
       if (mode === "cover-letter") {
         saveCoverLetterToSupabase(content, role);
@@ -424,6 +430,17 @@ export default function ResumeGeneratorClient() {
           profile, in seconds.
         </p>
       </div>
+
+      {usage && (
+        <FreeUsageMeter
+          used={usage.used}
+          limit={usage.limit}
+          noun={usage.noun}
+          period={usage.period}
+          resetsAt={usage.resetsAt}
+          className="mb-6"
+        />
+      )}
 
       {!profileLoaded && (
         <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-4 mb-6 text-sm">
