@@ -419,12 +419,13 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         {/* Dual-path entry (AIC-830 / AIC-825 Path C) — below the hero, so
             high-intent visitors still hit the primary CTA first. Users past the
             fold self-select by readiness: resume-ready → upload, just-browsing →
-            zero-upload job-posting quick-check. */}
+            zero-upload job-posting quick-check, not-sure-yet → 30s career quiz
+            (AIC-833 / Path B). */}
         <section className="py-16 px-6">
-          <AnimatedSection className="max-w-3xl mx-auto text-center">
+          <AnimatedSection className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 font-serif">Start your pivot — pick your path</h2>
             <p className="text-slate-400 mb-10">See real value in seconds. No signup, no credit card.</p>
-            <div className="grid sm:grid-cols-2 gap-5 text-left">
+            <div className="grid sm:grid-cols-3 gap-5 text-left">
               <Link
                 href="/free?mode=upload"
                 onClick={() => trackCtaClicked({ cta_text: "I have a resume ready", cta_location: "dual_path", destination: "/free?mode=upload" })}
@@ -444,6 +445,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 <div className="font-bold text-white mb-1">Just browsing a job?</div>
                 <p className="text-sm text-slate-400 mb-4">Paste any job posting and see the skills it demands — no resume needed.</p>
                 <span className="text-teal-400 text-sm font-semibold group-hover:text-teal-300">Check a job posting →</span>
+              </Link>
+              <Link
+                href="/quiz"
+                onClick={() => trackCtaClicked({ cta_text: "Take the career quiz", cta_location: "dual_path", destination: "/quiz" })}
+                className="group rounded-2xl bg-slate-800/60 border border-slate-700 hover:border-teal-500 p-6 transition-colors"
+              >
+                <div className="text-2xl mb-3">🧭</div>
+                <div className="font-bold text-white mb-1">Not sure where you fit?</div>
+                <p className="text-sm text-slate-400 mb-4">Answer 4 quick questions and see which AI-adjacent role matches you.</p>
+                <span className="text-teal-400 text-sm font-semibold group-hover:text-teal-300">Take the 30-second quiz →</span>
               </Link>
             </div>
           </AnimatedSection>
