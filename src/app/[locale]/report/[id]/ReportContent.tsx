@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { PivotPlan, MarketData, UserLocation } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import InteractiveRoadmap from "@/components/InteractiveRoadmap";
+import SkillDeltaPanel from "@/components/SkillDeltaPanel";
 import DownloadPdfButton from "@/components/DownloadPdfButton";
 import SkillGapChart from "@/components/SkillGapChart";
 import SkillTree from "@/components/SkillTree";
@@ -48,6 +49,10 @@ export default function ReportContent({ plans, reportId, location, profile }: { 
           transferableSkillsCount={profile?.transferableSkills?.length ?? 0}
           pdfButton={<DownloadPdfButton reportId={reportId} planIndex={selected} targetRole={plan.targetRole} label="Download Static Report (PDF)" />}
         />
+
+        {(plan.skillDelta?.targetTopSkills?.length ?? 0) > 0 && (
+          <SkillDeltaPanel skillDelta={plan.skillDelta!} targetRole={plan.targetRole} />
+        )}
 
         {(plan.skillGaps ?? []).length > 0 && (
           <TransferabilityBreakdown skillGaps={plan.skillGaps!} />

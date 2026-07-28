@@ -38,6 +38,43 @@ const pivotPlanJsonSchema = jsonSchema<{ plans: PivotPlan[] }>({
           sixMonthMilestones: { type: "array", items: { type: "string" } },
           oneYearMilestones: { type: "array", items: { type: "string" } },
           twoYearMilestones: { type: "array", items: { type: "string" } },
+          skillDelta: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              targetTopSkills: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    skill: { type: "string" },
+                    importance: { type: "string", enum: ["critical", "important", "nice-to-have"] },
+                    status: { type: "string", enum: ["have", "partial", "gap"] },
+                    evidence: { type: "string" },
+                  },
+                  required: ["skill", "importance", "status", "evidence"],
+                },
+              },
+              haveCount: { type: "number" },
+              partialCount: { type: "number" },
+              gapCount: { type: "number" },
+              closingMilestones: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    gapSkill: { type: "string" },
+                    phase: { type: "string", enum: ["6-month", "1-year", "2-year"] },
+                    milestone: { type: "string" },
+                  },
+                  required: ["gapSkill", "phase", "milestone"],
+                },
+              },
+            },
+            required: ["targetTopSkills", "haveCount", "partialCount", "gapCount", "closingMilestones"],
+          },
           skillGaps: {
             type: "array",
             items: {
@@ -177,6 +214,13 @@ type PivotPlan = {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
   twoYearMilestones: string[];
+  skillDelta?: {
+    targetTopSkills: { skill: string; importance: "critical" | "important" | "nice-to-have"; status: "have" | "partial" | "gap"; evidence: string }[];
+    haveCount: number;
+    partialCount: number;
+    gapCount: number;
+    closingMilestones: { gapSkill: string; phase: "6-month" | "1-year" | "2-year"; milestone: string }[];
+  };
   skillGaps: { skill: string; currentLevel: string; requiredLevel: string; priority: "high" | "medium" | "low"; resource?: string; transferabilityScore: number; transferCategory: "direct-transfer" | "partial-transfer" | "new-skill"; transferNote: string }[];
   weekOneActions: { title: string; instruction: string; timeEstimate: string; difficulty: "easy" | "medium" | "hard" }[];
   estimatedTimeToTransition: string;
@@ -321,6 +365,17 @@ Each plan MUST include a riskAssessments array with 4-6 realistic obstacles this
 - category: one of "market" (job market/demand shifts), "skill" (capability gaps), "financial" (income/cost risks), "personal" (burnout, family, motivation), "industry" (sector-specific disruptions)
 - mitigationSteps: 2-4 specific, actionable steps to reduce or eliminate the risk
 Aim for variety across categories. Include at least one high-impact and one low-impact risk. Tailor risks to the user's specific circumstances (dependents, salary floor, risk tolerance, location).
+
+MEASURED SKILL DELTA — REQUIRED FOR EVERY PLAN (this is the backbone of the roadmap):
+Do NOT invent generic milestones. Derive the roadmap from a MEASURED current-vs-target skill delta, computed against the user's ACTUAL skills, experience, and education listed above. For each plan, produce a skillDelta object:
+- targetTopSkills: the 10 MOST important skills this plan's targetRole genuinely needs, ranked most-important-first. For EACH skill, compare it against the user's real background and set:
+  - status "have": the user already clearly demonstrates this — evidence must cite the specific skill/role/experience from their profile that proves it.
+  - status "partial": related or transferable experience exists but needs bridging — evidence names what transfers and what's missing.
+  - status "gap": the user must learn this from scratch — evidence says what's absent (e.g. "no exposure in background").
+  Set importance to "critical", "important", or "nice-to-have". Keep evidence to one short phrase grounded in their actual profile — never fabricate experience they don't have.
+- haveCount, partialCount, gapCount: integer counts across the 10 skills; they MUST sum to exactly 10.
+- closingMilestones: for EVERY "partial" and "gap" skill, add an entry naming the milestone that closes it. milestone MUST be copied VERBATIM from that plan's sixMonthMilestones / oneYearMilestones / twoYearMilestones array, and phase MUST match which array it came from ("6-month", "1-year", or "2-year"). Every partial/gap skill must be closed by at least one milestone. Conversely, WRITE the milestones so they explicitly close these measured gaps — a reader should be able to trace each gap to the milestone that resolves it. "have" skills need no closing milestone.
+This delta is the whole point: the roadmap must visibly derive from the user's measured gaps, not from generic advice.
 
 RULES FOR EVERY FIELD:
 1. matchScore (0-100): overall fit score considering skills, experience, market demand, AI-readiness, and transition difficulty. skillMatchPercent (0-100): percentage of required skills the user already has. Boost matchScore for paths where AI tools significantly lower the barrier to entry.

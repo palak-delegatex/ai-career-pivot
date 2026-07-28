@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
 import PlanHero from "@/components/PlanHero";
 import RoadmapTimeline from "@/components/RoadmapTimeline";
+import SkillDeltaPanel from "@/components/SkillDeltaPanel";
 import SkillGapChart from "@/components/SkillGapChart";
 import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import { useLocale } from "next-intl";
@@ -132,6 +133,13 @@ function StreamedPlanCard({ plan, index }: { plan: DeepPartial<PivotPlan>; index
       ) : hasBasicInfo ? (
         <SectionSkeleton label="Building milestones..." />
       ) : null}
+
+      {(plan.skillDelta?.targetTopSkills?.length ?? 0) > 0 && (
+        <SkillDeltaPanel
+          skillDelta={plan.skillDelta as NonNullable<PivotPlan["skillDelta"]>}
+          targetRole={plan.targetRole}
+        />
+      )}
 
       {hasSkillGaps ? (
         <SkillGapChart skillGaps={plan.skillGaps as NonNullable<PivotPlan["skillGaps"]>} />
