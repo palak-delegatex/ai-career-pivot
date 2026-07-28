@@ -272,6 +272,34 @@ export function trackAtsQuickcheckToUpload(props: { role: string }) {
   capture("ats_quickcheck_to_upload", props);
 }
 
+// ── 30-second career quiz (AIC-833 / AIC-825 Path B) ─────────────────────────
+// The second zero-signup entry path: a logged-out visitor answers 4 questions
+// (role / experience / interests / timeline) and gets an AI-adjacent role match
+// with a LOCKED score, then bridges into the free-upload flow. Mirrors the
+// ats_quickcheck_* trio so the CMO can compare the two activation entry paths.
+
+// Fired when the quiz first loads (at intent), so it counts everyone who landed
+// on the quiz regardless of whether they finish all 4 questions.
+export function trackCareerQuizStarted(props: { source: string }) {
+  capture("career_quiz_started", props);
+}
+
+// Fired when the result card renders. current_role/timeline/interests let the
+// CMO segment matches by audience and see which inputs drive which roles.
+export function trackCareerQuizCompleted(props: {
+  current_role: string;
+  timeline: string;
+  interests: string[];
+}) {
+  capture("career_quiz_completed", props);
+}
+
+// Fired when the user clicks the "get your full roadmap" CTA from the result —
+// the bridge event from the quiz taste into the existing upload/pricing flow.
+export function trackCareerQuizToFree(props: { matched_role: string }) {
+  capture("career_quiz_to_free", props);
+}
+
 // Upgrade comparison sheet (AIC-618 D3 / AIC-777) — the personalized free-vs-paid
 // comparison drawer opened from the /free-results contextual prompts + upsell CTA.
 // `source` records which surface opened it (e.g. "prompt_paths", "prompt_salary",
