@@ -205,9 +205,13 @@ export default function SiteNav() {
                     {user.user_metadata?.full_name || user.email}
                   </div>
                   <form action="/api/auth/signout" method="POST">
-                    <button className="block w-full text-left rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      className="w-full justify-start h-auto rounded-lg px-3 py-3 min-h-[44px] text-sm font-semibold text-red-400 hover:text-red-300 hover:bg-transparent"
+                    >
                       {tc("signOut")}
-                    </button>
+                    </Button>
                   </form>
                 </>
               ) : (

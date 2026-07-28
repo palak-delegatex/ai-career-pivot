@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import SiteNav from "@/components/SiteNav";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export async function generateMetadata({
@@ -83,27 +84,7 @@ export default function AboutPage() {
       />
 
       <div className="min-h-screen bg-slate-950 text-white">
-        {/* Nav */}
-        <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full border-b border-slate-800/50">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6-3m0 13l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
-              </svg>
-            </div>
-            <span className="font-semibold text-lg tracking-tight text-white">AICareerPivot</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/how-it-works" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">How It Works</Link>
-            <Link href="/faq" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">FAQ</Link>
-            <Link
-              href="/pricing"
-              className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold transition-all duration-200 text-white"
-            >
-              Get Started
-            </Link>
-          </div>
-        </nav>
+        <SiteNav />
 
         {/* Hero */}
         <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
