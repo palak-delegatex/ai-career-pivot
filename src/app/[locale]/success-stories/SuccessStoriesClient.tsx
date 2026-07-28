@@ -23,7 +23,7 @@ export default function SuccessStoriesClient() {
       <div className="mesh-bg" />
       <SiteNav />
 
-      <main className="relative z-10 pt-24 pb-16">
+      <main id="main-content" className="relative z-10 pt-24 pb-16">
         {/* Page header */}
         <div className="max-w-4xl mx-auto px-6 text-center mb-8">
           <p

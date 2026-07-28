@@ -91,7 +91,7 @@ export default async function BlogIndex({
       />
     <div className="min-h-screen bg-gray-950 text-white">
       <SiteNav />
-      <main className="py-16 px-6">
+      <main id="main-content" className="py-16 px-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
           {t("index.heading")}

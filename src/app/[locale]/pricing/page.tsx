@@ -183,7 +183,7 @@ export default function PricingPage() {
       <PricingPageTracker />
       <SiteNav />
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
+      <main id="main-content" className="max-w-6xl mx-auto px-6 py-16">
         {/* TL;DR */}
         <div className="max-w-3xl mx-auto mb-12 bg-slate-800/60 border border-slate-700 rounded-xl p-6">
           <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">TL;DR</h2>

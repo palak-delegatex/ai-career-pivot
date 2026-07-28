@@ -100,7 +100,7 @@ export default function FAQPage() {
       <div className="min-h-screen bg-slate-950 text-white">
         <SiteNav />
 
-        <main className="max-w-3xl mx-auto px-6 py-20">
+        <main id="main-content" className="max-w-3xl mx-auto px-6 py-20">
           <header className="mb-16">
             <p className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">FAQ</p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">

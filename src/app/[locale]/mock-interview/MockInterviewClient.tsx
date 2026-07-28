@@ -522,7 +522,7 @@ export default function MockInterviewClient() {
     return (
       <>
       <ModeTabs mode={mode} setMode={setMode} />
-      <main className="max-w-lg mx-auto px-6 pt-6 pb-16">
+      <main id="main-content" className="max-w-lg mx-auto px-6 pt-6 pb-16">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-600/20 border border-purple-600/30 text-purple-400 text-xs font-semibold mb-4">
             <Mic2 className="w-3.5 h-3.5" />

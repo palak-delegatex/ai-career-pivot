@@ -64,7 +64,7 @@ export default function AccountClient() {
   const providerLabel = provider === "google" ? "Google" : "Email (magic link)";
 
   return (
-    <main className="max-w-2xl mx-auto px-6 py-12">
+    <main id="main-content" className="max-w-2xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-extrabold mb-2">Account</h1>
       <p className="text-slate-400 mb-8">Manage your profile and view saved reports.</p>
 

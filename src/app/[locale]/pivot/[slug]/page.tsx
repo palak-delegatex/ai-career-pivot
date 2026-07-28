@@ -112,7 +112,7 @@ export default async function PivotPage({
       />
       <div className="min-h-screen bg-gray-950 text-white">
         <SiteNav />
-        <main className="py-10 px-6">
+        <main id="main-content" className="py-10 px-6">
           <div className="max-w-2xl mx-auto">
             <Link
               href="/blog"

@@ -161,7 +161,7 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
           <PostHogProvider>
-            <div id="main-content" className="flex-1">{children}</div>
+            <div className="flex-1">{children}</div>
             <Footer />
             <HelpPanel />
           </PostHogProvider>

@@ -84,7 +84,7 @@ export default function PivotIndex() {
       />
       <div className="min-h-screen bg-gray-950 text-white">
         <SiteNav />
-        <main className="py-12 px-6">
+        <main id="main-content" className="py-12 px-6">
           <div className="max-w-3xl mx-auto">
             <header className="mb-10">
               <p className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">
