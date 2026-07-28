@@ -8,6 +8,15 @@ import { useVoiceRecorder, type SpeechMetrics } from "./useVoiceRecorder";
 import { useSpeechSynthesis } from "./useSpeechSynthesis";
 import { useLocale } from "next-intl";
 import PrepSheet from "./PrepSheet";
+import MockTrendPanel from "./MockTrendPanel";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import {
+  computeDeliveryScore,
+  parseJdFitScore,
+  type AggregateSpeechMetrics,
+  type InterviewSession,
+} from "@/lib/mock-interview-score";
+import { trackMockSessionSaved } from "@/lib/tracking";
 
 type Mode = "live" | "prep";
 type InterviewType = "behavioral" | "technical" | "situational";
@@ -171,6 +180,10 @@ export default function MockInterviewClient() {
   // default when voice is available; user can mute at any time.
   const [speakEnabled, setSpeakEnabled] = useState(true);
   const allMetricsRef = useRef<SpeechMetrics[]>([]);
+  // AIC-828: persisted delivery scorecards for the trend view. Email comes from
+  // the Supabase session — saving requires an authed user, same as the tracker.
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<InterviewSession[]>([]);
 
   // Speak an interviewer question if voice mode + TTS are active and unmuted.
   const speakQuestion = useCallback(
@@ -212,6 +225,83 @@ export default function MockInterviewClient() {
       }
     } catch {}
   }, [targetRole]);
+
+  // AIC-828: resolve the signed-in user and load their saved sessions for the
+  // trend view. Failures are silent — the mock still works ephemerally for
+  // signed-out users (and before the interview_sessions table is provisioned).
+  useEffect(() => {
+    let cancelled = false;
+    async function loadHistory() {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (cancelled || !user?.email) return;
+        setUserEmail(user.email);
+        const res = await fetch(`/api/mock-interview/sessions?email=${encodeURIComponent(user.email)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data.sessions)) setSessions(data.sessions);
+      } catch {
+        // no-op — trend view simply stays empty
+      }
+    }
+    loadHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Persist a completed session's scorecard so it becomes a comparable, saved
+  // report (the retention loop). No-op when signed out or the save fails.
+  const saveSession = useCallback(
+    async (args: {
+      role: string;
+      feedbackText: string;
+      metrics: AggregateSpeechMetrics | undefined;
+      answers: number;
+    }) => {
+      if (!userEmail) return;
+      const overallScore = computeDeliveryScore(args.metrics);
+      const jdFitScore = parseJdFitScore(args.feedbackText);
+      try {
+        const res = await fetch("/api/mock-interview/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userEmail,
+            targetRole: args.role,
+            interviewType,
+            inputMode,
+            questionsAnswered: args.answers,
+            fillerCount: args.metrics?.totalFillerWords,
+            fillerPct: args.metrics?.fillerWordPercentage,
+            wpm: args.metrics?.averageWordsPerMinute,
+            durationSeconds: args.metrics?.totalDurationSeconds,
+            overallScore,
+            jdFitScore,
+          }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.session) {
+          setSessions((prev) => [data.session, ...prev]);
+          trackMockSessionSaved({
+            target_role: args.role,
+            input_mode: inputMode,
+            questions_answered: args.answers,
+            overall_score: overallScore,
+            jd_fit_score: jdFitScore,
+            session_index: sessions.length + 1,
+          });
+        }
+      } catch {
+        // no-op — an unsaved session shouldn't break the completion screen
+      }
+    },
+    [userEmail, interviewType, inputMode, sessions.length]
+  );
 
   async function startInterview() {
     const role = targetRole === "custom" ? customRole.trim() : targetRole;
@@ -338,6 +428,12 @@ export default function MockInterviewClient() {
 
       if (willEnd) {
         setPhase("done");
+        // The final assistant turn is the debrief; persist a scorecard from it +
+        // the aggregated speech metrics. Real answers exclude the end-request.
+        const answers = updatedMessages.filter(
+          (m) => m.role === "user" && m.content !== "Please give me my interview feedback and scorecard."
+        ).length;
+        saveSession({ role, feedbackText: assistantContent, metrics: aggregatedMetrics, answers });
       } else {
         setQuestionCount(nextQuestionCount);
         if (nextQuestionCount >= 3) setShowEndOption(true);
@@ -363,7 +459,7 @@ export default function MockInterviewClient() {
     voice.clearRecording();
   }
 
-  function aggregateSpeechMetrics(all: SpeechMetrics[]): object | undefined {
+  function aggregateSpeechMetrics(all: SpeechMetrics[]): AggregateSpeechMetrics | undefined {
     if (all.length === 0) return undefined;
     const totalDuration = all.reduce((s, m) => s + m.durationSeconds, 0);
     const totalWords = all.reduce((s, m) => s + m.wordCount, 0);
@@ -584,6 +680,8 @@ export default function MockInterviewClient() {
             5 questions · ~10 minutes · {inputMode === "voice" ? "Voice analysis & feedback" : jobDescription.trim() ? "Tailored to your job posting" : "Feedback scorecard at the end"}
           </p>
         </div>
+
+        <MockTrendPanel sessions={sessions} />
       </main>
       </>
     );
@@ -681,7 +779,12 @@ export default function MockInterviewClient() {
 
           {phase === "done" && (
             <div className="rounded-2xl bg-emerald-950/30 border border-emerald-800/30 p-5">
-              <p className="text-emerald-400 font-semibold mb-3 text-center">Interview Complete</p>
+              <p className="text-emerald-400 font-semibold mb-1 text-center">Interview Complete</p>
+              {userEmail && (
+                <p className="text-xs text-slate-400 mb-3 text-center">
+                  Scorecard saved to your progress — practice again to track your trend.
+                </p>
+              )}
               <div className="flex gap-3 justify-center mb-4">
                 <button
                   onClick={resetInterview}
