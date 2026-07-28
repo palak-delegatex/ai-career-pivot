@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getTranslations } from "next-intl/server";
 import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
+import BlogCtaLink from "@/components/BlogCtaLink";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
@@ -50,10 +51,12 @@ function WaitlistCTA({
   heading = "Ready to build your own roadmap?",
   subheading = "Get a personalized AI-powered career pivot plan based on your skills, finances, and family situation.",
   buttonText = "Get My Roadmap — $19 →",
+  slug,
 }: {
   heading?: string;
   subheading?: string;
   buttonText?: string;
+  slug?: string;
 } = {}) {
   return (
     <div className="my-10 p-6 rounded-2xl bg-teal-950 border border-teal-800 text-center not-prose">
@@ -63,12 +66,15 @@ function WaitlistCTA({
       <p className="text-slate-400 text-sm mb-5">
         {subheading}
       </p>
-      <Link
+      <BlogCtaLink
         href="/pricing"
+        ctaText={buttonText}
+        ctaLocation="blog_waitlist"
+        blogSlug={slug}
         className="inline-block px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-colors"
       >
         {buttonText}
-      </Link>
+      </BlogCtaLink>
     </div>
   );
 }
@@ -77,10 +83,12 @@ function PricingCTA({
   heading = "Get your career pivot roadmap for $29",
   subheading = "One-time payment. AI-powered analysis of your resume and LinkedIn. 30-day money-back guarantee.",
   buttonText = "See Pricing →",
+  slug,
 }: {
   heading?: string;
   subheading?: string;
   buttonText?: string;
+  slug?: string;
 } = {}) {
   return (
     <div className="my-10 p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40 text-center not-prose">
@@ -90,12 +98,15 @@ function PricingCTA({
       <p className="text-slate-400 text-sm mb-5">
         {subheading}
       </p>
-      <Link
+      <BlogCtaLink
         href="/pricing"
+        ctaText={buttonText}
+        ctaLocation="blog_pricing"
+        blogSlug={slug}
         className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all"
       >
         {buttonText}
-      </Link>
+      </BlogCtaLink>
     </div>
   );
 }
@@ -107,10 +118,12 @@ function FreeSnapshotCTA({
   heading = "Get your free AI career snapshot",
   subheading = "See your best-fit AI-adjacent roles and biggest skill gaps in 2 minutes — free, no signup. Just upload your resume or LinkedIn.",
   buttonText = "Get My Free Snapshot →",
+  slug,
 }: {
   heading?: string;
   subheading?: string;
   buttonText?: string;
+  slug?: string;
 } = {}) {
   return (
     <div className="my-10 p-6 rounded-2xl bg-gradient-to-br from-teal-900 to-emerald-950 border border-teal-600/50 text-center not-prose">
@@ -120,12 +133,15 @@ function FreeSnapshotCTA({
       <p className="text-slate-300 text-sm mb-5">
         {subheading}
       </p>
-      <Link
+      <BlogCtaLink
         href="/free"
+        ctaText={buttonText}
+        ctaLocation="blog_free_snapshot"
+        blogSlug={slug}
         className="inline-block px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-bold rounded-xl transition-all"
       >
         {buttonText}
-      </Link>
+      </BlogCtaLink>
     </div>
   );
 }
@@ -149,6 +165,7 @@ export default async function BlogPost({
         heading={t("cta.free.heading")}
         subheading={t("cta.free.subheading")}
         buttonText={t("cta.free.button")}
+        slug={slug}
         {...props}
       />
     ),
@@ -157,6 +174,7 @@ export default async function BlogPost({
         heading={t("cta.waitlist.heading")}
         subheading={t("cta.waitlist.subheading")}
         buttonText={t("cta.waitlist.button")}
+        slug={slug}
         {...props}
       />
     ),
@@ -165,6 +183,7 @@ export default async function BlogPost({
         heading={t("cta.pricing.heading")}
         subheading={t("cta.pricing.subheading")}
         buttonText={t("cta.pricing.button")}
+        slug={slug}
         {...props}
       />
     ),

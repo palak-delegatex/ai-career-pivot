@@ -150,8 +150,10 @@ export function trackPaymentVerificationFailed(props: { session_id: string }) {
   capture("payment_verification_failed", props);
 }
 
-// CTA clicks
-export function trackCtaClicked(props: { cta_text: string; cta_location: string; destination: string }) {
+// CTA clicks. `blog_slug` is set only for in-content blog CTAs (AIC-821) so the
+// blog→/free (and blog→/pricing) intent leg is visible in the funnel and can be
+// attributed per post; it is undefined for all other cta_clicked surfaces.
+export function trackCtaClicked(props: { cta_text: string; cta_location: string; destination: string; blog_slug?: string }) {
   capture("cta_clicked", props);
 }
 
