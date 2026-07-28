@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { trackCheckoutStarted, trackCheckoutError, trackPricingPlanSelected, pageSource, getPosthogDistinctId } from "@/lib/tracking";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 // Transient failures (network blips, 5xx, rate-limits) are worth retrying
 // automatically before showing the user an error — a single checkout attempt
@@ -143,6 +145,10 @@ export default function PricingCheckout({
         required
         className="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-400 text-sm"
       />
+      <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1.5">
+        <ShieldCheck className="w-3 h-3 text-slate-500 shrink-0" />
+        Secure checkout via Stripe · 30-day money-back guarantee · {PROOF_METRICS.pivotsDelivered} professionals
+      </p>
       {showDiscount ? (
         <input
           type="text"

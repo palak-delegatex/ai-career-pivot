@@ -10,6 +10,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
+import ContextualTestimonial from "@/components/ContextualTestimonial";
 import GuaranteeCard from "@/components/GuaranteeCard";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackUpgradeSheetCtaClicked } from "@/lib/tracking";
@@ -232,6 +233,12 @@ export default function UpgradeComparisonSheet({
           <p className="text-center text-slate-500 text-xs mt-2">
             One-time payment · Instant access · 30-day money-back guarantee
           </p>
+
+          {/* Contextual testimonial (AIC-823) — case study matched to the
+              viewer's own background so the proof reads as "someone like me". */}
+          <div className="mt-4">
+            <ContextualTestimonial userProfile={snapshot.profileSummary} />
+          </div>
 
           {/* Trust badges (AIC-753 components) */}
           <CheckoutTrustBlock

@@ -7,7 +7,9 @@ import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
+import InlineProofNudge from "@/components/InlineProofNudge";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -92,6 +94,12 @@ function ContextualUpgradePrompt({
         </div>
         <p className="text-sm font-semibold text-white">{title}</p>
         <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
+        <div className="mt-2">
+          <InlineProofNudge
+            count={PROOF_METRICS.pivotsDelivered}
+            verb="unlocked their full roadmap"
+          />
+        </div>
         <button
           type="button"
           onClick={onUnlock}

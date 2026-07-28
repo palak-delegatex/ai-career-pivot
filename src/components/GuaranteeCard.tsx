@@ -22,6 +22,7 @@ export default function GuaranteeCard({
       <div>
         <h3 className="text-base font-bold text-white mb-1">{title}</h3>
         <p className="text-sm text-slate-400 leading-relaxed">{body}</p>
+        <p className="text-xs text-slate-400 mt-1.5">Your data is encrypted, never shared, and deleted on request.</p>
       </div>
     </div>
   );
