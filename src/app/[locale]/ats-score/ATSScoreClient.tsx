@@ -6,6 +6,8 @@ import NextStepCTA from "@/components/NextStepCTA";
 import ToolEmailCapture from "@/components/ToolEmailCapture";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import UpgradeComparisonSheet, { type Row } from "@/components/UpgradeComparisonSheet";
+import FreeUsageMeter from "@/components/FreeUsageMeter";
+import { useFreeUsage } from "@/lib/use-free-usage";
 import { trackUpgradeSheetOpened } from "@/lib/tracking";
 import {
   Upload,
@@ -278,6 +280,8 @@ export default function ATSScoreClient() {
   // gate opened it for funnel attribution.
   const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  // Metered free-tier scarcity (AIC-844). Soft nudge only — never blocks a scan.
+  const { state: usage, consume: consumeUsage } = useFreeUsage("ats-score");
 
   function openUpgrade(source: string) {
     setUpgradeSource(source);
@@ -327,6 +331,9 @@ export default function ATSScoreClient() {
       const data: ATSResult = await res.json();
       setResult(data);
       setPhase("results");
+      // Record the scan against the free monthly allowance after it succeeds,
+      // so a failed run never burns a credit.
+      void consumeUsage();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setPhase("upload");
@@ -755,6 +762,18 @@ export default function ATSScoreClient() {
           keyword matching, and specific fixes to beat applicant tracking systems.
         </p>
       </div>
+
+      {usage && (
+        <FreeUsageMeter
+          used={usage.used}
+          limit={usage.limit}
+          noun={usage.noun}
+          period={usage.period}
+          resetsAt={usage.resetsAt}
+          onUpgrade={() => openUpgrade("free_usage_meter")}
+          className="mb-6"
+        />
+      )}
 
       <div className="space-y-6">
         {/* File upload */}

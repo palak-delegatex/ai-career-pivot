@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { trackCtaClicked, trackCtaHovered } from "@/lib/tracking";
 
 const CTA_TEXT = "Get My Plan — $19";
@@ -37,8 +38,9 @@ export default function StickyCtaBar() {
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 80, opacity: 0 }}
-      className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-center gap-4"
+      className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex flex-col items-center justify-center gap-1.5"
     >
+      <div className="flex items-center justify-center gap-4">
       {onPricing ? (
         <button
           type="button"
@@ -61,6 +63,8 @@ export default function StickyCtaBar() {
           {label}
         </Link>
       )}
+      </div>
+      <InlineGuaranteeBadge variant="short" />
     </motion.div>
   );
 }

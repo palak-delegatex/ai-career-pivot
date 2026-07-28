@@ -4,6 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { trackCheckoutStarted, trackCheckoutError, trackPricingPlanSelected, pageSource, getPosthogDistinctId } from "@/lib/tracking";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
+import MicroTestimonial from "@/components/MicroTestimonial";
+import { testimonials } from "@/lib/testimonials";
+
+// David C.'s quote speaks to bridging the income gap — the exact reassurance a
+// buyer needs at the payment step (AIC-844 decision-point proof).
+const CHECKOUT_TESTIMONIAL =
+  testimonials.find((t) => t.name === "David C.") ?? testimonials[0];
 
 // Transient failures (network blips, 5xx, rate-limits) are worth retrying
 // automatically before showing the user an error — a single checkout attempt
@@ -177,6 +185,10 @@ export default function PricingCheckout({
       >
         {loading ? "Redirecting to checkout..." : labels[plan] ?? labels.report}
       </button>
+      <div className="flex justify-center pt-1">
+        <InlineGuaranteeBadge />
+      </div>
+      <MicroTestimonial testimonial={CHECKOUT_TESTIMONIAL} className="mt-1" />
     </form>
   );
 }

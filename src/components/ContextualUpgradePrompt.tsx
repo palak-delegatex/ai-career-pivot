@@ -4,6 +4,7 @@ import { type ReactNode, type ComponentType } from "react";
 import { Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import InlineProofNudge from "@/components/InlineProofNudge";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 /**
@@ -54,21 +55,24 @@ export default function ContextualUpgradePrompt({
         <div className="blur-[5px] select-none pointer-events-none" aria-hidden="true" inert>
           {children}
         </div>
-        <div className="absolute inset-0 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 min-h-[44px] px-3 py-2 bg-slate-900/70 backdrop-blur-[2px] text-center sm:text-left">
-          {typeof count === "number" && (
-            <Badge variant="secondary" className="shrink-0">
-              {count}
-              {countLabel ? ` ${countLabel}` : ""}
-            </Badge>
-          )}
-          <p className="flex-1 text-xs text-slate-300 leading-snug">{hook}</p>
-          <button
-            type="button"
-            onClick={onUnlock}
-            className="w-full sm:w-auto min-h-[44px] shrink-0 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
-          >
-            Unlock — $19
-          </button>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 min-h-[44px] px-3 py-2 bg-slate-900/70 backdrop-blur-[2px] text-center">
+          <div className="flex w-full flex-col items-center justify-center gap-2 sm:flex-row sm:gap-3 sm:text-left">
+            {typeof count === "number" && (
+              <Badge variant="secondary" className="shrink-0">
+                {count}
+                {countLabel ? ` ${countLabel}` : ""}
+              </Badge>
+            )}
+            <p className="flex-1 text-xs text-slate-300 leading-snug">{hook}</p>
+            <button
+              type="button"
+              onClick={onUnlock}
+              className="w-full sm:w-auto min-h-[44px] shrink-0 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
+            >
+              Unlock — $19
+            </button>
+          </div>
+          <InlineGuaranteeBadge variant="short" />
         </div>
       </div>
     );
@@ -101,7 +105,11 @@ export default function ContextualUpgradePrompt({
           <Lock className="w-3.5 h-3.5" />
           Get Full Report — $19
         </button>
-        <p className="text-xs text-slate-500 mt-1">Includes everything · 30-day guarantee</p>
+        <p className="text-xs text-slate-400 mt-1">
+          Includes everything · {PROOF_METRICS.salaryUplift} average salary
+          increase
+        </p>
+        <InlineGuaranteeBadge variant="short" className="mt-1" />
       </div>
     </div>
   );

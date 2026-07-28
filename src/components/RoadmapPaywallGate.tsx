@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 
 /**
  * RoadmapPaywallGate (AIC-687) — the progress-aware free-tier gate for the
@@ -63,6 +64,9 @@ export default function RoadmapPaywallGate({
         <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-500">
           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
           {socialProof}
+        </div>
+        <div className="mt-2 flex justify-center">
+          <InlineGuaranteeBadge variant="short" />
         </div>
       </div>
     </div>
