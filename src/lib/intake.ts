@@ -123,6 +123,39 @@ export interface PathTradeoffs {
   cons: string[];
 }
 
+/**
+ * Measured current-vs-target skill delta (AIC-829). Grounds the roadmap in a
+ * concrete top-10 target-role skill breakdown scored against the user's actual
+ * background, and maps each measured gap to the milestone that closes it — so
+ * the roadmap visibly derives from the delta rather than generic output.
+ */
+export interface SkillDeltaSkill {
+  skill: string;
+  importance: "critical" | "important" | "nice-to-have";
+  /** "have" = already demonstrated, "partial" = transferable/bridgeable, "gap" = learn from scratch */
+  status: "have" | "partial" | "gap";
+  /** Short phrase citing what in their background covers it (or why it's a gap). */
+  evidence: string;
+}
+
+export interface SkillDeltaClosing {
+  /** A partial/gap skill from targetTopSkills that this milestone closes. */
+  gapSkill: string;
+  phase: "6-month" | "1-year" | "2-year";
+  /** The milestone text (verbatim from the phase list) that closes the gap. */
+  milestone: string;
+}
+
+export interface SkillDelta {
+  /** The 10 most important skills for the target role, ranked, each scored vs the user. */
+  targetTopSkills: SkillDeltaSkill[];
+  haveCount: number;
+  partialCount: number;
+  gapCount: number;
+  /** Maps each partial/gap skill to the milestone that closes it. */
+  closingMilestones: SkillDeltaClosing[];
+}
+
 export interface PivotPlan {
   targetRole: string;
   targetIndustry: string;
@@ -132,6 +165,8 @@ export interface PivotPlan {
   sixMonthMilestones: string[];
   oneYearMilestones: string[];
   twoYearMilestones: string[];
+  /** Measured current-vs-target skill delta driving the roadmap (AIC-829). */
+  skillDelta?: SkillDelta;
   skillGaps?: SkillGap[];
   weekOneActions?: WeekOneAction[];
   estimatedTimeToTransition: string;
