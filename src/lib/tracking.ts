@@ -413,3 +413,16 @@ export function trackWarmIntroShared(
 export function trackWarmIntroImportNudge(props: WarmIntroCtx) {
   capture("warm_intro_import_nudge_clicked", { ...props, surface: "sidebar" });
 }
+
+// Mock-interview delivery analytics (AIC-828) — fired when a completed session's
+// scorecard is persisted, so we can measure repeat practice (the retention loop).
+export function trackMockSessionSaved(props: {
+  target_role: string;
+  input_mode: "text" | "voice";
+  questions_answered: number;
+  overall_score: number | null;
+  jd_fit_score: number | null;
+  session_index: number;
+}) {
+  capture("mock_session_saved", props);
+}
