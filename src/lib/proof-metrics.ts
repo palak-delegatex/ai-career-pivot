@@ -10,13 +10,13 @@
  * inline (pricing, which is not i18n'd on main).
  */
 export const PROOF_METRICS = {
-  /** Aggregate career pivots delivered — headline outcome badge */
+  /** X+ professionals have unlocked their roadmap — headline outcome badge */
   pivotsDelivered: "847+",
-  /** Average star rating (out of 5) */
+  /** Average star rating (out of 5), based on post-pivot surveys */
   avgRating: "4.8",
   /** Share of members who would recommend */
   recommendRate: "92%",
-  /** Average salary uplift after a completed pivot */
+  /** Average salary increase across completed pivots */
   salaryUplift: "$15K",
 } as const;
 

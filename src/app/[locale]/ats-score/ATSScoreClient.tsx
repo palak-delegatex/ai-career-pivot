@@ -3,6 +3,9 @@
 import { useState, useRef } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
+import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
+import UpgradeComparisonSheet, { type Row } from "@/components/UpgradeComparisonSheet";
+import { trackUpgradeSheetOpened } from "@/lib/tracking";
 import {
   Upload,
   FileText,
@@ -228,6 +231,37 @@ function MatchBreakdownBadges({ summary }: { summary: MatchSummary }) {
   );
 }
 
+/**
+ * Free-vs-paid comparison rows built from the ATS scan already on the page
+ * (AIC-827). The scan is the free "diagnosis"; the Full Report ($19) is the
+ * prescription — the specific keywords, rewrites and fixes plus the career plan.
+ * Rows are honest about what the free scan already shows (counts) vs. what the
+ * paid report adds (the how).
+ */
+function buildAtsRows(result: ATSResult): Row[] {
+  const missing = result.keywordAnalysis.missingKeywords.length;
+  const rewrites = result.contentSuggestions.length;
+  const matches = result.keywordAnalysis.foundKeywords.length;
+  const formats = result.formatIssues.length;
+  return [
+    { feature: "Overall ATS score", free: `${result.overallScore}/100`, paid: "Full breakdown + how to raise it" },
+    { feature: "Missing keywords", free: `${missing} flagged`, paid: "Each one + exactly where to add it" },
+    {
+      feature: "Content rewrite suggestions",
+      free: rewrites > 0 ? `${rewrites} previewed` : false,
+      paid: "Full before/after rewrites",
+    },
+    { feature: "Matched keyword details", free: "Count only", paid: `Match type + section coverage (${matches})` },
+    {
+      feature: "Format fixes",
+      free: formats > 0 ? `${formats} flagged` : false,
+      paid: "Step-by-step fix for each",
+    },
+    { feature: "Personalized career roadmap", free: false, paid: "6 / 12 / 24-month plan" },
+    { feature: "Salary trajectory & bridge plan", free: false, paid: true },
+  ];
+}
+
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function ATSScoreClient() {
@@ -239,7 +273,15 @@ export default function ATSScoreClient() {
   const [result, setResult] = useState<ATSResult | null>(null);
   const [error, setError] = useState("");
   const [dragActive, setDragActive] = useState(false);
+  // Free-vs-paid drawer (AIC-777 / AIC-827). Non-null while open; records which
+  // gate opened it for funnel attribution.
+  const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  function openUpgrade(source: string) {
+    setUpgradeSource(source);
+    trackUpgradeSheetOpened({ source });
+  }
 
   function handleFile(f: File) {
     const allowed = [
@@ -433,19 +475,28 @@ export default function ATSScoreClient() {
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               Matched Keywords ({result.keywordAnalysis.foundKeywords.length})
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {result.keywordAnalysis.foundKeywords.map((kw, i) => (
-                <span
-                  key={i}
-                  className={`text-xs px-2.5 py-1.5 rounded-full border flex items-center gap-1.5 ${MATCH_TYPE_STYLE[kw.matchType]}`}
-                  title={`${MATCH_TYPE_LABEL[kw.matchType]} match · ${SKILL_TYPE_LABEL[kw.skillType]} · ${kw.frequency}x · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
-                >
-                  {kw.keyword}
-                  {kw.frequency > 1 && <span className="text-[9px] opacity-60">{kw.frequency}x</span>}
-                  <span className="text-[9px] opacity-60">{MATCH_TYPE_LABEL[kw.matchType]}</span>
-                </span>
-              ))}
-            </div>
+            <ContextualUpgradePrompt
+              variant="compact"
+              count={result.keywordAnalysis.foundKeywords.length}
+              countLabel="keyword matches"
+              title="Matched keyword details"
+              hook="See match type, frequency & section coverage for each."
+              onUnlock={() => openUpgrade("ats_matches")}
+            >
+              <div className="flex flex-wrap gap-2">
+                {result.keywordAnalysis.foundKeywords.map((kw, i) => (
+                  <span
+                    key={i}
+                    className={`text-xs px-2.5 py-1.5 rounded-full border flex items-center gap-1.5 ${MATCH_TYPE_STYLE[kw.matchType]}`}
+                    title={`${MATCH_TYPE_LABEL[kw.matchType]} match · ${SKILL_TYPE_LABEL[kw.skillType]} · ${kw.frequency}x · Found in: ${kw.foundIn.join(", ") || "semantic"}`}
+                  >
+                    {kw.keyword}
+                    {kw.frequency > 1 && <span className="text-[9px] opacity-60">{kw.frequency}x</span>}
+                    <span className="text-[9px] opacity-60">{MATCH_TYPE_LABEL[kw.matchType]}</span>
+                  </span>
+                ))}
+              </div>
+            </ContextualUpgradePrompt>
           </section>
         )}
 
@@ -456,32 +507,41 @@ export default function ATSScoreClient() {
               <XCircle className="w-5 h-5 text-red-400" />
               Missing Keywords ({result.keywordAnalysis.missingKeywords.length})
             </h2>
-            <div className="space-y-3">
-              {result.keywordAnalysis.missingKeywords.map((kw, i) => (
-                <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-sm">{kw.keyword}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${
-                      kw.importance === "critical" ? SEVERITY_STYLE.critical
-                        : kw.importance === "important" ? SEVERITY_STYLE.warning
-                          : SEVERITY_STYLE.minor
-                    }`}>
-                      {kw.importance}
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
-                      {SKILL_TYPE_LABEL[kw.skillType]}
-                    </span>
-                    {kw.suggestedSection && (
-                      <span className="text-xs text-slate-500 flex items-center gap-1">
-                        <ArrowRight className="w-3 h-3" />
-                        {kw.suggestedSection}
+            <ContextualUpgradePrompt
+              variant="compact"
+              count={result.keywordAnalysis.missingKeywords.length}
+              countLabel="missing keywords"
+              title="Missing keywords"
+              hook="See every missing keyword and exactly where to add it."
+              onUnlock={() => openUpgrade("ats_keywords")}
+            >
+              <div className="space-y-3">
+                {result.keywordAnalysis.missingKeywords.map((kw, i) => (
+                  <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-sm">{kw.keyword}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${
+                        kw.importance === "critical" ? SEVERITY_STYLE.critical
+                          : kw.importance === "important" ? SEVERITY_STYLE.warning
+                            : SEVERITY_STYLE.minor
+                      }`}>
+                        {kw.importance}
                       </span>
-                    )}
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                        {SKILL_TYPE_LABEL[kw.skillType]}
+                      </span>
+                      {kw.suggestedSection && (
+                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                          <ArrowRight className="w-3 h-3" />
+                          {kw.suggestedSection}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-400">{kw.suggestion}</p>
                   </div>
-                  <p className="text-sm text-slate-400">{kw.suggestion}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ContextualUpgradePrompt>
           </section>
         )}
 
@@ -492,20 +552,29 @@ export default function ATSScoreClient() {
               <AlertTriangle className="w-5 h-5 text-amber-400" />
               Format Issues ({criticals.length} critical, {warnings.length} warnings)
             </h2>
-            <div className="space-y-3">
-              {result.formatIssues.map((issue, i) => (
-                <div key={i} className={`rounded-xl p-4 border ${SEVERITY_STYLE[issue.severity]}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-sm">{issue.issue}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-medium text-slate-400 capitalize">{issue.category.replace("_", " ")}</span>
-                      <span className="text-xs font-medium capitalize">{issue.severity}</span>
+            <ContextualUpgradePrompt
+              variant="compact"
+              count={result.formatIssues.length}
+              countLabel="format issues"
+              title="Format issues"
+              hook="Get the step-by-step fix for every format issue."
+              onUnlock={() => openUpgrade("ats_format")}
+            >
+              <div className="space-y-3">
+                {result.formatIssues.map((issue, i) => (
+                  <div key={i} className={`rounded-xl p-4 border ${SEVERITY_STYLE[issue.severity]}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-sm">{issue.issue}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-slate-400 capitalize">{issue.category.replace("_", " ")}</span>
+                        <span className="text-xs font-medium capitalize">{issue.severity}</span>
+                      </div>
                     </div>
+                    <p className="text-sm text-slate-300">{issue.fix}</p>
                   </div>
-                  <p className="text-sm text-slate-300">{issue.fix}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ContextualUpgradePrompt>
           </section>
         )}
 
@@ -559,24 +628,33 @@ export default function ATSScoreClient() {
               <Zap className="w-5 h-5 text-amber-400" />
               Content Improvements
             </h2>
-            <div className="space-y-4">
-              {result.contentSuggestions.map((s, i) => (
-                <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
-                  <div className="text-xs text-slate-400 mb-2">{s.area}</div>
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1 bg-red-950/20 border border-red-900/30 rounded-lg p-3">
-                      <div className="text-[10px] text-red-400 font-semibold mb-1">CURRENT</div>
-                      <p className="text-sm text-slate-300">{s.current}</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-slate-500 mt-3 shrink-0" />
-                    <div className="flex-1 bg-emerald-950/20 border border-emerald-900/30 rounded-lg p-3">
-                      <div className="text-[10px] text-emerald-400 font-semibold mb-1">IMPROVED</div>
-                      <p className="text-sm text-slate-300">{s.improved}</p>
+            <ContextualUpgradePrompt
+              variant="compact"
+              count={result.contentSuggestions.length}
+              countLabel="rewrite suggestions"
+              title="Content improvements"
+              hook="Unlock the full before/after rewrite for each bullet."
+              onUnlock={() => openUpgrade("ats_rewrites")}
+            >
+              <div className="space-y-4">
+                {result.contentSuggestions.map((s, i) => (
+                  <div key={i} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4">
+                    <div className="text-xs text-slate-400 mb-2">{s.area}</div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 bg-red-950/20 border border-red-900/30 rounded-lg p-3">
+                        <div className="text-[10px] text-red-400 font-semibold mb-1">CURRENT</div>
+                        <p className="text-sm text-slate-300">{s.current}</p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-slate-500 mt-3 shrink-0" />
+                      <div className="flex-1 bg-emerald-950/20 border border-emerald-900/30 rounded-lg p-3">
+                        <div className="text-[10px] text-emerald-400 font-semibold mb-1">IMPROVED</div>
+                        <p className="text-sm text-slate-300">{s.improved}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ContextualUpgradePrompt>
           </section>
         )}
 
@@ -638,6 +716,16 @@ export default function ATSScoreClient() {
             Back to Dashboard
           </Link>
         </div>
+
+        {/* Personalized free-vs-paid comparison drawer (AIC-777 / AIC-827) —
+            opened by any of the ATS section gates. Rows are built from the scan
+            already on screen (no FreeSnapshot on this page). */}
+        <UpgradeComparisonSheet
+          open={upgradeSource !== null}
+          onOpenChange={(o) => !o && setUpgradeSource(null)}
+          rows={buildAtsRows(result)}
+          source={upgradeSource ?? "unknown"}
+        />
       </main>
     );
   }

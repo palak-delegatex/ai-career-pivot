@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback, type ReactNode, type ComponentType } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Lock, Layers, CalendarClock, LineChart, Mail } from "lucide-react";
+import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Mail } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
+import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
+import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -62,107 +64,46 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
 }
 
 /**
- * Contextual upgrade prompt (AIC-618 D2). Placed inline WHERE the gated content
- * would appear, showing a blurred preview of the real data type underneath a
- * lock overlay + inline CTA. Loss aversion: users see the value exists but
- * cannot read it, so the upgrade closes a concrete, visible gap.
+ * Salary trajectory gate backdrop (AIC-824). Current estimate anchors the left
+ * (rendered as real text when a truthful number is available; masked otherwise
+ * — we never fabricate a salary). The right/"target" side is the paid
+ * prescription: a `TrendingUp` "projected increase" with the destination number
+ * withheld, and the right 60% of the gradient bar blurred.
  */
-function ContextualUpgradePrompt({
-  title,
-  hook,
-  icon: Icon,
-  children,
-  onUnlock,
+function GhostSalaryTrajectory({
+  uplift,
+  direction,
+  currentSalary,
 }: {
-  title: string;
-  hook: string;
-  icon: ComponentType<{ className?: string }>;
-  children: ReactNode;
-  /** Opens the free-vs-paid comparison sheet (AIC-777) instead of leaving for /pricing. */
-  onUnlock: () => void;
+  uplift: number;
+  direction: "up";
+  currentSalary?: string;
 }) {
-  return (
-    <div className="relative rounded-xl overflow-hidden border border-slate-700/50">
-      <div className="blur-[5px] select-none pointer-events-none" aria-hidden="true">
-        {children}
-      </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-slate-900/60 backdrop-blur-[1px] gap-1.5">
-        <div className="flex items-center justify-center w-9 h-9 rounded-full bg-teal-600/20 border border-teal-600/40">
-          <Icon className="w-4 h-4 text-teal-300" />
-        </div>
-        <p className="text-sm font-semibold text-white">{title}</p>
-        <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
-        <button
-          type="button"
-          onClick={onUnlock}
-          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
-        >
-          <Lock className="w-3.5 h-3.5" />
-          Get Full Report — $19
-        </button>
-        <p className="text-xs text-slate-500 mt-1">Includes everything · 30-day guarantee</p>
-      </div>
-    </div>
-  );
-}
-
-/** Blurred preview: the other matched paths as ghost cards (D2 prompt #1). */
-function GhostPathCards({ paths }: { paths: { targetRole: string; matchScore: number }[] }) {
-  return (
-    <div className="space-y-2 p-4 bg-slate-800/40">
-      {paths.map((p, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-lg bg-slate-700/40 border border-slate-600/40 p-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-teal-900/40 border border-teal-700/30 text-xs font-bold text-teal-300 shrink-0">
-            {p.matchScore}
-          </div>
-          <span className="text-sm font-semibold text-slate-200">{p.targetRole}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/** Blurred preview: 3-phase milestone timeline (D2 prompt #2). */
-function GhostMilestoneTimeline() {
-  const phases = [
-    { label: "6 months", body: "Foundational certification + first portfolio project" },
-    { label: "1 year", body: "Land transitional role, ship shippable AI work" },
-    { label: "2 years", body: "Full pivot complete at target comp band" },
-  ];
-  return (
-    <div className="p-4 bg-slate-800/40 space-y-3">
-      {phases.map((ph) => (
-        <div key={ph.label} className="flex items-start gap-3">
-          <div className="flex flex-col items-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-teal-400" />
-            <div className="w-px flex-1 bg-slate-600 mt-1 min-h-[18px]" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-teal-300">{ph.label}</p>
-            <p className="text-xs text-slate-300">{ph.body}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/** Blurred preview: salary trajectory current → target (D2 prompt #3). */
-function GhostSalaryTrajectory({ uplift }: { uplift: number }) {
   return (
     <div className="p-4 bg-slate-800/40">
       <div className="flex items-center justify-between gap-3">
         <div className="text-center">
           <p className="text-[10px] uppercase tracking-wider text-slate-400">Current</p>
-          <p className="text-lg font-bold text-slate-300">$XXX,XXX</p>
+          <p className="text-lg font-bold text-slate-300">{currentSalary ?? "$XXX,XXX"}</p>
         </div>
         <div className="flex-1 flex flex-col items-center">
-          <span className="text-xs font-bold text-emerald-400">+${uplift}K</span>
-          <div className="w-full h-1.5 rounded-full bg-gradient-to-r from-slate-600 to-emerald-500 mt-1" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400">
+            {direction === "up" && <TrendingUp className="w-3 h-3" />}+${uplift}K
+          </span>
+          {/* Left 40% sharp (where you are), right 60% blurred (where you could be). */}
+          <div className="relative w-full h-1.5 rounded-full bg-gradient-to-r from-slate-600 to-emerald-500 mt-1 overflow-hidden">
+            <div
+              className="absolute inset-y-0 right-0 w-3/5 backdrop-blur-[2px] bg-slate-900/20"
+              aria-hidden="true"
+            />
+          </div>
         </div>
         <div className="text-center">
           <p className="text-[10px] uppercase tracking-wider text-slate-400">Target</p>
-          <p className="text-lg font-bold text-emerald-300">$XXX,XXX</p>
+          <p className="inline-flex items-center gap-1 text-lg font-bold text-emerald-300 blur-[3px] select-none" aria-hidden="true">
+            <TrendingUp className="w-4 h-4" />
+          </p>
+          <p className="text-[10px] text-emerald-300/70">projected increase</p>
         </div>
       </div>
       <p className="text-xs text-slate-400 mt-3">Bridge budget + ROI breakeven timeline included</p>
@@ -390,9 +331,44 @@ export default function FreeResultsClient() {
 
   // Single best-match focus (Hick's Law) — always show the #1 ranked path.
   const activePath = snapshot.paths[0];
-  const otherPaths = snapshot.paths.slice(1).map((p) => ({ targetRole: p.targetRole, matchScore: p.matchScore }));
   const salaryUplift = snapshot.estimatedSalaryUplift ?? 15;
   const marcusTestimonial = testimonials.find((t) => t.name === "Marcus T.")!;
+
+  // Gate zone 1 backing data. The first milestone is a real, personalized step
+  // derived from the user's own top skill gap (honest "diagnosis free" teaser);
+  // the remaining milestones are ghost placeholders that render only as blurred
+  // silhouettes, so no fabricated specifics are ever shown legibly.
+  const roadmapMilestones = activePath
+    ? [
+        {
+          title: activePath.topSkillGaps[0]
+            ? `Build ${activePath.topSkillGaps[0].skill} foundations`
+            : `Foundations for ${activePath.targetRole}`,
+          timeline: "First 90 days",
+          actions: [
+            activePath.topSkillGaps[0]
+              ? `Close your highest-priority gap: ${activePath.topSkillGaps[0].skill}`
+              : "Close your highest-priority skill gap",
+            "Ship one portfolio project that proves the skill",
+          ],
+        },
+        {
+          title: "Land a transitional role",
+          timeline: "Months 4–9",
+          actions: ["Target bridge roles that reward your existing strengths", "Rework your resume for ATS + recruiters"],
+        },
+        {
+          title: `Complete your pivot to ${activePath.targetRole}`,
+          timeline: "Months 10–18",
+          actions: ["Interview at target-tier companies", "Negotiate to your target comp band"],
+        },
+        {
+          title: "Compound your new trajectory",
+          timeline: "Months 19–24",
+          actions: ["Level up into senior scope", "Build a durable AI-adjacent specialization"],
+        },
+      ]
+    : [];
 
   return (
     <main className="max-w-2xl mx-auto px-6 py-12">
@@ -482,24 +458,22 @@ export default function FreeResultsClient() {
             </div>
           </div>
 
-          {/* Contextual prompt #2 — milestone roadmap, placed right after the gaps
-              the user now wants to close (progressive disclosure). */}
-          <div className="mb-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Your Milestone Roadmap
-            </p>
-            <ContextualUpgradePrompt
-              title="Your personalized milestone roadmap"
-              hook="The step-by-step plan to close these gaps — 6-month, 1-year & 2-year milestones."
-              icon={CalendarClock}
-              onUnlock={() => openUpgrade("prompt_roadmap")}
-            >
-              <GhostMilestoneTimeline />
-            </ContextualUpgradePrompt>
-          </div>
-
           {/* Job teaser */}
           <JobTeaser targetRole={activePath.targetRole} jobCount={jobCount} />
+        </div>
+      )}
+
+      {/* Gate zone 1 — Partial roadmap reveal (AIC-824). First milestone fully
+          legible; the rest fade behind progressive blur. Replaces the old
+          separate "other paths" + "milestone timeline" gates. */}
+      {activePath && (
+        <div className="mb-6">
+          <PartialRoadmapReveal
+            milestones={roadmapMilestones}
+            visibleCount={1}
+            totalCount={roadmapMilestones.length}
+            onUnlock={() => openUpgrade("gate_roadmap")}
+          />
         </div>
       )}
 
@@ -542,31 +516,17 @@ export default function FreeResultsClient() {
         <ValuePropCallout />
       </div>
 
-      {/* Contextual prompt #1 — the other matched paths as blurred ghost cards
-          (loss aversion: they exist, but you can't read them). */}
-      {otherPaths.length > 0 && (
-        <div className="mb-6 mt-6">
-          <ContextualUpgradePrompt
-            title={`${otherPaths.length} more career path${otherPaths.length > 1 ? "s" : ""} matched to you`}
-            hook="You have additional strong-fit pivots. Unlock to compare every match side by side."
-            icon={Layers}
-            onUnlock={() => openUpgrade("prompt_paths")}
-          >
-            <GhostPathCards paths={otherPaths} />
-          </ContextualUpgradePrompt>
-        </div>
-      )}
-
-      {/* Contextual prompt #3 — salary trajectory (anchoring on the
-          partially visible numbers). */}
-      <div className="mb-6">
+      {/* Gate zone 2 — Salary trajectory (AIC-824). Current estimate + up
+          direction anchor the free "diagnosis"; the target number and financial
+          bridge plan are the paid prescription. */}
+      <div className="mb-6 mt-6">
         <ContextualUpgradePrompt
           title="Salary trajectory & financial bridge plan"
           hook={`Estimated +$${salaryUplift}K uplift. See the full current → target model, bridge budget & ROI breakeven.`}
-          icon={LineChart}
-          onUnlock={() => openUpgrade("prompt_salary")}
+          icon={TrendingUp}
+          onUnlock={() => openUpgrade("gate_salary")}
         >
-          <GhostSalaryTrajectory uplift={salaryUplift} />
+          <GhostSalaryTrajectory uplift={salaryUplift} direction="up" />
         </ContextualUpgradePrompt>
       </div>
 
