@@ -450,6 +450,11 @@
       "lastUpdatedLabel": "Last updated:"
     },
     "cta": {
+      "free": {
+        "heading": "Get your free AI career snapshot",
+        "subheading": "See your best-fit AI-adjacent roles and biggest skill gaps in 2 minutes — free, no signup. Just upload your resume or LinkedIn.",
+        "button": "Get My Free Snapshot →"
+      },
       "waitlist": {
         "heading": "Ready to build your own roadmap?",
         "subheading": "Get a personalized AI-powered career pivot plan based on your skills, finances, and family situation.",
