@@ -244,6 +244,22 @@ export function trackFreeEmailCaptured(props: { source: string }) {
   capture("free_email_captured", props);
 }
 
+// Standalone free-tool lead funnel (AIC-839, pairs with AIC-838). The tool→
+// lead→report funnel is: cta_clicked (tool + source) → email_captured (tool +
+// source). These mirror the blog `cta_clicked` instrumentation (PR #120) but
+// carry `tool` (the slug: "ats-score", "linkedin-optimizer", …) and `source`
+// (the placement within the tool, e.g. "results_footer") so each standalone
+// tool's SEO-traffic → lead conversion is separately measurable. `cta_clicked`
+// is intentionally the SAME event as the blog CTA leg so both surfaces share
+// one funnel step; the extra `tool`/`source` props segment the tool traffic.
+export function trackToolCtaClicked(props: { tool: string; source: string; cta_location: string; destination?: string }) {
+  capture("cta_clicked", props);
+}
+
+export function trackToolEmailCaptured(props: { tool: string; source: string }) {
+  capture("email_captured", props);
+}
+
 // ── Anonymous ATS quick-check (AIC-830 / AIC-825 Path A) ─────────────────────
 // The zero-upload "taste" that sits above the existing upload funnel: a
 // logged-out visitor pastes a job posting and gets role + top skills + a LOCKED

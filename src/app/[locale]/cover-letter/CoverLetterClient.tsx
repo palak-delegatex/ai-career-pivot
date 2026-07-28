@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import {
   FileSignature,
   Loader2,
@@ -779,6 +780,7 @@ export default function CoverLetterClient() {
         </div>
         <div className="shrink-0 border-t border-slate-700/60 bg-slate-900/80 px-6 py-4">
           <div className="max-w-xl mx-auto">
+            <ToolEmailCapture tool="cover-letter" className="mb-4" />
             <NextStepCTA fromTool="cover-letter" />
           </div>
         </div>

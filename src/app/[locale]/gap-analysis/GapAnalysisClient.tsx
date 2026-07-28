@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import LearningResources from "@/components/LearningResources";
 import {
   Search,
@@ -446,6 +447,8 @@ export default function GapAnalysisClient() {
             </div>
           </section>
         )}
+
+        <ToolEmailCapture tool="gap-analysis" className="mb-6" />
 
         <NextStepCTA fromTool="gap-analysis" />
 

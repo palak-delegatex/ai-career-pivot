@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import LiveResumeScore from "@/components/LiveResumeScore";
 import {
   FileText,
@@ -389,6 +390,7 @@ export default function ResumeGeneratorClient() {
                       : "Now Generate Resume →"}
                   </button>
                 </div>
+                <ToolEmailCapture tool="resume-generator" className="mb-6" />
                 <NextStepCTA fromTool="resume-generator" />
                 <div className="flex justify-center mt-4">
                   <Link

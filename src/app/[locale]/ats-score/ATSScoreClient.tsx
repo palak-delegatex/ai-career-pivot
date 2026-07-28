@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useLocale } from "next-intl";
 import NextStepCTA from "@/components/NextStepCTA";
+import ToolEmailCapture from "@/components/ToolEmailCapture";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import UpgradeComparisonSheet, { type Row } from "@/components/UpgradeComparisonSheet";
 import { trackUpgradeSheetOpened } from "@/lib/tracking";
@@ -705,6 +706,14 @@ export default function ATSScoreClient() {
             </div>
           </section>
         )}
+
+        <ToolEmailCapture
+          tool="ats-score"
+          accent="blue"
+          heading="Email me my ATS report"
+          subheading="Get your score, the missing keywords, and a personalized next-step roadmap in your inbox."
+          className="mb-6"
+        />
 
         <NextStepCTA fromTool="ats-score" />
 
