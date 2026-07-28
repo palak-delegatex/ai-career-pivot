@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
 import { trackReferralLinkCopied } from "@/lib/tracking";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FormState = "idle" | "loading" | "success" | "already" | "error";
 
@@ -119,12 +129,13 @@ export default function WaitlistForm() {
                 <code className="flex-1 bg-slate-900 text-teal-300 text-sm px-3 py-2 rounded-lg truncate">
                   {referralLink}
                 </code>
-                <button
+                <Button
+                  type="button"
                   onClick={copyLink}
-                  className="shrink-0 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors"
+                  className="h-auto shrink-0 px-4 py-2 text-sm font-semibold"
                 >
                   {copied ? "Copied!" : "Copy"}
-                </button>
+                </Button>
               </div>
               {shareText && (
                 <>
@@ -159,47 +170,62 @@ export default function WaitlistForm() {
           onboarding early users now.
         </p>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500 text-lg"
-          />
-          <input
-            type="email"
-            placeholder="Your email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-white placeholder-slate-500 text-lg"
-          />
-          <select
-            value={persona}
-            onChange={(e) => setPersona(e.target.value)}
-            className="w-full px-5 py-4 rounded-xl bg-slate-800 border border-slate-600 focus:border-teal-500 focus:outline-none text-slate-300 text-lg"
-          >
-            <option value="">What best describes you?</option>
-            <option value="burnout">Burned out and ready for change</option>
-            <option value="parent">Parent needing income continuity</option>
-            <option value="career-change">Switching industries</option>
-            <option value="growth">Wanting faster career growth</option>
-            <option value="other">Other</option>
-          </select>
+        <form className="flex flex-col gap-4 text-left" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-name">Your name</Label>
+            <Input
+              id="waitlist-name"
+              type="text"
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="h-auto rounded-xl bg-secondary px-5 py-4 text-lg"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-email">Email address</Label>
+            <Input
+              id="waitlist-email"
+              type="email"
+              placeholder="Your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="h-auto rounded-xl bg-secondary px-5 py-4 text-lg"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-persona">What best describes you?</Label>
+            <Select value={persona} onValueChange={(val) => setPersona(val ?? "")}>
+              <SelectTrigger
+                id="waitlist-persona"
+                className="w-full rounded-xl bg-secondary px-5 text-lg data-[size=default]:h-auto data-[size=default]:py-4"
+              >
+                <SelectValue placeholder="What best describes you?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="burnout">Burned out and ready for change</SelectItem>
+                <SelectItem value="parent">Parent needing income continuity</SelectItem>
+                <SelectItem value="career-change">Switching industries</SelectItem>
+                <SelectItem value="growth">Wanting faster career growth</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {state === "error" && (
-            <p className="text-red-400 text-sm text-left">{errorMsg}</p>
+            <p className="text-destructive text-sm text-left">{errorMsg}</p>
           )}
 
-          <button
+          <Button
             type="submit"
+            size="lg"
             disabled={state === "loading"}
-            className="w-full px-8 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-60 disabled:cursor-not-allowed font-bold text-lg transition-colors shadow-lg shadow-teal-900/50 mt-2"
+            className="mt-2 h-auto w-full rounded-xl px-8 py-4 text-lg font-bold shadow-lg shadow-primary/30"
           >
             {state === "loading" ? "Claiming your spot…" : "Claim My Spot →"}
-          </button>
+          </Button>
         </form>
 
         <p className="text-slate-500 text-sm mt-6">
