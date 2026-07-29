@@ -7,6 +7,8 @@ import {
   trackAtsQuickcheckCompleted,
   trackAtsQuickcheckToUpload,
 } from "@/lib/tracking";
+import InlineProofNudge from "@/components/InlineProofNudge";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 import type { AtsQuickCheck as QuickCheckResult } from "@/app/api/ats-quickcheck/route";
 
 // Priority label colors — differentiated by TEXT as well as color so they stay
@@ -16,6 +18,43 @@ const IMPORTANCE_STYLES: Record<QuickCheckResult["topSkills"][number]["importanc
   High: "text-amber-400",
   Medium: "text-slate-400",
 };
+
+/**
+ * Locked score ring — reuses the /free-results MatchScoreRing visual language
+ * (same 72×72 viewBox, slate-700 track, teal arc) but shows a pulsing "?" instead
+ * of a number: the personalized score only resolves after a resume upload
+ * (Zeigarnik / Goal-Gradient). The ~60% decorative arc reads as "almost there"
+ * without implying an actual computed value.
+ */
+function LockedScoreRing() {
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - 0.6 * circumference;
+  return (
+    <div className="relative w-20 h-20 mx-auto mb-4" role="img" aria-label="Your match score is locked">
+      <svg className="w-20 h-20 -rotate-90" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r={radius} stroke="#334155" strokeWidth="6" fill="none" />
+        <circle
+          cx="36"
+          cy="36"
+          r={radius}
+          stroke="#2dd4bf"
+          strokeWidth="6"
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          opacity={0.6}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-2xl font-bold text-teal-400 motion-safe:animate-pulse" aria-hidden="true">
+          ?
+        </span>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Path A — anonymous zero-upload ATS quick-check (AIC-830 / AIC-825).
@@ -165,24 +204,35 @@ export default function AtsQuickCheck({
             ))}
           </ul>
 
-          <div className="rounded-xl bg-teal-950/40 border border-teal-700/40 px-4 py-4 text-center">
-            <div className="text-xs uppercase tracking-wide text-teal-400 font-semibold mb-1">
-              Your match score
+          <div className="mt-8 rounded-xl bg-teal-950/40 border border-teal-600/40 px-4 py-6 text-center">
+            <div className="text-sm font-semibold text-teal-300 mb-1">
+              We analyzed the job
             </div>
-            <div className="text-2xl font-bold text-teal-400 mb-1 motion-safe:animate-pulse" aria-label="Your match score is locked">
-              ?
+            <div className="text-lg font-bold text-white mb-4">
+              Now see how YOU stack up
             </div>
-            <p className="text-sm text-slate-300 mb-4">{result.readinessNote}</p>
+            <LockedScoreRing />
             <button
               type="button"
               onClick={() => {
                 trackAtsQuickcheckToUpload({ role: result.role });
+                // Carry the checked role forward so /free-results can personalize
+                // its header, gaps, upsell and strengths copy (AIC-859 §2a).
+                try {
+                  sessionStorage.setItem("quickcheck_role", result.role);
+                } catch {
+                  /* sessionStorage may be unavailable (private mode) — non-fatal */
+                }
                 onUploadResume(jd, result.role);
               }}
               className="w-full px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-semibold transition-colors"
             >
               Upload your resume to see YOUR match →
             </button>
+            <p className="text-xs text-slate-400 mt-3">{result.readinessNote}</p>
+            <div className="mt-3">
+              <InlineProofNudge count={PROOF_METRICS.pivotsDelivered} verb="unlocked their match score" />
+            </div>
           </div>
         </div>
       )}

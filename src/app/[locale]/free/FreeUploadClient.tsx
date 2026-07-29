@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { trackFreeUploadStarted, trackFreeSnapshotStreaming } from "@/lib/tracking";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
+import ContextualTestimonial from "@/components/ContextualTestimonial";
 import AtsQuickCheck from "./AtsQuickCheck";
 
 // Two logged-out entry modes on /free (AIC-830). The zero-upload quick-check is
@@ -118,7 +119,7 @@ function GeneratingReveal({ partial }: { partial: PartialSnapshot }) {
       </div>
 
       {partial.profileSummary ? (
-        <p className="text-slate-300 text-sm leading-relaxed mb-5">{partial.profileSummary}</p>
+        <p className="text-white font-semibold leading-relaxed mb-5">Analyzing {partial.profileSummary}</p>
       ) : (
         <p className="text-slate-500 text-sm mb-5">Analyzing your experience against today&apos;s AI-era roles.</p>
       )}
@@ -184,7 +185,19 @@ export default function FreeUploadClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [partial, setPartial] = useState<PartialSnapshot | null>(null);
+  // The role the visitor checked in the quick-check (AIC-859 §2a/§3b), used to
+  // contextualize the upload-form testimonial. Read from sessionStorage on mount
+  // (deep-link case) and set directly on the quick-check → upload hand-off.
+  const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
   const liveCount = useLiveSnapshotCount();
+
+  useEffect(() => {
+    try {
+      setQuickcheckRole(sessionStorage.getItem("quickcheck_role"));
+    } catch {
+      /* sessionStorage may be unavailable (private mode) — non-fatal */
+    }
+  }, []);
 
   // Honor a `?mode=upload` deep-link (used by the landing "I have a resume ready"
   // card) so high-intent visitors skip the quick-check. Read after mount to keep
@@ -200,12 +213,15 @@ export default function FreeUploadClient() {
   // Hand-off from the quick-check "upload your resume" CTA: carry the pasted JD
   // forward (so /free-results can reference the role the user was checking) and
   // switch to the upload mode where the personalized snapshot is generated.
-  function handleQuickCheckToUpload(jobDescription: string) {
+  function handleQuickCheckToUpload(jobDescription: string, role: string) {
     try {
       sessionStorage.setItem("quickcheck_jd", jobDescription);
     } catch {
       /* sessionStorage may be unavailable (private mode) — non-fatal */
     }
+    // AtsQuickCheck already persisted quickcheck_role; mirror it into state so the
+    // upload-form testimonial personalizes immediately without a remount.
+    setQuickcheckRole(role);
     setMode("upload");
   }
 
@@ -321,7 +337,7 @@ export default function FreeUploadClient() {
       )}
 
       {mode === "quickcheck" && !loading ? (
-        <AtsQuickCheck source="free_page" onUploadResume={(jd) => handleQuickCheckToUpload(jd)} />
+        <AtsQuickCheck source="free_page" onUploadResume={(jd, role) => handleQuickCheckToUpload(jd, role)} />
       ) : (
       <>
       <div className="text-center mb-10">
@@ -356,6 +372,11 @@ export default function FreeUploadClient() {
           </li>
         ))}
       </ul>
+
+      {/* Social proof, contextualized to the role the visitor was checking (AIC-859 §3b). */}
+      <div className="mt-4 mb-6">
+        <ContextualTestimonial userProfile={quickcheckRole ?? undefined} />
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <label
