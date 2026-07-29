@@ -12,6 +12,7 @@ import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import ContextualTestimonial from "@/components/ContextualTestimonial";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -553,9 +554,9 @@ export default function FreeResultsClient() {
         <SocialProofStrip
           testimonial={marcusTestimonial}
           metrics={[
-            { value: "500+", label: "Pivots" },
-            { value: "92%", label: "Progress" },
-            { value: "$15K+", label: "Avg uplift" },
+            { value: PROOF_METRICS.freeSpeed, label: "Free roadmap" },
+            { value: PROOF_METRICS.noSignup, label: "To start" },
+            { value: PROOF_METRICS.pathsMapped, label: "Paths mapped" },
           ]}
         />
       </div>

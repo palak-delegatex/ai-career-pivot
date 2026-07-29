@@ -8,7 +8,6 @@ import {
   trackAtsQuickcheckToUpload,
   trackFreeTimeToAha,
 } from "@/lib/tracking";
-import InlineProofNudge from "@/components/InlineProofNudge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import type { AtsQuickCheck as QuickCheckResult } from "@/app/api/ats-quickcheck/route";
 
@@ -239,7 +238,9 @@ export default function AtsQuickCheck({
             </button>
             <p className="text-xs text-slate-400 mt-3">{result.readinessNote}</p>
             <div className="mt-3">
-              <InlineProofNudge count={PROOF_METRICS.pivotsDelivered} verb="unlocked their match score" />
+              <p className="text-sm font-medium text-teal-300/90">
+                Free match score in {PROOF_METRICS.freeSpeed} · {PROOF_METRICS.noSignup} to start
+              </p>
             </div>
           </div>
         </div>

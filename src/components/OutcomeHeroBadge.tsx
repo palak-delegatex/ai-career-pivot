@@ -1,10 +1,9 @@
 /**
- * OutcomeHeroBadge (AIC-753)
+ * OutcomeHeroBadge (AIC-753 / AIC-862)
  *
- * Replaces the generic social-proof pill in the hero with an aggregate
- * outcome claim ("847+ career pivots delivered — and counting").
- * Pure presentational — value + label are passed in so the number stays
- * consistent with PROOF_METRICS and the label stays localizable.
+ * Hero pill showing a verifiable capability signal (e.g. "9 roles · 30+ paths
+ * — AI-adjacent, fully mapped"). Pure presentational — value + label are passed
+ * in (sourced from localized messages) so the copy stays translatable.
  */
 export default function OutcomeHeroBadge({
   count,

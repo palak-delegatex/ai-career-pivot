@@ -14,14 +14,16 @@ import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 import SocialProofStrip from "@/components/SocialProofStrip";
 import { testimonials } from "@/lib/testimonials";
+import { PROOF_METRICS } from "@/lib/proof-metrics";
 import PricingCheckout from "@/app/[locale]/pricing/PricingCheckout";
 
-// Trust metrics shown beside the plan-page CTA — same numbers used on
-// /free-results so the social proof reads consistently across the funnel.
+// Trust signals shown beside the plan-page CTA — same honest offer/capability
+// signals used on /free-results so the proof reads consistently across the
+// funnel (AIC-862: no fabricated outcome numbers).
 const CHECKOUT_TRUST_METRICS = [
-  { value: "500+", label: "Pivots" },
-  { value: "92%", label: "Progress" },
-  { value: "$15K+", label: "Avg uplift" },
+  { value: PROOF_METRICS.freeSpeed, label: "Free roadmap" },
+  { value: PROOF_METRICS.noSignup, label: "To start" },
+  { value: PROOF_METRICS.pathsMapped, label: "Paths mapped" },
 ];
 
 // Inline checkout tiers on the plan page — a value summary shown at the

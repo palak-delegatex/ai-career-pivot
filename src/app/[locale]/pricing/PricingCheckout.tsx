@@ -155,7 +155,7 @@ export default function PricingCheckout({
       />
       <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1.5">
         <ShieldCheck className="w-3 h-3 text-slate-500 shrink-0" />
-        Secure checkout via Stripe · 30-day money-back guarantee · {PROOF_METRICS.pivotsDelivered} professionals
+        Secure checkout via Stripe · 30-day money-back guarantee · {PROOF_METRICS.noSignup} required to start
       </p>
       {showDiscount ? (
         <input

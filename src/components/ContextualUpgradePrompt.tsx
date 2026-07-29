@@ -3,7 +3,6 @@
 import { type ReactNode, type ComponentType } from "react";
 import { Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import InlineProofNudge from "@/components/InlineProofNudge";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 
@@ -92,10 +91,9 @@ export default function ContextualUpgradePrompt({
         <p className="text-sm font-semibold text-white">{title}</p>
         <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
         <div className="mt-2">
-          <InlineProofNudge
-            count={PROOF_METRICS.pivotsDelivered}
-            verb="unlocked their full roadmap"
-          />
+          <p className="text-xs font-medium text-teal-300/90">
+            Free AI snapshot in {PROOF_METRICS.freeSpeed} · {PROOF_METRICS.noSignup} to start
+          </p>
         </div>
         <button
           type="button"
@@ -106,8 +104,7 @@ export default function ContextualUpgradePrompt({
           Get Full Report — $19
         </button>
         <p className="text-xs text-slate-400 mt-1">
-          Includes everything · {PROOF_METRICS.salaryUplift} average salary
-          increase
+          Includes everything · full roadmap, milestones &amp; salary model
         </p>
         <InlineGuaranteeBadge variant="short" className="mt-1" />
       </div>

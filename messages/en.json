@@ -68,25 +68,35 @@
       "freeLink": "Or try the free skill-gap snapshot — no payment required →",
       "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
       "viewers": "🔥 83 people viewed this page today",
-      "outcomeBadge": "career pivots delivered — and counting",
-      "microProof": {
-        "rating": "avg rating",
-        "recommend": "recommend",
-        "salary": "avg salary uplift"
-      }
+      "outcomeBadgeValue": "9 roles · 30+ paths",
+      "outcomeBadge": "AI-adjacent, fully mapped",
+      "microProof": [
+        {
+          "value": "~60 sec",
+          "label": "free AI roadmap"
+        },
+        {
+          "value": "No signup",
+          "label": "to start"
+        },
+        {
+          "value": "Free",
+          "label": "AI career snapshot"
+        }
+      ]
     },
     "stats": [
       {
-        "value": "847+",
-        "label": "Career pivots delivered"
+        "value": "9",
+        "label": "AI-adjacent roles"
       },
       {
-        "value": "92%",
-        "label": "Report career progress"
+        "value": "30+",
+        "label": "pivot paths mapped"
       },
       {
-        "value": "$15K",
-        "label": "Avg salary uplift"
+        "value": "Claude",
+        "label": "generation engine"
       }
     ],
     "activity": "<b>{count} people</b> are building their career pivot right now",

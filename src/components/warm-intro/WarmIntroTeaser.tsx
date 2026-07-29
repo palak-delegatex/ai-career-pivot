@@ -92,7 +92,7 @@ export default function WarmIntroTeaser({
         </button>
         <p className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2.5">
           <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-          847+ career pivoters trust us
+          Backed by our 30-day money-back guarantee
         </p>
       </div>
     </motion.div>

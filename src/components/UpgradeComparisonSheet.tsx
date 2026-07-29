@@ -204,9 +204,9 @@ export default function UpgradeComparisonSheet({
           {/* Social-proof metric strip (single source of truth) */}
           <div className="grid grid-cols-3 gap-2 mt-4">
             {[
-              { value: PROOF_METRICS.pivotsDelivered, label: "Pivots delivered" },
-              { value: PROOF_METRICS.avgRating + "★", label: "Avg rating" },
-              { value: PROOF_METRICS.salaryUplift, label: "Avg uplift" },
+              { value: PROOF_METRICS.freeSpeed, label: "Free snapshot" },
+              { value: PROOF_METRICS.noSignup, label: "To start" },
+              { value: PROOF_METRICS.pathsMapped, label: "Paths mapped" },
             ].map((m) => (
               <div
                 key={m.label}
@@ -260,7 +260,7 @@ export default function UpgradeComparisonSheet({
                 icon: "users",
                 text: (
                   <>
-                    Joined by <strong className="text-slate-300">{PROOF_METRICS.pivotsDelivered}</strong> career pivoters
+                    Start free — <strong className="text-slate-300">{PROOF_METRICS.noSignup}</strong> for the snapshot
                   </>
                 ),
               },

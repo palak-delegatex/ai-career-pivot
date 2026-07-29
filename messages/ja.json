@@ -68,25 +68,35 @@
       "freeLink": "または無料のスキルギャップ診断をお試しください — 支払い不要 →",
       "freeNote": "所要時間3分 · サブスク不要 · ロードマップはずっとあなたのもの",
       "viewers": "🔥 本日このページを83名が閲覧しました",
-      "outcomeBadge": "件のキャリアチェンジを実現 — さらに増加中",
-      "microProof": {
-        "rating": "平均評価",
-        "recommend": "推奨",
-        "salary": "平均給与増"
-      }
+      "outcomeBadgeValue": "9職種・30+経路",
+      "outcomeBadge": "AI隣接、完全マッピング",
+      "microProof": [
+        {
+          "value": "約60秒",
+          "label": "無料AIロードマップ"
+        },
+        {
+          "value": "登録不要",
+          "label": "すぐ開始"
+        },
+        {
+          "value": "無料",
+          "label": "AIキャリア診断"
+        }
+      ]
     },
     "stats": [
       {
-        "value": "847+",
-        "label": "キャリアチェンジ実現"
+        "value": "9",
+        "label": "AI隣接の職種"
       },
       {
-        "value": "92%",
-        "label": "前進を実感"
+        "value": "30+",
+        "label": "マッピング済み経路"
       },
       {
-        "value": "$15K",
-        "label": "平均給与増"
+        "value": "Claude",
+        "label": "生成エンジン"
       }
     ],
     "activity": "<b>{count}名</b>が今まさにキャリアチェンジを設計しています",

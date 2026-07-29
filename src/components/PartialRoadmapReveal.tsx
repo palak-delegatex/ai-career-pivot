@@ -94,8 +94,8 @@ export default function PartialRoadmapReveal({
       {/* Social proof + unlock CTA */}
       <div className="mt-5 flex flex-col items-center gap-3 text-center">
         <p className="text-xs text-slate-400">
-          <strong className="text-slate-200">{PROOF_METRICS.pivotsDelivered}</strong> career changers
-          unlocked their full roadmap · {PROOF_METRICS.avgRating}★ avg rating
+          <strong className="text-slate-200">{PROOF_METRICS.freeSpeed}</strong> for your free AI
+          roadmap · {PROOF_METRICS.noSignup} to start
         </p>
         <InlineGuaranteeBadge variant="short" />
         <button
