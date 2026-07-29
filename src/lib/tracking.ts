@@ -260,6 +260,74 @@ export function trackToolEmailCaptured(props: { tool: string; source: string }) 
   capture("email_captured", props);
 }
 
+// ── Time-to-aha, landing → first value reveal (AIC-856) ──────────────────────
+// The existing per-branch diagnostics (`ats_quickcheck_completed.ms_to_result`,
+// `free_snapshot_streaming.ms_to_first_insight`) only time the network/LLM
+// round-trip AFTER the user commits (Analyze / upload click). They do NOT
+// capture the read-decide-paste time before that, so we can't answer the
+// activation question the competitive scan raised: median seconds from /free
+// LANDING → first value reveal. These two helpers close that gap with a single
+// branch-agnostic `free_time_to_aha` event whose `seconds_to_aha` property is
+// charted as a p50 on the funnel dashboard (1809774).
+//
+// Mechanism: markFreeLanding() stamps a first-touch timestamp in sessionStorage
+// on /free mount (survives the quick-check→upload mode switch, which never
+// unmounts the tab). Whichever reveal renders first — the quick-check locked
+// score or the upload snapshot's first streamed insight — fires
+// trackFreeTimeToAha(), which reads the stamp, computes elapsed, and self-guards
+// so only the FIRST reveal per session counts as the aha. `aha_surface`
+// segments the two entry paths.
+const FREE_LANDING_TS_KEY = "free_landing_ts";
+const FREE_AHA_FIRED_KEY = "free_aha_fired";
+
+// Stamp the landing time once per session (first touch wins — a mode toggle or
+// re-render must not reset the clock). Safe to call on every /free mount.
+export function markFreeLanding() {
+  if (typeof window === "undefined") return;
+  try {
+    if (!sessionStorage.getItem(FREE_LANDING_TS_KEY)) {
+      sessionStorage.setItem(FREE_LANDING_TS_KEY, String(Date.now()));
+    }
+  } catch {
+    /* sessionStorage may be unavailable (private mode) — non-fatal, we just
+       can't measure time-to-aha for this visitor. */
+  }
+}
+
+// Fire the single time-to-aha event at the FIRST value reveal. Idempotent per
+// session via the fired-guard, so a quick-check reveal followed by an upload
+// reveal reports only the earliest (correct) aha. `ms_to_aha`/`seconds_to_aha`
+// are null when the landing stamp is missing (blocked storage) or the elapsed
+// is implausible (negative / >30min stale), keeping the p50 clean without
+// dropping the event count.
+export function trackFreeTimeToAha(props: {
+  aha_surface: "quickcheck_locked_score" | "upload_snapshot";
+}) {
+  if (typeof window === "undefined") return;
+  let firedAlready = false;
+  let ms: number | null = null;
+  try {
+    firedAlready = sessionStorage.getItem(FREE_AHA_FIRED_KEY) === "1";
+    const landedRaw = sessionStorage.getItem(FREE_LANDING_TS_KEY);
+    if (landedRaw) {
+      const elapsed = Date.now() - Number(landedRaw);
+      if (Number.isFinite(elapsed) && elapsed >= 0 && elapsed <= 30 * 60 * 1000) {
+        ms = elapsed;
+      }
+    }
+    sessionStorage.setItem(FREE_AHA_FIRED_KEY, "1");
+  } catch {
+    /* storage blocked — fall through and still fire once (firedAlready stays
+       false), just without timing. */
+  }
+  if (firedAlready) return;
+  capture("free_time_to_aha", {
+    ...props,
+    ms_to_aha: ms,
+    seconds_to_aha: ms == null ? null : Math.round(ms / 1000),
+  });
+}
+
 // ── Anonymous ATS quick-check (AIC-830 / AIC-825 Path A) ─────────────────────
 // The zero-upload "taste" that sits above the existing upload funnel: a
 // logged-out visitor pastes a job posting and gets role + top skills + a LOCKED

@@ -6,6 +6,7 @@ import {
   trackAtsQuickcheckStarted,
   trackAtsQuickcheckCompleted,
   trackAtsQuickcheckToUpload,
+  trackFreeTimeToAha,
 } from "@/lib/tracking";
 import InlineProofNudge from "@/components/InlineProofNudge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
@@ -108,6 +109,13 @@ export default function AtsQuickCheck({
         skill_count: quick.topSkills?.length ?? 0,
         ms_to_result: Date.now() - startedAt,
       });
+      // The locked-score quick-check reveal is our designated "aha" (AIC-856).
+      // Fire the landing→reveal timer only for the /free instance, where the
+      // landing stamp is set — the landing-page instance is a different entry
+      // and would report a null/foreign clock. Self-guards to fire once/session.
+      if (source === "free_page") {
+        trackFreeTimeToAha({ aha_surface: "quickcheck_locked_score" });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
