@@ -194,6 +194,14 @@ export default function FreeUploadClient() {
   // contextualize the upload-form testimonial. Read from sessionStorage on mount
   // (deep-link case) and set directly on the quick-check → upload hand-off.
   const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
+  // Quiz → snapshot carry (AIC-863 §2b). When the visitor arrived from the
+  // 30-second career quiz, show a "targeting [matchedRole]" pill and pass this
+  // context to the snapshot API so its #1 path aligns with the quiz's promise.
+  const [quizContext, setQuizContext] = useState<{
+    matchedRole?: string;
+    interests?: string[];
+    timeline?: string;
+  } | null>(null);
   const liveCount = useLiveSnapshotCount();
 
   // Stamp the time-to-aha clock on first /free mount (AIC-856). First touch
@@ -205,8 +213,21 @@ export default function FreeUploadClient() {
     markFreeLanding();
     try {
       setQuickcheckRole(sessionStorage.getItem("quickcheck_role"));
+      // Quiz-carry (AIC-863 §2b): parse the outcome the quiz stored so the pill
+      // and the snapshot request can target the role the visitor was promised.
+      const rawQuiz = sessionStorage.getItem("quiz_answers");
+      if (rawQuiz) {
+        const parsed = JSON.parse(rawQuiz);
+        if (parsed && typeof parsed === "object" && typeof parsed.matchedRole === "string") {
+          setQuizContext({
+            matchedRole: parsed.matchedRole,
+            interests: Array.isArray(parsed.interests) ? parsed.interests : undefined,
+            timeline: typeof parsed.timeline === "string" ? parsed.timeline : undefined,
+          });
+        }
+      }
     } catch {
-      /* sessionStorage may be unavailable (private mode) — non-fatal */
+      /* sessionStorage unavailable or quiz_answers malformed — non-fatal */
     }
   }, []);
 
@@ -252,6 +273,11 @@ export default function FreeUploadClient() {
     const formData = new FormData();
     formData.append("resume", resumeFile);
     formData.append("locale", locale);
+    // Bias the snapshot's top path toward the quiz match so it fulfils the pill's
+    // promise (AIC-863 §2b). Only sent when the visitor came through the quiz.
+    if (quizContext?.matchedRole) {
+      formData.append("quizContext", JSON.stringify(quizContext));
+    }
 
     const startedAt = Date.now();
     let firstInsightTracked = false;
@@ -392,6 +418,20 @@ export default function FreeUploadClient() {
       <div className="mt-4 mb-6">
         <ContextualTestimonial userProfile={quickcheckRole ?? undefined} />
       </div>
+
+      {/* Quiz-carry pill (AIC-863 §2b) — only shown when the visitor arrived from
+          the quiz; its matchedRole is what the snapshot API is told to target. */}
+      {quizContext?.matchedRole && (
+        <div className="mb-4 flex items-center gap-2 rounded-xl bg-teal-950/40 border border-teal-700/40 px-4 py-2.5 text-sm text-teal-200">
+          <svg className="w-4 h-4 flex-shrink-0 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8a4 4 0 100 8 4 4 0 000-8zm0-5v3m0 12v3m9-9h-3M6 12H3" />
+          </svg>
+          <span>
+            Based on your quiz: targeting{" "}
+            <strong className="font-semibold text-white">{quizContext.matchedRole}</strong> roles
+          </span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <label

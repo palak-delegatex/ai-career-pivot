@@ -146,7 +146,26 @@ export default function CareerQuizClient() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Couldn't build your match. Please try again.");
-      setResult(data as CareerQuizResult);
+      const matched = data as CareerQuizResult;
+      // Carry the quiz outcome into the /free snapshot (AIC-863 §2b). The upload
+      // page shows a "targeting [matchedRole]" pill and the snapshot API weights
+      // its top path toward this match, so the UI never promises a role the
+      // snapshot doesn't deliver. sessionStorage-scoped, best-effort.
+      try {
+        sessionStorage.setItem(
+          "quiz_answers",
+          JSON.stringify({
+            role: currentRole,
+            matchedRole: matched.matchedRole,
+            experience: years,
+            interests,
+            timeline,
+          })
+        );
+      } catch {
+        /* sessionStorage may be unavailable (private mode) — non-fatal */
+      }
+      setResult(matched);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
