@@ -129,7 +129,7 @@ function CheckoutSuccessInner() {
             metrics={[]}
             className="justify-center"
           />
-          <p className="text-xs text-slate-500 mt-1">Join 500+ professionals</p>
+          <p className="text-xs text-slate-500 mt-1">You&rsquo;re in — let&rsquo;s build your roadmap</p>
         </div>
 
         <p className="text-slate-500 text-xs">

@@ -112,26 +112,10 @@ export default function PricingPage() {
       "Personalized career pivot roadmap with AI-powered analysis of your resume and LinkedIn profile.",
     brand: organizationSchema(),
     dateModified: "2026-06-12",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
-      bestRating: "5",
-    },
-    review: [
-      {
-        "@type": "Review",
-        author: { "@type": "Person", name: "Sarah K." },
-        reviewRating: { "@type": "Rating", ratingValue: "5" },
-        reviewBody: "The roadmap was incredibly specific to my situation. Worth every penny.",
-      },
-      {
-        "@type": "Review",
-        author: { "@type": "Person", name: "James L." },
-        reviewRating: { "@type": "Rating", ratingValue: "5" },
-        reviewBody: "Finally, career advice that accounts for my mortgage and kids. Game changer.",
-      },
-    ],
+    // AIC-862: fabricated AggregateRating + Review markup removed. Google
+    // structured-data policy + the FTC endorsement rules require review markup
+    // to reflect genuine reviews; we have none yet. Do NOT re-add until a real
+    // review-collection pipeline exists.
     offers: {
       "@type": "AggregateOffer",
       lowPrice: "19.00",
@@ -214,17 +198,18 @@ export default function PricingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
             </span>
-            <span className="text-slate-300 text-sm font-medium">847 reports generated</span>
+            <span className="text-slate-300 text-sm font-medium">Free AI roadmap in ~60 seconds</span>
           </div>
           <PricingHeroCta />
         </div>
 
-        {/* Trust text badges */}
+        {/* Capability badges (AIC-862: honest signals, not unverified "used by"
+            claims) */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
           {[
-            { label: "Used by Fortune 500 professionals", icon: Building2 },
-            { label: "Trusted by YC startup founders", icon: Rocket },
-            { label: "Adopted by Big 4 consultants", icon: Briefcase },
+            { label: "9 AI-adjacent roles mapped", icon: Building2 },
+            { label: "30+ pivot paths modeled", icon: Rocket },
+            { label: "Free AI roadmap in ~60s", icon: Briefcase },
           ].map(({ label, icon: Icon }) => (
             <span key={label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
               <Icon className="w-4 h-4 text-teal-400" />
@@ -233,7 +218,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="text-center text-slate-500 text-sm mb-10 -mt-4">
-          Trusted by professionals from leading organizations
+          Built on Claude · no signup required to start
         </p>
 
         {/* Feature-comparison table — us vs. status quo (coach) vs. free (ChatGPT),
@@ -249,10 +234,10 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto mb-10">
           <OutcomeProofStrip
             metrics={[
-              { value: PROOF_METRICS.pivotsDelivered, label: "Pivots delivered" },
-              { value: PROOF_METRICS.avgRating, label: "Avg rating", accent: "text-teal-400", star: true },
-              { value: PROOF_METRICS.recommendRate, label: "Would recommend" },
-              { value: PROOF_METRICS.salaryUplift, label: "Avg salary uplift", accent: "text-emerald-400" },
+              { value: PROOF_METRICS.freeSpeed, label: "Free AI roadmap", accent: "text-teal-400" },
+              { value: PROOF_METRICS.noSignup, label: "To get started" },
+              { value: PROOF_METRICS.rolesMapped, label: "AI-adjacent, mapped" },
+              { value: PROOF_METRICS.pathsMapped, label: "Pivot paths modeled", accent: "text-emerald-400" },
             ]}
           />
         </div>
@@ -343,7 +328,7 @@ export default function PricingPage() {
                       icon: "users",
                       text: (
                         <>
-                          Join <strong className="text-slate-200 font-semibold">{PROOF_METRICS.pivotsDelivered} professionals</strong> who&rsquo;ve pivoted
+                          Start free — <strong className="text-slate-200 font-semibold">{PROOF_METRICS.noSignup}</strong> for the snapshot
                         </>
                       ),
                     },

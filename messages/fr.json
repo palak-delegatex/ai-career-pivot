@@ -68,25 +68,35 @@
       "freeLink": "Ou essayez le bilan gratuit des écarts de compétences — sans paiement →",
       "freeNote": "3 minutes · Sans abonnement · Feuille de route à conserver",
       "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui",
-      "outcomeBadge": "reconversions réussies — et ça continue",
-      "microProof": {
-        "rating": "note moyenne",
-        "recommend": "recommandent",
-        "salary": "hausse de salaire moy."
-      }
+      "outcomeBadgeValue": "9 métiers · 30+ parcours",
+      "outcomeBadge": "proches de l'IA, entièrement cartographiés",
+      "microProof": [
+        {
+          "value": "~60 s",
+          "label": "feuille de route IA gratuite"
+        },
+        {
+          "value": "Sans inscription",
+          "label": "pour commencer"
+        },
+        {
+          "value": "Gratuit",
+          "label": "aperçu de carrière IA"
+        }
+      ]
     },
     "stats": [
       {
-        "value": "847+",
-        "label": "Reconversions réussies"
+        "value": "9",
+        "label": "métiers proches de l'IA"
       },
       {
-        "value": "92%",
-        "label": "Constatent des progrès"
+        "value": "30+",
+        "label": "parcours cartographiés"
       },
       {
-        "value": "$15K",
-        "label": "Hausse de salaire moy."
+        "value": "Claude",
+        "label": "moteur de génération"
       }
     ],
     "activity": "<b>{count} personnes</b> construisent leur reconversion professionnelle en ce moment",

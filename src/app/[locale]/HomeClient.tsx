@@ -19,7 +19,6 @@ import OutcomeHeroBadge from "@/components/OutcomeHeroBadge";
 import MicroProofStrip from "@/components/MicroProofStrip";
 import HeroTestimonial from "@/components/HeroTestimonial";
 import PivotJourneyTimeline from "@/components/PivotJourneyTimeline";
-import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -190,7 +189,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const stats = th.raw("stats") as { value: string; label: string }[];
   const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
-  const microProof = th.raw("hero.microProof") as { rating: string; recommend: string; salary: string };
+  const microProof = th.raw("hero.microProof") as { value: string; label: string }[];
   const journeySteps = th.raw("journey.steps") as { label: string; deliverable: string; phase: string }[];
   // Featured case study (Sarah K.) drives the hero testimonial + journey annotation.
   const heroCase = caseStudies[0];
@@ -304,14 +303,8 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             transition={{ delay: 0.45, duration: 0.5 }}
             className="flex flex-col items-center gap-3.5 mb-8"
           >
-            <MicroProofStrip
-              metrics={[
-                { value: PROOF_METRICS.avgRating, label: microProof.rating, star: true },
-                { value: PROOF_METRICS.recommendRate, label: microProof.recommend },
-                { value: PROOF_METRICS.salaryUplift, label: microProof.salary },
-              ]}
-            />
-            <OutcomeHeroBadge count={PROOF_METRICS.pivotsDelivered} label={th("hero.outcomeBadge")} />
+            <MicroProofStrip metrics={microProof} />
+            <OutcomeHeroBadge count={th("hero.outcomeBadgeValue")} label={th("hero.outcomeBadge")} />
           </motion.div>
 
           {/* Primary CTA — larger, animated ring for attention */}

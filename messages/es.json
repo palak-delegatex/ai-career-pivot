@@ -68,25 +68,35 @@
       "freeLink": "O prueba el diagnóstico gratuito de brechas — sin pago requerido →",
       "freeNote": "3 minutos · Sin suscripción · Tu plan completo para siempre",
       "viewers": "🔥 83 personas vieron esta página hoy",
-      "outcomeBadge": "cambios de carrera logrados — y sumando",
-      "microProof": {
-        "rating": "valoración media",
-        "recommend": "recomiendan",
-        "salary": "aumento salarial medio"
-      }
+      "outcomeBadgeValue": "9 roles · 30+ rutas",
+      "outcomeBadge": "afines a la IA, totalmente mapeados",
+      "microProof": [
+        {
+          "value": "~60 s",
+          "label": "hoja de ruta IA gratis"
+        },
+        {
+          "value": "Sin registro",
+          "label": "para empezar"
+        },
+        {
+          "value": "Gratis",
+          "label": "diagnóstico de carrera IA"
+        }
+      ]
     },
     "stats": [
       {
-        "value": "847+",
-        "label": "Cambios de carrera logrados"
+        "value": "9",
+        "label": "roles afines a la IA"
       },
       {
-        "value": "92%",
-        "label": "Reportan progreso"
+        "value": "30+",
+        "label": "rutas mapeadas"
       },
       {
-        "value": "$15K",
-        "label": "Aumento salarial medio"
+        "value": "Claude",
+        "label": "motor de generación"
       }
     ],
     "activity": "<b>{count} personas</b> están construyendo su plan de cambio de carrera ahora mismo",

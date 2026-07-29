@@ -1,23 +1,33 @@
 /**
- * Shared outcome / social-proof metrics (AIC-748 / AIC-753).
+ * Shared social-proof / trust signals (AIC-748 / AIC-753 / AIC-862).
  *
- * Single source of truth for the numeric proof values shown across the
- * landing hero and pricing page so the two surfaces never drift.
+ * Single source of truth for the proof values shown across the landing hero,
+ * pricing page, /free-results, and the upgrade surfaces so they never drift.
  *
- * NOTE: These are the current SuccessMetrics placeholder values. CMO/CEO
- * will source production-truthful numbers; update here and both surfaces
- * stay consistent. Labels are localized in messages/*.json (landing) or
- * inline (pricing, which is not i18n'd on main).
+ * AIC-862: the previous values (847+ pivots, 4.8★, 92% recommend, $15K uplift)
+ * were fabricated outcome CLAIMS — the product has no rating/recommend/salary
+ * event, and all-time verified payments were single digits, so those numbers
+ * could never be sourced. They are replaced here with verifiable OFFER /
+ * capability signals that are true today. Do NOT reintroduce outcome metrics
+ * (ratings, recommend rate, salary uplift, "N pivots delivered") until a real
+ * measurement pipeline exists to back them.
+ *
+ * These strings are used by the English-only surfaces (pricing, /free-results,
+ * upgrade sheets, checkout). The localized homepage sources its equivalents
+ * from messages/*.json (home.hero.microProof / home.hero.outcomeBadge /
+ * home.stats) so the copy stays translated.
  */
 export const PROOF_METRICS = {
-  /** X+ professionals have unlocked their roadmap — headline outcome badge */
-  pivotsDelivered: "847+",
-  /** Average star rating (out of 5), based on post-pivot surveys */
-  avgRating: "4.8",
-  /** Share of members who would recommend */
-  recommendRate: "92%",
-  /** Average salary increase across completed pivots */
-  salaryUplift: "$15K",
+  /** Time to the free streaming roadmap snapshot (AIC-796) */
+  freeSpeed: "~60 sec",
+  /** Anonymous quick-check requires no account (AIC-830) */
+  noSignup: "No signup",
+  /** AI-adjacent roles mapped in the flagship guide (AIC-768) */
+  rolesMapped: "9 roles",
+  /** Pivot paths modeled in the /pivot dataset (AIC-697/710) */
+  pathsMapped: "30+ paths",
+  /** Generation stack */
+  builtOn: "Built on Claude",
 } as const;
 
 export type ProofMetrics = typeof PROOF_METRICS;

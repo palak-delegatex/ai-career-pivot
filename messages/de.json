@@ -68,25 +68,35 @@
       "freeLink": "Oder die kostenlose Kompetenzlücken-Analyse testen — keine Zahlung nötig →",
       "freeNote": "3 Minuten · Kein Abo · Kompletter Fahrplan gehört Ihnen",
       "viewers": "🔥 83 Personen haben diese Seite heute angesehen",
-      "outcomeBadge": "Karrierewechsel begleitet — Tendenz steigend",
-      "microProof": {
-        "rating": "Ø Bewertung",
-        "recommend": "Weiterempfehlung",
-        "salary": "Ø Gehaltsplus"
-      }
+      "outcomeBadgeValue": "9 Rollen · 30+ Pfade",
+      "outcomeBadge": "KI-nah, vollständig kartiert",
+      "microProof": [
+        {
+          "value": "~60 Sek.",
+          "label": "kostenloser KI-Fahrplan"
+        },
+        {
+          "value": "Ohne Anmeldung",
+          "label": "zum Start"
+        },
+        {
+          "value": "Kostenlos",
+          "label": "KI-Karriere-Snapshot"
+        }
+      ]
     },
     "stats": [
       {
-        "value": "847+",
-        "label": "Karrierewechsel begleitet"
+        "value": "9",
+        "label": "KI-nahe Rollen"
       },
       {
-        "value": "92%",
-        "label": "Melden Fortschritt"
+        "value": "30+",
+        "label": "kartierte Pfade"
       },
       {
-        "value": "$15K",
-        "label": "Ø Gehaltsplus"
+        "value": "Claude",
+        "label": "Generierungs-Engine"
       }
     ],
     "activity": "<b>{count} Personen</b> erstellen gerade ihren Karrierewechselplan",

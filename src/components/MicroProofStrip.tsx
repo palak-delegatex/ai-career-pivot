@@ -1,10 +1,11 @@
 /**
  * MicroProofStrip (AIC-753)
  *
- * Inline metrics row shown below the hero subtitle:
- *   ★4.8 avg rating · 92% recommend · $15K avg salary uplift
- * Values come from PROOF_METRICS; labels are localized. Collapses to a
- * vertical stack on mobile (< sm) per the design spec.
+ * Inline signals row shown below the hero subtitle:
+ *   ~60 sec free AI roadmap · No signup to start · Free AI career snapshot
+ * Values + labels come from localized messages (AIC-862 — honest offer/
+ * capability signals, no fabricated outcome numbers). Collapses to a vertical
+ * stack on mobile (< sm) per the design spec.
  */
 export interface MicroProofMetric {
   value: string;
