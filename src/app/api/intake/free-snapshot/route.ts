@@ -34,9 +34,33 @@ const FreeSnapshotSchema = z.object({
 
 export type FreeSnapshot = z.infer<typeof FreeSnapshotSchema>;
 
+// Optional signal carried over from the 30-second career quiz (AIC-863 §2b).
+// When present, the visitor was already shown `matchedRole` as their top match,
+// so we bias the snapshot's #1 path toward it — the /free pill promises that
+// role and the snapshot must not contradict it.
+type QuizContext = { matchedRole?: string; interests?: string[]; timeline?: string };
+
+function parseQuizContext(raw: unknown): QuizContext | undefined {
+  if (typeof raw !== "string" || !raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && typeof parsed.matchedRole === "string") {
+      return {
+        matchedRole: parsed.matchedRole,
+        interests: Array.isArray(parsed.interests) ? parsed.interests.filter((x: unknown) => typeof x === "string") : undefined,
+        timeline: typeof parsed.timeline === "string" ? parsed.timeline : undefined,
+      };
+    }
+  } catch {
+    /* malformed quizContext — proceed without weighting */
+  }
+  return undefined;
+}
+
 export async function POST(req: NextRequest) {
   let profile: UserProfile;
   let locale: string | undefined;
+  let quizContext: QuizContext | undefined;
 
   const contentType = req.headers.get("content-type") ?? "";
   if (contentType.includes("multipart/form-data")) {
@@ -44,6 +68,7 @@ export async function POST(req: NextRequest) {
     const resumeFile = formData.get("resume") as File | null;
     const email = (formData.get("email") as string | null)?.toLowerCase().trim() ?? "";
     locale = (formData.get("locale") as string | null) ?? undefined;
+    quizContext = parseQuizContext(formData.get("quizContext"));
 
     if (!resumeFile) {
       return NextResponse.json({ error: "Resume file required" }, { status: 400 });
@@ -62,7 +87,7 @@ export async function POST(req: NextRequest) {
     const parsed = await parseRes.json();
     profile = { ...parsed.profile, email: email || parsed.profile.email };
   } else {
-    let body: { profile?: UserProfile; locale?: string };
+    let body: { profile?: UserProfile; locale?: string; quizContext?: QuizContext };
     try {
       body = await req.json();
     } catch {
@@ -70,11 +95,22 @@ export async function POST(req: NextRequest) {
     }
     profile = body?.profile as UserProfile;
     locale = body?.locale;
+    quizContext = parseQuizContext(body?.quizContext ? JSON.stringify(body.quizContext) : undefined);
   }
 
   if (!profile?.skills?.length) {
     return NextResponse.json({ error: "Could not extract skills from resume" }, { status: 400 });
   }
+
+  // When the visitor came through the quiz, steer the #1 path toward the role
+  // they were already promised (AIC-863 §2b) — without forcing a poor fit.
+  const quizGuidance = quizContext?.matchedRole
+    ? `\n\nQUIZ CONTEXT: This person just took a 30-second career quiz and was shown "${quizContext.matchedRole}" as their top AI-adjacent match${
+        quizContext.interests?.length ? `; stated interests: ${quizContext.interests.join(", ")}` : ""
+      }${
+        quizContext.timeline ? `; target timeline: ${quizContext.timeline}` : ""
+      }. Rank "${quizContext.matchedRole}" (or a closely adjacent role) as the #1 path with the highest matchScore so this snapshot fulfils the promise the quiz made. Only if their résumé genuinely points elsewhere, keep "${quizContext.matchedRole}" as a strong secondary path rather than dropping it.`
+    : "";
 
   const result = streamObject({
     model: anthropic("claude-haiku-4-5-20251001"),
@@ -126,7 +162,7 @@ USER PROFILE:
 - Transferable skills: ${(profile.transferableSkills ?? []).slice(0, 8).join(", ") || "Not specified"}
 - Education: ${(profile.education ?? []).map(e => `${e.degree} in ${e.field}`).join("; ") || "Not specified"}
 
-Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.${localeSystemPrompt(locale)}`,
+Generate paths ranked by matchScore descending. Make them feel personalized and achievable — reference their specific skills and experience by name. Return JSON matching the schema exactly.${quizGuidance}${localeSystemPrompt(locale)}`,
   });
 
   // The snapshot object streams in the response body (progressive reveal on
