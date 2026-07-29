@@ -3,7 +3,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { trackFreeUploadStarted, trackFreeSnapshotStreaming } from "@/lib/tracking";
+import {
+  trackFreeUploadStarted,
+  trackFreeSnapshotStreaming,
+  markFreeLanding,
+  trackFreeTimeToAha,
+} from "@/lib/tracking";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import ContextualTestimonial from "@/components/ContextualTestimonial";
 import AtsQuickCheck from "./AtsQuickCheck";
@@ -191,7 +196,13 @@ export default function FreeUploadClient() {
   const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
   const liveCount = useLiveSnapshotCount();
 
+  // Stamp the time-to-aha clock on first /free mount (AIC-856). First touch
+  // wins, so the quick-check→upload mode switch (which never unmounts) keeps the
+  // original landing time. Whichever reveal renders first fires free_time_to_aha.
+  // Also read the role the visitor checked in the quick-check (AIC-859) for the
+  // upload-form testimonial (deep-link case).
   useEffect(() => {
+    markFreeLanding();
     try {
       setQuickcheckRole(sessionStorage.getItem("quickcheck_role"));
     } catch {
@@ -285,6 +296,10 @@ export default function FreeUploadClient() {
           if (!firstInsightTracked && (snap.profileSummary || snap.paths?.[0]?.targetRole)) {
             firstInsightTracked = true;
             trackFreeSnapshotStreaming({ ms_to_first_insight: Date.now() - startedAt });
+            // First value moment for a visitor who went straight to upload (no
+            // quick-check). Self-guards, so it's a no-op if the quick-check
+            // reveal already claimed the aha earlier this session (AIC-856).
+            trackFreeTimeToAha({ aha_surface: "upload_snapshot" });
           }
         } catch {
           // Partial JSON not parseable yet — keep accumulating.
