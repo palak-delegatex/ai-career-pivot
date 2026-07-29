@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
+import { alternatesFor, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 import SuccessStoriesClient from "./SuccessStoriesClient";
 import { breadcrumbSchema } from "@/lib/schema";
@@ -14,6 +14,14 @@ export async function generateMetadata({
   title: "Success Stories | AICareerPivot",
   description:
     "Real career transition stories from professionals who pivoted successfully with AICareerPivot. See data-driven outcomes and proven roadmaps.",
+  // AIC-867 compliance kill: page presented unmeasured outcomes as fact.
+  // Suppress indexing (overrides the site-wide index:true in [locale]/layout.tsx,
+  // incl. googleBot) until CMO rebuilds/retires it under AIC-866.
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
   alternates: alternatesFor("/success-stories", locale),
   openGraph: {
     locale: ogLocaleFor(locale),
