@@ -2,6 +2,7 @@
 
 import { Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 /**
@@ -96,6 +97,7 @@ export default function PartialRoadmapReveal({
           <strong className="text-slate-200">{PROOF_METRICS.pivotsDelivered}</strong> career changers
           unlocked their full roadmap · {PROOF_METRICS.avgRating}★ avg rating
         </p>
+        <InlineGuaranteeBadge variant="short" />
         <button
           type="button"
           onClick={onUnlock}

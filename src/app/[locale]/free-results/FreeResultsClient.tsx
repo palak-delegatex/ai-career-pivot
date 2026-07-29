@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Link as LinkIcon, Mail } from "lucide-react";
+import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Sparkles, Link as LinkIcon, Mail } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
+import ContextualTestimonial from "@/components/ContextualTestimonial";
+import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
@@ -248,6 +250,10 @@ export default function FreeResultsClient() {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [jobCount, setJobCount] = useState(0);
+  // Role the visitor checked in the /free quick-check (AIC-859 §2a). When present
+  // it personalizes the header, skill-gap header, upsell title/bullet and the
+  // strengths subtitle so the results read as "your [role] plan", not generic.
+  const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
   // Personalized free-vs-paid comparison drawer (AIC-777). `upgradeSource` is
   // non-null while open and records which surface opened it (funnel attribution).
   const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
@@ -283,6 +289,11 @@ export default function FreeResultsClient() {
   }, [snapshot, shareText, shareUrl]);
 
   useEffect(() => {
+    try {
+      setQuickcheckRole(sessionStorage.getItem("quickcheck_role"));
+    } catch {
+      /* sessionStorage may be unavailable (private mode) — non-fatal */
+    }
     const raw = sessionStorage.getItem("free_snapshot");
     if (!raw) { setNotFound(true); return; }
     try {
@@ -380,7 +391,9 @@ export default function FreeResultsClient() {
           </div>
           <ReportCounterBadge />
         </div>
-        <h1 className="text-3xl font-extrabold mb-2">Your Top Career Pivot Match</h1>
+        <h1 className="text-3xl font-extrabold mb-2">
+          {quickcheckRole ? `Your Match for ${quickcheckRole}` : "Your Top Career Pivot Match"}
+        </h1>
         {snapshot.profileSummary && (
           <p className="text-slate-400 text-sm">{snapshot.profileSummary}</p>
         )}
@@ -393,8 +406,14 @@ export default function FreeResultsClient() {
       {/* Transferable strengths with confidence bars */}
       {snapshot.topTransferableStrengths?.length > 0 && (
         <div className="rounded-2xl bg-teal-950/30 border border-teal-800/30 p-5 mb-6">
-          <p className="text-xs font-semibold text-teal-400 uppercase tracking-wider mb-4">Hidden Strengths You Didn&apos;t Know You Had</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
+            <h2 className="text-lg font-bold text-white">Strengths You Didn&apos;t Know You Had</h2>
+          </div>
+          {quickcheckRole && (
+            <p className="text-sm text-slate-300 mb-4">These carry over directly to {quickcheckRole}</p>
+          )}
+          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 ${quickcheckRole ? "" : "mt-4"} motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2`}>
             {snapshot.topTransferableStrengths.map((s) => (
               <div key={s.skill} className="rounded-xl bg-slate-800/50 border border-slate-700/40 p-4">
                 <p className="text-sm font-semibold text-white mb-1">{s.skill}</p>
@@ -429,7 +448,7 @@ export default function FreeResultsClient() {
           {/* Top skill gaps */}
           <div className="mb-4">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Top Skill Gaps to Close
+              {quickcheckRole ? `Skill Gaps vs. ${quickcheckRole} Requirements` : "Top Skill Gaps to Close"}
             </p>
             <div className="space-y-2">
               {activePath.topSkillGaps.map((gap) => (
@@ -480,13 +499,17 @@ export default function FreeResultsClient() {
       {/* Upsell CTA — elevated above the secondary prompts and share buttons so the
           primary conversion action sits within one scroll of the match card (AIC-807 #3). */}
       <div className="rounded-2xl bg-gradient-to-br from-teal-900/40 to-slate-800/60 border border-teal-700/40 p-6 text-center">
-        <h3 className="text-xl font-bold mb-2">Your Full Roadmap Is Ready</h3>
+        <h3 className="text-xl font-bold mb-2">
+          {quickcheckRole ? `Your ${quickcheckRole} Roadmap Is Ready` : "Your Full Roadmap Is Ready"}
+        </h3>
         <p className="text-slate-400 text-sm mb-3 leading-relaxed">
           We&apos;ve already built your personalized plan. Here&apos;s what&apos;s inside:
         </p>
         <ul className="text-left max-w-sm mx-auto space-y-2 mb-4">
           {[
-            "6 / 12 / 24-month milestone timeline",
+            quickcheckRole
+              ? `6 / 12 / 24-month timeline to ${quickcheckRole}`
+              : "6 / 12 / 24-month milestone timeline",
             "AI certifications roadmap for your target role",
             "Financial modeling — salary trajectory & bridge budget",
             "Week-by-week action plan with AI coaching",
@@ -497,6 +520,10 @@ export default function FreeResultsClient() {
             </li>
           ))}
         </ul>
+        {/* Social proof matched to the visitor's own background (AIC-859 §3c). */}
+        <div className="mt-4 mb-4">
+          <ContextualTestimonial userProfile={snapshot.profileSummary} />
+        </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             type="button"
@@ -513,7 +540,24 @@ export default function FreeResultsClient() {
           </Link>
         </div>
         <p className="text-slate-500 text-xs mt-3">One-time payment. 30-day money-back guarantee.</p>
+        <div className="mt-2 flex justify-center">
+          <InlineGuaranteeBadge />
+        </div>
         <ValuePropCallout />
+      </div>
+
+      {/* Social proof strip — relocated directly beneath the primary conversion
+          CTA (was below the share buttons) so the "others like you did this"
+          reassurance sits at the decision point (AIC-859 §3e). */}
+      <div className="mt-6">
+        <SocialProofStrip
+          testimonial={marcusTestimonial}
+          metrics={[
+            { value: "500+", label: "Pivots" },
+            { value: "92%", label: "Progress" },
+            { value: "$15K+", label: "Avg uplift" },
+          ]}
+        />
       </div>
 
       {/* Gate zone 2 — Salary trajectory (AIC-824). Current estimate + up
@@ -572,18 +616,6 @@ export default function FreeResultsClient() {
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           Share on LinkedIn
         </a>
-      </div>
-
-      {/* Social proof strip */}
-      <div className="mt-6">
-        <SocialProofStrip
-          testimonial={marcusTestimonial}
-          metrics={[
-            { value: "500+", label: "Pivots" },
-            { value: "92%", label: "Progress" },
-            { value: "$15K+", label: "Avg uplift" },
-          ]}
-        />
       </div>
 
       {/* Bottom nudge — distinct from the main CTA above to avoid redundancy */}
