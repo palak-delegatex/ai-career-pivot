@@ -356,6 +356,42 @@ export function trackAtsQuickcheckToUpload(props: { role: string }) {
   capture("ats_quickcheck_to_upload", props);
 }
 
+// ── Conversion surfaces (AIC-879 / design AIC-873, engines AIC-874) ───────────
+
+// Locked paid-report preview mounted on /free-results. `unlocked` mirrors the
+// server entitlement flag so we can split viewers who already paid.
+export function trackLockedReportPreviewViewed(props: { unlocked: boolean; section_count: number }) {
+  capture("locked_report_preview_viewed", props);
+}
+
+// Gamified ATS score surfaced on /free-results (fired once on mount).
+export function trackAtsScoreViewed(props: { score: number; target_role: string }) {
+  capture("ats_score_viewed", props);
+}
+
+// A fix-this checklist item toggled. `new_score` is the recomputed live score so
+// the engagement loop can be analyzed (which fixes move users, how far they get).
+export function trackAtsFixToggled(props: {
+  fix_id: string;
+  category: string;
+  points: number;
+  new_score: number;
+  checked: boolean;
+}) {
+  capture("ats_fix_toggled", props);
+}
+
+// Score crossed a band threshold (60 / 80 / 100) during the check-off loop.
+export function trackAtsScoreMilestone(props: { band: string; score: number }) {
+  capture("ats_score_milestone", props);
+}
+
+// Honest, DB-sourced social-proof signal rendered (AIC-874 /api/proof-signal).
+// `kind: "capability"` = below-floor fallback to a non-outcome capability signal.
+export function trackHonestProofShown(props: { kind: "weekly" | "total" | "capability"; value?: number }) {
+  capture("honest_proof_shown", props);
+}
+
 // ── 30-second career quiz (AIC-833 / AIC-825 Path B) ─────────────────────────
 // The second zero-signup entry path: a logged-out visitor answers 4 questions
 // (role / experience / interests / timeline) and gets an AI-adjacent role match
