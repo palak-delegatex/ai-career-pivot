@@ -1,9 +1,15 @@
 -- =============================================================================
 -- AIC-765 — Production schema-drift bundle (paste-once apply)
 -- =============================================================================
--- Consolidates the 4 unapplied prod migrations (003 / 007 / 010 / 017) plus the
--- extension-promo table (020, tracked in AIC-763) into ONE fully-idempotent
+-- Consolidates the unapplied prod migrations (003 / 004 / 007 / 010 / 017) plus
+-- the extension-promo table (020, tracked in AIC-763) into ONE fully-idempotent
 -- script so a human can paste it once into the Supabase SQL editor.
+--
+-- AIC-868 fix: 004 (milestone_progress) was missing from this bundle AND from
+-- prod, but 010's backfill reads from it and two of the drift crons
+-- (milestone-emails, weekly-digest) query it directly. Its absence aborted the
+-- whole transaction (42P01 relation "public.milestone_progress" does not exist).
+-- It is now created ahead of the 010 backfill below.
 --
 -- Why this file exists: the source migration files are correct, but a few of
 -- their statements were NOT guarded for re-runs (007's indexes + policy, 017's
@@ -80,6 +86,40 @@ drop policy if exists "Service role full access on milestone_emails" on mileston
 create policy "Service role full access on milestone_emails"
   on milestone_emails for all
   using (auth.role() = 'service_role');
+
+-- -----------------------------------------------------------------------------
+-- 004_milestone_progress.sql  →  dependency of 010's backfill below AND directly
+-- queried by /api/cron/milestone-emails + /api/cron/weekly-digest (both silently
+-- no-op without it). Missing from prod (42P01) — the defect AIC-868 fixes.
+-- (source 004's policy + trigger hardened with drop-first for re-run safety)
+-- -----------------------------------------------------------------------------
+create table if not exists public.milestone_progress (
+  id          uuid default gen_random_uuid() primary key,
+  report_id   uuid not null references public.reports(id) on delete cascade,
+  plan_index  int not null,
+  phase       text not null,
+  milestone_index int not null,
+  completed   boolean not null default false,
+  notes       text,
+  completed_at timestamptz,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now(),
+  unique (report_id, plan_index, phase, milestone_index)
+);
+
+create index if not exists milestone_progress_report_idx
+  on public.milestone_progress (report_id, plan_index);
+
+alter table public.milestone_progress enable row level security;
+
+drop policy if exists "service_role_only_milestone_progress" on public.milestone_progress;
+create policy "service_role_only_milestone_progress" on public.milestone_progress
+  using (auth.role() = 'service_role');
+
+drop trigger if exists milestone_progress_updated_at on public.milestone_progress;
+create trigger milestone_progress_updated_at
+  before update on public.milestone_progress
+  for each row execute function public.set_updated_at();
 
 -- -----------------------------------------------------------------------------
 -- 010_last_active_at.sql  →  /api/cron/weekly-digest (42703 reports.last_active_at)
@@ -163,7 +203,8 @@ commit;
 
 -- =============================================================================
 -- Verify (run after commit):
---   select to_regclass('public.milestone_emails'),
+--   select to_regclass('public.milestone_progress'),
+--          to_regclass('public.milestone_emails'),
 --          to_regclass('public.plan_leads'),
 --          to_regclass('public.extension_promo_emails');
 --   select column_name from information_schema.columns
