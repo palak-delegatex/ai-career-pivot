@@ -49,6 +49,19 @@ alter table public.orders
   add column if not exists stripe_subscription_id text;
 
 -- -----------------------------------------------------------------------------
+-- 016_orders_recovery.sql  →  /api/cron/checkout-recovery (42703 orders.recovery_email_sent_at)
+-- checkout-recovery selects orders.recovery_email_sent_at; without this column
+-- the cron's query errors and it skips every run with {"skipped":"schema_drift"}.
+-- 003 (plan_type) alone is insufficient — the cron needs BOTH columns present.
+-- -----------------------------------------------------------------------------
+alter table public.orders
+  add column if not exists recovery_email_sent_at timestamptz;
+
+create index if not exists orders_recovery_scan_idx
+  on public.orders (status, created_at)
+  where recovery_email_sent_at is null;
+
+-- -----------------------------------------------------------------------------
 -- 007_milestone_emails.sql  →  /api/cron/milestone-emails (PGRST205 milestone_emails)
 -- (original indexes + policy hardened with IF NOT EXISTS / drop-first)
 -- -----------------------------------------------------------------------------
@@ -208,7 +221,8 @@ commit;
 --          to_regclass('public.plan_leads'),
 --          to_regclass('public.extension_promo_emails');
 --   select column_name from information_schema.columns
---     where table_name='orders' and column_name in ('plan_type','stripe_subscription_id');
+--     where table_name='orders'
+--       and column_name in ('plan_type','stripe_subscription_id','recovery_email_sent_at');
 --   select column_name from information_schema.columns
 --     where table_name='reports' and column_name='last_active_at';
 -- All should return non-null / the expected rows.
