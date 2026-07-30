@@ -2,16 +2,18 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Check, Briefcase, TrendingUp, DollarSign, Users, Award, Target, Sparkles, Link as LinkIcon, Mail } from "lucide-react";
+import { Check, Briefcase, TrendingUp, Sparkles, Link as LinkIcon, Mail } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
+import type { GamifiedAtsPayload } from "@/lib/gamified-ats-payload";
 import { testimonials } from "@/lib/testimonials";
 import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
-import ContextualTestimonial from "@/components/ContextualTestimonial";
-import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
+import LockedReportPreview from "@/components/LockedReportPreview";
+import GamifiedATSScore from "@/components/GamifiedATSScore";
+import HonestProofBadge from "@/components/HonestProofBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
 
@@ -110,33 +112,6 @@ function GhostSalaryTrajectory({
         </div>
       </div>
       <p className="text-xs text-slate-400 mt-3">Bridge budget + ROI breakeven timeline included</p>
-    </div>
-  );
-}
-
-function ReportCounterBadge() {
-  return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/40 text-[11px] text-slate-400">
-      <Users className="w-3 h-3 text-teal-400" />
-      <span><strong className="text-slate-300">547</strong> reports generated this week</span>
-    </div>
-  );
-}
-
-function ValuePropCallout() {
-  const props = [
-    { icon: Target, text: "Personalized to your exact background" },
-    { icon: Award, text: "Actionable milestones, not generic advice" },
-    { icon: DollarSign, text: "Salary data & financial bridge plan" },
-  ];
-  return (
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-4">
-      {props.map((p) => (
-        <div key={p.text} className="flex items-center gap-1.5 text-xs text-slate-400">
-          <p.icon className="w-3.5 h-3.5 text-teal-400" />
-          <span>{p.text}</span>
-        </div>
-      ))}
     </div>
   );
 }
@@ -255,6 +230,11 @@ export default function FreeResultsClient() {
   // it personalizes the header, skill-gap header, upsell title/bullet and the
   // strengths subtitle so the results read as "your [role] plan", not generic.
   const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
+  // Live gamified ATS score (AIC-879 §2). Computed in the background on /free
+  // (only when the visitor pasted a JD in the quick-check) and handed over via
+  // sessionStorage; null when there's no JD to score against, in which case
+  // Surface 2 simply doesn't render.
+  const [atsPayload, setAtsPayload] = useState<GamifiedAtsPayload | null>(null);
   // Personalized free-vs-paid comparison drawer (AIC-777). `upgradeSource` is
   // non-null while open and records which surface opened it (funnel attribution).
   const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
@@ -319,6 +299,47 @@ export default function FreeResultsClient() {
     } catch {
       setNotFound(true);
     }
+  }, []);
+
+  // Pick up the background-computed gamified ATS score (AIC-879 §2). The result
+  // is written to sessionStorage by the upload flow after this page has already
+  // navigated, so if a computation is still pending we poll briefly for it.
+  useEffect(() => {
+    function readPayload(): boolean {
+      try {
+        const raw = sessionStorage.getItem("free_ats_gamified");
+        if (raw) {
+          setAtsPayload(JSON.parse(raw) as GamifiedAtsPayload);
+          return true;
+        }
+      } catch {
+        /* malformed/unavailable — treat as absent */
+      }
+      return false;
+    }
+    if (readPayload()) return;
+    // Only poll while the upload flow flagged a computation in flight.
+    let pending = false;
+    try {
+      pending = sessionStorage.getItem("free_ats_pending") === "1";
+    } catch {
+      /* ignore */
+    }
+    if (!pending) return;
+    let elapsed = 0;
+    const interval = setInterval(() => {
+      elapsed += 1200;
+      let stillPending = false;
+      try {
+        stillPending = sessionStorage.getItem("free_ats_pending") === "1";
+      } catch {
+        /* ignore */
+      }
+      if (readPayload() || !stillPending || elapsed >= 24000) {
+        clearInterval(interval);
+      }
+    }, 1200);
+    return () => clearInterval(interval);
   }, []);
 
   if (notFound) {
@@ -390,7 +411,7 @@ export default function FreeResultsClient() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold">
             Free Skill-Gap Snapshot
           </div>
-          <ReportCounterBadge />
+          <HonestProofBadge variant="compact" />
         </div>
         <h1 className="text-3xl font-extrabold mb-2">
           {quickcheckRole ? `Your Match for ${quickcheckRole}` : "Your Top Career Pivot Match"}
@@ -483,6 +504,15 @@ export default function FreeResultsClient() {
         </div>
       )}
 
+      {/* Surface 2 — live gamified ATS score + fix-this checklist (AIC-879 §2).
+          Renders only when the visitor pasted a JD in the quick-check, so we
+          have a real target to score against (no JD ⇒ no fabricated score). */}
+      {atsPayload && (
+        <div className="mb-6">
+          <GamifiedATSScore payload={atsPayload} />
+        </div>
+      )}
+
       {/* Gate zone 1 — Partial roadmap reveal (AIC-824). First milestone fully
           legible; the rest fade behind progressive blur. Replaces the old
           separate "other paths" + "milestone timeline" gates. */}
@@ -497,54 +527,20 @@ export default function FreeResultsClient() {
         </div>
       )}
 
-      {/* Upsell CTA — elevated above the secondary prompts and share buttons so the
-          primary conversion action sits within one scroll of the match card (AIC-807 #3). */}
-      <div className="rounded-2xl bg-gradient-to-br from-teal-900/40 to-slate-800/60 border border-teal-700/40 p-6 text-center">
-        <h3 className="text-xl font-bold mb-2">
-          {quickcheckRole ? `Your ${quickcheckRole} Roadmap Is Ready` : "Your Full Roadmap Is Ready"}
-        </h3>
-        <p className="text-slate-400 text-sm mb-3 leading-relaxed">
-          We&apos;ve already built your personalized plan. Here&apos;s what&apos;s inside:
-        </p>
-        <ul className="text-left max-w-sm mx-auto space-y-2 mb-4">
-          {[
-            quickcheckRole
-              ? `6 / 12 / 24-month timeline to ${quickcheckRole}`
-              : "6 / 12 / 24-month milestone timeline",
-            "AI certifications roadmap for your target role",
-            "Financial modeling — salary trajectory & bridge budget",
-            "Week-by-week action plan with AI coaching",
-          ].map((item) => (
-            <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
-              <Check className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-        {/* Social proof matched to the visitor's own background (AIC-859 §3c). */}
-        <div className="mt-4 mb-4">
-          <ContextualTestimonial userProfile={snapshot.profileSummary} />
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            type="button"
-            onClick={() => openUpgrade("cta_full_report")}
-            className="px-6 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors shadow-lg shadow-teal-900/30"
-          >
-            Get Full Report — $19 →
-          </button>
-          <Link
-            href="/free"
-            className="px-6 py-3.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold text-sm transition-colors"
-          >
-            Try a different resume
-          </Link>
-        </div>
-        <p className="text-slate-500 text-xs mt-3">One-time payment. 30-day money-back guarantee.</p>
-        <div className="mt-2 flex justify-center">
-          <InlineGuaranteeBadge />
-        </div>
-        <ValuePropCallout />
+      {/* Surface 1 — Locked paid-report preview (AIC-879 §1). Replaces the old
+          text-bullet upsell card: shows the actual paid-report sections as
+          blurred/locked cards with honest counts + personalized salary/timeline
+          (loss aversion), gated server-side on paid access (AIC-874). This is
+          the primary conversion action, one scroll from the match card. */}
+      <LockedReportPreview
+        snapshot={snapshot}
+        quickcheckRole={quickcheckRole}
+        onUnlock={() => openUpgrade("locked_report_preview")}
+      />
+      <div className="mt-3 text-center">
+        <Link href="/free" className="text-slate-500 hover:text-slate-300 text-xs underline">
+          Try a different resume
+        </Link>
       </div>
 
       {/* Social proof strip — relocated directly beneath the primary conversion

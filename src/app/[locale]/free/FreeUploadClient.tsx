@@ -11,6 +11,7 @@ import {
 } from "@/lib/tracking";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import ContextualTestimonial from "@/components/ContextualTestimonial";
+import HonestProofBadge from "@/components/HonestProofBadge";
 import AtsQuickCheck from "./AtsQuickCheck";
 import { Button } from "@/components/ui/button";
 
@@ -73,26 +74,52 @@ const BENEFITS = [
 ];
 
 /**
- * Live social-proof counter (AIC-618 D1). Seeds a base that grows with the
- * calendar date so it climbs day over day, then ticks up gently while the
- * visitor is on the page to feel live. Cosmetic — never blocks the form.
+ * Fire the gamified ATS scoring (AIC-879 §2) in the background and hand the
+ * result to /free-results via sessionStorage. Runs only when the visitor pasted
+ * a JD in the quick-check (`quickcheck_jd`) — the sole case where we have a real
+ * target to score against, so the meter is never fabricated. Fully detached from
+ * React lifecycle: the fetch outlives this component's unmount on navigation.
  */
-function useLiveSnapshotCount() {
-  const [count, setCount] = useState<number | null>(null);
+function kickGamifiedAts(file: File) {
+  let jd: string | null = null;
+  try {
+    jd = sessionStorage.getItem("quickcheck_jd");
+    // Clear any stale result from a prior run so /free-results doesn't show it.
+    sessionStorage.removeItem("free_ats_gamified");
+  } catch {
+    return; // sessionStorage unavailable — skip Surface 2 silently.
+  }
+  if (!jd?.trim()) return;
 
-  useEffect(() => {
-    // Anchor: ~1,900 snapshots/week baseline, drifting up over the year.
-    const daysSinceEpoch = Math.floor(Date.now() / 86_400_000);
-    const base = 1_900 + ((daysSinceEpoch * 37) % 260);
-    setCount(base);
+  try {
+    sessionStorage.setItem("free_ats_pending", "1");
+  } catch {
+    return;
+  }
 
-    const id = setInterval(() => {
-      setCount((c) => (c == null ? c : c + 1));
-    }, 9_000);
-    return () => clearInterval(id);
-  }, []);
+  const form = new FormData();
+  form.append("resume", file);
+  form.append("jobDescription", jd);
 
-  return count;
+  fetch("/api/ats-gamified", { method: "POST", body: form })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((payload) => {
+      try {
+        sessionStorage.setItem("free_ats_gamified", JSON.stringify(payload));
+      } catch {
+        /* non-fatal */
+      }
+    })
+    .catch(() => {
+      /* Surface 2 simply won't render — the rest of /free-results is unaffected. */
+    })
+    .finally(() => {
+      try {
+        sessionStorage.removeItem("free_ats_pending");
+      } catch {
+        /* non-fatal */
+      }
+    });
 }
 
 /**
@@ -203,7 +230,6 @@ export default function FreeUploadClient() {
     interests?: string[];
     timeline?: string;
   } | null>(null);
-  const liveCount = useLiveSnapshotCount();
 
   // Stamp the time-to-aha clock on first /free mount (AIC-856). First touch
   // wins, so the quick-check→upload mode switch (which never unmounts) keeps the
@@ -345,6 +371,12 @@ export default function FreeUploadClient() {
 
       sessionStorage.setItem("free_snapshot", JSON.stringify(snapshot));
       if (profile) sessionStorage.setItem("free_profile", JSON.stringify(profile));
+      // Kick the gamified ATS score (AIC-879 §2) in the background — only when
+      // the visitor pasted a JD in the quick-check, the one case where we have a
+      // real target to score the résumé against. Non-blocking: it writes the
+      // result to sessionStorage where /free-results picks it up (it polls while
+      // `free_ats_pending` is set), so it never delays navigation to results.
+      kickGamifiedAts(resumeFile);
       router.push("/free-results");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -511,20 +543,10 @@ export default function FreeUploadClient() {
         </Button>
       </form>
 
-      {liveCount != null && (
-        <div className="flex items-center justify-center gap-2 mt-5 text-xs text-slate-400">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75 animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-500" />
-          </span>
-          <span>
-            <strong className="text-slate-200 font-semibold tabular-nums">
-              {liveCount.toLocaleString(locale)}
-            </strong>{" "}
-            snapshots generated this week
-          </span>
-        </div>
-      )}
+      {/* Honest, DB-sourced momentum (AIC-879) — real plan_leads count when it
+          clears the floor, else a truthful capability signal (never a fabricated
+          number; replaces the old seeded ~1,900 ticker). */}
+      <HonestProofBadge variant="live" className="mt-5" />
       </>
       )}
 
