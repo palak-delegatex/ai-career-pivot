@@ -10,6 +10,9 @@ import {
 } from "@/lib/tracking";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import type { AtsQuickCheck as QuickCheckResult } from "@/app/api/ats-quickcheck/route";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 // Priority label colors — differentiated by TEXT as well as color so they stay
 // colorblind-safe (design a11y checklist).
@@ -137,27 +140,36 @@ export default function AtsQuickCheck({
       </div>
 
       <form onSubmit={handleAnalyze} className="space-y-4">
-        <label className="block">
-          <span className="sr-only">Paste a job description or URL</span>
-          <textarea
-            value={jd}
-            onChange={(e) => setJd(e.target.value)}
-            rows={5}
-            placeholder="Paste a job description or a job posting URL…"
-            className="w-full px-4 py-3 rounded-2xl bg-slate-800/60 border border-slate-700 text-slate-100 placeholder:text-slate-500 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-y min-h-32"
-          />
-        </label>
+        <Label htmlFor="ats-jd" className="sr-only">
+          Paste a job description or URL
+        </Label>
+        <Textarea
+          id="ats-jd"
+          value={jd}
+          onChange={(e) => setJd(e.target.value)}
+          rows={5}
+          placeholder="Paste a job description or a job posting URL…"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "ats-jd-error" : undefined}
+          className="min-h-32 resize-y rounded-2xl bg-slate-800/60 px-4 py-3 text-base"
+        />
 
         {error && (
-          <p className="text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+          <p
+            id="ats-jd-error"
+            role="alert"
+            className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
             {error}
           </p>
         )}
 
-        <button
+        <Button
           type="submit"
+          size="lg"
           disabled={!jd.trim() || loading}
-          className="w-full px-6 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-busy={loading}
+          className="h-auto w-full rounded-xl px-6 py-4 text-lg font-bold shadow-lg shadow-primary/30"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
@@ -169,7 +181,7 @@ export default function AtsQuickCheck({
           ) : (
             "Analyze This Job →"
           )}
-        </button>
+        </Button>
       </form>
 
       {result && (
@@ -219,7 +231,7 @@ export default function AtsQuickCheck({
               Now see how YOU stack up
             </div>
             <LockedScoreRing />
-            <button
+            <Button
               type="button"
               onClick={() => {
                 trackAtsQuickcheckToUpload({ role: result.role });
@@ -232,10 +244,10 @@ export default function AtsQuickCheck({
                 }
                 onUploadResume(jd, result.role);
               }}
-              className="w-full px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-semibold transition-colors"
+              className="h-auto w-full rounded-xl px-5 py-3 font-semibold"
             >
               Upload your resume to see YOUR match →
-            </button>
+            </Button>
             <p className="text-xs text-slate-400 mt-3">{result.readinessNote}</p>
             <div className="mt-3">
               <p className="text-sm font-medium text-teal-300/90">
