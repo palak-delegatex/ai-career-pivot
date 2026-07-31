@@ -5,20 +5,16 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import SiteNav from "@/components/SiteNav";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
-import CaseStudyCards from "@/components/CaseStudyCards";
 import FeatureShowcase from "@/components/FeatureShowcase";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 import StickyCtaBar from "@/components/StickyCtaBar";
-import { testimonials, caseStudies } from "@/lib/testimonials";
 import OutcomeHeroBadge from "@/components/OutcomeHeroBadge";
 import MicroProofStrip from "@/components/MicroProofStrip";
-import HeroTestimonial from "@/components/HeroTestimonial";
-import PivotJourneyTimeline from "@/components/PivotJourneyTimeline";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -190,19 +186,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
   const microProof = th.raw("hero.microProof") as { value: string; label: string }[];
-  const journeySteps = th.raw("journey.steps") as { label: string; deliverable: string; phase: string }[];
-  // Featured case study (Sarah K.) drives the hero testimonial + journey annotation.
-  const heroCase = caseStudies[0];
-
-  const shuffledTestimonials = useMemo(() => {
-    const arr = [...testimonials];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }, []);
-
   const handleHeroCtaHover = useCallback(() => {
     trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero" });
   }, []);
@@ -349,16 +332,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             </div>
           </motion.div>
 
-          {/* Featured hero testimonial — answers "will this work for me?" at peak intent (AIC-753) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55, duration: 0.4 }}
-            className="mb-10 w-full"
-          >
-            <HeroTestimonial testimonial={heroCase} />
-          </motion.div>
-
           {/* Stats */}
           <motion.div
             variants={stagger}
@@ -460,17 +433,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </div>
         </section>
 
-        {/* Pivot journey timeline — visualize the full pipeline before signup (AIC-753) */}
-        <PivotJourneyTimeline
-          eyebrow={th("journey.eyebrow")}
-          titleLead={th("journey.titleLead")}
-          titleAccent={th("journey.titleAccent")}
-          subtitle={th("journey.subtitle")}
-          steps={journeySteps}
-          caseHeading={th("journey.caseHeading", { name: heroCase.name })}
-          caseStudy={heroCase}
-        />
-
         {/* AI feature showcase — surface plan gen / insights / PDF before signup (AIC-532) */}
         <FeatureShowcase />
 
@@ -531,95 +493,8 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         {/* Voices of the AI Era — Image-Forward Expert Quotes */}
         <VoicesOfTheAIEra />
 
-        {/* Case Study Cards */}
-        <CaseStudyCards />
-
         {/* Trust Bar */}
         <TrustBar />
-
-        {/* Social Proof / Testimonials */}
-        <section className="py-28 px-6 bg-slate-900/30 border-y border-slate-800/40">
-          <div className="max-w-6xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                {th("testimonials.eyebrow")}
-              </motion.p>
-              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                {th("testimonials.titleLead")}{" "}
-                <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  {th("testimonials.titleAccent")}
-                </span>
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-slate-400 max-w-lg mx-auto">
-                {th("testimonials.subtitle")}
-              </motion.p>
-            </AnimatedSection>
-
-            <AnimatedSection className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {shuffledTestimonials.map((t, i) => (
-                <motion.div
-                  key={t.name}
-                  variants={{
-                    hidden: { opacity: 0, y: 30, scale: 0.97 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      scale: 1,
-                      transition: { duration: 0.45, delay: i * 0.08, ease: [0.21, 1.11, 0.81, 0.99] },
-                    },
-                  }}
-                  whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                  className="relative bg-slate-900/80 backdrop-blur-sm rounded-2xl p-7 border border-slate-800 hover:border-slate-700 hover:shadow-xl transition-all duration-300 group"
-                >
-                  <div className="absolute top-4 right-5 text-5xl font-serif leading-none select-none text-slate-800 group-hover:text-slate-700 transition-colors">
-                    &ldquo;
-                  </div>
-
-                  <div className="relative z-10">
-                    {/* 5-star rating */}
-                    <div className="flex gap-0.5 mb-3">
-                      {Array.from({ length: 5 }).map((_, s) => (
-                        <svg key={s} className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
-                      ))}
-                    </div>
-
-                    <blockquote className="text-slate-300 text-sm leading-relaxed mb-6">
-                      &ldquo;{t.quote}&rdquo;
-                    </blockquote>
-
-                    <div className="flex items-center gap-3 pt-4 border-t border-slate-800/60">
-                      <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
-                        {t.initials}
-                      </div>
-                      <div>
-                        <div className="text-white font-semibold text-sm">{t.name}</div>
-                        {/* Role transition badge */}
-                        <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-400">
-                          {t.role}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatedSection>
-
-            <AnimatedSection className="mt-12 text-center">
-              <motion.div variants={fadeUp}>
-                <Link
-                  href="/pricing"
-                  onClick={() => trackCtaClicked({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials", destination: "/pricing" })}
-                  onMouseEnter={() => trackCtaHovered({ cta_text: "Start My Career Pivot — $19", cta_location: "testimonials" })}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 font-bold text-base transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-[1.02] text-white"
-                >
-                  {th.rich("testimonials.cta", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}
-                </Link>
-              </motion.div>
-            </AnimatedSection>
-          </div>
-        </section>
 
         {/* Before/After Success Metrics */}
         <section className="py-28 px-6">

@@ -10,7 +10,6 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
-import ContextualTestimonial from "@/components/ContextualTestimonial";
 import GuaranteeCard from "@/components/GuaranteeCard";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackUpgradeSheetCtaClicked } from "@/lib/tracking";
@@ -120,7 +119,6 @@ export default function UpgradeComparisonSheet({
   source,
   rows: rowsProp,
   targetRole: targetRoleProp,
-  profileSummary: profileSummaryProp,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -130,14 +128,11 @@ export default function UpgradeComparisonSheet({
   source: string;
   /** Generic mode (e.g. /ats-score, which has no FreeSnapshot): pass rows directly. */
   rows?: Row[];
-  /** Target role for CTA attribution + testimonial context (generic mode). */
+  /** Target role for CTA attribution (generic mode). */
   targetRole?: string;
-  /** Profile summary string used to match a ContextualTestimonial (generic mode). */
-  profileSummary?: string;
 }) {
   const rows = rowsProp ?? (snapshot ? buildRows(snapshot) : []);
   const targetRole = targetRoleProp ?? snapshot?.paths[0]?.targetRole;
-  const profileSummary = profileSummaryProp ?? snapshot?.profileSummary;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -244,12 +239,6 @@ export default function UpgradeComparisonSheet({
           <p className="text-center text-slate-500 text-xs mt-2">
             One-time payment · Instant access · 30-day money-back guarantee
           </p>
-
-          {/* Contextual testimonial (AIC-823) — case study matched to the
-              viewer's own background so the proof reads as "someone like me". */}
-          <div className="mt-4">
-            <ContextualTestimonial userProfile={profileSummary} />
-          </div>
 
           {/* Trust badges (AIC-753 components) */}
           <CheckoutTrustBlock

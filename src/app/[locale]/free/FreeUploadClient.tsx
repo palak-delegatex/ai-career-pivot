@@ -10,7 +10,6 @@ import {
   trackFreeTimeToAha,
 } from "@/lib/tracking";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
-import ContextualTestimonial from "@/components/ContextualTestimonial";
 import HonestProofBadge from "@/components/HonestProofBadge";
 import AtsQuickCheck from "./AtsQuickCheck";
 import { Button } from "@/components/ui/button";
@@ -218,10 +217,6 @@ export default function FreeUploadClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [partial, setPartial] = useState<PartialSnapshot | null>(null);
-  // The role the visitor checked in the quick-check (AIC-859 §2a/§3b), used to
-  // contextualize the upload-form testimonial. Read from sessionStorage on mount
-  // (deep-link case) and set directly on the quick-check → upload hand-off.
-  const [quickcheckRole, setQuickcheckRole] = useState<string | null>(null);
   // Quiz → snapshot carry (AIC-863 §2b). When the visitor arrived from the
   // 30-second career quiz, show a "targeting [matchedRole]" pill and pass this
   // context to the snapshot API so its #1 path aligns with the quiz's promise.
@@ -234,12 +229,9 @@ export default function FreeUploadClient() {
   // Stamp the time-to-aha clock on first /free mount (AIC-856). First touch
   // wins, so the quick-check→upload mode switch (which never unmounts) keeps the
   // original landing time. Whichever reveal renders first fires free_time_to_aha.
-  // Also read the role the visitor checked in the quick-check (AIC-859) for the
-  // upload-form testimonial (deep-link case).
   useEffect(() => {
     markFreeLanding();
     try {
-      setQuickcheckRole(sessionStorage.getItem("quickcheck_role"));
       // Quiz-carry (AIC-863 §2b): parse the outcome the quiz stored so the pill
       // and the snapshot request can target the role the visitor was promised.
       const rawQuiz = sessionStorage.getItem("quiz_answers");
@@ -272,15 +264,12 @@ export default function FreeUploadClient() {
   // Hand-off from the quick-check "upload your resume" CTA: carry the pasted JD
   // forward (so /free-results can reference the role the user was checking) and
   // switch to the upload mode where the personalized snapshot is generated.
-  function handleQuickCheckToUpload(jobDescription: string, role: string) {
+  function handleQuickCheckToUpload(jobDescription: string) {
     try {
       sessionStorage.setItem("quickcheck_jd", jobDescription);
     } catch {
       /* sessionStorage may be unavailable (private mode) — non-fatal */
     }
-    // AtsQuickCheck already persisted quickcheck_role; mirror it into state so the
-    // upload-form testimonial personalizes immediately without a remount.
-    setQuickcheckRole(role);
     setMode("upload");
   }
 
@@ -412,7 +401,7 @@ export default function FreeUploadClient() {
       )}
 
       {mode === "quickcheck" && !loading ? (
-        <AtsQuickCheck source="free_page" onUploadResume={(jd, role) => handleQuickCheckToUpload(jd, role)} />
+        <AtsQuickCheck source="free_page" onUploadResume={(jd) => handleQuickCheckToUpload(jd)} />
       ) : (
       <>
       <div className="text-center mb-10">
@@ -447,11 +436,6 @@ export default function FreeUploadClient() {
           </li>
         ))}
       </ul>
-
-      {/* Social proof, contextualized to the role the visitor was checking (AIC-859 §3b). */}
-      <div className="mt-4 mb-6">
-        <ContextualTestimonial userProfile={quickcheckRole ?? undefined} />
-      </div>
 
       {/* Quiz-carry pill (AIC-863 §2b) — only shown when the visitor arrived from
           the quiz; its matchedRole is what the snapshot API is told to target. */}

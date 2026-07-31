@@ -6,15 +6,12 @@ import { Check, Briefcase, TrendingUp, Sparkles, Link as LinkIcon, Mail } from "
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { UserProfile } from "@/lib/intake";
 import type { GamifiedAtsPayload } from "@/lib/gamified-ats-payload";
-import { testimonials } from "@/lib/testimonials";
-import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
 import LockedReportPreview, { type PaywallVariant } from "@/components/LockedReportPreview";
 import GamifiedATSScore from "@/components/GamifiedATSScore";
 import HonestProofBadge from "@/components/HonestProofBadge";
-import { PROOF_METRICS } from "@/lib/proof-metrics";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed, trackEmailGateShown, trackEmailGateSkipped, trackEmailGateCaptured, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -409,7 +406,6 @@ export default function FreeResultsClient() {
   // Single best-match focus (Hick's Law) — always show the #1 ranked path.
   const activePath = snapshot.paths[0];
   const salaryUplift = snapshot.estimatedSalaryUplift ?? 15;
-  const marcusTestimonial = testimonials.find((t) => t.name === "Marcus T.")!;
 
   // Gate zone 1 backing data. The first milestone is a real, personalized step
   // derived from the user's own top skill gap (honest "diagnosis free" teaser);
@@ -604,20 +600,6 @@ export default function FreeResultsClient() {
         <Link href="/free" className="text-slate-500 hover:text-slate-300 text-xs underline">
           Try a different resume
         </Link>
-      </div>
-
-      {/* Social proof strip — relocated directly beneath the primary conversion
-          CTA (was below the share buttons) so the "others like you did this"
-          reassurance sits at the decision point (AIC-859 §3e). */}
-      <div className="mt-6">
-        <SocialProofStrip
-          testimonial={marcusTestimonial}
-          metrics={[
-            { value: PROOF_METRICS.freeSpeed, label: "Free roadmap" },
-            { value: PROOF_METRICS.noSignup, label: "To start" },
-            { value: PROOF_METRICS.pathsMapped, label: "Paths mapped" },
-          ]}
-        />
       </div>
 
       {/* Gate zone 2 — Salary trajectory (AIC-824). Current estimate + up
