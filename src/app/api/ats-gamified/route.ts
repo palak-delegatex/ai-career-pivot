@@ -8,6 +8,8 @@ import {
 } from "@/lib/ats-scoring";
 import { buildGamifiedAtsScore } from "@/lib/ats-gamified";
 import type { GamifiedAtsPayload } from "@/lib/gamified-ats-payload";
+import { getSupabaseClient } from "@/lib/supabase";
+import { getAtsBenchmark, recordAtsScoreSample } from "@/lib/ats-benchmark";
 
 // Gamified ATS score data (AIC-879 / design AIC-873, engine AIC-874).
 //
@@ -124,6 +126,16 @@ ${jobDescription.slice(0, 6000)}
     });
     const gamified = buildGamifiedAtsScore(breakdown);
 
+    // Honest score benchmark (AIC-884 §4): record this real score into the
+    // distribution, then read back the floor-gated "average user scores X"
+    // anchor for the Designer's surface. Both use the same client; persistence
+    // is best-effort (never blocks/fails the response) and the benchmark
+    // degrades to a null anchor on any error — a missing anchor beats a
+    // fabricated one (AIC-860/862).
+    const supabase = getSupabaseClient();
+    await recordAtsScoreSample(supabase, gamified.score);
+    const benchmark = await getAtsBenchmark(supabase);
+
     const payload: GamifiedAtsPayload = {
       gamified,
       categories: [
@@ -131,6 +143,7 @@ ${jobDescription.slice(0, 6000)}
         { name: "Formatting", score: breakdown.formattingScore },
       ],
       targetRole: enriched.jobTitle?.trim() || "your target role",
+      benchmark,
     };
 
     return NextResponse.json(payload);
