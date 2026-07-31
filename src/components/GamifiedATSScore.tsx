@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { ScoreRing } from "@/components/ScoreRing";
 import type { GamifiedAtsPayload } from "@/lib/gamified-ats-payload";
-import { trackAtsScoreViewed, trackAtsFixToggled, trackAtsScoreMilestone } from "@/lib/tracking";
+import { trackAtsScoreViewed, trackAtsFixToggled, trackAtsScoreMilestone, trackAtsScoreClimbed } from "@/lib/tracking";
 
 // Surface 2: Live gamified ATS score + "Fix This" checklist (AIC-879 / design
 // AIC-873, engine AIC-874).
@@ -104,9 +104,19 @@ export default function GamifiedATSScore({ payload }: { payload: GamifiedAtsPayl
         /* non-fatal */
       }
 
+      const prevGained = fixes.reduce((s, f) => (prev.has(f.id) ? s + f.pointDelta : s), 0);
+      const fromScore = Math.min(100, gamified.score + prevGained);
       const newGained = fixes.reduce((s, f) => (next.has(f.id) ? s + f.pointDelta : s), 0);
       const newScore = Math.min(100, gamified.score + newGained);
       trackAtsFixToggled({ fix_id: id, category, points, new_score: newScore, checked: isChecking });
+
+      // The measurement backbone (AIC-884 item 1): fire only when applying a fix
+      // actually raised the live score. Un-checks go to `ats_fix_toggled` only —
+      // `ats_score_climbed` is the clean upward-transition signal the free→paid
+      // gamification analysis reads.
+      if (isChecking && newScore > fromScore) {
+        trackAtsScoreClimbed({ from: fromScore, to: newScore, delta: newScore - fromScore, trigger: id });
+      }
 
       // Milestone pop on an upward band crossing.
       const newBand = bandFloor(newScore);
