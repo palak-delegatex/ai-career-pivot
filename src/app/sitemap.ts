@@ -85,8 +85,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/about", lastModified: pageLastModified("about"), changeFrequency: "monthly", priority: 0.6 },
     { path: "/faq", lastModified: pageLastModified("faq"), changeFrequency: "monthly", priority: 0.6 },
     { path: "/pricing", lastModified: pageLastModified("pricing"), changeFrequency: "monthly", priority: 0.8 },
-    // /success-stories intentionally omitted (AIC-867): page served fabricated
-    // outcome data and is noindex'd pending CMO rebuild/retire under AIC-866.
+    // /success-stories permanently deleted (AIC-888): the page + its fabricated
+    // outcome data files were removed. Do not re-add this path without real,
+    // consented outcome data. Rebuild deferred (see AIC-866).
     ...toolPages,
     { path: "/pivot", lastModified: pageLastModified("pivot"), changeFrequency: "weekly", priority: 0.8 },
     ...pivotPages,
