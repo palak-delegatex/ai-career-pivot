@@ -386,6 +386,16 @@ export function trackAtsScoreMilestone(props: { band: string; score: number }) {
   capture("ats_score_milestone", props);
 }
 
+// The live ATS score CLIMBED because a user applied a fix (AIC-884 item 1). This
+// is the measurement backbone for the whole gamification loop — it lets us prove
+// the live-climbing-score UX lifts free→paid against `payment_verified`. Fired
+// only on an upward transition (a checked fix), unlike the bidirectional
+// `ats_fix_toggled`. Contract agreed with the Chief Designer: { from, to, delta,
+// trigger } — do not rename without updating the Designer's dependent surface.
+export function trackAtsScoreClimbed(props: { from: number; to: number; delta: number; trigger: string }) {
+  capture("ats_score_climbed", props);
+}
+
 // Honest, DB-sourced social-proof signal rendered (AIC-874 /api/proof-signal).
 // `kind: "capability"` = below-floor fallback to a non-outcome capability signal.
 export function trackHonestProofShown(props: { kind: "weekly" | "total" | "capability"; value?: number }) {
