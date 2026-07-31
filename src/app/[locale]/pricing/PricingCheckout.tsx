@@ -5,6 +5,7 @@ import { ShieldCheck } from "lucide-react";
 import { trackCheckoutStarted, trackCheckoutError, trackPricingPlanSelected, pageSource, getPosthogDistinctId } from "@/lib/tracking";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
+import CheckoutReassurance from "@/components/CheckoutReassurance";
 
 // Transient failures (network blips, 5xx, rate-limits) are worth retrying
 // automatically before showing the user an error — a single checkout attempt
@@ -30,11 +31,15 @@ export default function PricingCheckout({
   prefillEmail = "",
   ctaLocation = "pricing_page",
   sourceFeature,
+  showReassurance = false,
 }: {
   plan?: string;
   prefillEmail?: string;
   ctaLocation?: string;
   sourceFeature?: string;
+  /** Show the "what happens next" reassurance panel (AIC-893) — enable at the
+   *  high-intent single-checkout moment (e.g. the plan page). */
+  showReassurance?: boolean;
 }) {
   const [email, setEmail] = useState(prefillEmail);
   const [discountCode, setDiscountCode] = useState("");
@@ -181,6 +186,7 @@ export default function PricingCheckout({
       <div className="flex justify-center pt-1">
         <InlineGuaranteeBadge />
       </div>
+      {showReassurance && <CheckoutReassurance className="mt-2" />}
     </form>
   );
 }

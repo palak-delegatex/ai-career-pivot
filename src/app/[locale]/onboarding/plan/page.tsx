@@ -13,6 +13,9 @@ import RiskAssessmentCard from "@/components/RiskAssessmentCard";
 import PathComparison from "@/components/PathComparison";
 import PlanSelector from "@/components/PlanSelector";
 import PricingCheckout from "@/app/[locale]/pricing/PricingCheckout";
+import ContextualValueNote from "@/components/ContextualValueNote";
+import CredibilityStrip from "@/components/CredibilityStrip";
+import FeedbackConsentPrompt from "@/components/FeedbackConsentPrompt";
 
 // Inline checkout tiers on the plan page — a value summary shown at the
 // checkout-decision moment so users buy in context instead of bouncing to
@@ -261,6 +264,13 @@ export default function PivotPlanPage() {
             bouncing to /pricing and re-entering the email we already have.
             Directly targets the plan_selected → checkout_started drop-off (AIC-372). */}
         <div className="mt-10 bg-slate-800/40 border border-teal-700/30 rounded-2xl p-8">
+          {/* Methodology reinforcement (AIC-893) — replaces the removed
+              testimonial strip with what the plan is actually built on. */}
+          <div className="max-w-md mx-auto mb-6 space-y-3">
+            <ContextualValueNote />
+            <CredibilityStrip variant="mini" />
+          </div>
+
           <div className="text-center mb-6">
             <h3 className="text-xl font-bold mb-2">Get your full detailed roadmap</h3>
             <p className="text-slate-400 max-w-md mx-auto">
@@ -305,6 +315,7 @@ export default function PivotPlanPage() {
               prefillEmail={profile?.email ?? ""}
               ctaLocation="plan_page_inline"
               sourceFeature="onboarding_plan"
+              showReassurance
             />
 
             <p className="text-center text-slate-500 text-xs mt-3">
@@ -320,6 +331,13 @@ export default function PivotPlanPage() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Consent capture (AIC-893) — post-onboarding opt-in to (later) share
+            REAL feedback. Placed below the CTA so it never competes with the
+            primary conversion. */}
+        <div className="mt-8 max-w-md mx-auto">
+          <FeedbackConsentPrompt email={profile?.email} source="post_onboarding" />
         </div>
       </div>
     </div>

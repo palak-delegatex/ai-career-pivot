@@ -625,3 +625,19 @@ export function trackMockSessionSaved(props: {
 }) {
   capture("mock_session_saved", props);
 }
+
+// Feedback-consent capture (AIC-893) — the honest social-proof program's
+// leading indicator. `consent_prompt_shown` fires when the opt-in prompt is
+// rendered; `consent_submitted` records the choice. Opt-in rate =
+// count(consent_submitted where choice != 'declined') / count(consent_prompt_shown)
+// (CEO target ≥30% of completers).
+export function trackConsentPromptShown(props: { source: string }) {
+  capture("consent_prompt_shown", props);
+}
+
+export function trackConsentSubmitted(props: {
+  source: string;
+  choice: "named" | "anonymous" | "declined";
+}) {
+  capture("consent_submitted", { ...props, opted_in: props.choice !== "declined" });
+}

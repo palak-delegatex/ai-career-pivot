@@ -12,6 +12,10 @@ import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
 import LockedReportPreview, { type PaywallVariant } from "@/components/LockedReportPreview";
 import GamifiedATSScore from "@/components/GamifiedATSScore";
 import HonestProofBadge from "@/components/HonestProofBadge";
+import CredibilityStrip from "@/components/CredibilityStrip";
+import MicroProof from "@/components/MicroProof";
+import FeedbackConsentPrompt from "@/components/FeedbackConsentPrompt";
+import { useHonestProofVariant, HONEST_PROOF_FLAG } from "@/lib/useHonestProofVariant";
 import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed, trackEmailGateShown, trackEmailGateSkipped, trackEmailGateCaptured, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -123,10 +127,12 @@ function EmailCaptureCard({
   snapshot,
   profile,
   placement = "bottom",
+  onCaptured,
 }: {
   snapshot: FreeSnapshot;
   profile: UserProfile | null;
   placement?: string;
+  onCaptured?: (email: string) => void;
 }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "skipped">("idle");
@@ -151,6 +157,7 @@ function EmailCaptureCard({
       });
       if (!res.ok) throw new Error("failed");
       setStatus("sent");
+      onCaptured?.(trimmed);
       trackFreeEmailCaptured({ source: "free_results" });
       trackEmailGateCaptured({ placement });
     } catch {
@@ -267,6 +274,12 @@ export default function FreeResultsClient() {
   // "control" = current blur gate; "itemized" = concrete locked-value lines;
   // "subscore" = real ATS category bars injected above the locked catalog.
   const [paywallVariant, setPaywallVariant] = useState<PaywallVariant>("control");
+  // Lifted from EmailCaptureCard so the post-assessment consent prompt can key
+  // on the email the visitor just gave (AIC-893).
+  const [capturedEmail, setCapturedEmail] = useState("");
+  // Honest-proof A/B (AIC-893): "honest" renders the credibility block, "control"
+  // leaves it bare (the AIC-890 baseline) so we can isolate the conversion lift.
+  const honestProof = useHonestProofVariant("free_results");
 
   const openUpgrade = useCallback(
     (source: string) => {
@@ -554,7 +567,7 @@ export default function FreeResultsClient() {
           </div>
           {emailGatePlacement === "post_ats" && (
             <div className="mb-6">
-              <EmailCaptureCard snapshot={snapshot} profile={profile} placement="post_ats" />
+              <EmailCaptureCard snapshot={snapshot} profile={profile} placement="post_ats" onCaptured={setCapturedEmail} />
             </div>
           )}
         </>
@@ -591,6 +604,14 @@ export default function FreeResultsClient() {
             event: "locked_report_unlock_click",
             page: "free-results",
           });
+          // Honest-proof A/B conversion (AIC-893) — the assessment→paid intent
+          // click, split by whether the honest credibility block was shown.
+          trackExperimentConversion({
+            flag: HONEST_PROOF_FLAG,
+            variant: honestProof,
+            event: "locked_report_unlock_click",
+            page: "free_results",
+          });
           openUpgrade("locked_report_preview");
         }}
         paywallVariant={paywallVariant}
@@ -601,6 +622,16 @@ export default function FreeResultsClient() {
           Try a different resume
         </Link>
       </div>
+
+      {/* Verifiable credibility (AIC-893) — replaces the removed testimonial
+          strip at the decision point with what the plan is actually built on.
+          Gated by the honest-proof A/B flag; "control" stays bare. */}
+      {honestProof === "honest" && (
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <CredibilityStrip variant="mini" />
+          <MicroProof />
+        </div>
+      )}
 
       {/* Gate zone 2 — Salary trajectory (AIC-824). Current estimate + up
           direction anchor the free "diagnosis"; the target number and financial
@@ -620,7 +651,7 @@ export default function FreeResultsClient() {
           variant already rendered above so suppress here to avoid double-fire. */}
       {emailGatePlacement !== "post_ats" && (
         <div className="mt-6">
-          <EmailCaptureCard snapshot={snapshot} profile={profile} placement={emailGatePlacement} />
+          <EmailCaptureCard snapshot={snapshot} profile={profile} placement={emailGatePlacement} onCaptured={setCapturedEmail} />
         </div>
       )}
 
@@ -674,6 +705,12 @@ export default function FreeResultsClient() {
           Compare what&apos;s in the free snapshot vs. the full report.
         </button>
       </p>
+
+      {/* Consent capture (AIC-893) — post-assessment opt-in to (later) share
+          REAL feedback. Only renders once the visitor has given an email. */}
+      <div className="mt-8">
+        <FeedbackConsentPrompt email={(capturedEmail || profile?.email || "").trim() || undefined} source="post_assessment" />
+      </div>
 
       {/* Personalized free-vs-paid comparison drawer (AIC-777) */}
       <UpgradeComparisonSheet
