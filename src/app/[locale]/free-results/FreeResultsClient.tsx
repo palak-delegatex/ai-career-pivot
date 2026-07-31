@@ -11,11 +11,11 @@ import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
-import LockedReportPreview from "@/components/LockedReportPreview";
+import LockedReportPreview, { type PaywallVariant } from "@/components/LockedReportPreview";
 import GamifiedATSScore from "@/components/GamifiedATSScore";
 import HonestProofBadge from "@/components/HonestProofBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
-import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed, trackEmailGateShown, trackEmailGateSkipped, trackEmailGateCaptured, getFeatureFlagVariant, trackExperimentViewed } from "@/lib/tracking";
+import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed, trackEmailGateShown, trackEmailGateSkipped, trackEmailGateCaptured, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -266,6 +266,10 @@ export default function FreeResultsClient() {
   // (current passive form at page bottom); "post_ats" = shown inline right
   // after the ATS score reveal with an explicit Skip button.
   const [emailGatePlacement, setEmailGatePlacement] = useState("bottom");
+  // Paywall-framing experiment (AIC-884 item 2, Designer contract AIC-886).
+  // "control" = current blur gate; "itemized" = concrete locked-value lines;
+  // "subscore" = real ATS category bars injected above the locked catalog.
+  const [paywallVariant, setPaywallVariant] = useState<PaywallVariant>("control");
 
   const openUpgrade = useCallback(
     (source: string) => {
@@ -301,6 +305,12 @@ export default function FreeResultsClient() {
     const placement = getFeatureFlagVariant("email-gate-placement", "bottom");
     setEmailGatePlacement(placement);
     trackExperimentViewed({ flag: "email-gate-placement", variant: placement, page: "free_results" });
+
+    const pfRaw = getFeatureFlagVariant("paywall-framing", "control");
+    const pfVariant: PaywallVariant =
+      pfRaw === "itemized" || pfRaw === "subscore" ? pfRaw : "control";
+    setPaywallVariant(pfVariant);
+    trackExperimentViewed({ flag: "paywall-framing", variant: pfVariant, page: "free-results" });
   }, []);
 
   useEffect(() => {
@@ -576,7 +586,19 @@ export default function FreeResultsClient() {
       <LockedReportPreview
         snapshot={snapshot}
         quickcheckRole={quickcheckRole}
-        onUnlock={() => openUpgrade("locked_report_preview")}
+        onUnlock={() => {
+          // Experiment conversion for the paywall-framing A/B (AIC-884 item 2 /
+          // AIC-886 §4): the primary unlock CTA click, split by variant.
+          trackExperimentConversion({
+            flag: "paywall-framing",
+            variant: paywallVariant,
+            event: "locked_report_unlock_click",
+            page: "free-results",
+          });
+          openUpgrade("locked_report_preview");
+        }}
+        paywallVariant={paywallVariant}
+        atsCategories={atsPayload?.categories}
       />
       <div className="mt-3 text-center">
         <Link href="/free" className="text-slate-500 hover:text-slate-300 text-xs underline">
