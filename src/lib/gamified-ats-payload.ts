@@ -5,6 +5,7 @@
 // composed from (keyword × 0.70 + formatting × 0.30), surfaced as breakdown bars.
 
 import type { GamifiedAtsScore } from "@/lib/ats-gamified";
+import type { AtsBenchmark } from "@/lib/ats-benchmark";
 
 export interface AtsCategoryScore {
   name: string;
@@ -17,4 +18,11 @@ export interface GamifiedAtsPayload {
   categories: AtsCategoryScore[];
   /** Role/title inferred from the target JD, for the "for {role}" header. */
   targetRole: string;
+  /**
+   * Honest, DB-sourced score benchmark (AIC-884 §4) — the real "average user
+   * scores X" anchor, floor-gated. `benchmark.primary` is null when too few
+   * real samples exist, in which case the UI shows no anchor. Always present in
+   * the shape so the Designer's surface can read it unconditionally.
+   */
+  benchmark: AtsBenchmark;
 }
