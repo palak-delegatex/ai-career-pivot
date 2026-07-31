@@ -15,6 +15,7 @@ import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracki
 import StickyCtaBar from "@/components/StickyCtaBar";
 import OutcomeHeroBadge from "@/components/OutcomeHeroBadge";
 import MicroProofStrip from "@/components/MicroProofStrip";
+import HonestSocialProofSection from "@/components/HonestSocialProofSection";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -492,6 +493,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
         {/* Voices of the AI Era — Image-Forward Expert Quotes */}
         <VoicesOfTheAIEra />
+
+        {/* Honest social proof (AIC-893) — replaces the removed fabricated
+            testimonials section: labeled sample output + early-access framing +
+            verifiable credibility signals. Gated by the `honest-proof` A/B flag. */}
+        <HonestSocialProofSection />
 
         {/* Trust Bar */}
         <TrustBar />
