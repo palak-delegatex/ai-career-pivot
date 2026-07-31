@@ -8,8 +8,8 @@
 import { CheckCircle2 } from "lucide-react";
 
 export default function MicroProof({
-  line = "Salary ranges and role-growth outlook are based on U.S. Bureau of Labor Statistics data",
-  source = "BLS OEWS",
+  line = "Salary ranges and role-growth outlook reflect public U.S. labor-market data",
+  source = "U.S. Bureau of Labor Statistics (OEWS)",
   className = "",
 }: {
   line?: string;

@@ -33,7 +33,7 @@ export default function CheckoutReassurance({ className = "" }: { className?: st
         ))}
       </ol>
       <p className="mt-3 border-t border-slate-800 pt-3 text-[11px] font-medium text-slate-500">
-        One-time payment · No subscription · Cancel-free (nothing recurring to cancel)
+        One-time payment · No subscription · Nothing recurring to cancel
       </p>
     </div>
   );
