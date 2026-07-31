@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
-import SocialProofStrip from "@/components/SocialProofStrip";
 
 function CheckoutSuccessInner() {
   const router = useRouter();
@@ -115,20 +114,7 @@ function CheckoutSuccessInner() {
           Build My Roadmap →
         </Link>
 
-        {/* Social proof */}
         <div className="mt-6 mb-4">
-          <SocialProofStrip
-            variant="minimal"
-            testimonial={{
-              quote: "The 6-month plan gave me a way to upskill nights and weekends.",
-              name: "Priya R.",
-              role: "Career Pivoter",
-              initials: "PR",
-              gradient: "from-teal-500 to-cyan-500",
-            }}
-            metrics={[]}
-            className="justify-center"
-          />
           <p className="text-xs text-slate-500 mt-1">You&rsquo;re in — let&rsquo;s build your roadmap</p>
         </div>
 

@@ -17,7 +17,6 @@ import {
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { ReportTeaser, TeaserSection } from "@/lib/report-teaser";
 import type { AtsCategoryScore } from "@/lib/gamified-ats-payload";
-import ContextualTestimonial from "@/components/ContextualTestimonial";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { trackLockedReportPreviewViewed } from "@/lib/tracking";
 
@@ -265,11 +264,6 @@ export default function LockedReportPreview({
         {teaser.sections.map((s) => (
           <LockedSectionCard key={s.id} section={s} variant={paywallVariant} />
         ))}
-      </div>
-
-      {/* Social proof matched to the visitor's background (AIC-859 §3c). */}
-      <div className="mt-5">
-        <ContextualTestimonial userProfile={snapshot.profileSummary} />
       </div>
 
       {/* Single conversion action */}
