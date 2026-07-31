@@ -16,9 +16,29 @@ import {
 } from "lucide-react";
 import type { FreeSnapshot } from "@/app/api/intake/free-snapshot/route";
 import type { ReportTeaser, TeaserSection } from "@/lib/report-teaser";
+import type { AtsCategoryScore } from "@/lib/gamified-ats-payload";
 import ContextualTestimonial from "@/components/ContextualTestimonial";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { trackLockedReportPreviewViewed } from "@/lib/tracking";
+
+// Paywall-framing A/B (AIC-884 item 2 — flag `paywall-framing`, Designer contract
+// AIC-886). Three variants read in FreeResultsClient and passed down:
+//   control  — today's blurred ghost-bar gate (no change)
+//   itemized — ghost bars replaced with the section's real count as an explicit
+//              "locked value" line (loss aversion made concrete)
+//   subscore — the real ATS category sub-scores injected above the catalog, so
+//              the user's specific weakness is visible and the locked sections
+//              read as the fix (information scent / goal-gradient)
+export type PaywallVariant = "control" | "itemized" | "subscore";
+
+// Score-band → bar color (same thresholds as GamifiedATSScore/ScoreRing) so a
+// weak sub-score reads red — the honest weakness the report addresses.
+function subscoreBar(score: number): string {
+  if (score >= 80) return "bg-emerald-400";
+  if (score >= 60) return "bg-teal-400";
+  if (score >= 40) return "bg-amber-400";
+  return "bg-red-400";
+}
 
 // Surface 1: Locked Paid-Report Preview (AIC-879 / design AIC-873, engine AIC-874).
 //
@@ -46,12 +66,24 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
 // any real (or fabricated) content. Purely decorative + inert.
 const GHOST_WIDTHS = ["85%", "70%", "45%"];
 
-function LockedSectionCard({ section }: { section: TeaserSection }) {
+function LockedSectionCard({
+  section,
+  variant = "control",
+}: {
+  section: TeaserSection;
+  variant?: PaywallVariant;
+}) {
   const Icon = SECTION_ICONS[section.id] ?? Lock;
   const countLabel =
     section.count != null
       ? `${section.count}${section.countLabel ? ` ${section.countLabel}` : ""}`
       : null;
+
+  // `itemized` variant: swap the decorative blur for a concrete "locked value"
+  // line built from the section's REAL count (no fabrication — same data the
+  // count badge shows). Sections without a count keep the ghost bars so the
+  // card never looks empty.
+  const showItemizedValue = variant === "itemized" && countLabel != null;
 
   return (
     <div className="rounded-xl bg-slate-800/40 border border-slate-700/40 p-4">
@@ -70,16 +102,70 @@ function LockedSectionCard({ section }: { section: TeaserSection }) {
         </div>
         <Lock className="h-4 w-4 text-slate-500 shrink-0" aria-hidden="true" />
       </div>
-      {/* Ghost content — blurred, inert, aria-hidden. No real or fake text. */}
-      <div
-        className="mt-3 space-y-2 blur-[6px] select-none pointer-events-none"
-        aria-hidden="true"
-        inert
-      >
-        {GHOST_WIDTHS.map((w, i) => (
-          <div key={i} className="h-3 rounded bg-slate-700/60" style={{ width: w }} />
-        ))}
+      {showItemizedValue ? (
+        <div className="mt-3 flex items-center gap-2 rounded-lg bg-slate-900/40 border border-slate-700/40 px-3 py-2">
+          <Lock className="h-3.5 w-3.5 text-teal-400/80 shrink-0" aria-hidden="true" />
+          <p className="text-xs text-slate-300">
+            <span className="font-semibold text-teal-300">{countLabel}</span>{" "}
+            ready — unlock to view
+          </p>
+        </div>
+      ) : (
+        /* Ghost content — blurred, inert, aria-hidden. No real or fake text. */
+        <div
+          className="mt-3 space-y-2 blur-[6px] select-none pointer-events-none"
+          aria-hidden="true"
+          inert
+        >
+          {GHOST_WIDTHS.map((w, i) => (
+            <div key={i} className="h-3 rounded bg-slate-700/60" style={{ width: w }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Subscore variant: the real ATS category sub-scores rendered as compact meter
+// bars above the section catalog. Reuses the exact meter/a11y pattern from
+// GamifiedATSScore. Stacks on mobile, sits in one inline row on `sm:` up to
+// avoid pushing the CTA below the fold (AIC-886 §5 mobile-density mitigation).
+function SubscoreBreakdown({ categories }: { categories: AtsCategoryScore[] }) {
+  if (!categories.length) return null;
+  return (
+    <div className="mb-5 rounded-xl bg-slate-800/50 border border-slate-700/40 p-4">
+      <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        Your ATS score breakdown
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
+        {categories.map((c) => {
+          const rounded = Math.round(c.score);
+          return (
+            <div key={c.name}>
+              <div className="flex items-baseline justify-between mb-1">
+                <span className="text-sm text-slate-300">{c.name}</span>
+                <span className="text-xs font-semibold text-slate-400 tabular-nums">{rounded}</span>
+              </div>
+              <div
+                className="h-2 w-full rounded-full bg-slate-700 overflow-hidden"
+                role="meter"
+                aria-valuenow={rounded}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`${c.name}: ${rounded} out of 100`}
+              >
+                <div
+                  className={`h-2 rounded-full ${subscoreBar(c.score)} transition-all duration-700 ease-out`}
+                  style={{ width: `${Math.max(3, Math.min(100, c.score))}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
+      <p className="text-[11px] text-slate-500 mt-3 leading-snug">
+        The report below closes the gaps behind these scores.
+      </p>
     </div>
   );
 }
@@ -88,10 +174,14 @@ export default function LockedReportPreview({
   snapshot,
   quickcheckRole,
   onUnlock,
+  paywallVariant = "control",
+  atsCategories,
 }: {
   snapshot: FreeSnapshot;
   quickcheckRole: string | null;
   onUnlock: () => void;
+  paywallVariant?: PaywallVariant;
+  atsCategories?: AtsCategoryScore[];
 }) {
   const [teaser, setTeaser] = useState<ReportTeaser | null>(null);
   const [unlocked, setUnlocked] = useState(false);
@@ -165,10 +255,15 @@ export default function LockedReportPreview({
         </div>
       </div>
 
+      {/* Subscore variant — real ATS category bars above the catalog (AIC-884 §2). */}
+      {paywallVariant === "subscore" && atsCategories && atsCategories.length > 0 && (
+        <SubscoreBreakdown categories={atsCategories} />
+      )}
+
       {/* Locked section catalog */}
       <div className="space-y-3">
         {teaser.sections.map((s) => (
-          <LockedSectionCard key={s.id} section={s} />
+          <LockedSectionCard key={s.id} section={s} variant={paywallVariant} />
         ))}
       </div>
 

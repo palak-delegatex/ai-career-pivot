@@ -63,6 +63,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 400 });
   }
 
+  if (event.type === "charge.refunded") {
+    const charge = event.data.object;
+    const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
+    if (token) {
+      try {
+        const ph = new PostHog(token, {
+          host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+          flushAt: 1,
+        });
+        const email = typeof charge.billing_details?.email === "string" ? charge.billing_details.email : null;
+        ph.capture({
+          distinctId: email ?? charge.id,
+          event: "payment_refunded",
+          properties: {
+            charge_id: charge.id,
+            amount_refunded_cents: charge.amount_refunded,
+            email,
+            source: "stripe_webhook",
+          },
+        });
+        await ph.shutdown();
+      } catch (err) {
+        console.error("Failed to capture payment_refunded event:", err);
+      }
+    }
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const supabase = getSupabaseClient();

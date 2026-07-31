@@ -11,11 +11,11 @@ import SocialProofStrip from "@/components/SocialProofStrip";
 import UpgradeComparisonSheet from "@/components/UpgradeComparisonSheet";
 import ContextualUpgradePrompt from "@/components/ContextualUpgradePrompt";
 import PartialRoadmapReveal from "@/components/PartialRoadmapReveal";
-import LockedReportPreview from "@/components/LockedReportPreview";
+import LockedReportPreview, { type PaywallVariant } from "@/components/LockedReportPreview";
 import GamifiedATSScore from "@/components/GamifiedATSScore";
 import HonestProofBadge from "@/components/HonestProofBadge";
 import { PROOF_METRICS } from "@/lib/proof-metrics";
-import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed } from "@/lib/tracking";
+import { trackFreeEmailCaptured, trackUpgradeSheetOpened, trackFreeResultsViewed, trackEmailGateShown, trackEmailGateSkipped, trackEmailGateCaptured, getFeatureFlagVariant, trackExperimentViewed, trackExperimentConversion } from "@/lib/tracking";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "text-red-400 bg-red-950/40 border-red-800/40",
@@ -125,12 +125,18 @@ function GhostSalaryTrajectory({
 function EmailCaptureCard({
   snapshot,
   profile,
+  placement = "bottom",
 }: {
   snapshot: FreeSnapshot;
   profile: UserProfile | null;
+  placement?: string;
 }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "skipped">("idle");
+
+  useEffect(() => {
+    trackEmailGateShown({ placement });
+  }, [placement]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -149,10 +155,18 @@ function EmailCaptureCard({
       if (!res.ok) throw new Error("failed");
       setStatus("sent");
       trackFreeEmailCaptured({ source: "free_results" });
+      trackEmailGateCaptured({ placement });
     } catch {
       setStatus("error");
     }
   }
+
+  function handleSkip() {
+    trackEmailGateSkipped({ placement });
+    setStatus("skipped");
+  }
+
+  if (status === "skipped") return null;
 
   if (status === "sent") {
     return (
@@ -170,9 +184,19 @@ function EmailCaptureCard({
 
   return (
     <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Mail className="w-4 h-4 text-teal-400 shrink-0" />
-        <p className="text-sm font-semibold text-white">Email me this snapshot</p>
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-2">
+          <Mail className="w-4 h-4 text-teal-400 shrink-0" />
+          <p className="text-sm font-semibold text-white">Email me this snapshot</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleSkip}
+          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          aria-label="Skip email capture"
+        >
+          Skip
+        </button>
       </div>
       <p className="text-xs text-slate-400 mb-3">
         Get your results and matched paths sent to your inbox so you can pick this back up later.
@@ -238,6 +262,14 @@ export default function FreeResultsClient() {
   // Personalized free-vs-paid comparison drawer (AIC-777). `upgradeSource` is
   // non-null while open and records which surface opened it (funnel attribution).
   const [upgradeSource, setUpgradeSource] = useState<string | null>(null);
+  // Email-gate placement experiment (AIC-884 item 7). "bottom" = control
+  // (current passive form at page bottom); "post_ats" = shown inline right
+  // after the ATS score reveal with an explicit Skip button.
+  const [emailGatePlacement, setEmailGatePlacement] = useState("bottom");
+  // Paywall-framing experiment (AIC-884 item 2, Designer contract AIC-886).
+  // "control" = current blur gate; "itemized" = concrete locked-value lines;
+  // "subscore" = real ATS category bars injected above the locked catalog.
+  const [paywallVariant, setPaywallVariant] = useState<PaywallVariant>("control");
 
   const openUpgrade = useCallback(
     (source: string) => {
@@ -268,6 +300,18 @@ export default function FreeResultsClient() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [snapshot, shareText, shareUrl]);
+
+  useEffect(() => {
+    const placement = getFeatureFlagVariant("email-gate-placement", "bottom");
+    setEmailGatePlacement(placement);
+    trackExperimentViewed({ flag: "email-gate-placement", variant: placement, page: "free_results" });
+
+    const pfRaw = getFeatureFlagVariant("paywall-framing", "control");
+    const pfVariant: PaywallVariant =
+      pfRaw === "itemized" || pfRaw === "subscore" ? pfRaw : "control";
+    setPaywallVariant(pfVariant);
+    trackExperimentViewed({ flag: "paywall-framing", variant: pfVariant, page: "free-results" });
+  }, []);
 
   useEffect(() => {
     try {
@@ -508,9 +552,16 @@ export default function FreeResultsClient() {
           Renders only when the visitor pasted a JD in the quick-check, so we
           have a real target to score against (no JD ⇒ no fabricated score). */}
       {atsPayload && (
-        <div className="mb-6">
-          <GamifiedATSScore payload={atsPayload} />
-        </div>
+        <>
+          <div className="mb-6">
+            <GamifiedATSScore payload={atsPayload} />
+          </div>
+          {emailGatePlacement === "post_ats" && (
+            <div className="mb-6">
+              <EmailCaptureCard snapshot={snapshot} profile={profile} placement="post_ats" />
+            </div>
+          )}
+        </>
       )}
 
       {/* Gate zone 1 — Partial roadmap reveal (AIC-824). First milestone fully
@@ -535,7 +586,19 @@ export default function FreeResultsClient() {
       <LockedReportPreview
         snapshot={snapshot}
         quickcheckRole={quickcheckRole}
-        onUnlock={() => openUpgrade("locked_report_preview")}
+        onUnlock={() => {
+          // Experiment conversion for the paywall-framing A/B (AIC-884 item 2 /
+          // AIC-886 §4): the primary unlock CTA click, split by variant.
+          trackExperimentConversion({
+            flag: "paywall-framing",
+            variant: paywallVariant,
+            event: "locked_report_unlock_click",
+            page: "free-results",
+          });
+          openUpgrade("locked_report_preview");
+        }}
+        paywallVariant={paywallVariant}
+        atsCategories={atsPayload?.categories}
       />
       <div className="mt-3 text-center">
         <Link href="/free" className="text-slate-500 hover:text-slate-300 text-xs underline">
@@ -571,10 +634,13 @@ export default function FreeResultsClient() {
         </ContextualUpgradePrompt>
       </div>
 
-      {/* Deferred email capture (D1) — offered after the user has seen value */}
-      <div className="mt-6">
-        <EmailCaptureCard snapshot={snapshot} profile={profile} />
-      </div>
+      {/* Deferred email capture (D1) — control variant shows at bottom; post_ats
+          variant already rendered above so suppress here to avoid double-fire. */}
+      {emailGatePlacement !== "post_ats" && (
+        <div className="mt-6">
+          <EmailCaptureCard snapshot={snapshot} profile={profile} placement={emailGatePlacement} />
+        </div>
+      )}
 
       {/* Share buttons — demoted below the conversion surface (upsell CTA + email
           capture) so they don't compete with the primary action (AIC-807 #3). */}
