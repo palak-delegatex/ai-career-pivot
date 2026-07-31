@@ -7,7 +7,7 @@ import type { Testimonial } from "@/lib/testimonials";
  * (checkout, free-tool upgrade CTA). Social proof at the exact moment of
  * highest intent — a real member outcome in the buyer's own shoes, kept small
  * so it reinforces the CTA without competing with it. Sources from the shared
- * `testimonials` list so quotes never drift from the success-stories page.
+ * `testimonials` list so quotes stay consistent across the funnel.
  */
 export default function MicroTestimonial({
   testimonial,
