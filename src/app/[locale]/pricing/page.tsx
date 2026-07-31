@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import PricingCheckout from "./PricingCheckout";
+import PricingCadenceExperiment from "./PricingCadenceExperiment";
 import PricingHeroCta from "./PricingHeroCta";
 import PricingFreeCta from "./PricingFreeCta";
 import PricingPageTracker from "./PricingPageTracker";
@@ -319,7 +320,7 @@ export default function PricingPage() {
                 </ul>
               </CardContent>
               <CardFooter className="px-8 pb-8 flex-col gap-2">
-                <PricingCheckout plan="report" />
+                <PricingCadenceExperiment />
                 <CheckoutTrustBlock
                   items={[
                     { icon: "shield", text: "30-day refund, no questions" },

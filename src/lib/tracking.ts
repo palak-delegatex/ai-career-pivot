@@ -244,6 +244,19 @@ export function trackFreeEmailCaptured(props: { source: string }) {
   capture("free_email_captured", props);
 }
 
+// Soft email-gate experiment (AIC-884 item 7). Tracks the impression, skip,
+// and capture for the email-gate card. Source encodes the placement variant
+// so PostHog can compare "bottom" vs "post_ats" conversion rates.
+export function trackEmailGateShown(props: { placement: string }) {
+  capture("email_gate_shown", props);
+}
+export function trackEmailGateSkipped(props: { placement: string }) {
+  capture("email_gate_skipped", props);
+}
+export function trackEmailGateCaptured(props: { placement: string }) {
+  capture("email_gate_captured", props);
+}
+
 // Standalone free-tool lead funnel (AIC-839, pairs with AIC-838). The tool→
 // lead→report funnel is: cta_clicked (tool + source) → email_captured (tool +
 // source). These mirror the blog `cta_clicked` instrumentation (PR #120) but

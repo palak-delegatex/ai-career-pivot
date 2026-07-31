@@ -4,7 +4,7 @@ export function getStripeClient() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
-export type PlanKey = "report" | "lifetime";
+export type PlanKey = "report" | "lifetime" | "report_monthly" | "report_annual";
 
 export const PLANS: Record<
   PlanKey,
@@ -13,7 +13,9 @@ export const PLANS: Record<
     label: string;
     description: string;
     mode: "payment" | "subscription";
-    recurring?: { interval: "month" };
+    recurring?: { interval: "month" | "year" };
+    // Displayed on the pricing page when this plan is the annual anchor
+    effectiveMonthly?: number;
   }
 > = {
   report: {
@@ -29,6 +31,25 @@ export const PLANS: Record<
     description:
       "Lifetime access to all current and future features — one-time payment",
     mode: "payment",
+  },
+  // Pricing-cadence experiment variants (AIC-884 item 3). Uses inline price_data
+  // so no Stripe dashboard objects needed. Flag: pricing-cadence → annual_anchored.
+  report_monthly: {
+    amount: 999,
+    label: "AICareerPivot — Monthly",
+    description:
+      "Full AI career pivot roadmap, coaching, resume builder, and job board — billed monthly",
+    mode: "subscription",
+    recurring: { interval: "month" },
+  },
+  report_annual: {
+    amount: 7900,
+    label: "AICareerPivot — Annual (best value)",
+    description:
+      "Full AI career pivot roadmap, coaching, resume builder, and job board — billed annually",
+    mode: "subscription",
+    recurring: { interval: "year" },
+    effectiveMonthly: 658,
   },
 };
 

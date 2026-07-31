@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
         plan: planKey,
         discountCode: discountCode ?? "",
         posthog_distinct_id: typeof posthogDistinctId === "string" ? posthogDistinctId : "",
+        money_back_guarantee: "30_day",
       },
     };
 
