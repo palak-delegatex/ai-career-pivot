@@ -477,10 +477,15 @@ export function trackTourDismissed(props: { tour_id: string; step_index: number 
 // PostHog's SDK auto-attaches utm_* params to the manual $pageview events we
 // fire (see instrumentation-client.ts), so landing attribution needs no extra
 // event. These track the outbound share side of the loop.
+export type ShareChannel = "linkedin" | "x" | "copy_link" | "copy" | "native" | "other";
+
 export function trackContentShareClicked(props: {
-  channel: "linkedin" | "x" | "copy";
-  content_type: "blog" | "assessment";
+  channel?: "linkedin" | "x" | "copy";
+  share_channel?: ShareChannel;
+  content_type?: "blog" | "assessment";
+  content_slug?: string;
   slug?: string;
+  page?: string;
 }) {
   capture("content_share_clicked", props);
 }
