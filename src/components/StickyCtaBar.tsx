@@ -2,22 +2,20 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
 import { trackCtaClicked, trackCtaHovered } from "@/lib/tracking";
 
-const CTA_TEXT = "Get My Plan — $19";
+// Sticky mobile CTA now routes cold traffic to the FREE snapshot rather than
+// /pricing ($19) — the hero-to-paid jump was the root cause of the ~2-5%
+// landing→free_upload_started rate (AIC-1052 conversion audit).
+const CTA_TEXT = "Try My Free Skill-Gap Snapshot";
+const CTA_DEST = "/free?mode=upload";
 
 export default function StickyCtaBar() {
   const [visible, setVisible] = useState(false);
   const t = useTranslations("home.stickyCta");
-  const pathname = usePathname();
-  // On /pricing the checkout card is already on this page, so linking to
-  // /pricing is a dead-end tap (AIC-786 fix #4). Scroll to the Report card
-  // (#get-report) instead; on every other page keep navigating to /pricing.
-  const onPricing = pathname?.replace(/\/$/, "").endsWith("/pricing") ?? false;
 
   useEffect(() => {
     function onScroll() {
@@ -41,28 +39,14 @@ export default function StickyCtaBar() {
       className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex flex-col items-center justify-center gap-1.5"
     >
       <div className="flex items-center justify-center gap-4">
-      {onPricing ? (
-        <button
-          type="button"
-          onClick={() => {
-            trackCtaClicked({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile", destination: "#get-report" });
-            document.getElementById("get-report")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          onMouseEnter={() => trackCtaHovered({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile" })}
-          className={btnClass}
-        >
-          {label}
-        </button>
-      ) : (
         <Link
-          href="/pricing"
-          onClick={() => trackCtaClicked({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile", destination: "/pricing" })}
+          href={CTA_DEST}
+          onClick={() => trackCtaClicked({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile", destination: CTA_DEST })}
           onMouseEnter={() => trackCtaHovered({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile" })}
           className={btnClass}
         >
           {label}
         </Link>
-      )}
       </div>
       <InlineGuaranteeBadge variant="short" />
     </motion.div>

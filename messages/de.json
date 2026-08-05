@@ -59,13 +59,13 @@
   },
   "home": {
     "hero": {
-      "badge": "Einführungspreis — Nur $19 (statt $29) · Begrenzte Zeit",
+      "badge": "Kostenlose Skill-Gap-Analyse · Ohne Anmeldung · Ergebnis in 3 Min",
       "titleLine1": "Schluss mit dem Gefühl, festzustecken.",
       "titleLine2": "Bauen Sie Ihren Ausweg.",
       "subtitle": "Laden Sie Ihren Lebenslauf hoch. Erhalten Sie einen personalisierten Karrierewechsel-Fahrplan, der auf Ihren echten Fähigkeiten, Finanzen und familiären Rahmenbedingungen basiert — in unter 5 Minuten.",
       "socialProof": "127 Fachleute haben diesen Monat gewechselt",
-      "ctaPrimary": "Meinen Plan jetzt erstellen — <s>$29</s> $19 →",
-      "freeLink": "Oder die kostenlose Kompetenzlücken-Analyse testen — keine Zahlung nötig →",
+      "ctaPrimary": "Kostenlose Skill-Gap-Analyse starten →",
+      "freeLink": "Weg schon klar? Hol dir den 19-$-Pivot-Plan →",
       "freeNote": "3 Minuten · Kein Abo · Kompletter Fahrplan gehört Ihnen",
       "viewers": "🔥 83 Personen haben diese Seite heute angesehen",
       "outcomeBadgeValue": "9 Rollen · 30+ Pfade",
@@ -293,7 +293,7 @@
       "label": "Entwickelt mit Technologie von"
     },
     "stickyCta": {
-      "cta": "Meinen Plan erhalten — <s>$29</s> $19 →"
+      "cta": "Kostenlose Skill-Gap-Analyse testen →"
     },
     "featureShowcase": {
       "eyebrow": "In Aktion Erleben",
