@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { trackAssessmentShared, trackContentShareClicked } from "@/lib/tracking";
+import { trackAssessmentShared, type ShareChannel } from "@/lib/tracking";
 
 type Channel = "linkedin" | "x" | "copy";
+
+// Map the button's UI channel onto the documented AIC-909 share_channel enum.
+const SHARE_CHANNEL: Record<Channel, ShareChannel> = {
+  linkedin: "linkedin",
+  x: "x",
+  copy: "copy_link",
+};
 
 /**
  * Assessment share loop (AIC-688). Renders LinkedIn / X / copy buttons that
@@ -33,8 +40,7 @@ export default function ShareResultButtons({
   const onShare = useCallback(
     (channel: Channel) => {
       const link = shareUrl(channel);
-      trackContentShareClicked({ channel, content_type: "assessment" });
-      trackAssessmentShared({ channel, score });
+      trackAssessmentShared({ share_channel: SHARE_CHANNEL[channel], score });
 
       if (channel === "copy") {
         navigator.clipboard?.writeText(link).then(() => {
