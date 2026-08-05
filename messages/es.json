@@ -59,13 +59,13 @@
   },
   "home": {
     "hero": {
-      "badge": "Precio de lanzamiento — Solo $19 (antes $29) · Tiempo limitado",
+      "badge": "Diagnóstico gratis de brechas · Sin registro · Resultados en 3 min",
       "titleLine1": "Deja de sentirte atrapado.",
       "titleLine2": "Construye tu plan de escape.",
       "subtitle": "Sube tu currículum. Obtén un plan de cambio de carrera personalizado basado en tus habilidades reales, tus finanzas y tus circunstancias familiares — en menos de 5 minutos.",
       "socialProof": "127 profesionales dieron su salto este mes",
-      "ctaPrimary": "Crea mi plan ahora — <s>$29</s> $19 →",
-      "freeLink": "O prueba el diagnóstico gratuito de brechas — sin pago requerido →",
+      "ctaPrimary": "Obtén mi diagnóstico gratis de brechas →",
+      "freeLink": "¿Ya sabes tu camino? Consigue el Plan de Pivote por $19 →",
       "freeNote": "3 minutos · Sin suscripción · Tu plan completo para siempre",
       "viewers": "🔥 83 personas vieron esta página hoy",
       "outcomeBadgeValue": "9 roles · 30+ rutas",
@@ -293,7 +293,7 @@
       "label": "Construido con tecnología de"
     },
     "stickyCta": {
-      "cta": "Obtener mi plan — <s>$29</s> $19 →"
+      "cta": "Prueba mi diagnóstico gratis de brechas →"
     },
     "featureShowcase": {
       "eyebrow": "Míralo En Acción",

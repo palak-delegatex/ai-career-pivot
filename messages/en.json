@@ -59,13 +59,13 @@
   },
   "home": {
     "hero": {
-      "badge": "Intro Pricing — Just $19 (was $29) · Limited time",
+      "badge": "Free Skill-Gap Snapshot · No signup · Results in 3 min",
       "titleLine1": "Stop feeling trapped.",
       "titleLine2": "Build your escape plan.",
       "subtitle": "Upload your resume. Get a personalized career pivot roadmap built around your real skills, finances, and family constraints — in under 5 minutes.",
       "socialProof": "127 professionals pivoted this month",
-      "ctaPrimary": "Build My Pivot Plan Now — <s>$29</s> $19 →",
-      "freeLink": "Or try the free skill-gap snapshot — no payment required →",
+      "ctaPrimary": "Get My Free Skill-Gap Snapshot →",
+      "freeLink": "Already know your path? Get the $19 Pivot Plan →",
       "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
       "viewers": "🔥 83 people viewed this page today",
       "outcomeBadgeValue": "9 roles · 30+ paths",
@@ -293,7 +293,7 @@
       "label": "Built with technology from"
     },
     "stickyCta": {
-      "cta": "Get My Plan — <s>$29</s> $19 →"
+      "cta": "Try My Free Skill-Gap Snapshot →"
     },
     "featureShowcase": {
       "eyebrow": "See It In Action",

@@ -59,13 +59,13 @@
   },
   "home": {
     "hero": {
-      "badge": "Preço de lançamento — Apenas $19 (era $29) · Por tempo limitado",
+      "badge": "Diagnóstico gratuito de lacunas · Sem cadastro · Resultado em 3 min",
       "titleLine1": "Pare de se sentir preso.",
       "titleLine2": "Monte seu plano de fuga.",
       "subtitle": "Envie seu currículo. Receba um roteiro personalizado de transição de carreira construído em torno das suas habilidades reais, finanças e limitações familiares — em menos de 5 minutos.",
       "socialProof": "127 profissionais fizeram a transição neste mês",
-      "ctaPrimary": "Montar meu plano de transição agora — <s>$29</s> $19 →",
-      "freeLink": "Ou experimente o diagnóstico gratuito de lacunas de habilidades — sem pagamento →",
+      "ctaPrimary": "Obter meu diagnóstico gratuito de lacunas →",
+      "freeLink": "Já sabe seu caminho? Garanta o Plano de Pivô por US$ 19 →",
       "freeNote": "Leva 3 minutos · Sem assinatura · O roteiro completo é seu para guardar",
       "viewers": "🔥 83 pessoas visualizaram esta página hoje",
       "outcomeBadgeValue": "9 funções · 30+ caminhos",
@@ -293,7 +293,7 @@
       "label": "Desenvolvido com tecnologia de"
     },
     "stickyCta": {
-      "cta": "Receber meu plano — <s>$29</s> $19 →"
+      "cta": "Testar meu diagnóstico gratuito de lacunas →"
     },
     "featureShowcase": {
       "eyebrow": "Veja Em Ação",

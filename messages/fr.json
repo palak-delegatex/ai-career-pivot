@@ -59,13 +59,13 @@
   },
   "home": {
     "hero": {
-      "badge": "Tarif de lancement — Seulement 19 $ (au lieu de 29 $) · Durée limitée",
+      "badge": "Bilan gratuit des lacunes · Sans inscription · Résultats en 3 min",
       "titleLine1": "Arrêtez de vous sentir bloqué.",
       "titleLine2": "Construisez votre plan d'évasion.",
       "subtitle": "Importez votre CV. Obtenez une feuille de route de reconversion personnalisée basée sur vos compétences réelles, vos finances et vos contraintes familiales — en moins de 5 minutes.",
       "socialProof": "127 professionnels ont pivoté ce mois-ci",
-      "ctaPrimary": "Créer mon plan de reconversion maintenant — <s>$29</s> $19 →",
-      "freeLink": "Ou essayez le bilan gratuit des écarts de compétences — sans paiement →",
+      "ctaPrimary": "Obtenir mon bilan gratuit des lacunes →",
+      "freeLink": "Vous connaissez déjà votre voie ? Obtenez le Plan de Reconversion à 19 $ →",
       "freeNote": "3 minutes · Sans abonnement · Feuille de route à conserver",
       "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui",
       "outcomeBadgeValue": "9 métiers · 30+ parcours",
@@ -293,7 +293,7 @@
       "label": "Construit avec la technologie de"
     },
     "stickyCta": {
-      "cta": "Obtenir mon plan — <s>$29</s> $19 →"
+      "cta": "Essayer mon bilan gratuit des lacunes →"
     },
     "featureShowcase": {
       "eyebrow": "Voyez-le En Action",

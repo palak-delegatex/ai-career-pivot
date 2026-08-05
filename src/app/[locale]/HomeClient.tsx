@@ -179,7 +179,6 @@ function ActivityIndicator() {
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
-  const t = useTranslations("nav");
   const th = useTranslations("home");
   const steps = th.raw("steps") as { title: string; desc: string }[];
   const personas = th.raw("personas") as { label: string; tag: string }[];
@@ -188,7 +187,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
   const microProof = th.raw("hero.microProof") as { value: string; label: string }[];
   const handleHeroCtaHover = useCallback(() => {
-    trackCtaHovered({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero" });
+    trackCtaHovered({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero" });
   }, []);
 
   useEffect(() => {
@@ -289,28 +288,25 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             transition={{ delay: 0.5, duration: 0.4 }}
             className="flex flex-col items-center gap-4 mb-10"
           >
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/pricing"
-                onClick={() => trackCtaClicked({ cta_text: "Build My Pivot Plan Now — $19", cta_location: "hero", destination: "/pricing" })}
-                onMouseEnter={handleHeroCtaHover}
-                className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
-              >
-                <span className="relative z-10">{th.rich("hero.ctaPrimary", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
-              </Link>
-              <a
-                href="#how-it-works"
-                className="px-8 py-6 rounded-xl border border-slate-700 hover:border-slate-500 font-semibold text-base transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800/50 backdrop-blur-sm"
-              >
-                {t("howItWorks")}
-              </a>
-            </div>
+            {/* Primary CTA now routes cold traffic to the FREE snapshot, not
+                /pricing ($19) — landing→free_upload_started was converting at
+                only ~2-5% because the hero pushed straight to paid (AIC-1052
+                conversion audit). The paid plan stays one click away via the
+                secondary link below for high-intent visitors. */}
+            <Link
+              href="/free?mode=upload"
+              onClick={() => trackCtaClicked({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free?mode=upload" })}
+              onMouseEnter={handleHeroCtaHover}
+              className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
+            >
+              <span className="relative z-10">{th.rich("hero.ctaPrimary", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
+            </Link>
             <div className="flex flex-col items-center gap-1.5">
               <Link
-                href="/free"
-                onClick={() => trackCtaClicked({ cta_text: "Try Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free" })}
+                href="/pricing"
+                onClick={() => trackCtaClicked({ cta_text: "See the $19 Pivot Plan", cta_location: "hero", destination: "/pricing" })}
                 className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
               >
                 {th("hero.freeLink")}
