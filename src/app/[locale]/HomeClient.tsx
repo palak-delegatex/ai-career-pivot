@@ -255,29 +255,20 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             {th("hero.badge")}
           </motion.div>
 
-          <motion.h1
-            variants={stagger}
-            initial="hidden"
-            animate="visible"
-            className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6"
-          >
-            <motion.span variants={fadeUp} className="block text-white">
-              {th("hero.titleLine1")}
-            </motion.span>
-            <motion.span variants={fadeUp} className="block shimmer-text mt-2">
-              {th("hero.titleLine2")}
-            </motion.span>
-          </motion.h1>
+          {/* LCP-critical: the hero H1 + subtitle are the largest above-the-fold
+              text and are the Largest Contentful Paint candidate. They must paint
+              on first render, NOT wait for framer-motion to hydrate — a JS-gated
+              opacity:0 → 1 entrance here delays LCP until the client bundle loads
+              and runs (AIC-1055). Render them statically at full opacity; the
+              badge/CTA/stats below keep their entrance animations. */}
+          <h1 className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6">
+            <span className="block text-white">{th("hero.titleLine1")}</span>
+            <span className="block shimmer-text mt-2">{th("hero.titleLine2")}</span>
+          </h1>
 
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.35 }}
-            className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6"
-          >
+          <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6">
             {th("hero.subtitle")}
-          </motion.p>
+          </p>
 
           {/* Outcome proof — micro-proof strip + aggregate outcome badge, above CTA
               for trust-before-action (AIC-753, replaces the generic avatar pill) */}
