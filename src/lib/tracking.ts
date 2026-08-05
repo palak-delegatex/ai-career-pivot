@@ -473,25 +473,29 @@ export function trackTourDismissed(props: { tour_id: string; step_index: number 
   capture("tour_dismissed", props);
 }
 
-// Share loop (AIC-688) — measure viral coefficient + channel attribution.
-// PostHog's SDK auto-attaches utm_* params to the manual $pageview events we
-// fire (see instrumentation-client.ts), so landing attribution needs no extra
-// event. These track the outbound share side of the loop.
-export type ShareChannel = "linkedin" | "x" | "copy_link" | "copy" | "native" | "other";
+// Share loop (AIC-688 / AIC-909) — measure viral coefficient + channel
+// attribution. PostHog's SDK auto-attaches utm_* params to the manual $pageview
+// events we fire (see instrumentation-client.ts), so landing attribution needs
+// no extra event. These track the outbound share side of the loop.
+//
+// Prop shapes are the documented AIC-909 spec: content_share_clicked carries
+// { content_slug, share_channel, page }; assessment_shared carries
+// { share_channel, result_variant?, score? }. These events had never fired
+// before AIC-909 verification, so there is no historical taxonomy to preserve —
+// the shapes below are canonical.
+export type ShareChannel = "linkedin" | "x" | "copy_link" | "native" | "other";
 
 export function trackContentShareClicked(props: {
-  channel?: "linkedin" | "x" | "copy";
-  share_channel?: ShareChannel;
-  content_type?: "blog" | "assessment";
-  content_slug?: string;
-  slug?: string;
-  page?: string;
+  share_channel: ShareChannel;
+  content_slug: string;
+  page: string;
 }) {
   capture("content_share_clicked", props);
 }
 
 export function trackAssessmentShared(props: {
-  channel: "linkedin" | "x" | "copy";
+  share_channel: ShareChannel;
+  result_variant?: string;
   score?: number;
 }) {
   capture("assessment_shared", props);
