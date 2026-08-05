@@ -1,4 +1,18 @@
-# AICareerPivot — Full Product Documentation
+import { getAllPosts } from "@/lib/blog";
+
+const BASE_URL = "https://ai-career-pivot.com";
+
+// Hand-maintained product documentation. Everything up to "## Blog Topics"
+// below is static prose; the blog index itself is generated at build time from
+// src/content/blog/ so it never goes stale as new GEO posts ship.
+//
+// AIC-1053: this replaced a static `public/llms-full.txt` whose Blog Topics
+// list had drifted to just 20 of 88 posts (last hand-edited 2026-05-21), so AI
+// engines reading it saw ~23% of the content moat. Keeping the index dynamic
+// means every future blog post is surfaced to AI crawlers on the next deploy
+// with zero maintenance. Served at /llms-full.txt (bypasses i18n middleware via
+// the dotted-path matcher exclusion); referenced from public/llms.txt.
+const PRODUCT_DOC = `# AICareerPivot — Full Product Documentation
 
 > AI-powered career transition strategist that builds personalized roadmaps based on your skills, finances, and family constraints.
 
@@ -92,34 +106,9 @@ Current role/industry, key skills, target direction, financial situation (income
 Yes — concrete next steps for each milestone: which skills to build, certifications to pursue, networking strategies, resume reframing, and job search timing.
 
 ### Is my data secure?
-Yes. Your resume and profile data are processed securely, never shared with third parties, and you can request deletion anytime. Payment is handled by Stripe.
+Yes. Your resume and profile data are processed securely, never shared with third parties, and you can request deletion anytime. Payment is handled by Stripe.`;
 
-## Blog Topics
-
-AICareerPivot publishes practical guides for career changers:
-
-- How to Change Careers at 40: What Nobody Tells You — https://ai-career-pivot.com/blog/how-to-change-careers-at-40
-- Career Change Networking Strategies — https://ai-career-pivot.com/blog/career-change-networking-strategies
-- Transferable Skills: The Career Change Guide — https://ai-career-pivot.com/blog/transferable-skills-career-change-guide
-- How to Change Careers at 50 — https://ai-career-pivot.com/blog/career-change-at-50
-- Signs You Need a Career Change — https://ai-career-pivot.com/blog/signs-you-need-a-career-change
-- How to Learn AI Skills While Working Full Time — https://ai-career-pivot.com/blog/how-to-learn-ai-skills-while-working-full-time
-- Career Change Cover Letter Guide — https://ai-career-pivot.com/blog/career-change-cover-letter-guide
-- Best Careers to Pivot Into — https://ai-career-pivot.com/blog/best-careers-to-pivot-into
-- How to Explain a Career Change in an Interview — https://ai-career-pivot.com/blog/how-to-explain-career-change-in-interview
-- Financial Planning for Career Change — https://ai-career-pivot.com/blog/financial-planning-for-career-change
-- Career Change Resume Guide — https://ai-career-pivot.com/blog/career-change-resume-guide
-- How to Pivot From Tech to Leadership — https://ai-career-pivot.com/blog/how-to-pivot-from-tech-to-leadership
-- How to Change Careers With a Family — https://ai-career-pivot.com/blog/how-to-change-careers-with-a-family
-- Best AI Career Coaching Tools 2026 — https://ai-career-pivot.com/blog/best-ai-career-coaching-tools-2026
-- The 6-Month Career Pivot Framework — https://ai-career-pivot.com/blog/the-6-month-career-pivot-framework
-- Career Change at 35: Complete Guide — https://ai-career-pivot.com/blog/career-change-at-35-complete-guide
-- How to Change Careers Without Going Back to School — https://ai-career-pivot.com/blog/how-to-change-careers-without-going-back-to-school
-- Mid-Career Crisis: What to Do — https://ai-career-pivot.com/blog/mid-career-crisis-what-to-do
-- The 8 AI Certifications That Matter for Career Pivots in 2026 — https://ai-career-pivot.com/blog/the-8-ai-certifications-that-matter-for-career-pivots-2026
-- Overcoming Career Change Anxiety — https://ai-career-pivot.com/blog/overcoming-career-change-anxiety
-
-## Key Links
+const KEY_LINKS = `## Key Links
 
 - Homepage: https://ai-career-pivot.com
 - Pricing: https://ai-career-pivot.com/pricing
@@ -127,4 +116,36 @@ AICareerPivot publishes practical guides for career changers:
 - About: https://ai-career-pivot.com/about
 - FAQ: https://ai-career-pivot.com/faq
 - Blog: https://ai-career-pivot.com/blog
-- Waitlist: https://ai-career-pivot.com/waitlist
+- Waitlist: https://ai-career-pivot.com/waitlist`;
+
+// Prerendered to a static file at build time. getAllPosts() reads the mdx
+// content directory at build (same pattern as src/app/sitemap.ts), so the
+// output refreshes on every deploy that ships new posts.
+export const dynamic = "force-static";
+
+export function GET(): Response {
+  const posts = getAllPosts();
+
+  // llms.txt-idiomatic markdown link list: `- [title](url): description`.
+  // Ordered pinned-first then newest-first, matching getAllPosts().
+  const blogIndex = posts
+    .map((p) => `- [${p.title}](${BASE_URL}/blog/${p.slug}): ${p.description}`)
+    .join("\n");
+
+  const body = `${PRODUCT_DOC}
+
+## Blog Topics
+
+AICareerPivot publishes practical, regularly-updated guides for career changers and professionals breaking into AI. Complete index of all ${posts.length} posts (newest first):
+
+${blogIndex}
+
+${KEY_LINKS}
+`;
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+    },
+  });
+}
