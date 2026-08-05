@@ -195,6 +195,15 @@ export default async function BlogPost({
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
+    // Article rich-result eligibility requires an image; point at the
+    // per-post dynamic OG image (1200x630). Uses the en canonical path so it
+    // matches `url`/`mainEntityOfPage` below (AIC-1053).
+    image: {
+      "@type": "ImageObject",
+      url: `https://ai-career-pivot.com/blog/${slug}/opengraph-image`,
+      width: 1200,
+      height: 630,
+    },
     datePublished: post.date,
     dateModified: post.lastModified,
     author: {
