@@ -14,6 +14,15 @@ export interface PostFrontmatter {
   title: string;
   description: string;
   date: string;
+  /**
+   * Optional real content-revision date (YYYY-MM-DD). Set this when a post is
+   * meaningfully updated after publish. When absent we fall back to `date`.
+   * We intentionally do NOT use the file's mtime for `lastModified`: on Vercel
+   * the mtime is the build/checkout time, so it would stamp every post as
+   * "modified today" on every deploy and dilute our sitemap/JSON-LD freshness
+   * signal (AIC-1053).
+   */
+  updated?: string;
   keywords: string[];
   tldr?: string[];
   faq?: FaqItem[];
@@ -50,8 +59,6 @@ export function getAllPosts(): Omit<Post, "content">[] {
           .filter((l) => l.trim().length > 0 && !l.trim().startsWith("import "))[0]
           ?.slice(0, 160) ?? fm.description;
 
-      const mtime = fs.statSync(filePath).mtime.toISOString().split("T")[0];
-
       return {
         slug,
         title: fm.title,
@@ -62,7 +69,7 @@ export function getAllPosts(): Omit<Post, "content">[] {
         pinned: fm.pinned ?? false,
         readingTime: stats.text,
         excerpt,
-        lastModified: mtime,
+        lastModified: fm.updated ?? fm.date,
       };
     })
     .sort((a, b) => {
@@ -89,8 +96,6 @@ export function getPost(slug: string): Post | null {
       .filter((l) => l.trim().length > 0 && !l.trim().startsWith("import "))[0]
       ?.slice(0, 160) ?? fm.description;
 
-  const mtime = fs.statSync(filepath).mtime.toISOString().split("T")[0];
-
   return {
     slug,
     title: fm.title,
@@ -102,7 +107,7 @@ export function getPost(slug: string): Post | null {
     readingTime: stats.text,
     excerpt,
     content,
-    lastModified: mtime,
+    lastModified: fm.updated ?? fm.date,
   };
 }
 
