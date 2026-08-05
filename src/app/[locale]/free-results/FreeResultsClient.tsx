@@ -591,7 +591,9 @@ export default function FreeResultsClient() {
           text-bullet upsell card: shows the actual paid-report sections as
           blurred/locked cards with honest counts + personalized salary/timeline
           (loss aversion), gated server-side on paid access (AIC-874). This is
-          the primary conversion action, one scroll from the match card. */}
+          the primary conversion action, one scroll from the match card.
+          id anchors the ATS-checklist completion CTA's smooth-scroll (AIC-1058). */}
+      <div id="locked-report-preview" className="scroll-mt-4">
       <LockedReportPreview
         snapshot={snapshot}
         quickcheckRole={quickcheckRole}
@@ -617,6 +619,7 @@ export default function FreeResultsClient() {
         paywallVariant={paywallVariant}
         atsCategories={atsPayload?.categories}
       />
+      </div>
       <div className="mt-3 text-center">
         <Link href="/free" className="text-slate-500 hover:text-slate-300 text-xs underline">
           Try a different resume

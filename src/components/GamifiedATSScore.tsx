@@ -47,6 +47,18 @@ function bandFloor(score: number): number {
   return band;
 }
 
+// Category-standard ATS pass threshold (Jobscan/Enhancv/Careerflow all cite 75+).
+// A stated industry heuristic, NOT a fabricated user metric — see AIC-862.
+const ATS_TARGET_THRESHOLD = 75;
+
+// Bridge the completion state into the conversion surface (AIC-883 spec 2):
+// smooth-scroll to the locked paid-report preview rendered by FreeResultsClient.
+function scrollToLockedReport() {
+  document
+    .getElementById("locked-report-preview")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export default function GamifiedATSScore({ payload }: { payload: GamifiedAtsPayload }) {
   const { gamified, categories, targetRole } = payload;
 
@@ -141,11 +153,20 @@ export default function GamifiedATSScore({ payload }: { payload: GamifiedAtsPayl
       {/* Ring + category breakdown */}
       <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-6 items-center mb-6">
         <div className="flex flex-col items-center gap-2">
-          <ScoreRing score={liveScore} animated={animated} label="ATS Score" size={112} />
+          <ScoreRing
+            score={liveScore}
+            animated={animated}
+            label="ATS Score"
+            size={112}
+            target={targetScore}
+          />
           <span
             className={`text-xs font-semibold uppercase tracking-wider border rounded-full px-2.5 py-0.5 ${bandBadge(liveScore)}`}
           >
             {scoreLabel(liveScore)}
+          </span>
+          <span className="text-[10px] text-slate-500 text-center max-w-[9rem] leading-tight">
+            ATS target for {targetRole}: {ATS_TARGET_THRESHOLD}+
           </span>
         </div>
 
@@ -157,15 +178,22 @@ export default function GamifiedATSScore({ payload }: { payload: GamifiedAtsPayl
                 <span className="text-xs font-semibold text-slate-400 tabular-nums">{Math.round(c.score)}</span>
               </div>
               <div
-                className="h-2 w-full rounded-full bg-slate-700 overflow-hidden"
+                className="relative h-2 w-full rounded-full bg-slate-700 overflow-hidden"
                 role="meter"
                 aria-valuenow={Math.round(c.score)}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label={`${c.name}: ${Math.round(c.score)} out of 100`}
               >
+                {/* 75% target marker (AIC-883 spec 4) — matches the ring target.
+                    The fill (positioned, rendered after) paints over it once the
+                    category reaches 75%, visually confirming the pass. */}
                 <div
-                  className={`h-2 rounded-full ${bandBar(c.score)} transition-all duration-700 ease-out`}
+                  className="absolute left-[75%] top-0 h-full w-px bg-slate-500/50"
+                  aria-hidden="true"
+                />
+                <div
+                  className={`relative h-2 rounded-full ${bandBar(c.score)} transition-all duration-700 ease-out`}
                   style={{ width: `${Math.max(3, Math.min(100, c.score))}%` }}
                 />
               </div>
@@ -217,7 +245,16 @@ export default function GamifiedATSScore({ payload }: { payload: GamifiedAtsPayl
 
           <p className="text-xs text-slate-400 mt-4" aria-live="polite">
             {allDone ? (
-              <span className="text-emerald-400 font-semibold">Your résumé is ATS-optimized! 🎉</span>
+              <span className="text-emerald-400 font-semibold">
+                Your résumé is ATS-optimized! 🎉{" "}
+                <button
+                  type="button"
+                  onClick={scrollToLockedReport}
+                  className="text-teal-400 hover:text-teal-300 underline underline-offset-2 font-semibold"
+                >
+                  See the full breakdown below ↓
+                </button>
+              </span>
             ) : (
               <>
                 Potential score:{" "}
