@@ -375,7 +375,7 @@ export default function FreeUploadClient() {
   }
 
   return (
-    <main id="main-content" className="max-w-lg mx-auto px-6 py-16">
+    <main id="main-content" className="max-w-lg mx-auto px-6 pt-6 pb-16">
       {/* Entry-mode toggle — hidden once an upload analysis is streaming so the
           reveal owns the viewport. Quick-check is the default zero-upload path. */}
       {!loading && (
@@ -404,24 +404,6 @@ export default function FreeUploadClient() {
         <AtsQuickCheck source="free_page" onUploadResume={(jd) => handleQuickCheckToUpload(jd)} />
       ) : (
       <>
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4">
-          Free — No credit card required
-        </div>
-        <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-          See Where AI Could Take Your Career
-        </h1>
-        <p className="text-slate-400 leading-relaxed">
-          Upload your resume and get an instant skill-gap snapshot — which careers fit you best and what you'd need to get there.
-        </p>
-        <div className="mt-4 inline-flex items-center gap-2 text-sm text-slate-300">
-          <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Results in <strong className="text-white font-semibold">30 seconds</strong> — no signup needed</span>
-        </div>
-      </div>
-
       {loading ? (
         <GeneratingReveal partial={partial ?? {}} />
       ) : (

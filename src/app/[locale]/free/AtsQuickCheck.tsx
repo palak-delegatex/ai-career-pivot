@@ -127,18 +127,6 @@ export default function AtsQuickCheck({
 
   return (
     <div>
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold mb-4 font-mono">
-          Free · No signup needed
-        </div>
-        <h1 className="text-4xl font-extrabold mb-3 tracking-tight font-serif">
-          Check any job posting in 5 seconds
-        </h1>
-        <p className="text-slate-400 leading-relaxed">
-          See what skills matter — before you apply. Paste a job description, no resume needed.
-        </p>
-      </div>
-
       <form onSubmit={handleAnalyze} className="space-y-4">
         <Label htmlFor="ats-jd" className="sr-only">
           Paste a job description or URL

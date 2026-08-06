@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { Post } from "@/lib/blog";
 import { motion, useInView, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import SiteNav from "@/components/SiteNav";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
 import SuccessMetrics from "@/components/SuccessMetrics";
@@ -13,8 +13,6 @@ import FeatureShowcase from "@/components/FeatureShowcase";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 import StickyCtaBar from "@/components/StickyCtaBar";
-import OutcomeHeroBadge from "@/components/OutcomeHeroBadge";
-import MicroProofStrip from "@/components/MicroProofStrip";
 import HonestSocialProofSection from "@/components/HonestSocialProofSection";
 
 const organizationSchema = {
@@ -147,36 +145,6 @@ const stepStyles = [
 ];
 
 
-function ActivityIndicator() {
-  const [count, setCount] = useState(14);
-  const th = useTranslations("home");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCount(Math.floor(Math.random() * (25 - 8 + 1)) + 8);
-    }, 30_000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="flex justify-center py-6 px-6">
-      <div className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-slate-900/70 backdrop-blur-sm border border-slate-800/60">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-        </span>
-        <p className="text-slate-400 text-sm">
-          {th.rich("activity", {
-            count,
-            b: (chunks) => <span className="text-white font-semibold">{chunks}</span>,
-          })}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
   const th = useTranslations("home");
@@ -185,7 +153,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const stats = th.raw("stats") as { value: string; label: string }[];
   const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
-  const microProof = th.raw("hero.microProof") as { value: string; label: string }[];
   const handleHeroCtaHover = useCallback(() => {
     trackCtaHovered({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero" });
   }, []);
@@ -270,21 +237,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             <span className="block shimmer-text mt-2">{th("hero.titleLine2")}</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-6">
+          <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-8">
             {th("hero.subtitle")}
           </p>
-
-          {/* Outcome proof — micro-proof strip + aggregate outcome badge, above CTA
-              for trust-before-action (AIC-753, replaces the generic avatar pill) */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45, duration: 0.5 }}
-            className="flex flex-col items-center gap-3.5 mb-8"
-          >
-            <MicroProofStrip metrics={microProof} />
-            <OutcomeHeroBadge count={th("hero.outcomeBadgeValue")} label={th("hero.outcomeBadge")} />
-          </motion.div>
 
           {/* Primary CTA — larger, animated ring for attention */}
           <motion.div
@@ -319,9 +274,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               <p className="text-slate-500 text-sm">
                 {th("hero.freeNote")}
               </p>
-              <p className="text-amber-400/80 text-xs font-medium">
-                {th("hero.viewers")}
-              </p>
             </div>
           </motion.div>
 
@@ -342,9 +294,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
           </motion.div>
           </div>
         </main>
-
-        {/* Real-time activity indicator */}
-        <ActivityIndicator />
 
         {/* Dual-path entry (AIC-830 / AIC-825 Path C) — below the hero, so
             high-intent visitors still hit the primary CTA first. Users past the
