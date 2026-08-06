@@ -31,11 +31,18 @@ const sourceSerif = Source_Serif_4({
   display: "swap",
 });
 
+// Mono is only ever applied to `code, pre, kbd, samp` (see globals.css) — none of
+// which appear above the fold on the marketing entry routes (home / pricing /
+// free). Preloading it put a ~20-30KB woff2 on the critical path of every page,
+// competing for bandwidth with the actual LCP font (Source Serif `<h1>`). Drop it
+// from preload so the LCP font paints sooner; mono still loads on-demand (swap)
+// wherever code blocks actually render, e.g. blog posts (AIC-1067).
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+  preload: false,
 });
 
 // Script fonts for multilingual support (AIC-662). Not preloaded — the browser
