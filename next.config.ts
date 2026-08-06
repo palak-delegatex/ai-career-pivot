@@ -7,6 +7,19 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
+  // Image optimization tuned for entry-page LCP (AIC-1067). The home hero is a
+  // full-viewport decorative PNG and is the LCP element on `/` (field p50 ~3.3s,
+  // p75 ~4.1s — poor). Two levers:
+  //   1. formats: serve AVIF first (≈20% smaller than the WebP-only default),
+  //      WebP fallback for browsers without AVIF support.
+  //   2. qualities: Next 16 requires non-75 quality values to be allowlisted
+  //      (unrestricted quality access is now a build error). 50 lets the darkened
+  //      decorative hero ship far fewer bytes without visible loss under its 80%
+  //      overlay; 75 stays available for content images (dashboard/product shots).
+  images: {
+    formats: ["image/avif", "image/webp"],
+    qualities: [50, 75],
+  },
   async headers() {
     return [
       {

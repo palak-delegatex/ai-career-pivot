@@ -239,6 +239,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             alt=""
             fill
             priority
+            // Decorative hero sits under an 80% dark overlay and is the LCP
+            // element on `/` — ship it at quality 50 (allowlisted in
+            // next.config) so the LCP paint is far lighter (AIC-1067). AVIF is
+            // preferred via the global formats config.
+            quality={50}
             className="object-cover object-center"
             sizes="100vw"
           />
