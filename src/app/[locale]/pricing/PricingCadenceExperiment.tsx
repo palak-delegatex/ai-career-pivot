@@ -11,15 +11,15 @@ import PricingCheckout from "./PricingCheckout";
 const FLAG = "pricing-cadence";
 
 export default function PricingCadenceExperiment() {
-  const [variant, setVariant] = useState<string | null>(null);
+  // AIC-1067: default to "control" so the checkout button is SSR-visible and
+  // never causes CLS. The flag may flip to annual_anchored after PostHog loads.
+  const [variant, setVariant] = useState("control");
 
   useEffect(() => {
     const v = getFeatureFlagVariant(FLAG, "control");
     setVariant(v);
     trackExperimentViewed({ flag: FLAG, variant: v, page: "pricing" });
   }, []);
-
-  if (variant === null) return null;
 
   if (variant === "annual_anchored") {
     return (

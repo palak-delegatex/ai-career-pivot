@@ -59,15 +59,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Free Skill-Gap Snapshot · No signup · Results in 3 min",
-      "titleLine1": "Stop feeling trapped.",
-      "titleLine2": "Build your escape plan.",
-      "subtitle": "Upload your resume. Get a personalized career pivot roadmap built around your real skills, finances, and family constraints — in under 5 minutes.",
+      "badge": "Free · No signup required",
+      "titleLine1": "Find Your Best AI-Era Career Move",
+      "titleLine2": "Free Snapshot — 30 Seconds",
+      "subtitle": "Upload your resume or paste a job posting — instantly see which AI-adjacent roles fit your background and what skills to build.",
       "socialProof": "127 professionals pivoted this month",
       "ctaPrimary": "Get My Free Skill-Gap Snapshot →",
       "freeLink": "Already know your path? Get the $19 Pivot Plan →",
-      "freeNote": "Takes 3 minutes · No subscription · Full roadmap yours to keep",
-      "viewers": "🔥 83 people viewed this page today",
+      "freeNote": "No signup · No credit card · Results in 30 seconds",
       "outcomeBadgeValue": "9 roles · 30+ paths",
       "outcomeBadge": "AI-adjacent, fully mapped",
       "microProof": [
@@ -95,11 +94,10 @@
         "label": "pivot paths mapped"
       },
       {
-        "value": "Claude",
-        "label": "generation engine"
+        "value": "Free",
+        "label": "to start"
       }
     ],
-    "activity": "<b>{count} people</b> are building their career pivot right now",
     "howItWorks": {
       "eyebrow": "How It Works",
       "title": "From stuck to strategic in three steps",
