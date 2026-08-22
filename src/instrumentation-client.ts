@@ -9,6 +9,10 @@ if (token) {
     person_profiles: "identified_only",
     capture_pageview: false,
     capture_pageleave: true,
+    // AIC-1076: enable client-side JS error autocapture so $exception events
+    // flow into proj 381452. Without this, error rate is a blind spot in the
+    // weekly analytics review (AIC-1074), not a clean bill of health.
+    capture_exceptions: true,
   });
 
   // Capture the initial landing pageview. `onRouterTransitionStart` only fires
