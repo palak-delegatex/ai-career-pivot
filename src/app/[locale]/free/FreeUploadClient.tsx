@@ -273,9 +273,13 @@ export default function FreeUploadClient() {
     setMode("upload");
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!resumeFile) return;
+  // Guards against a double-start when a file arrives via both the change event
+  // and a fast second interaction (or the fallback submit button after an error).
+  const startingRef = useRef(false);
+
+  async function startAnalysis(file: File) {
+    if (startingRef.current) return;
+    startingRef.current = true;
 
     // Top of the canonical free→paid funnel (AIC-785) — fired at submit intent,
     // before the network round-trip, so the funnel counts everyone who committed
@@ -287,7 +291,7 @@ export default function FreeUploadClient() {
     setPartial({});
 
     const formData = new FormData();
-    formData.append("resume", resumeFile);
+    formData.append("resume", file);
     formData.append("locale", locale);
     // Bias the snapshot's top path toward the quiz match so it fulfils the pill's
     // promise (AIC-863 §2b). Only sent when the visitor came through the quiz.
@@ -365,13 +369,29 @@ export default function FreeUploadClient() {
       // real target to score the résumé against. Non-blocking: it writes the
       // result to sessionStorage where /free-results picks it up (it polls while
       // `free_ats_pending` is set), so it never delays navigation to results.
-      kickGamifiedAts(resumeFile);
+      kickGamifiedAts(file);
       router.push("/free-results");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
       setPartial(null);
+      // Allow a retry via the fallback submit button below.
+      startingRef.current = false;
     }
+  }
+
+  // Selecting a file IS the commit — auto-start the snapshot instead of making the
+  // visitor take a second action on the "Get My Free Snapshot" button (AIC-1097
+  // friction cut: remove a step before the first snapshot). The button stays as a
+  // fallback for keyboard users and post-error retries.
+  function selectFile(file: File | null) {
+    setResumeFile(file);
+    if (file) startAnalysis(file);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (resumeFile) startAnalysis(resumeFile);
   }
 
   return (
@@ -448,7 +468,7 @@ export default function FreeUploadClient() {
             e.preventDefault();
             setDropActive(false);
             const file = e.dataTransfer.files?.[0];
-            if (file) setResumeFile(file);
+            if (file) selectFile(file);
           }}
         >
           {resumeFile ? (
@@ -475,7 +495,7 @@ export default function FreeUploadClient() {
             className="sr-only"
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "resume-error" : undefined}
-            onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => selectFile(e.target.files?.[0] ?? null)}
           />
         </label>
 
