@@ -207,11 +207,20 @@ function GeneratingReveal({ partial }: { partial: PartialSnapshot }) {
   );
 }
 
-export default function FreeUploadClient() {
+export default function FreeUploadClient({
+  initialMode = "quickcheck",
+}: {
+  initialMode?: EntryMode;
+}) {
   const locale = useLocale();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [mode, setMode] = useState<EntryMode>("quickcheck");
+  const [mode, setMode] = useState<EntryMode>(initialMode);
+  // A `?mode=upload` deep-link (hero + sticky CTA) is committed upload intent.
+  // For that path we drop the entry-mode toggle and the benefits list so the
+  // drop zone is the first thing under the heading — no competing choice, no
+  // content pushing the first snapshot action below the fold (AIC-1097).
+  const deepLinkedUpload = initialMode === "upload";
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [dropActive, setDropActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -250,16 +259,8 @@ export default function FreeUploadClient() {
     }
   }, []);
 
-  // Honor a `?mode=upload` deep-link (used by the landing "I have a resume ready"
-  // card) so high-intent visitors skip the quick-check. Read after mount to keep
-  // the SSR/first-client render identical (default quick-check) and avoid a
-  // hydration mismatch; the switch is a one-frame flip only on that deep-link.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (new URLSearchParams(window.location.search).get("mode") === "upload") {
-      setMode("upload");
-    }
-  }, []);
+  // (`?mode=upload` deep-links are now resolved on the server via `initialMode`,
+  // so there is no post-hydration mode flip — the upload form is the first paint.)
 
   // Hand-off from the quick-check "upload your resume" CTA: carry the pasted JD
   // forward (so /free-results can reference the role the user was checking) and
@@ -397,8 +398,10 @@ export default function FreeUploadClient() {
   return (
     <main id="main-content" className="max-w-lg mx-auto px-6 pt-6 pb-16">
       {/* Entry-mode toggle — hidden once an upload analysis is streaming so the
-          reveal owns the viewport. Quick-check is the default zero-upload path. */}
-      {!loading && (
+          reveal owns the viewport, and hidden entirely for `?mode=upload`
+          deep-links (committed upload intent — don't re-offer the other path).
+          Quick-check is the default zero-upload path for organic /free landings. */}
+      {!loading && !deepLinkedUpload && (
         <div className="flex p-1 mb-8 rounded-xl bg-slate-800/60 border border-slate-700 text-sm font-semibold">
           {([
             { id: "quickcheck", label: "Check a job posting" },
@@ -428,16 +431,21 @@ export default function FreeUploadClient() {
         <GeneratingReveal partial={partial ?? {}} />
       ) : (
       <>
-      <ul className="space-y-2 mb-8">
-        {BENEFITS.map((b) => (
-          <li key={b} className="flex items-center gap-3 text-sm text-slate-300">
-            <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 011.414-1.414L8.414 12.172l6.879-6.879a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-            {b}
-          </li>
-        ))}
-      </ul>
+      {/* Benefits list — reinforces value for organic /free visitors, but skipped
+          for committed `?mode=upload` deep-links so the drop zone sits directly
+          under the heading (removes a step before the first snapshot; AIC-1097). */}
+      {!deepLinkedUpload && (
+        <ul className="space-y-2 mb-8">
+          {BENEFITS.map((b) => (
+            <li key={b} className="flex items-center gap-3 text-sm text-slate-300">
+              <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 011.414-1.414L8.414 12.172l6.879-6.879a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              {b}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* Quiz-carry pill (AIC-863 §2b) — only shown when the visitor arrived from
           the quiz; its matchedRole is what the snapshot API is told to target. */}

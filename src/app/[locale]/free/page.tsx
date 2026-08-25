@@ -17,7 +17,18 @@ export async function generateMetadata({
   };
 }
 
-export default function FreePage() {
+export default async function FreePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // High-intent visitors arrive via the hero/sticky CTA as `/free?mode=upload`.
+  // Resolve that on the server so the client's first paint already shows the
+  // upload form — no post-hydration quickcheck→upload flip (kills the flicker +
+  // its CLS) and lets us drop the competing entry-mode choice for that path
+  // (AIC-1097 friction cut). Reading searchParams opts this route into dynamic
+  // rendering, which is fine — the page is a thin shell over a client form.
+  const initialMode = (await searchParams).mode === "upload" ? "upload" : "quickcheck";
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
@@ -37,7 +48,7 @@ export default function FreePage() {
           Free skill-gap snapshot in 30 seconds — upload your resume or paste a job posting. No signup, no credit card.
         </p>
       </div>
-      <FreeUploadClient />
+      <FreeUploadClient initialMode={initialMode} />
     </div>
   );
 }
