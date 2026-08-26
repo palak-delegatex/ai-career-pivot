@@ -190,6 +190,22 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Mobile-perf + a11y (AIC-1100): the marketing decorations run *infinite*
+     loops that never idle — the two mesh-bg radial blobs (float 8s/10s), the
+     hero `shimmer-text` (4s), and `animate-gradient` (6s) keep the compositor
+     and main thread busy for the whole session. For visitors who ask for
+     reduced motion, stop them entirely instead of only quieting the one-shot
+     celebration effects below. */
+  .mesh-bg::before,
+  .mesh-bg::after {
+    animation: none;
+  }
+  .shimmer-text {
+    animation: none;
+  }
+  .animate-gradient {
+    animation: none;
+  }
   .phase-confetti::after {
     animation: none;
     opacity: 0;
