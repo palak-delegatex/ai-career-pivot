@@ -11,6 +11,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import { PostHogProvider } from "../PostHogProvider";
+import { PreloadResources } from "../PreloadResources";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
 import { HelpPanel } from "@/components/ui/help-panel";
@@ -166,6 +167,7 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <PreloadResources />
         <NextIntlClientProvider>
           <PostHogProvider>
             <div className="flex-1">{children}</div>
