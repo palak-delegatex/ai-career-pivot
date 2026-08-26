@@ -59,12 +59,12 @@
   },
   "home": {
     "hero": {
-      "badge": "Free · No signup required",
-      "titleLine1": "Find Your Best AI-Era Career Move",
-      "titleLine2": "Free Snapshot — 30 Seconds",
-      "subtitle": "Upload your resume or paste a job posting — instantly see which AI-adjacent roles fit your background and what skills to build.",
+      "badge": "Free · No signup · Instant results",
+      "titleLine1": "Discover the AI Career You're Already Qualified For",
+      "titleLine2": "Free · 30 Seconds · No Signup",
+      "subtitle": "Upload your resume and see which AI roles match your experience — plus the exact skills to close the gap.",
       "socialProof": "127 professionals pivoted this month",
-      "ctaPrimary": "Get My Free Skill-Gap Snapshot →",
+      "ctaPrimary": "See My AI Career Matches — Free →",
       "freeLink": "Already know your path? Get the $19 Pivot Plan →",
       "freeNote": "No signup · No credit card · Results in 30 seconds",
       "outcomeBadgeValue": "9 roles · 30+ paths",
@@ -87,15 +87,15 @@
     "stats": [
       {
         "value": "9",
-        "label": "AI-adjacent roles"
+        "label": "AI-adjacent roles matched to you"
       },
       {
         "value": "30+",
-        "label": "pivot paths mapped"
+        "label": "career pivot paths mapped"
       },
       {
-        "value": "Free",
-        "label": "to start"
+        "value": "30 sec",
+        "label": "to your first result"
       }
     ],
     "howItWorks": {
@@ -291,7 +291,7 @@
       "label": "Built with technology from"
     },
     "stickyCta": {
-      "cta": "Try My Free Skill-Gap Snapshot →"
+      "cta": "See My AI Career Matches — Free →"
     },
     "featureShowcase": {
       "eyebrow": "See It In Action",

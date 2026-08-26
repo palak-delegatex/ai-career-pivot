@@ -24,17 +24,29 @@ import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 
 // `key` resolves against the `nav.*` message catalog (messages/*.json).
-const NAV_LINKS = [
-  { href: "/free", key: "freeSnapshot" },
-  { href: "/blog", key: "blog" },
-  { href: "/pricing", key: "pricing" },
+//
+// Above-the-fold conversion (AIC-1117): the desktop nav is a distraction budget.
+// Only the two links that support the primary decision (understand the product,
+// see the price) stay in the above-the-fold bar; everything else moves to the
+// mobile Sheet (full list) and the footer (SECONDARY_NAV). Fewer competing
+// clicks in the hero → higher landing→free_upload_started.
+const PRIMARY_NAV = [
   { href: "/how-it-works", key: "howItWorks" },
+  { href: "/pricing", key: "pricing" },
+] as const;
+
+const SECONDARY_NAV = [
+  { href: "/blog", key: "blog" },
   { href: "/dashboard", key: "myRoadmaps" },
   { href: "/job-tracker", key: "jobTracker" },
   { href: "/networking", key: "networking" },
   { href: "/cover-letter", key: "coverLetter" },
   { href: "/linkedin-optimizer", key: "linkedin" },
+  { href: "/free", key: "freeSnapshot" },
 ] as const;
+
+// Mobile Sheet renders the full set (primary first, then the rest).
+const ALL_NAV = [...PRIMARY_NAV, ...SECONDARY_NAV] as const;
 
 const LogoIcon = (
   <svg
@@ -94,11 +106,12 @@ export default function SiteNav() {
     <nav aria-label="Main" className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto w-full">
       <Logo />
 
-      {/* Desktop nav */}
+      {/* Desktop nav — PRIMARY_NAV only + Sign In (AIC-1117). LanguageSwitcher
+          moved to the footer to keep the above-the-fold bar minimal. */}
       <div className="hidden md:flex items-center gap-1">
         <NavigationMenu>
           <NavigationMenuList>
-            {NAV_LINKS.map(({ href, key }) => (
+            {PRIMARY_NAV.map(({ href, key }) => (
               <NavigationMenuItem key={href}>
                 <NavigationMenuLink
                   href={href}
@@ -111,7 +124,6 @@ export default function SiteNav() {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <LanguageSwitcher />
         {user ? (
           <div className="flex items-center gap-3 ml-2">
             <Link
@@ -167,7 +179,7 @@ export default function SiteNav() {
 
               <Separator className="mb-2" />
 
-              {NAV_LINKS.map(({ href, key }) => (
+              {ALL_NAV.map(({ href, key }) => (
                 <SheetClose
                   key={href}
                   render={

@@ -1,10 +1,13 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Footer() {
   const t = useTranslations("footer");
   const tc = useTranslations("common");
   const l = useTranslations("footer.links");
+  // Secondary nav links relocated here from the above-the-fold bar (AIC-1117).
+  const n = useTranslations("nav");
 
   return (
     <footer className="border-t border-slate-800/60 bg-slate-950 text-sm">
@@ -37,6 +40,10 @@ export function Footer() {
               <li><Link href="/ats-score" className="text-slate-400 hover:text-teal-400 transition-colors">{l("atsScore")}</Link></li>
               <li><Link href="/resume-generator" className="text-slate-400 hover:text-teal-400 transition-colors">{l("resumeGenerator")}</Link></li>
               <li><Link href="/dashboard" className="text-slate-400 hover:text-teal-400 transition-colors">{l("dashboard")}</Link></li>
+              <li><Link href="/job-tracker" className="text-slate-400 hover:text-teal-400 transition-colors">{n("jobTracker")}</Link></li>
+              <li><Link href="/networking" className="text-slate-400 hover:text-teal-400 transition-colors">{n("networking")}</Link></li>
+              <li><Link href="/cover-letter" className="text-slate-400 hover:text-teal-400 transition-colors">{n("coverLetter")}</Link></li>
+              <li><Link href="/linkedin-optimizer" className="text-slate-400 hover:text-teal-400 transition-colors">{n("linkedin")}</Link></li>
             </ul>
           </div>
 
@@ -66,11 +73,15 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-600 text-xs">
           <p>{tc("tagline")}</p>
-          <nav className="flex items-center gap-4" aria-label="Legal">
-            <Link href="/privacy" className="hover:text-slate-400 transition-colors">{l("privacy")}</Link>
-            <Link href="/about" className="hover:text-slate-400 transition-colors">{l("terms")}</Link>
-            <a href="mailto:hello@ai-career-pivot.com" className="hover:text-slate-400 transition-colors">{l("contact")}</a>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="flex items-center gap-4" aria-label="Legal">
+              <Link href="/privacy" className="hover:text-slate-400 transition-colors">{l("privacy")}</Link>
+              <Link href="/about" className="hover:text-slate-400 transition-colors">{l("terms")}</Link>
+              <a href="mailto:hello@ai-career-pivot.com" className="hover:text-slate-400 transition-colors">{l("contact")}</a>
+            </nav>
+            {/* LanguageSwitcher relocated from above-the-fold nav (AIC-1117). */}
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </footer>

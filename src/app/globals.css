@@ -47,6 +47,18 @@ html {
   50% { opacity: 1; }
 }
 
+/* Idle "breathe" pulse on the primary hero CTA (AIC-1117). A soft outward teal
+   glow rather than a transform pulse so it never fights the button's
+   hover:scale. Guarded for reduced-motion below. */
+@keyframes cta-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.35); }
+  50% { box-shadow: 0 0 24px 4px rgba(45, 212, 191, 0.28); }
+}
+
+.animate-cta-breathe {
+  animation: cta-breathe 3.2s ease-in-out infinite;
+}
+
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient-shift 6s ease infinite;
@@ -223,6 +235,9 @@ html {
     animation: none;
   }
   .animate-warm-pulse {
+    animation: none;
+  }
+  .animate-cta-breathe {
     animation: none;
   }
 }
