@@ -7,6 +7,16 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
+  // Mobile-perf: tree-shake framer-motion's barrel export (AIC-1100). The home
+  // route ships `motion`, `useInView`, `useSpring`, `useTransform`, etc. across
+  // HomeClient + several section components; without this, importing from the
+  // package root pulls a large slice of the library into the home route's First
+  // Load JS, inflating Total Blocking Time on mobile. optimizePackageImports
+  // rewrites the barrel imports to load only the used modules — pure bundle
+  // reduction, no behavior change. framer-motion is not optimized by default.
+  experimental: {
+    optimizePackageImports: ["framer-motion"],
+  },
   // Image optimization tuned for entry-page LCP (AIC-1067). The home hero is a
   // full-viewport decorative PNG and is the LCP element on `/` (field p50 ~3.3s,
   // p75 ~4.1s — poor). Two levers:
