@@ -386,6 +386,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
             src="/images/dashboard.png"
             alt="AI-powered career analytics dashboard showing skill match scores and progress tracking"
             fill
+            // Below-the-fold decorative visual sitting under a heavy top/bottom
+            // gradient — lazy by default (non-priority) and shipped at quality 50
+            // (allowlisted in next.config) to cut its bytes off the mobile page
+            // weight without visible loss under the overlay (AIC-1110).
+            quality={50}
             className="object-cover object-center"
             sizes="100vw"
           />

@@ -223,7 +223,11 @@ export default function VoicesOfTheAIEra() {
         alt=""
         fill
         sizes="100vw"
-        quality={60}
+        // quality 50 (was 60): 60 is not in next.config's `qualities` allowlist
+        // [50,75], so the optimizer rejects it at request time (400) and the raw
+        // full-size PNG is served instead — the opposite of the intent. 50 is
+        // allowlisted, lighter, and invisible on this fixed background (AIC-1110).
+        quality={50}
         className="object-cover fixed inset-0 -z-10"
       />
       <div className="max-w-6xl mx-auto relative z-10">
