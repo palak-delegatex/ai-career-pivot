@@ -234,7 +234,10 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               badge/CTA/stats below keep their entrance animations. */}
           <h1 className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6">
             <span className="block text-white">{th("hero.titleLine1")}</span>
-            <span className="block shimmer-text mt-2">{th("hero.titleLine2")}</span>
+            {/* Static teal instead of animated shimmer (AIC-1117): keeps the
+                value line legible/high-contrast and drops one infinite animation
+                above the fold. */}
+            <span className="block text-teal-300 mt-2">{th("hero.titleLine2")}</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-8">
@@ -257,20 +260,16 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               href="/free?mode=upload"
               onClick={() => trackCtaClicked({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free?mode=upload" })}
               onMouseEnter={handleHeroCtaHover}
-              className="group relative px-12 py-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712]"
+              className="group relative px-14 py-7 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712] animate-cta-breathe"
             >
               <span className="relative z-10">{th.rich("hero.ctaPrimary", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}</span>
               <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
               <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
             </Link>
+            {/* Single-CTA hero (AIC-1117): the secondary $19 pricing link was
+                removed to keep one clear action above the fold. Pricing stays
+                reachable via the nav/footer. */}
             <div className="flex flex-col items-center gap-1.5">
-              <Link
-                href="/pricing"
-                onClick={() => trackCtaClicked({ cta_text: "See the $19 Pivot Plan", cta_location: "hero", destination: "/pricing" })}
-                className="text-sm text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
-              >
-                {th("hero.freeLink")}
-              </Link>
               <p className="text-slate-500 text-sm">
                 {th("hero.freeNote")}
               </p>
