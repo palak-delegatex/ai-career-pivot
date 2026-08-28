@@ -147,23 +147,11 @@ function LoginForm() {
           </p>
         </div>
 
-        <div className="space-y-3">
-          <button
-            onClick={signInWithGoogle}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-colors disabled:opacity-50"
-          >
-            <GoogleIcon />
-            {loading ? t("form.redirecting") : t("form.continueWithGoogle")}
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-slate-700" />
-          <span className="text-slate-500 text-xs font-medium">{t("form.or")}</span>
-          <div className="flex-1 h-px bg-slate-700" />
-        </div>
-
+        {/* AIC-1129: email magic-link is the primary sign-in. Google OAuth has
+            been broken in prod for ~2 months (AIC-1090, post-consent PKCE
+            failure) and is human-gated; leading with a broken CTA bled signups.
+            Email is Google-independent and verified working end-to-end in prod.
+            When Google is fixed, restore it to primary by reversing this order. */}
         <form onSubmit={signInWithMagicLink} className="space-y-3">
           <input
             type="email"
@@ -182,6 +170,23 @@ function LoginForm() {
             {loading ? t("form.sending") : t("form.continueWithEmail")}
           </button>
         </form>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-slate-700" />
+          <span className="text-slate-500 text-xs font-medium">{t("form.or")}</span>
+          <div className="flex-1 h-px bg-slate-700" />
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={signInWithGoogle}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 transition-colors disabled:opacity-50"
+          >
+            <GoogleIcon />
+            {loading ? t("form.redirecting") : t("form.continueWithGoogle")}
+          </button>
+        </div>
 
         {error && (
           <p className="text-red-400 text-sm text-center mt-4">{error}</p>
