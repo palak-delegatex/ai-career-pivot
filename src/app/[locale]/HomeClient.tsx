@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { Post } from "@/lib/blog";
@@ -14,6 +14,15 @@ import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import HonestSocialProofSection from "@/components/HonestSocialProofSection";
+
+// Hero + sticky CTA hand the selected resume File to /free via this global so
+// the picker can be OS-native (a hidden <input>) while the analysis auto-starts
+// on the next page — sidestepping a cross-route state store (AIC-1155).
+declare global {
+  interface Window {
+    __queuedResumeFile?: File;
+  }
+}
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -147,15 +156,30 @@ const stepStyles = [
 
 export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "content">[] }) {
   const heroRef = useRef<HTMLElement>(null);
+  const router = useRouter();
   const th = useTranslations("home");
   const steps = th.raw("steps") as { title: string; desc: string }[];
   const personas = th.raw("personas") as { label: string; tag: string }[];
-  const stats = th.raw("stats") as { value: string; label: string }[];
   const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
   const handleHeroCtaHover = useCallback(() => {
     trackCtaHovered({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero" });
   }, []);
+
+  // Inline file-picker CTA (AIC-1155): selecting a resume IS the first action —
+  // queue the File for /free to auto-start analysis and navigate. A cancelled
+  // picker fires no change event, so the visitor simply stays on `/`. Tracking
+  // fires on selection (real commit), not on opening the OS dialog.
+  const handleHeroFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      trackCtaClicked({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free?mode=upload" });
+      window.__queuedResumeFile = file;
+      router.push("/free?mode=upload");
+    },
+    [router],
+  );
 
   useEffect(() => {
     let lastDepth = 0;
@@ -232,12 +256,11 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               opacity:0 → 1 entrance here delays LCP until the client bundle loads
               and runs (AIC-1055). Render them statically at full opacity; the
               badge/CTA/stats below keep their entrance animations. */}
+          {/* Single-line H1 (AIC-1155): the teal Line 2 ("Free · 30 Seconds ·
+              No Signup") was pure redundancy — the badge and freeNote already
+              carry that promise. One white line reads faster above the fold. */}
           <h1 className="text-5xl sm:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6">
             <span className="block text-white">{th("hero.titleLine1")}</span>
-            {/* Static teal instead of animated shimmer (AIC-1117): keeps the
-                value line legible/high-contrast and drops one infinite animation
-                above the fold. */}
-            <span className="block text-teal-300 mt-2">{th("hero.titleLine2")}</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl mb-8">
@@ -256,16 +279,24 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
                 only ~2-5% because the hero pushed straight to paid (AIC-1052
                 conversion audit). The paid plan stays one click away via the
                 secondary link below for high-intent visitors. */}
-            <Link
-              href="/free?mode=upload"
-              onClick={() => trackCtaClicked({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero", destination: "/free?mode=upload" })}
+            {/* Inline file-picker CTA (AIC-1155): the primary action opens the OS
+                file dialog directly instead of routing first, so the resume is
+                selected in one tap and the snapshot auto-starts on /free. Keeps
+                every visual class of the prior <Link>. */}
+            <label
               onMouseEnter={handleHeroCtaHover}
-              className="group relative px-14 py-7 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712] animate-cta-breathe"
+              className="group relative px-14 py-7 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 font-bold text-xl transition-all duration-200 hover:shadow-2xl hover:shadow-teal-500/50 hover:scale-[1.04] text-white overflow-hidden ring-2 ring-teal-400/30 ring-offset-2 ring-offset-[#030712] animate-cta-breathe cursor-pointer"
             >
               <span className="relative z-10">{th.rich("hero.ctaPrimary", { s: (chunks) => <s className="text-white/60 font-normal">{chunks}</s> })}</span>
               <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
               <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-300" />
-            </Link>
+              <input
+                type="file"
+                accept=".pdf,.docx,.doc,.txt"
+                className="sr-only"
+                onChange={handleHeroFileSelect}
+              />
+            </label>
             {/* Single-CTA hero (AIC-1117): the secondary $19 pricing link was
                 removed to keep one clear action above the fold. Pricing stays
                 reachable via the nav/footer. */}
@@ -275,22 +306,9 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               </p>
             </div>
           </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.6 }}
-            className="grid grid-cols-3 gap-6 sm:gap-12 border-t border-slate-800/80 pt-10 w-full max-w-lg mx-auto"
-          >
-            {stats.map((s) => (
-              <motion.div key={s.label} variants={fadeUp} className="text-center">
-                <div className="text-2xl sm:text-3xl font-extrabold text-white mb-1">{s.value}</div>
-                <div className="text-xs text-slate-500 leading-tight">{s.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Stats bar removed (AIC-1155): the context-free "9 / 30+ / 30 sec"
+              row consumed ~80px between the CTA and the next section without
+              earning the trust it claimed. */}
           </div>
         </main>
 

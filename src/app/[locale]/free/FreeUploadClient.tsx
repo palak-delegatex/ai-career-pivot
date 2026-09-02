@@ -395,6 +395,19 @@ export default function FreeUploadClient({
     if (resumeFile) startAnalysis(resumeFile);
   }
 
+  // Pick up a resume queued by the home hero / sticky CTA inline file-picker
+  // (AIC-1155). The visitor already chose their file on `/`, so auto-start the
+  // snapshot here and clear the global so a later client-side re-navigation to
+  // /free doesn't replay a stale File.
+  useEffect(() => {
+    const queued = window.__queuedResumeFile;
+    if (queued) {
+      window.__queuedResumeFile = undefined;
+      selectFile(queued);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <main id="main-content" className="max-w-lg mx-auto px-6 pt-6 pb-16">
       {/* Entry-mode toggle — hidden once an upload analysis is streaming so the
