@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
@@ -16,6 +16,7 @@ const CTA_DEST = "/free?mode=upload";
 export default function StickyCtaBar() {
   const [visible, setVisible] = useState(false);
   const t = useTranslations("home.stickyCta");
+  const router = useRouter();
 
   useEffect(() => {
     function onScroll() {
@@ -24,6 +25,17 @@ export default function StickyCtaBar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Inline file-picker (AIC-1155): mirror the hero CTA — pick the resume here,
+  // queue it for /free to auto-start, then navigate. Cancelled picker fires no
+  // change event, so nothing happens.
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    trackCtaClicked({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile", destination: CTA_DEST });
+    window.__queuedResumeFile = file;
+    router.push(CTA_DEST);
+  }
 
   if (!visible) return null;
 
@@ -39,14 +51,18 @@ export default function StickyCtaBar() {
       className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#030712]/95 backdrop-blur-md border-t border-slate-800/60 py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex flex-col items-center justify-center gap-1.5"
     >
       <div className="flex items-center justify-center gap-4">
-        <Link
-          href={CTA_DEST}
-          onClick={() => trackCtaClicked({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile", destination: CTA_DEST })}
+        <label
           onMouseEnter={() => trackCtaHovered({ cta_text: CTA_TEXT, cta_location: "sticky_bar_mobile" })}
-          className={btnClass}
+          className={`${btnClass} cursor-pointer`}
         >
           {label}
-        </Link>
+          <input
+            type="file"
+            accept=".pdf,.docx,.doc,.txt"
+            className="sr-only"
+            onChange={handleFileSelect}
+          />
+        </label>
       </div>
       <InlineGuaranteeBadge variant="short" />
     </motion.div>
