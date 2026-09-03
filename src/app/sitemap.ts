@@ -79,6 +79,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const entries: Entry[] = [
     { path: "/", lastModified: pageLastModified(""), changeFrequency: "weekly", priority: 1.0 },
     { path: "/blog", lastModified: pageLastModified("blog"), changeFrequency: "weekly", priority: 0.85 },
+    // Topic-cluster hub (AIC-1164) — hub/spoke IA over all blog posts.
+    { path: "/blog/topics", lastModified: pageLastModified("blog/topics"), changeFrequency: "weekly", priority: 0.8 },
     ...blogPosts,
     { path: "/how-it-works", lastModified: pageLastModified("how-it-works"), changeFrequency: "monthly", priority: 0.7 },
     { path: "/chrome-extension", lastModified: pageLastModified("chrome-extension"), changeFrequency: "monthly", priority: 0.7 },

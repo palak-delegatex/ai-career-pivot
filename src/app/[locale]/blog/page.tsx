@@ -96,9 +96,18 @@ export default async function BlogIndex({
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
           {t("index.heading")}
         </h1>
-        <p className="text-slate-400 text-lg mb-12">
+        <p className="text-slate-400 text-lg mb-6">
           {t("index.subheading")}
         </p>
+
+        {/* Hub entry point (AIC-1164): lets readers and crawlers reach the
+            topic-cluster IA from the flat chronological index. */}
+        <Link
+          href="/blog/topics"
+          className="inline-block text-teal-400 font-medium hover:text-teal-300 transition-colors mb-12"
+        >
+          {t("index.browseByTopic")}
+        </Link>
 
         <div className="flex flex-col gap-10">
           {posts.map((post) => (

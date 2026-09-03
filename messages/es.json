@@ -450,14 +450,16 @@
     "index": {
       "heading": "Blog de cambio de carrera",
       "subheading": "Guías prácticas para profesionales que navegan por transiciones de carrera.",
-      "readArticle": "Leer artículo →"
+      "readArticle": "Leer artículo →",
+      "browseByTopic": "Browse by topic →"
     },
     "post": {
       "backToBlog": "← Volver al blog",
       "tldr": "Resumen",
       "faqHeading": "Preguntas frecuentes",
       "team": "Equipo de AICareerPivot",
-      "lastUpdatedLabel": "Última actualización:"
+      "lastUpdatedLabel": "Última actualización:",
+      "keepReading": "Keep reading"
     },
     "cta": {
       "free": {
@@ -475,6 +477,12 @@
         "subheading": "Pago único. Análisis de tu currículum y LinkedIn impulsado por IA. Garantía de reembolso de 30 días.",
         "button": "Ver precios →"
       }
+    },
+    "topics": {
+      "heading": "Browse by topic",
+      "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
+      "allPosts": "← All posts",
+      "postsInCluster": "{count, plural, one {# post} other {# posts}}"
     }
   },
   "jobTracker": {

@@ -450,14 +450,16 @@
     "index": {
       "heading": "Blog de transição de carreira",
       "subheading": "Guias práticos para profissionais em processo de transição de carreira.",
-      "readArticle": "Ler artigo →"
+      "readArticle": "Ler artigo →",
+      "browseByTopic": "Browse by topic →"
     },
     "post": {
       "backToBlog": "← Voltar ao blog",
       "tldr": "Resumo",
       "faqHeading": "Perguntas frequentes",
       "team": "Equipe AICareerPivot",
-      "lastUpdatedLabel": "Última atualização:"
+      "lastUpdatedLabel": "Última atualização:",
+      "keepReading": "Keep reading"
     },
     "cta": {
       "free": {
@@ -475,6 +477,12 @@
         "subheading": "Pagamento único. Análise de currículo e LinkedIn com tecnologia de IA. Garantia de 30 dias.",
         "button": "Ver preços →"
       }
+    },
+    "topics": {
+      "heading": "Browse by topic",
+      "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
+      "allPosts": "← All posts",
+      "postsInCluster": "{count, plural, one {# post} other {# posts}}"
     }
   },
   "jobTracker": {

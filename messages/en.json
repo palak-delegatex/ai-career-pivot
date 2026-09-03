@@ -448,14 +448,16 @@
     "index": {
       "heading": "Career Pivot Blog",
       "subheading": "Practical guides for professionals navigating career transitions.",
-      "readArticle": "Read article →"
+      "readArticle": "Read article →",
+      "browseByTopic": "Browse by topic →"
     },
     "post": {
       "backToBlog": "← Back to blog",
       "tldr": "TL;DR",
       "faqHeading": "Frequently asked questions",
       "team": "AICareerPivot Team",
-      "lastUpdatedLabel": "Last updated:"
+      "lastUpdatedLabel": "Last updated:",
+      "keepReading": "Keep reading"
     },
     "cta": {
       "free": {
@@ -473,6 +475,12 @@
         "subheading": "One-time payment. AI-powered analysis of your resume and LinkedIn. 30-day money-back guarantee.",
         "button": "See Pricing →"
       }
+    },
+    "topics": {
+      "heading": "Browse by topic",
+      "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
+      "allPosts": "← All posts",
+      "postsInCluster": "{count, plural, one {# post} other {# posts}}"
     }
   },
   "jobTracker": {

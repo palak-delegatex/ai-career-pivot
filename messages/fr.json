@@ -450,14 +450,16 @@
     "index": {
       "heading": "Blog reconversion professionnelle",
       "subheading": "Des guides pratiques pour les professionnels naviguant dans les transitions de carrière.",
-      "readArticle": "Lire l'article →"
+      "readArticle": "Lire l'article →",
+      "browseByTopic": "Browse by topic →"
     },
     "post": {
       "backToBlog": "← Retour au blog",
       "tldr": "En bref",
       "faqHeading": "Questions fréquentes",
       "team": "Équipe AICareerPivot",
-      "lastUpdatedLabel": "Dernière mise à jour :"
+      "lastUpdatedLabel": "Dernière mise à jour :",
+      "keepReading": "Keep reading"
     },
     "cta": {
       "free": {
@@ -475,6 +477,12 @@
         "subheading": "Paiement unique. Analyse de votre CV et LinkedIn par IA. Garantie de remboursement de 30 jours.",
         "button": "Voir les tarifs →"
       }
+    },
+    "topics": {
+      "heading": "Browse by topic",
+      "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
+      "allPosts": "← All posts",
+      "postsInCluster": "{count, plural, one {# post} other {# posts}}"
     }
   },
   "jobTracker": {
