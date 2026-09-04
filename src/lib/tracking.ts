@@ -162,6 +162,20 @@ export function trackCtaHovered(props: { cta_text: string; cta_location: string 
   capture("cta_hovered", props);
 }
 
+// Internal-linking / related-posts module at the end of each blog post (AIC-1164).
+// This is a TRAFFIC/reader-depth lever (pages/session), NOT a funnel step — it
+// measures whether the end-of-article "Keep reading" grid keeps readers on the
+// site. `source_slug` is the article the reader finished, `target_slug` the
+// related post they clicked, and `position` (1-indexed) its slot in the grid so
+// we can see whether the first card does the heavy lifting.
+export function trackRelatedPostClicked(props: {
+  source_slug: string;
+  target_slug: string;
+  position: number;
+}) {
+  capture("related_post_clicked", props);
+}
+
 // Scroll depth
 export function trackScrollDepth(props: { depth_percent: number; section_visible: string }) {
   capture("scroll_depth", props);

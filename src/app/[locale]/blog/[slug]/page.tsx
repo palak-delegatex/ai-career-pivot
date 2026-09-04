@@ -7,6 +7,7 @@ import { getAllSlugs, getPost } from "@/lib/blog";
 import SiteNav from "@/components/SiteNav";
 import BlogCtaLink from "@/components/BlogCtaLink";
 import BlogShareButtons from "@/components/BlogShareButtons";
+import RelatedPosts from "@/components/RelatedPosts";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
@@ -306,6 +307,12 @@ export default async function BlogPost({
               client share CTA so blog readers can push UTM-tagged links back
               into the loop and fire content_share_clicked for attribution. */}
           <BlogShareButtons slug={slug} title={post.title} />
+
+          {/* Internal-linking / reader-depth lever (AIC-1164): topically-related
+              posts so every article links out to its neighbours for readers and
+              crawlers. Placed after share, before FAQ (FAQ is the SEO/lookup
+              end-of-page). Traffic lever — does NOT touch the frozen funnel. */}
+          <RelatedPosts slug={slug} />
 
           {post.faq && post.faq.length > 0 && (
             <section className="mt-14 not-prose">
