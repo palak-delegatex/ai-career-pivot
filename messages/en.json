@@ -454,6 +454,7 @@
     "post": {
       "backToBlog": "← Back to blog",
       "tldr": "TL;DR",
+      "keyTakeaways": "Key Takeaways",
       "faqHeading": "Frequently asked questions",
       "team": "AICareerPivot Team",
       "lastUpdatedLabel": "Last updated:",
