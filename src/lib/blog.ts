@@ -10,6 +10,22 @@ export interface FaqItem {
   answer: string;
 }
 
+export interface HowToStep {
+  name: string;
+  text: string;
+}
+
+/**
+ * Optional frontmatter for procedural "How to X" posts (AIC-1192). When present
+ * with a non-empty `steps` array, the blog route emits HowTo JSON-LD. `name`
+ * defaults to the post title and `description` to the post description.
+ */
+export interface HowToSpec {
+  name?: string;
+  description?: string;
+  steps: HowToStep[];
+}
+
 export interface PostFrontmatter {
   title: string;
   description: string;
@@ -26,6 +42,7 @@ export interface PostFrontmatter {
   keywords: string[];
   tldr?: string[];
   faq?: FaqItem[];
+  howto?: HowToSpec;
   pinned?: boolean;
 }
 
@@ -104,6 +121,7 @@ export function getPost(slug: string): Post | null {
     keywords: fm.keywords ?? [],
     tldr: fm.tldr,
     faq: fm.faq,
+    howto: fm.howto,
     readingTime: stats.text,
     excerpt,
     content,

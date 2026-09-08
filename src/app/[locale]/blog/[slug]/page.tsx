@@ -8,7 +8,12 @@ import SiteNav from "@/components/SiteNav";
 import BlogCtaLink from "@/components/BlogCtaLink";
 import BlogShareButtons from "@/components/BlogShareButtons";
 import RelatedPosts from "@/components/RelatedPosts";
-import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import {
+  organizationSchema,
+  breadcrumbSchema,
+  howToSchema,
+  speakableSchema,
+} from "@/lib/schema";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 
@@ -191,6 +196,15 @@ export default async function BlogPost({
     ),
   };
 
+  const canonicalUrl = `https://ai-career-pivot.com/blog/${slug}`;
+
+  // Speakable (AIC-1192): point voice/answer engines at the concise,
+  // spoken-answer-ready sections that actually render on this post — the TL;DR
+  // block and the FAQ. Selectors match the stable ids on those <section>s below.
+  const speakableSelectors: string[] = [];
+  if (post.tldr && post.tldr.length > 0) speakableSelectors.push("#post-tldr");
+  if (post.faq && post.faq.length > 0) speakableSelectors.push("#post-faq");
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -213,12 +227,15 @@ export default async function BlogPost({
       url: "https://ai-career-pivot.com",
     },
     publisher: organizationSchema(),
-    url: `https://ai-career-pivot.com/blog/${slug}`,
+    url: canonicalUrl,
     keywords: post.keywords.join(", "),
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://ai-career-pivot.com/blog/${slug}`,
+      "@id": canonicalUrl,
     },
+    ...(speakableSelectors.length > 0
+      ? { speakable: speakableSchema(speakableSelectors) }
+      : {}),
   };
 
   const crumbs = breadcrumbSchema([
@@ -242,9 +259,24 @@ export default async function BlogPost({
         }
       : null;
 
-  const jsonLd = faqSchema
-    ? [articleSchema, crumbs, faqSchema]
-    : [articleSchema, crumbs];
+  // HowTo (AIC-1192): only for procedural posts that opt in via `howto.steps`
+  // frontmatter. Mirrors the conditional FAQPage assembly above.
+  const howtoSchema =
+    post.howto && post.howto.steps && post.howto.steps.length > 0
+      ? howToSchema({
+          name: post.howto.name ?? post.title,
+          description: post.howto.description ?? post.description,
+          steps: post.howto.steps,
+          url: canonicalUrl,
+        })
+      : null;
+
+  const jsonLd = [
+    articleSchema,
+    crumbs,
+    ...(faqSchema ? [faqSchema] : []),
+    ...(howtoSchema ? [howtoSchema] : []),
+  ];
 
   return (
     <>
@@ -286,7 +318,7 @@ export default async function BlogPost({
           </header>
 
           {post.tldr && post.tldr.length > 0 && (
-            <section className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
+            <section id="post-tldr" className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
               <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("post.tldr")}</h2>
               <ul className="space-y-2">
                 {post.tldr.map((point, i) => (
@@ -315,7 +347,7 @@ export default async function BlogPost({
           <RelatedPosts slug={slug} />
 
           {post.faq && post.faq.length > 0 && (
-            <section className="mt-14 not-prose">
+            <section id="post-faq" className="mt-14 not-prose">
               <h2 className="text-2xl font-bold tracking-tight mb-6">
                 {t("post.faqHeading")}
               </h2>
