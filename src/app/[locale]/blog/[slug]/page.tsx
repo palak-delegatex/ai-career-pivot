@@ -8,6 +8,8 @@ import SiteNav from "@/components/SiteNav";
 import BlogCtaLink from "@/components/BlogCtaLink";
 import BlogShareButtons from "@/components/BlogShareButtons";
 import RelatedPosts from "@/components/RelatedPosts";
+import KeyTakeaways from "@/components/blog/KeyTakeaways";
+import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
 import {
   organizationSchema,
   breadcrumbSchema,
@@ -199,11 +201,13 @@ export default async function BlogPost({
   const canonicalUrl = `https://ai-career-pivot.com/blog/${slug}`;
 
   // Speakable (AIC-1192): point voice/answer engines at the concise,
-  // spoken-answer-ready sections that actually render on this post — the TL;DR
-  // block and the FAQ. Selectors match the stable ids on those <section>s below.
+  // spoken-answer-ready sections that actually render on this post — the Key
+  // Takeaways box and the FAQ accordion. Selectors are the stable class-name
+  // contract from AIC-1193/AIC-1194 (`.key-takeaways`, `.faq-accordion`) on the
+  // outermost <section> of each component below.
   const speakableSelectors: string[] = [];
-  if (post.tldr && post.tldr.length > 0) speakableSelectors.push("#post-tldr");
-  if (post.faq && post.faq.length > 0) speakableSelectors.push("#post-faq");
+  if (post.tldr && post.tldr.length > 0) speakableSelectors.push(".key-takeaways");
+  if (post.faq && post.faq.length > 0) speakableSelectors.push(".faq-accordion");
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -318,17 +322,10 @@ export default async function BlogPost({
           </header>
 
           {post.tldr && post.tldr.length > 0 && (
-            <section id="post-tldr" className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
-              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("post.tldr")}</h2>
-              <ul className="space-y-2">
-                {post.tldr.map((point, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-teal-400 mt-0.5 shrink-0">•</span>
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <KeyTakeaways
+              items={post.tldr}
+              heading={t.has("post.keyTakeaways") ? t("post.keyTakeaways") : undefined}
+            />
           )}
 
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
@@ -347,23 +344,7 @@ export default async function BlogPost({
           <RelatedPosts slug={slug} />
 
           {post.faq && post.faq.length > 0 && (
-            <section id="post-faq" className="mt-14 not-prose">
-              <h2 className="text-2xl font-bold tracking-tight mb-6">
-                {t("post.faqHeading")}
-              </h2>
-              <div className="divide-y divide-slate-800 border-t border-slate-800">
-                {post.faq.map((item, i) => (
-                  <div key={i} className="py-5">
-                    <h3 className="text-base font-semibold text-white mb-2">
-                      {item.question}
-                    </h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      {item.answer}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
+            <BlogFaqAccordion items={post.faq} heading={t("post.faqHeading")} />
           )}
         </div>
         </main>
