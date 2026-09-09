@@ -456,6 +456,7 @@
     "post": {
       "backToBlog": "← ブログに戻る",
       "tldr": "要約",
+      "keyTakeaways": "要点",
       "faqHeading": "よくある質問",
       "team": "AICareerPivot チーム",
       "lastUpdatedLabel": "最終更新日：",
