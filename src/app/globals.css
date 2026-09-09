@@ -240,6 +240,12 @@ html {
   .animate-cta-breathe {
     animation: none;
   }
+  /* Blog FAQ accordion (AIC-1196): expand/collapse instantly for readers who
+     ask for reduced motion instead of running the accordion-up/down height
+     transitions. Content still shows/hides — only the animation is dropped. */
+  .blog-faq [data-slot="accordion-content"] {
+    animation: none !important;
+  }
 }
 
 .dot-grid {

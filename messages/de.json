@@ -456,6 +456,7 @@
     "post": {
       "backToBlog": "← Zurück zum Blog",
       "tldr": "Kurzfassung",
+      "keyTakeaways": "Wichtigste Erkenntnisse",
       "faqHeading": "Häufig gestellte Fragen",
       "team": "AICareerPivot-Team",
       "lastUpdatedLabel": "Zuletzt aktualisiert:",

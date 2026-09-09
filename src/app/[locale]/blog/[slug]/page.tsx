@@ -8,7 +8,13 @@ import SiteNav from "@/components/SiteNav";
 import BlogCtaLink from "@/components/BlogCtaLink";
 import BlogShareButtons from "@/components/BlogShareButtons";
 import RelatedPosts from "@/components/RelatedPosts";
-import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+import BlogFaqAccordion from "@/components/BlogFaqAccordion";
+import {
+  organizationSchema,
+  breadcrumbSchema,
+  howToSchema,
+  speakableSpecification,
+} from "@/lib/schema";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 
@@ -191,6 +197,13 @@ export default async function BlogPost({
     ),
   };
 
+  // Speakable regions (AIC-1190): flag the TL;DR summary and FAQ answers as the
+  // concise, quotable parts of the page for voice/AI answer engines. Only point
+  // at blocks that actually render on this post.
+  const speakableSelectors: string[] = [];
+  if (post.tldr && post.tldr.length > 0) speakableSelectors.push(".blog-tldr");
+  if (post.faq && post.faq.length > 0) speakableSelectors.push(".blog-faq");
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -219,6 +232,9 @@ export default async function BlogPost({
       "@type": "WebPage",
       "@id": `https://ai-career-pivot.com/blog/${slug}`,
     },
+    ...(speakableSelectors.length > 0
+      ? { speakable: speakableSpecification(speakableSelectors) }
+      : {}),
   };
 
   const crumbs = breadcrumbSchema([
@@ -242,9 +258,20 @@ export default async function BlogPost({
         }
       : null;
 
-  const jsonLd = faqSchema
-    ? [articleSchema, crumbs, faqSchema]
-    : [articleSchema, crumbs];
+  // HowTo (AIC-1190): emitted only for procedural posts that declare `howto:`
+  // steps in frontmatter, mirroring the conditional FAQPage assembly above.
+  const howtoLd =
+    post.howto && post.howto.length > 0
+      ? howToSchema({
+          name: post.howtoName ?? post.title,
+          description: post.description,
+          url: `https://ai-career-pivot.com/blog/${slug}`,
+          dateModified: post.lastModified,
+          steps: post.howto,
+        })
+      : null;
+
+  const jsonLd = [articleSchema, crumbs, faqSchema, howtoLd].filter(Boolean);
 
   return (
     <>
@@ -285,17 +312,22 @@ export default async function BlogPost({
             </p>
           </header>
 
+          {/* Answer-first Key Takeaways box (AIC-1196, spec AIC-1195): the single
+              most-quotable block, placed in the F-pattern's first fixation zone.
+              Numbered (serial-position + more citable by AI answer engines) and
+              given a teal left accent for Von Restorff distinction. Keeps the
+              `.blog-tldr` class so the speakable JSON-LD (AIC-1192) still resolves. */}
           {post.tldr && post.tldr.length > 0 && (
-            <section className="mb-10 bg-slate-900/60 border border-slate-800 rounded-xl p-6 not-prose">
-              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("post.tldr")}</h2>
-              <ul className="space-y-2">
+            <section className="blog-tldr mb-10 bg-slate-900/80 border border-slate-800 border-l-4 border-l-teal-500 rounded-xl p-6 not-prose">
+              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-3">{t("post.keyTakeaways")}</h2>
+              <ol className="space-y-3">
                 {post.tldr.map((point, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-teal-400 mt-0.5 shrink-0">•</span>
+                  <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="text-teal-400 font-semibold tabular-nums shrink-0">{i + 1}.</span>
                     {point}
                   </li>
                 ))}
-              </ul>
+              </ol>
             </section>
           )}
 
@@ -314,23 +346,17 @@ export default async function BlogPost({
               end-of-page). Traffic lever — does NOT touch the frozen funnel. */}
           <RelatedPosts slug={slug} />
 
+          {/* FAQ accordion (AIC-1196, spec AIC-1195): human-visible mirror of the
+              FAQPage JSON-LD. `.blog-faq` is the hook the speakable spec (AIC-1192)
+              points at. Radix accordion handles keyboard nav + ARIA; reduced-motion
+              is gated in globals.css. Kept at page bottom so height transitions
+              cause no CLS. */}
           {post.faq && post.faq.length > 0 && (
-            <section className="mt-14 not-prose">
+            <section className="blog-faq mt-14 not-prose">
               <h2 className="text-2xl font-bold tracking-tight mb-6">
                 {t("post.faqHeading")}
               </h2>
-              <div className="divide-y divide-slate-800 border-t border-slate-800">
-                {post.faq.map((item, i) => (
-                  <div key={i} className="py-5">
-                    <h3 className="text-base font-semibold text-white mb-2">
-                      {item.question}
-                    </h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      {item.answer}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <BlogFaqAccordion items={post.faq} />
             </section>
           )}
         </div>

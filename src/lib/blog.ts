@@ -10,6 +10,11 @@ export interface FaqItem {
   answer: string;
 }
 
+export interface HowToStep {
+  name: string;
+  text: string;
+}
+
 export interface PostFrontmatter {
   title: string;
   description: string;
@@ -26,6 +31,15 @@ export interface PostFrontmatter {
   keywords: string[];
   tldr?: string[];
   faq?: FaqItem[];
+  /**
+   * Optional procedural steps for posts that teach "how to X". When present we
+   * emit HowTo/HowToStep JSON-LD (AIC-1190) so AI answer engines can cite the
+   * post as a step-by-step source. Purely additive and opt-in per post — a post
+   * without `howto:` behaves exactly as before.
+   */
+  howto?: HowToStep[];
+  /** Optional override for the HowTo schema `name`; defaults to the post title. */
+  howtoName?: string;
   pinned?: boolean;
 }
 
@@ -104,6 +118,8 @@ export function getPost(slug: string): Post | null {
     keywords: fm.keywords ?? [],
     tldr: fm.tldr,
     faq: fm.faq,
+    howto: fm.howto,
+    howtoName: fm.howtoName,
     readingTime: stats.text,
     excerpt,
     content,
