@@ -456,6 +456,7 @@
     "post": {
       "backToBlog": "← Retour au blog",
       "tldr": "En bref",
+      "keyTakeaways": "Points clés",
       "faqHeading": "Questions fréquentes",
       "team": "Équipe AICareerPivot",
       "lastUpdatedLabel": "Dernière mise à jour :",
