@@ -36,6 +36,7 @@ const PRIMARY_NAV = [
 ] as const;
 
 const SECONDARY_NAV = [
+  { href: "/tools", key: "tools" },
   { href: "/blog", key: "blog" },
   { href: "/dashboard", key: "myRoadmaps" },
   { href: "/job-tracker", key: "jobTracker" },
