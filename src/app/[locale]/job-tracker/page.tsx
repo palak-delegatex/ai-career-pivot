@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import JobTrackerClient from "./JobTrackerClient";
+import ToolsHubLink from "@/components/ToolsHubLink";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export async function generateMetadata({
@@ -40,6 +41,7 @@ export default async function JobTrackerPage({
         <main id="main-content">
           <JobTrackerClient />
         </main>
+        <ToolsHubLink />
       </div>
     </>
   );

@@ -5,6 +5,7 @@ import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 import { pivots } from "@/content/pivots";
+import ToolsHubLink from "@/components/ToolsHubLink";
 
 const BASE_URL = "https://ai-career-pivot.com";
 
@@ -143,6 +144,7 @@ export default function PivotIndex() {
             </div>
           </div>
         </main>
+        <ToolsHubLink />
       </div>
     </>
   );
