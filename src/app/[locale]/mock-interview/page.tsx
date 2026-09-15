@@ -3,6 +3,7 @@ import { alternatesFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import MockInterviewClient from "./MockInterviewClient";
+import ToolsHubLink from "@/components/ToolsHubLink";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export async function generateMetadata({
@@ -29,6 +30,7 @@ export default function MockInterviewPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <SiteNav />
         <MockInterviewClient />
+        <ToolsHubLink />
       </div>
     </>
   );

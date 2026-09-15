@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import SiteNav from "@/components/SiteNav";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import NetworkingClient from "./NetworkingClient";
+import ToolsHubLink from "@/components/ToolsHubLink";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export async function generateMetadata({
@@ -40,6 +41,7 @@ export default async function NetworkingPage({
         <main id="main-content">
           <NetworkingClient />
         </main>
+        <ToolsHubLink />
       </div>
     </>
   );

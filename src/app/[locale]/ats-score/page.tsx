@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { alternatesFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
 import ATSScoreClient from "./ATSScoreClient";
+import ToolsHubLink from "@/components/ToolsHubLink";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export async function generateMetadata({
@@ -27,6 +28,7 @@ export default function ATSScorePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
       <ATSScoreClient />
+      <ToolsHubLink />
     </>
   );
 }
