@@ -97,6 +97,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...pivotPages,
     { path: "/free", lastModified: pageLastModified("free"), changeFrequency: "monthly", priority: 0.7 },
     { path: "/privacy", lastModified: pageLastModified("privacy"), changeFrequency: "yearly", priority: 0.3 },
+    { path: "/terms", lastModified: pageLastModified("terms"), changeFrequency: "yearly", priority: 0.3 },
   ];
 
   return entries.map((e) => ({

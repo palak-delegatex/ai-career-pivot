@@ -727,6 +727,74 @@
       "body": "Dúvidas sobre esta política? Envie um e-mail para"
     }
   },
+  "terms": {
+    "page": {
+      "metaTitle": "Termos de serviço — AICareerPivot",
+      "metaDescription": "Termos de serviço do AICareerPivot. As regras para usar nossas ferramentas de carreira com IA, a extensão do Chrome e o aplicativo web.",
+      "metaOgTitle": "Termos de serviço — AICareerPivot",
+      "metaOgDescription": "Termos de serviço do AICareerPivot. As regras para usar nossas ferramentas de carreira com IA e o aplicativo web."
+    },
+    "eyebrow": "Legal",
+    "heading": "Termos de serviço",
+    "lastUpdated": "Última atualização: setembro de 2026",
+    "intro": "Estes Termos de serviço (\"Termos\") regem seu acesso e uso do site do AICareerPivot, da extensão do Chrome e dos serviços relacionados (coletivamente, o \"Serviço\"). Ao criar uma conta ou usar o Serviço, você concorda com estes Termos. Se você não concordar, não use o Serviço.",
+    "s1": {
+      "heading": "1. Quem somos",
+      "body": "O AICareerPivot (\"nós\", \"nos\", \"nosso\") oferece ferramentas de carreira assistidas por IA, incluindo pontuação de currículos e ATS, acompanhamento de vagas, preenchimento automático de candidaturas e orientação de carreira. O Serviço é operado a partir dos Estados Unidos."
+    },
+    "s2": {
+      "heading": "2. Elegibilidade",
+      "body": "Você deve ter pelo menos 16 anos para usar o Serviço. Ao usá-lo, você declara que atende a esse requisito e que as informações fornecidas são precisas e completas."
+    },
+    "s3": {
+      "heading": "3. Sua conta",
+      "body": "Você é responsável por manter a segurança da sua conta e por toda a atividade realizada nela. O login é fornecido por meio do Google OAuth e de links mágicos por e-mail. Avise-nos imediatamente sobre qualquer uso não autorizado da sua conta."
+    },
+    "s4": {
+      "heading": "4. Uso aceitável",
+      "intro": "Você concorda em não:",
+      "item1": "usar o Serviço para qualquer finalidade ilícita ou em violação dos direitos de terceiros;",
+      "item2": "extrair dados, fazer engenharia reversa ou tentar interromper ou sobrecarregar o Serviço;",
+      "item3": "enviar informações falsas ou se passar por qualquer pessoa ou entidade;",
+      "item4": "revender ou redistribuir o Serviço sem nossa permissão por escrito."
+    },
+    "s5": {
+      "heading": "5. Pagamentos e reembolsos",
+      "body": "Os planos pagos são cobrados por meio do nosso processador de pagamentos pelos preços exibidos no checkout. Salvo exigência legal ou indicação em contrário, os pagamentos não são reembolsáveis. Você pode cancelar uma assinatura a qualquer momento na sua conta, e o acesso continua até o fim do período de faturamento atual."
+    },
+    "s6": {
+      "heading": "6. Seu conteúdo",
+      "body": "Você mantém a propriedade dos currículos, dados de vagas e demais conteúdos que enviar. Você nos concede uma licença limitada para armazenar e processar esse conteúdo unicamente para fornecer o Serviço. Consulte nossa Política de privacidade para saber como tratamos seus dados."
+    },
+    "s7": {
+      "heading": "7. Propriedade intelectual",
+      "body": "O Serviço, incluindo seu software, design e o conteúdo que criamos, é de propriedade do AICareerPivot e protegido por lei. Concedemos a você uma licença pessoal, não exclusiva e intransferível para usar o Serviço de acordo com estes Termos."
+    },
+    "s8": {
+      "heading": "8. Resultados de IA e ausência de garantia de resultados",
+      "body": "O Serviço usa IA para gerar pontuações, sugestões e textos de candidatura. Os resultados podem conter erros e devem ser revisados antes de você confiar neles. Não garantimos entrevistas, ofertas de emprego, contratação ou qualquer resultado profissional específico."
+    },
+    "s9": {
+      "heading": "9. Isenções de responsabilidade",
+      "body": "O Serviço é fornecido \"como está\" e \"conforme disponível\", sem garantias de qualquer tipo, expressas ou implícitas, incluindo adequação a uma finalidade específica e não violação, na máxima extensão permitida por lei."
+    },
+    "s10": {
+      "heading": "10. Limitação de responsabilidade",
+      "body": "Na máxima extensão permitida por lei, o AICareerPivot não será responsável por quaisquer danos indiretos, incidentais ou consequenciais, nem por lucros ou dados perdidos, decorrentes do seu uso do Serviço. Nossa responsabilidade total não excederá o valor que você nos pagou nos doze meses anteriores à reclamação."
+    },
+    "s11": {
+      "heading": "11. Rescisão",
+      "body": "Você pode parar de usar o Serviço a qualquer momento. Podemos suspender ou encerrar o acesso se você violar estes Termos ou para proteger o Serviço. Com a rescisão, seu direito de usar o Serviço termina; as disposições que, por sua natureza, devam sobreviver permanecerão em vigor."
+    },
+    "s12": {
+      "heading": "12. Alterações a estes Termos",
+      "body": "Podemos atualizar estes Termos periodicamente. Alterações relevantes serão comunicadas por meio do Serviço ou por e-mail. A data de \"Última atualização\" reflete a revisão mais recente, e o uso continuado após as alterações entrarem em vigor significa que você as aceita."
+    },
+    "s13": {
+      "heading": "13. Contato",
+      "body": "Dúvidas sobre estes Termos? Envie um e-mail para"
+    }
+  },
   "login": {
     "page": {
       "metaTitle": "Entrar",

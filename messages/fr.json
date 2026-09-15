@@ -727,6 +727,74 @@
       "body": "Des questions sur cette politique ? Envoyez-nous un e-mail à"
     }
   },
+  "terms": {
+    "page": {
+      "metaTitle": "Conditions d'utilisation — AICareerPivot",
+      "metaDescription": "Conditions d'utilisation d'AICareerPivot. Les règles d'utilisation de nos outils de carrière basés sur l'IA, de l'extension Chrome et de l'application web.",
+      "metaOgTitle": "Conditions d'utilisation — AICareerPivot",
+      "metaOgDescription": "Conditions d'utilisation d'AICareerPivot. Les règles d'utilisation de nos outils de carrière basés sur l'IA et de l'application web."
+    },
+    "eyebrow": "Légal",
+    "heading": "Conditions d'utilisation",
+    "lastUpdated": "Dernière mise à jour : septembre 2026",
+    "intro": "Les présentes Conditions d'utilisation (« Conditions ») régissent votre accès au site web AICareerPivot, à l'extension Chrome et aux services associés (collectivement, le « Service ») ainsi que leur utilisation. En créant un compte ou en utilisant le Service, vous acceptez ces Conditions. Si vous ne les acceptez pas, n'utilisez pas le Service.",
+    "s1": {
+      "heading": "1. Qui nous sommes",
+      "body": "AICareerPivot (« nous », « notre ») propose des outils de carrière assistés par l'IA, notamment l'évaluation des CV et des ATS, le suivi des offres d'emploi, le remplissage automatique des candidatures et l'accompagnement de carrière. Le Service est exploité depuis les États-Unis."
+    },
+    "s2": {
+      "heading": "2. Admissibilité",
+      "body": "Vous devez avoir au moins 16 ans pour utiliser le Service. En l'utilisant, vous déclarez remplir cette condition et que les informations que vous fournissez sont exactes et complètes."
+    },
+    "s3": {
+      "heading": "3. Votre compte",
+      "body": "Vous êtes responsable du maintien de la sécurité de votre compte et de toute activité qui s'y déroule. La connexion s'effectue via Google OAuth et des liens magiques envoyés par e-mail. Signalez-nous rapidement toute utilisation non autorisée de votre compte."
+    },
+    "s4": {
+      "heading": "4. Utilisation acceptable",
+      "intro": "Vous acceptez de ne pas :",
+      "item1": "utiliser le Service à des fins illégales ou en violation des droits de tiers ;",
+      "item2": "extraire des données, procéder à de la rétro-ingénierie ni tenter de perturber ou de surcharger le Service ;",
+      "item3": "soumettre de fausses informations ni usurper l'identité d'une personne ou d'une entité ;",
+      "item4": "revendre ou redistribuer le Service sans notre autorisation écrite."
+    },
+    "s5": {
+      "heading": "5. Paiements et remboursements",
+      "body": "Les forfaits payants sont facturés via notre prestataire de paiement aux prix indiqués au moment du paiement. Sauf disposition légale contraire ou mention contraire, les paiements ne sont pas remboursables. Vous pouvez annuler un abonnement à tout moment depuis votre compte, et l'accès se poursuit jusqu'à la fin de la période de facturation en cours."
+    },
+    "s6": {
+      "heading": "6. Votre contenu",
+      "body": "Vous conservez la propriété des CV, des données d'emploi et des autres contenus que vous soumettez. Vous nous accordez une licence limitée pour stocker et traiter ce contenu uniquement afin de fournir le Service. Consultez notre Politique de confidentialité pour savoir comment nous traitons vos données."
+    },
+    "s7": {
+      "heading": "7. Propriété intellectuelle",
+      "body": "Le Service, y compris son logiciel, sa conception et le contenu que nous créons, appartient à AICareerPivot et est protégé par la loi. Nous vous accordons une licence personnelle, non exclusive et non transférable pour utiliser le Service conformément aux présentes Conditions."
+    },
+    "s8": {
+      "heading": "8. Résultats de l'IA et absence de garantie de résultats",
+      "body": "Le Service utilise l'IA pour générer des scores, des suggestions et des textes de candidature. Les résultats peuvent contenir des erreurs et doivent être vérifiés avant que vous ne vous y fiiez. Nous ne garantissons ni entretiens, ni offres d'emploi, ni embauche, ni aucun résultat professionnel précis."
+    },
+    "s9": {
+      "heading": "9. Avertissements",
+      "body": "Le Service est fourni « en l'état » et « selon disponibilité », sans garantie d'aucune sorte, expresse ou implicite, y compris l'adéquation à un usage particulier et l'absence de contrefaçon, dans toute la mesure permise par la loi."
+    },
+    "s10": {
+      "heading": "10. Limitation de responsabilité",
+      "body": "Dans toute la mesure permise par la loi, AICareerPivot ne saurait être tenu responsable des dommages indirects, accessoires ou consécutifs, ni de la perte de bénéfices ou de données, résultant de votre utilisation du Service. Notre responsabilité totale n'excédera pas le montant que vous nous avez versé au cours des douze mois précédant la réclamation."
+    },
+    "s11": {
+      "heading": "11. Résiliation",
+      "body": "Vous pouvez cesser d'utiliser le Service à tout moment. Nous pouvons suspendre ou résilier l'accès si vous enfreignez les présentes Conditions ou pour protéger le Service. À la résiliation, votre droit d'utiliser le Service prend fin ; les dispositions qui, par leur nature, doivent survivre resteront en vigueur."
+    },
+    "s12": {
+      "heading": "12. Modifications de ces Conditions",
+      "body": "Nous pouvons mettre à jour ces Conditions de temps à autre. Les modifications importantes seront communiquées via le Service ou par e-mail. La date de « Dernière mise à jour » reflète la révision la plus récente, et l'utilisation continue après l'entrée en vigueur des modifications signifie que vous les acceptez."
+    },
+    "s13": {
+      "heading": "13. Contact",
+      "body": "Des questions sur ces Conditions ? Écrivez-nous à"
+    }
+  },
   "login": {
     "page": {
       "metaTitle": "Se connecter",

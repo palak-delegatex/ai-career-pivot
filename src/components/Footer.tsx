@@ -76,7 +76,7 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <nav className="flex items-center gap-4" aria-label="Legal">
               <Link href="/privacy" className="hover:text-slate-400 transition-colors">{l("privacy")}</Link>
-              <Link href="/about" className="hover:text-slate-400 transition-colors">{l("terms")}</Link>
+              <Link href="/terms" className="hover:text-slate-400 transition-colors">{l("terms")}</Link>
               <a href="mailto:hello@ai-career-pivot.com" className="hover:text-slate-400 transition-colors">{l("contact")}</a>
             </nav>
             {/* LanguageSwitcher relocated from above-the-fold nav (AIC-1117). */}
