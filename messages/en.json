@@ -725,6 +725,74 @@
       "body": "Questions about this policy? Email us at"
     }
   },
+  "terms": {
+    "page": {
+      "metaTitle": "Terms of Service — AICareerPivot",
+      "metaDescription": "AICareerPivot terms of service. The rules for using our AI career tools, Chrome extension, and web application.",
+      "metaOgTitle": "Terms of Service — AICareerPivot",
+      "metaOgDescription": "AICareerPivot terms of service. The rules for using our AI career tools and web application."
+    },
+    "eyebrow": "Legal",
+    "heading": "Terms of Service",
+    "lastUpdated": "Last updated: September 2026",
+    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the AICareerPivot website, Chrome extension, and related services (collectively, the \"Service\"). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.",
+    "s1": {
+      "heading": "1. Who We Are",
+      "body": "AICareerPivot (\"we\", \"us\", \"our\") provides AI-assisted career tools, including resume and ATS scoring, job tracking, application autofill, and career guidance. The Service is operated from the United States."
+    },
+    "s2": {
+      "heading": "2. Eligibility",
+      "body": "You must be at least 16 years old to use the Service. By using it, you represent that you meet this requirement and that the information you provide is accurate and complete."
+    },
+    "s3": {
+      "heading": "3. Your Account",
+      "body": "You are responsible for maintaining the security of your account and for all activity under it. Sign-in is provided through Google OAuth and email magic links. Notify us promptly of any unauthorized use of your account."
+    },
+    "s4": {
+      "heading": "4. Acceptable Use",
+      "intro": "You agree not to:",
+      "item1": "use the Service for any unlawful purpose or in violation of any third party's rights;",
+      "item2": "scrape, reverse-engineer, or attempt to disrupt or overload the Service;",
+      "item3": "submit false information or impersonate any person or entity;",
+      "item4": "resell or redistribute the Service without our written permission."
+    },
+    "s5": {
+      "heading": "5. Payments and Refunds",
+      "body": "Paid plans are billed through our payment processor at the prices shown at checkout. Unless required by law or stated otherwise, payments are non-refundable. You can cancel a subscription at any time from your account, and access continues until the end of the current billing period."
+    },
+    "s6": {
+      "heading": "6. Your Content",
+      "body": "You retain ownership of the resumes, job data, and other content you submit. You grant us a limited license to store and process that content solely to provide the Service. See our Privacy Policy for how we handle your data."
+    },
+    "s7": {
+      "heading": "7. Intellectual Property",
+      "body": "The Service, including its software, design, and the content we create, is owned by AICareerPivot and protected by law. We grant you a personal, non-exclusive, non-transferable license to use the Service in accordance with these Terms."
+    },
+    "s8": {
+      "heading": "8. AI Output and No Guarantee of Results",
+      "body": "The Service uses AI to generate scores, suggestions, and application text. Output may contain errors and should be reviewed before you rely on it. We do not guarantee interviews, job offers, employment, or any specific career outcome."
+    },
+    "s9": {
+      "heading": "9. Disclaimers",
+      "body": "The Service is provided \"as is\" and \"as available\" without warranties of any kind, whether express or implied, including fitness for a particular purpose and non-infringement, to the fullest extent permitted by law."
+    },
+    "s10": {
+      "heading": "10. Limitation of Liability",
+      "body": "To the fullest extent permitted by law, AICareerPivot will not be liable for any indirect, incidental, or consequential damages, or for lost profits or data, arising from your use of the Service. Our total liability will not exceed the amount you paid us in the twelve months before the claim."
+    },
+    "s11": {
+      "heading": "11. Termination",
+      "body": "You may stop using the Service at any time. We may suspend or terminate access if you violate these Terms or to protect the Service. On termination, your right to use the Service ends; provisions that by their nature should survive will survive."
+    },
+    "s12": {
+      "heading": "12. Changes to These Terms",
+      "body": "We may update these Terms from time to time. Material changes will be communicated through the Service or by email. The \"Last updated\" date reflects the most recent revision, and continued use after changes take effect means you accept them."
+    },
+    "s13": {
+      "heading": "13. Contact",
+      "body": "Questions about these Terms? Email us at"
+    }
+  },
   "login": {
     "page": {
       "metaTitle": "Sign In",
