@@ -1,146 +1,206 @@
 import type { Metadata } from "next";
 import { alternatesFor, localizedPath, ogLocaleFor } from "@/lib/seo";
 import type { Locale } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import SiteNav from "@/components/SiteNav";
+import { Footer } from "@/components/Footer";
+import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
+import ReadinessAssessment from "@/components/ReadinessAssessment";
 import { breadcrumbSchema, speakableSchema } from "@/lib/schema";
-import ReadinessClient from "./ReadinessClient";
+import { decodeResult, overallScore, tierFor } from "@/lib/readiness";
+import type { FaqItem } from "@/lib/blog";
 
 const BASE_URL = "https://ai-career-pivot.com";
-const PAGE_URL = `${BASE_URL}/readiness`;
+
+// A shared ?r= link → point the social card at the scored OG variant so the
+// preview shows the actual score/tier (fuels the share loop, spec §1.7).
+function ogImageFor(searchParams: Record<string, string | string[] | undefined>): string {
+  const raw = searchParams.r;
+  const token = Array.isArray(raw) ? raw[0] : raw;
+  if (token) {
+    const dims = decodeResult(token);
+    if (dims) {
+      const score = overallScore(dims);
+      return `/api/og/readiness?score=${score}&tier=${tierFor(score).slug}`;
+    }
+  }
+  return "/api/og/readiness";
+}
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const locale = (await params).locale as Locale;
+  const image = ogImageFor(await searchParams);
+  const title = "AI Career Pivot Readiness Assessment — Free Quiz | AICareerPivot";
+  const description =
+    "Find out if you're ready to pivot into an AI career. 5 quick questions, instant results, no signup required.";
   return {
-    title: "AI Career Pivot Readiness Check — Free Score in 60 Seconds | AICareerPivot",
-    description:
-      "Answer 5 quick questions and get an honest 0–100 score for how ready you are to pivot into an AI-adjacent career — plus your next three moves. No resume, no signup.",
+    title,
+    description,
     alternates: alternatesFor("/readiness", locale),
     openGraph: {
       locale: ogLocaleFor(locale),
-      title: "How ready are you to pivot into AI? — Free readiness check",
-      description:
-        "A free 5-question readiness score for career changers moving into AI-adjacent roles. Instant result, no signup.",
+      title: "How Ready Are You for an AI Career Pivot?",
+      description,
       url: localizedPath("/readiness", locale),
+      images: [{ url: image, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "How Ready Are You for an AI Career Pivot?",
+      description,
+      images: [image],
     },
   };
 }
 
-// FAQ answers double as the citable, answer-engine-ready copy (GEO). Keep them
-// concise and factual — they back the FAQPage JSON-LD below and render visibly
-// so the schema never describes text a user can't see.
-const FAQ: { q: string; a: string }[] = [
+// GEO-optimized FAQ (spec §1.10). Honest, concise answers — no fabricated claims.
+const FAQ: FaqItem[] = [
   {
-    q: "What is the AI career readiness score?",
-    a: "It's a free 0–100 self-assessment that estimates how prepared you are to pivot into an AI-adjacent role. It weighs five factors equally: your comfort with AI tools, how much of your work already involves data or systems, whether you have shareable proof of work, your weekly time to invest, and your financial runway and network.",
+    question: "What does the AI Career Pivot Readiness score measure?",
+    answer:
+      "It measures how prepared you are to transition into an AI-adjacent career across four dimensions: your experience foundation (career stage plus AI exposure), motivation alignment (why you're pivoting), time commitment (hours you can invest weekly), and timeline readiness (how soon you want to switch). The four combine into one 0–100 readiness score.",
   },
   {
-    q: "How is the readiness score calculated?",
-    a: "Five questions, each worth 0 to 20 points, add up to a score out of 100. There's no hidden model — the weights are transparent. 70–100 means you're pivot-ready, 40–69 means you're building momentum, and 0–39 means you're an early explorer just getting started.",
+    question: "How is my readiness score calculated?",
+    answer:
+      "Each of your five answers maps to points across the four dimensions. The dimensions are weighted — experience 30%, motivation 25%, commitment 25%, and timeline 20% — and averaged into your overall score. The calculation runs entirely in your browser, so results are instant and nothing is sent to a server.",
   },
   {
-    q: "Is the AI career readiness check free?",
-    a: "Yes. It's completely free, runs entirely in your browser, and requires no resume, email, login, or payment. You get your score and three concrete next steps instantly.",
+    question: "Do I need to sign up to take the assessment?",
+    answer:
+      "No. The assessment is completely free with no signup, no email, and no login required. You answer five questions and see your results immediately.",
   },
   {
-    q: "Do I need any AI or coding experience to pivot into an AI-adjacent career?",
-    a: "No. Many AI-adjacent roles — from AI-assisted marketing and operations to data analysis and prompt design — build on skills you already have. The readiness check is designed for career changers with no formal AI background and points you to the fastest path from where you are today.",
+    question: "Can I retake the assessment?",
+    answer:
+      "Yes. Use the \"Retake the assessment\" link on your results to start over with fresh answers anytime.",
+  },
+  {
+    question: "What should I do after getting my results?",
+    answer:
+      "Your results highlight your strengths and the areas to build next. From there you can get a free AI career snapshot by uploading your resume, or take the 30-second role-match quiz to see which AI-adjacent roles fit your background — both are free.",
+  },
+  {
+    question: "Is my data stored or shared?",
+    answer:
+      "No personal data is collected. Scoring happens in your browser, and a shared result link only contains your four numeric dimension scores — never your answers or any identifying information.",
   },
 ];
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQ.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
-  })),
-};
+export default async function ReadinessPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = (await params).locale as Locale;
+  const canonicalUrl = `${BASE_URL}${localizedPath("/readiness", locale)}`;
 
-// Quiz JSON-LD (schema.org/Quiz) — declares the interactive assessment as a
-// structured, educational quiz so search & answer engines can surface it.
-const quizSchema = {
-  "@context": "https://schema.org",
-  "@type": "Quiz",
-  name: "AI Career Pivot Readiness Check",
-  url: PAGE_URL,
-  educationalUse: "self-assessment",
-  about: {
-    "@type": "Thing",
-    name: "Readiness to pivot into an AI-adjacent career",
-  },
-  description:
-    "A free five-question assessment that scores how ready a career changer is to pivot into an AI-adjacent role and returns three concrete next steps.",
-  provider: {
-    "@type": "Organization",
-    name: "AICareerPivot",
-    url: BASE_URL,
-  },
-};
-
-// Speakable targets the result card's tier + one-line summary — the concise,
-// spoken-answer-ready payload for voice/answer engines. (The ids render inside
-// ReadinessClient's result view.)
-const speakable = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  url: PAGE_URL,
-  name: "AI Career Pivot Readiness Check",
-  speakable: speakableSchema(["#readiness-tier", "#readiness-summary"]),
-};
-
-export default function ReadinessPage() {
   const crumbs = breadcrumbSchema([
-    { name: "Tools", path: "/tools" },
-    { name: "Readiness Check", path: "/readiness" },
+    { name: "AI Career Pivot Readiness Assessment", path: "/readiness" },
   ]);
+
+  const quizSchema = {
+    "@context": "https://schema.org",
+    "@type": "Quiz",
+    name: "AI Career Pivot Readiness Assessment",
+    description:
+      "A free 5-question assessment that measures your readiness to pivot into an AI career across experience, motivation, time commitment, and timeline.",
+    url: canonicalUrl,
+    educationalLevel: "Beginner to advanced",
+    about: {
+      "@type": "Thing",
+      name: "AI career transition readiness",
+    },
+    assesses: [
+      "Experience foundation",
+      "Motivation alignment",
+      "Time commitment",
+      "Timeline readiness",
+    ],
+    isAccessibleForFree: true,
+    provider: {
+      "@type": "Organization",
+      name: "AICareerPivot",
+      url: BASE_URL,
+    },
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": canonicalUrl,
+    url: canonicalUrl,
+    name: "AI Career Pivot Readiness Assessment",
+    speakable: speakableSchema([".readiness-quote", ".faq-accordion"]),
+  };
+
+  const jsonLd = [webPageSchema, quizSchema, crumbs, faqSchema];
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([quizSchema, faqSchema, speakable, crumbs]),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <div className="min-h-screen bg-background text-white">
         <SiteNav />
         <main id="main-content">
-          <ReadinessClient />
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-6 text-sm text-slate-500">
+              <ol className="flex items-center gap-2">
+                <li>
+                  <Link href="/" className="hover:text-teal-400 transition-colors">
+                    Home
+                  </Link>
+                </li>
+                <li aria-hidden="true">›</li>
+                <li className="text-slate-400">Readiness Assessment</li>
+              </ol>
+            </nav>
 
-          {/* Visible FAQ — mirrors the FAQPage JSON-LD above. */}
-          <section
-            aria-labelledby="readiness-faq-heading"
-            className="max-w-xl mx-auto px-6 pb-20"
-          >
-            <h2
-              id="readiness-faq-heading"
-              className="text-2xl font-bold text-white mb-6 text-center"
-            >
-              Common questions
-            </h2>
-            <div className="space-y-4">
-              {FAQ.map((f) => (
-                <details
-                  key={f.q}
-                  className="group rounded-xl bg-slate-800/40 border border-slate-700 px-5 py-4"
-                >
-                  <summary className="cursor-pointer list-none font-semibold text-white flex items-center justify-between gap-4">
-                    {f.q}
-                    <span className="text-teal-400 transition-transform group-open:rotate-45" aria-hidden="true">
-                      +
-                    </span>
-                  </summary>
-                  <p className="mt-3 text-sm text-slate-300 leading-relaxed">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
+            {/* Answer-first hero */}
+            <header className="mb-8">
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white leading-tight">
+                How Ready Are You for an AI Career Pivot?
+              </h1>
+              <p className="mt-4 text-lg text-slate-400">
+                5 questions. 60 seconds. Instant results. No signup required.
+              </p>
+              <div className="mt-6 bg-slate-900/80 border-l-4 border-l-teal-500 rounded-xl p-4">
+                <p className="text-slate-200 leading-relaxed">
+                  The World Economic Forum projects{" "}
+                  <strong className="text-white">170 million new jobs by 2030</strong>, with AI and
+                  data roles among the fastest-growing. Knowing where you stand is the first step to
+                  claiming one.
+                </p>
+              </div>
+            </header>
+
+            {/* Interactive assessment */}
+            <ReadinessAssessment />
+
+            {/* FAQ */}
+            <BlogFaqAccordion items={FAQ} heading="Readiness Assessment FAQ" />
+          </div>
         </main>
+        <Footer />
       </div>
     </>
   );

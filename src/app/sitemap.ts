@@ -89,8 +89,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/pricing", lastModified: pageLastModified("pricing"), changeFrequency: "monthly", priority: 0.8 },
     // Free-tools hub (AIC-1214) — internal-link surface over the tool pages below.
     { path: "/tools", lastModified: pageLastModified("tools"), changeFrequency: "monthly", priority: 0.8 },
-    // Interactive readiness assessment (AIC-1233) — discovery/GEO tool.
-    { path: "/readiness", lastModified: pageLastModified("readiness"), changeFrequency: "monthly", priority: 0.7 },
+    // Readiness assessment (AIC-1233) — free discovery tool for the "am I ready?" intent cluster.
+    { path: "/readiness", lastModified: pageLastModified("readiness"), changeFrequency: "monthly", priority: 0.8 },
+    // Citable original-data page (AIC-1233) — GEO/citation lever for AI answer engines.
+    {
+      path: "/research/ai-career-pivots-2026",
+      lastModified: pageLastModified("research/ai-career-pivots-2026"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     // /success-stories permanently deleted (AIC-888): the page + its fabricated
     // outcome data files were removed. Do not re-add this path without real,
     // consented outcome data. Rebuild deferred (see AIC-866).

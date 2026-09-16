@@ -515,6 +515,80 @@ export function trackAssessmentShared(props: {
   capture("assessment_shared", props);
 }
 
+// ── AI Career Pivot Readiness Assessment (AIC-1233 / design AIC-1200) ─────────
+// Free top-of-funnel discovery tool at /readiness. Distinct from the /quiz
+// role-matcher (AIC-833): this measures "am I ready to pivot?" across four
+// dimensions. No email gate / login / upsell on the result — pure discovery, so
+// these events measure reach + the share loop, NOT funnel conversion.
+export function trackReadinessStarted(props: { source: string }) {
+  capture("readiness_assessment_started", props);
+}
+
+export function trackReadinessStep(props: {
+  step: number;
+  question_id: string;
+  answer_value: string;
+}) {
+  capture("readiness_assessment_step", props);
+}
+
+export function trackReadinessCompleted(props: {
+  score: number;
+  tier: string;
+  dimensions: Record<string, number>;
+}) {
+  capture("readiness_assessment_completed", props);
+}
+
+export function trackReadinessShared(props: {
+  channel: "linkedin" | "x" | "copy";
+  score: number;
+  tier: string;
+}) {
+  capture("readiness_result_shared", props);
+}
+
+export function trackReadinessCtaClicked(props: {
+  cta_target: "free" | "quiz";
+  score: number;
+}) {
+  capture("readiness_cta_clicked", props);
+}
+
+// ── "State of AI Career Pivots 2026" data page (AIC-1233 / design AIC-1234) ───
+// Citable, quotable GEO data page. These events measure reach + the citation /
+// share loop (copy-quote and per-stat shares seed AI-citation + social links).
+// Free discovery only — no funnel/conversion semantics here.
+export function trackDataPageViewed(props: {
+  page_url: string;
+  section_count: number;
+  stat_count: number;
+}) {
+  capture("data_page_viewed", props);
+}
+
+export function trackDataStatCopied(props: {
+  stat_anchor: string;
+  stat_value: string;
+  stat_label: string;
+  section?: string;
+}) {
+  capture("data_stat_copied", props);
+}
+
+export function trackDataStatShared(props: {
+  stat_anchor: string;
+  stat_value: string;
+  channel: "linkedin" | "x" | "copy_link";
+  section?: string;
+}) {
+  capture("data_stat_shared", props);
+}
+
+export function trackDataCitationCopied(props: { citation_text: string }) {
+  capture("data_citation_copied", props);
+}
+
 // Live JD-targeted ATS match scoring (resume tailor) — AIC-735
 export function trackLiveMatchScoreUpdated(props: {
   score: number;
@@ -663,28 +737,4 @@ export function trackConsentSubmitted(props: {
   choice: "named" | "anonymous" | "declined";
 }) {
   capture("consent_submitted", { ...props, opted_in: props.choice !== "declined" });
-}
-
-// AI Career Pivot Readiness assessment (AIC-1233 / AIC-1200). A zero-signup
-// discovery + GEO tool: 5 questions → a 0–100 readiness score and a shareable
-// result card. Funnel is frozen (AIC-1124) so there is NO email gate or upsell
-// here — these three events are the only success signal (starts → completions →
-// shares) the CMO reads to judge the discovery lever.
-export function trackReadinessStarted(props: { source: string }) {
-  capture("readiness_started", props);
-}
-
-export function trackReadinessCompleted(props: {
-  score: number;
-  tier: string;
-}) {
-  capture("readiness_completed", props);
-}
-
-export function trackReadinessShared(props: {
-  score: number;
-  tier: string;
-  method: "web_share" | "copy_link";
-}) {
-  capture("readiness_shared", props);
 }

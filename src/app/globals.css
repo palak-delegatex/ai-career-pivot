@@ -247,6 +247,21 @@ html {
   background-size: 32px 32px;
 }
 
+/* Deep-link highlight pulse for #stat-* anchors on the data page (AIC-1234 §2.5). */
+@keyframes stat-highlight {
+  0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.3); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+.stat-highlight {
+  animation: stat-highlight 1s ease-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-highlight {
+    animation: none;
+  }
+}
+
 @theme inline {
   --font-heading: var(--font-serif);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
