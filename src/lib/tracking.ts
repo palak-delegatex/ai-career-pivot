@@ -664,3 +664,27 @@ export function trackConsentSubmitted(props: {
 }) {
   capture("consent_submitted", { ...props, opted_in: props.choice !== "declined" });
 }
+
+// AI Career Pivot Readiness assessment (AIC-1233 / AIC-1200). A zero-signup
+// discovery + GEO tool: 5 questions → a 0–100 readiness score and a shareable
+// result card. Funnel is frozen (AIC-1124) so there is NO email gate or upsell
+// here — these three events are the only success signal (starts → completions →
+// shares) the CMO reads to judge the discovery lever.
+export function trackReadinessStarted(props: { source: string }) {
+  capture("readiness_started", props);
+}
+
+export function trackReadinessCompleted(props: {
+  score: number;
+  tier: string;
+}) {
+  capture("readiness_completed", props);
+}
+
+export function trackReadinessShared(props: {
+  score: number;
+  tier: string;
+  method: "web_share" | "copy_link";
+}) {
+  capture("readiness_shared", props);
+}
