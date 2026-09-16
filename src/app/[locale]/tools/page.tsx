@@ -108,6 +108,12 @@ const CATEGORIES: ToolCategory[] = [
           "Answer 4 quick questions and see which AI-adjacent role fits your background — no resume, no signup.",
       },
       {
+        name: "AI Pivot Readiness Check",
+        href: "/readiness",
+        description:
+          "Answer 5 questions and get an honest 0–100 score for how ready you are to pivot into AI — plus your next three moves.",
+      },
+      {
         name: "Career Values Assessment",
         href: "/assessment",
         description:
