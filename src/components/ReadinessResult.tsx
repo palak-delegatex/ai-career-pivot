@@ -6,7 +6,7 @@
 // scores, which is what the `?r=` share token and OG image both encode. Free
 // discovery only — NO email gate / login / paywall here (funnel frozen, AIC-1124).
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   type Dimensions,
@@ -62,14 +62,9 @@ function ReadinessRing({ score, size = 128 }: { score: number; size?: number }) 
   const circumference = 2 * Math.PI * radius;
   const [animated, setAnimated] = useState(false);
 
+  // Flip to the final value on the next frame. Reduced-motion visitors get the
+  // same end state without animation via `motion-reduce:transition-none` below.
   useEffect(() => {
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setAnimated(true);
-      return;
-    }
     const id = requestAnimationFrame(() => setAnimated(true));
     return () => cancelAnimationFrame(id);
   }, []);
@@ -123,7 +118,6 @@ export default function ReadinessResult({
   const insights = insightsFor(dimensions);
   const token = encodeResult(dimensions);
   const [copied, setCopied] = useState(false);
-  const firedShare = useRef(false);
 
   function shareLink(channel: "linkedin" | "x" | "copy"): string {
     if (typeof window === "undefined") return "";
