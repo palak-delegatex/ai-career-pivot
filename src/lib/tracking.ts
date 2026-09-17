@@ -555,6 +555,39 @@ export function trackReadinessCtaClicked(props: {
   capture("readiness_cta_clicked", props);
 }
 
+// ── AI Career Pivot Matcher (AIC-1240, competitive cycle c21) ────────────────
+// Free discovery tool at /pivot-matcher — visitor picks their field + strengths
+// and gets a ranked list of AI-adjacent target roles. Like /readiness, this is
+// pure top-of-funnel discovery (no email gate / paywall on the result), so these
+// events measure reach + which target roles resonate, NOT funnel conversion.
+export function trackPivotMatcherStarted(props: { source: string }) {
+  capture("pivot_matcher_started", props);
+}
+
+export function trackPivotMatcherCompleted(props: {
+  field: string;
+  skills: string[];
+  top_role: string;
+  top_fit: number;
+}) {
+  capture("pivot_matcher_completed", props);
+}
+
+export function trackPivotMatcherRoleExpanded(props: {
+  role_id: string;
+  rank: number;
+  fit: number;
+}) {
+  capture("pivot_matcher_role_expanded", props);
+}
+
+export function trackPivotMatcherCtaClicked(props: {
+  cta_target: "free" | "quiz" | "readiness";
+  top_role: string;
+}) {
+  capture("pivot_matcher_cta_clicked", props);
+}
+
 // ── "State of AI Career Pivots 2026" data page (AIC-1233 / design AIC-1234) ───
 // Citable, quotable GEO data page. These events measure reach + the citation /
 // share loop (copy-quote and per-stat shares seed AI-citation + social links).

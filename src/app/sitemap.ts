@@ -91,6 +91,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/tools", lastModified: pageLastModified("tools"), changeFrequency: "monthly", priority: 0.8 },
     // Readiness assessment (AIC-1233) — free discovery tool for the "am I ready?" intent cluster.
     { path: "/readiness", lastModified: pageLastModified("readiness"), changeFrequency: "monthly", priority: 0.8 },
+    // Pivot matcher (AIC-1240) — free discovery tool for the "which AI role fits me?" intent cluster.
+    { path: "/pivot-matcher", lastModified: pageLastModified("pivot-matcher"), changeFrequency: "monthly", priority: 0.8 },
     // Citable original-data page (AIC-1233) — GEO/citation lever for AI answer engines.
     {
       path: "/research/ai-career-pivots-2026",

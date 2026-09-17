@@ -114,6 +114,12 @@ const CATEGORIES: ToolCategory[] = [
           "Answer 5 questions and get an honest 0–100 score for how ready you are to pivot into AI — plus your next three moves.",
       },
       {
+        name: "AI Career Pivot Matcher",
+        href: "/pivot-matcher",
+        description:
+          "Pick your field and strengths and get AI-adjacent roles ranked by fit — with demand, transition speed, and why each one matches.",
+      },
+      {
         name: "Career Values Assessment",
         href: "/assessment",
         description:
