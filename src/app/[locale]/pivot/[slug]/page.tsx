@@ -185,21 +185,61 @@ export default async function PivotPage({
               ))}
             </article>
 
-            <div className="my-12 p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40 text-center">
-              <p className="text-white font-semibold text-lg mb-2">
+            {/* AIC-1208: personalized trust-loaded on-ramp into /readiness.
+                Replaces the generic assessment CTA on every /pivot page.
+                Signals are honest capability/sourcing claims only (AIC-860/862)
+                — no fabricated outcome numbers. */}
+            <div className="my-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40">
+              <p className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-2">
                 Is this pivot realistic for you?
               </p>
-              <p className="text-slate-400 text-sm mb-5">
-                Run your actual background through it. AICareerPivot maps your
-                transferable skills to {pivot.toRole}, flags the real gaps, and
-                builds a week-by-week plan.
+              <p className="text-white font-bold text-xl sm:text-2xl leading-snug mb-3">
+                See how ready you are to go from {pivot.fromRole} to{" "}
+                {pivot.toRole}.
               </p>
+              <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+                The free readiness check runs your actual {pivot.fromRole}{" "}
+                background against the {pivot.toRole} role — it maps your
+                transferable skills, flags the real gaps, and sketches a
+                week-by-week plan. No account to start.
+              </p>
+
+              <ul className="grid gap-2 mb-6">
+                {[
+                  `A readiness score for the ${pivot.toRole} pivot, not a generic quiz`,
+                  "The specific skill gaps to close first",
+                  "A realistic timeline and starting steps",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-sm text-slate-300"
+                  >
+                    <span className="text-teal-400 mt-0.5 shrink-0" aria-hidden>
+                      ✓
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
               <Link
-                href="/assessment"
+                href="/readiness"
                 className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all"
               >
-                Start your free assessment →
+                Check your readiness — free →
               </Link>
+
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500">
+                <span>No account to start</span>
+                <span aria-hidden className="text-slate-700">
+                  ·
+                </span>
+                <span>Grounded in U.S. Bureau of Labor Statistics data</span>
+                <span aria-hidden className="text-slate-700">
+                  ·
+                </span>
+                <span>Built on Claude</span>
+              </div>
             </div>
 
             {pivot.faq.length > 0 && (

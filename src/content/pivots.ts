@@ -1759,6 +1759,846 @@ export const pivots: PivotPage[] = [
       },
     ],
   },
+  {
+    slug: "real-estate-agent-to-data-analyst",
+    fromSlug: "real-estate-agent",
+    toSlug: "data-analyst",
+    fromRole: "Real Estate Agent",
+    toRole: "Data Analyst",
+    headline: "From Real Estate Agent to Data Analyst: Turning Market Instinct Into Analytics",
+    description:
+      "Real estate agents already read markets, model comps, and advise clients on numbers. Here's how to convert that market fluency into a data-analyst résumé built on SQL, dashboards, and clean storytelling.",
+    keywords: [
+      "real estate agent to data analyst",
+      "career change from real estate to data",
+      "real estate agent career change",
+      "data analyst career pivot",
+    ],
+    tldr: [
+      "Comps, pricing, and market trends are analysis — you already do the reasoning; the gap is tooling (SQL, spreadsheets at scale, a BI tool).",
+      "Your edge is the business-context layer most junior analysts lack: you can explain why a number matters to a decision.",
+      "Target real-estate-tech, proptech, and brokerage analytics teams first — your domain is a hiring differentiator.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why agents make credible analysts",
+        body: "Every listing you priced was a small analysis: pull comparable sales, adjust for differences, and defend a number to a skeptical client. That is exactly what a data analyst does — gather evidence, normalize it, and turn it into a recommendation someone will act on. The reasoning muscle is already built.",
+      },
+      {
+        heading: "What you need to add",
+        body: "The missing pieces are tools, not thinking: SQL to pull data yourself, spreadsheet modeling beyond a few hundred rows, and one BI tool (Looker, Power BI, or Tableau) to build a dashboard. Learn to frame a question, query for it, and show the answer visually.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Don't aim for a senior analytics role on day one. Build two portfolio projects on public housing-market data, then target proptech, mortgage, or brokerage-ops analyst roles where your real-estate fluency is rare and valuable. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Market and comparables analysis",
+      "Pricing and negotiation logic",
+      "Translating numbers for clients",
+      "Spreadsheet modeling",
+      "Decision-oriented storytelling",
+    ],
+    timeline: "6–12 months",
+    faq: [
+      {
+        question: "Can a real estate agent become a data analyst without a degree?",
+        answer:
+          "Yes. Analytics hiring is portfolio-first. Two or three clean projects that query real data, build a dashboard, and explain a decision matter more than a credential. Your market-analysis background gives those projects instant credibility.",
+      },
+      {
+        question: "What should I learn first?",
+        answer:
+          "SQL, then a BI tool (Power BI, Tableau, or Looker), then spreadsheet modeling at scale. Analyze a public real-estate dataset end to end so you have a concrete 'I found X, recommended Y' story.",
+      },
+      {
+        question: "Which companies should I target?",
+        answer:
+          "Proptech, mortgage lenders, large brokerages, and real-estate marketplaces. They need analysts who understand the business, so your domain experience shortens the ramp considerably.",
+      },
+    ],
+  },
+  {
+    slug: "chef-to-operations-manager",
+    fromSlug: "chef",
+    toSlug: "operations-manager",
+    fromRole: "Chef",
+    toRole: "Operations Manager",
+    headline: "From Chef to Operations Manager: Running Service at Scale",
+    description:
+      "A busy kitchen is operations under pressure — throughput, cost control, and a team hitting a hard deadline every night. Here's how to reframe line-management experience into an operations-manager résumé.",
+    keywords: [
+      "chef to operations manager",
+      "career change from culinary to operations",
+      "chef career change",
+      "operations manager career pivot",
+    ],
+    tldr: [
+      "Running a kitchen is running operations: scheduling, inventory, cost-of-goods, quality control, and a team under a nightly deadline.",
+      "The gap is vocabulary and tools (SOPs, KPIs, a spreadsheet or ops dashboard), not the underlying discipline.",
+      "Target hospitality, food-service, logistics, and warehouse operations first — your experience reads as directly relevant.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why chefs make strong ops managers",
+        body: "A head chef manages inventory and spoilage, schedules a team, controls food cost against a margin, and keeps quality consistent while service spikes. That is operations management with the stakes turned up. You already own throughput, cost control, and leading under pressure.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn to name what you already do: standard operating procedures, KPIs (throughput, cost per unit, error rate), and basic ops tooling in spreadsheets or a dashboard. Reframe 'ran a kitchen' as 'managed a P&L line, a team, and a supply chain under deadline.'",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target operations roles in hospitality, food production, fulfillment, or retail — sectors that value your floor experience. Start as an operations coordinator or shift/assistant manager if needed, then move up fast on your track record. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Team scheduling and leadership",
+      "Inventory and cost control",
+      "Throughput under deadline",
+      "Quality and consistency control",
+      "Vendor and supply coordination",
+    ],
+    timeline: "3–9 months",
+    faq: [
+      {
+        question: "Can a chef move into operations management?",
+        answer:
+          "Yes, and often faster than expected. Kitchen leadership is operations leadership — scheduling, inventory, cost control, and quality under pressure. The main task is translating that experience into business operations language on your résumé.",
+      },
+      {
+        question: "What should I learn to make the switch?",
+        answer:
+          "Standard operating procedures, core operations KPIs, and basic spreadsheet or ops-dashboard skills. A short operations or supply-chain fundamentals course helps you adopt the vocabulary interviewers expect.",
+      },
+      {
+        question: "Do I need to start over at the bottom?",
+        answer:
+          "Usually not entirely. Many chefs move into operations coordinator or assistant operations manager roles and progress quickly because they already lead teams and own cost and quality outcomes.",
+      },
+    ],
+  },
+  {
+    slug: "flight-attendant-to-customer-success-manager",
+    fromSlug: "flight-attendant",
+    toSlug: "customer-success-manager",
+    fromRole: "Flight Attendant",
+    toRole: "Customer Success Manager",
+    headline: "From Flight Attendant to Customer Success Manager: Service Under Pressure, Repackaged",
+    description:
+      "Flight attendants manage demanding customers, de-escalate fast, and keep people calm in high-stakes moments. Here's how to turn frontline service mastery into a customer-success-manager résumé.",
+    keywords: [
+      "flight attendant to customer success",
+      "career change from flight attendant",
+      "flight attendant career change",
+      "customer success manager career pivot",
+    ],
+    tldr: [
+      "De-escalation, calm under pressure, and owning a customer's experience end to end are the core of customer success — you already do all three.",
+      "The gap is SaaS vocabulary (onboarding, retention, churn, QBRs) and a CRM, not the human skills.",
+      "Target CSM roles at SaaS, travel-tech, and hospitality-tech companies where your service background stands out.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why flight attendants make strong CSMs",
+        body: "Your job is to keep people satisfied in a confined, high-stress environment, read the room instantly, and resolve problems before they escalate. Customer success is the same loop at a desk: anticipate needs, defuse friction, and make sure the customer gets value and stays. The emotional-intelligence core transfers directly.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn the SaaS playbook: onboarding, adoption, renewals, churn, and the quarterly business review. Get comfortable in a CRM (HubSpot or Salesforce) and learn to read a simple health score. These are quick to pick up on top of your service instincts.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target customer success or onboarding roles at SaaS, travel-tech, or hospitality-tech firms first — your domain and service reputation are differentiators. A support or onboarding-specialist role is a fast stepping-stone into full CSM. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "De-escalation and conflict resolution",
+      "Customer empathy under pressure",
+      "Clear communication to diverse audiences",
+      "Composure in high-stakes moments",
+      "Service recovery and follow-through",
+    ],
+    timeline: "4–9 months",
+    faq: [
+      {
+        question: "Can a flight attendant become a customer success manager?",
+        answer:
+          "Yes. The frontline skills — de-escalation, empathy, and owning a customer's experience — are exactly what customer success rewards. The learning curve is the SaaS vocabulary and a CRM, both of which are fast to acquire.",
+      },
+      {
+        question: "What should I learn to pivot into customer success?",
+        answer:
+          "SaaS fundamentals (onboarding, retention, churn, QBRs), one CRM like HubSpot or Salesforce, and how a customer health score works. A short customer-success course plus one informational interview usually covers the gap.",
+      },
+      {
+        question: "Where should I apply first?",
+        answer:
+          "SaaS, travel-tech, and hospitality-tech companies, ideally starting in an onboarding or support role if a direct CSM title is out of reach. Your service record makes you a credible candidate quickly.",
+      },
+    ],
+  },
+  {
+    slug: "paralegal-to-legal-operations-manager",
+    fromSlug: "paralegal",
+    toSlug: "legal-operations-manager",
+    fromRole: "Paralegal",
+    toRole: "Legal Operations Manager",
+    headline: "From Paralegal to Legal Operations Manager: Running the Legal Function as a Business",
+    description:
+      "Paralegals already run matters, manage vendors, and keep process tight. Here's how to step up into legal operations — the role that manages budgets, tooling, and workflow for the whole legal team.",
+    keywords: [
+      "paralegal to legal operations",
+      "legal ops career path",
+      "paralegal career change",
+      "legal operations manager career pivot",
+    ],
+    tldr: [
+      "Legal ops is process, vendor, budget, and tooling management for the legal team — much of which paralegals already touch day to day.",
+      "The gap is the business layer: managing spend, selecting and owning legal tech, and reporting metrics to leadership.",
+      "Target in-house legal departments; an internal move from paralegal to legal ops is one of the most common paths.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why paralegals move naturally into legal ops",
+        body: "You already coordinate matters, manage outside counsel and vendors, maintain document systems, and keep deadlines airtight. Legal operations formalizes that work into a function: the person who makes the legal team run efficiently, on budget, with the right tools. You have been doing the groundwork already.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Build the business layer: matter and spend management, e-billing and outside-counsel budgeting, legal-tech selection and administration (CLM, e-billing, matter management), and reporting metrics to a GC. Learn to speak in cost, cycle time, and efficiency.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "The highest-probability route is internal: volunteer to own a tooling rollout or a vendor-management project in your current legal department, then move into a legal ops analyst or coordinator role and up. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Matter and case management",
+      "Vendor and outside-counsel coordination",
+      "Process and document systems",
+      "Deadline and workflow discipline",
+      "Legal technology familiarity",
+    ],
+    timeline: "6–12 months",
+    faq: [
+      {
+        question: "Can a paralegal become a legal operations manager?",
+        answer:
+          "Yes — it is one of the most common legal-ops entry paths. Paralegals already handle process, vendors, and tooling; legal ops adds budget ownership, metrics, and formal technology administration on top.",
+      },
+      {
+        question: "What skills should I build for legal ops?",
+        answer:
+          "Legal spend and e-billing management, legal-tech administration (CLM, matter management), and reporting efficiency metrics to leadership. A legal-operations certificate (e.g., via CLOC resources) signals intent and builds vocabulary.",
+      },
+      {
+        question: "Is an internal move the fastest route?",
+        answer:
+          "Typically yes. Owning a tooling or vendor-management project in your current legal department is the clearest on-ramp, because you already understand the team's workflows and pain points.",
+      },
+    ],
+  },
+  {
+    slug: "pharmacy-technician-to-clinical-data-analyst",
+    fromSlug: "pharmacy-technician",
+    toSlug: "clinical-data-analyst",
+    fromRole: "Pharmacy Technician",
+    toRole: "Clinical Data Analyst",
+    headline: "From Pharmacy Technician to Clinical Data Analyst: Clinical Fluency Meets Data",
+    description:
+      "Pharmacy technicians handle structured clinical data, strict accuracy, and healthcare systems daily. Here's how to convert that into a clinical-data-analyst role built on SQL and healthcare analytics.",
+    keywords: [
+      "pharmacy technician to data analyst",
+      "clinical data analyst career path",
+      "pharmacy tech career change",
+      "clinical data analyst career pivot",
+    ],
+    tldr: [
+      "You already work with structured clinical data, coding systems, and zero-error accuracy standards — rare and valuable context for a clinical analyst.",
+      "The gap is analysis tooling (SQL, Excel at scale, a BI tool) and healthcare-data standards, not the clinical literacy.",
+      "Target health systems, payers, pharmacy-benefit managers, and health-tech companies where your domain is an asset.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why pharmacy techs make strong clinical analysts",
+        body: "You handle medication data, insurance and claims workflows, and clinical coding under accuracy standards where mistakes have real consequences. Clinical data analysts need exactly that: people who understand healthcare data in context and treat correctness as non-negotiable. Your clinical literacy is the hard part to teach.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn SQL, spreadsheet analysis at scale, and one BI tool, plus healthcare-data fundamentals (claims structure, ICD/CPT coding, HIPAA-aware handling). Build a project on a public health dataset to show you can turn clinical data into an answer.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target reporting or data-coordinator roles at a hospital system, payer, or PBM first — your pharmacy background is a direct advantage — then grow into a full clinical-data-analyst title. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Clinical and medication data literacy",
+      "Accuracy and compliance discipline",
+      "Claims and insurance workflows",
+      "Healthcare coding familiarity",
+      "Attention to detail at scale",
+    ],
+    timeline: "6–12 months",
+    faq: [
+      {
+        question: "Can a pharmacy technician become a clinical data analyst?",
+        answer:
+          "Yes. Clinical analysts need healthcare-data literacy and rigorous accuracy, both of which pharmacy techs have in depth. The pivot is mostly adding analysis tools — SQL, spreadsheets at scale, and a BI tool — on top of existing domain knowledge.",
+      },
+      {
+        question: "What should I learn first?",
+        answer:
+          "SQL and spreadsheet analysis, then healthcare-data fundamentals like claims structure and ICD/CPT coding. A portfolio project on a public health dataset demonstrates the full analyze-and-explain loop.",
+      },
+      {
+        question: "Which employers should I target?",
+        answer:
+          "Hospital systems, insurers, pharmacy-benefit managers, and health-tech firms. They value analysts who already understand clinical and pharmacy workflows, so your background shortens the hiring ramp.",
+      },
+    ],
+  },
+  {
+    slug: "teacher-to-instructional-designer",
+    fromSlug: "teacher",
+    toSlug: "instructional-designer",
+    fromRole: "Teacher",
+    toRole: "Instructional Designer",
+    headline: "From Teacher to Instructional Designer: Designing Learning for the Corporate World",
+    description:
+      "Instructional design is teaching, systematized for scale. Here's how teachers convert lesson planning and assessment into an ID portfolio built on learning frameworks and e-learning tools.",
+    keywords: [
+      "teacher to instructional designer",
+      "career change from teaching to instructional design",
+      "teacher career change",
+      "instructional designer career pivot",
+    ],
+    tldr: [
+      "Lesson planning, assessment design, and differentiating for learners is instructional design — you already own the craft.",
+      "The gap is corporate ID tooling and frameworks (ADDIE, Articulate Storyline / Rise, LMS basics), not pedagogy.",
+      "Target corporate L&D, edtech, and training teams; a portfolio of two e-learning modules opens most doors.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why teachers make strong instructional designers",
+        body: "You design learning objectives, build toward them, assess whether they landed, and adjust — every single day. Instructional design is that loop applied to corporate training: define the outcome, design the experience, and measure it. Your pedagogy is the expensive-to-acquire part.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn the corporate frameworks and tools: ADDIE or SAM as a design model, an authoring tool like Articulate Storyline or Rise, and the basics of how an LMS delivers and tracks training. Rebuild one of your best lessons as a polished e-learning module.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Build a two-piece portfolio (one branching scenario, one standard module), then target corporate L&D, edtech, or training-vendor roles. A learning-experience-designer or training-specialist title is a common entry point. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Learning-objective design",
+      "Assessment and feedback loops",
+      "Explaining complex ideas simply",
+      "Differentiating for diverse learners",
+      "Curriculum and sequence design",
+    ],
+    timeline: "4–9 months",
+    faq: [
+      {
+        question: "Can a teacher become an instructional designer?",
+        answer:
+          "Yes — it is one of the most natural teacher pivots. The pedagogy transfers directly; the new skills are corporate frameworks (ADDIE) and authoring tools (Articulate), which a focused portfolio demonstrates.",
+      },
+      {
+        question: "What tools do I need to learn?",
+        answer:
+          "An authoring tool such as Articulate Storyline or Rise, a design model like ADDIE or SAM, and basic familiarity with how an LMS delivers training. Rebuilding one strong lesson as an e-learning module is the fastest proof.",
+      },
+      {
+        question: "What should my portfolio include?",
+        answer:
+          "Two polished samples — ideally one branching-scenario module and one standard course — with clear learning objectives and a short note on your design decisions. That outweighs any certificate in hiring.",
+      },
+    ],
+  },
+  {
+    slug: "recruiter-to-people-operations-manager",
+    fromSlug: "recruiter",
+    toSlug: "people-operations-manager",
+    fromRole: "Recruiter",
+    toRole: "People Operations Manager",
+    headline: "From Recruiter to People Operations Manager: Owning the Full Employee Lifecycle",
+    description:
+      "Recruiters already run the front of the employee lifecycle. Here's how to broaden into people operations — the role that owns onboarding, systems, policy, and the whole HR workflow.",
+    keywords: [
+      "recruiter to people operations",
+      "recruiter to HR career change",
+      "recruiter career change",
+      "people operations manager career pivot",
+    ],
+    tldr: [
+      "You already own candidate experience, hiring workflows, and HR systems like an ATS — people ops extends that to the full lifecycle.",
+      "The gap is the operational breadth: onboarding, HRIS, policy, compliance basics, and people metrics.",
+      "Target growing startups and mid-size companies where recruiters commonly expand into people-ops generalist roles.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why recruiters move naturally into people ops",
+        body: "Recruiting is operations: you run a pipeline, manage a system (the ATS), coordinate stakeholders, and own a candidate's experience end to end. People operations applies the same operational mindset across onboarding, systems, policy, and retention. You already think in workflows and candidate — soon employee — experience.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Broaden from hiring to the full lifecycle: HRIS administration, onboarding design, basic employment-compliance literacy, and people metrics (time-to-productivity, retention, engagement). Learn how the systems you touch connect to payroll, benefits, and performance.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Startups and scaling mid-size companies are the easiest bridge — they often need a recruiter to grow into a people-ops generalist. Volunteer for onboarding or HRIS projects now to build the broader track record. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Candidate and employee experience",
+      "HR systems and ATS administration",
+      "Stakeholder coordination",
+      "Process and workflow design",
+      "Confidential-information handling",
+    ],
+    timeline: "4–9 months",
+    faq: [
+      {
+        question: "Can a recruiter move into people operations?",
+        answer:
+          "Yes, and it is a well-worn path, especially at startups. Recruiting already covers systems, workflows, and candidate experience; people ops adds onboarding, HRIS, policy, and metrics across the full employee lifecycle.",
+      },
+      {
+        question: "What should I learn to broaden into people ops?",
+        answer:
+          "HRIS administration, onboarding design, core employment-compliance basics, and people metrics. A people-operations or HR-fundamentals course helps, as does owning one onboarding or systems project in your current role.",
+      },
+      {
+        question: "Where is the easiest entry point?",
+        answer:
+          "Growing startups and mid-size companies, which frequently ask a strong recruiter to expand into a people-ops generalist role before hiring separate specialists.",
+      },
+    ],
+  },
+  {
+    slug: "military-veteran-to-project-manager",
+    fromSlug: "military-veteran",
+    toSlug: "project-manager",
+    fromRole: "Military Veteran",
+    toRole: "Project Manager",
+    headline: "From Military Veteran to Project Manager: Mission Planning, Translated to Business",
+    description:
+      "Military experience is project management under the highest stakes — planning, logistics, and leading teams to an objective. Here's how to translate service into a civilian PM résumé.",
+    keywords: [
+      "military to project manager",
+      "veteran career change",
+      "military transition to project management",
+      "project manager career pivot",
+    ],
+    tldr: [
+      "Mission planning, logistics, and leading teams to a defined objective on a timeline is project management — you have done it under pressure most PMs never face.",
+      "The gap is civilian vocabulary and tools (PM frameworks, Gantt/Agile, business terms), not the discipline.",
+      "Translate your experience into civilian language and target PMO, operations, and construction/logistics-heavy industries first.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why veterans make strong project managers",
+        body: "You planned operations against clear objectives, coordinated people and resources under constraints, managed risk in real time, and led teams through ambiguity. That is the core of project management. The leadership and planning rigor from service is exactly what PM roles are trying to hire for.",
+      },
+      {
+        heading: "What you need to add",
+        body: "The main task is translation: map your experience to civilian PM language (scope, schedule, budget, stakeholders, risk) and learn common tools and frameworks (Agile/Scrum, a tool like Jira or Asana, and optionally a CAPM/PMP path). Rewrite accomplishments in business terms.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target PMO roles, operations, and industries that value your background (defense contractors, logistics, construction, manufacturing). A coordinator or associate PM title plus a CAPM can accelerate the transition. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Mission and operations planning",
+      "Logistics and resource coordination",
+      "Team leadership under pressure",
+      "Risk management",
+      "Execution against deadlines",
+    ],
+    timeline: "3–9 months",
+    faq: [
+      {
+        question: "Can a military veteran become a project manager?",
+        answer:
+          "Yes, and the fit is strong. Mission planning, logistics, and leading teams to objectives map almost directly to project management. The key step is translating military accomplishments into civilian business language.",
+      },
+      {
+        question: "Do I need a PMP certification?",
+        answer:
+          "Not to start. A CAPM or an entry PM/coordinator role is enough initially; a PMP helps later once you have logged civilian project hours. Your leadership and planning record often matters more than the certificate early on.",
+      },
+      {
+        question: "Which industries are most veteran-friendly for PM roles?",
+        answer:
+          "Defense contractors, logistics, construction, manufacturing, and operations-heavy companies tend to value military experience directly and offer the smoothest on-ramp.",
+      },
+    ],
+  },
+  {
+    slug: "truck-driver-to-logistics-coordinator",
+    fromSlug: "truck-driver",
+    toSlug: "logistics-coordinator",
+    fromRole: "Truck Driver",
+    toRole: "Logistics Coordinator",
+    headline: "From Truck Driver to Logistics Coordinator: From the Road to the Control Tower",
+    description:
+      "Truck drivers know logistics from the inside — routes, timing, and where supply chains break. Here's how to move off the road into a logistics-coordinator role that plans and dispatches it.",
+    keywords: [
+      "truck driver to logistics coordinator",
+      "truck driver career change",
+      "driver to dispatch career path",
+      "logistics coordinator career pivot",
+    ],
+    tldr: [
+      "You already understand routing, delivery windows, compliance, and the real-world failure points of a supply chain.",
+      "The gap is the office tooling: TMS software, spreadsheets, and the coordination/communication side of dispatch and planning.",
+      "Target carriers, 3PLs, and shippers — your road experience is a direct credibility advantage over outside hires.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why drivers make strong logistics coordinators",
+        body: "You have lived the logistics network: route efficiency, delivery windows, hours-of-service rules, and exactly where plans fall apart. A logistics coordinator plans and troubleshoots that network from the office. Few office hires understand the operational reality the way a former driver does.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn the office side: a transportation management system (TMS), solid spreadsheet skills, and the communication cadence of coordinating drivers, warehouses, and customers. Get comfortable turning shipment data into decisions and status updates.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target dispatch, coordinator, or planning roles at carriers, third-party logistics providers, and shippers. Many start in dispatch and grow into coordination and planning as they prove the office skills. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Route and delivery planning",
+      "Transportation compliance knowledge",
+      "Real-world supply-chain insight",
+      "Problem-solving under time pressure",
+      "Driver and customer communication",
+    ],
+    timeline: "3–6 months",
+    faq: [
+      {
+        question: "Can a truck driver become a logistics coordinator?",
+        answer:
+          "Yes. Drivers understand routing, timing, and failure points better than most office hires. The move requires learning TMS software, spreadsheets, and the coordination workflow, all of which are quick to build on existing field knowledge.",
+      },
+      {
+        question: "What should I learn to move off the road?",
+        answer:
+          "A transportation management system, strong spreadsheet skills, and the communication rhythm of dispatch and coordination. A short logistics or supply-chain fundamentals course helps formalize the vocabulary.",
+      },
+      {
+        question: "Where should I apply?",
+        answer:
+          "Carriers, third-party logistics (3PL) providers, and large shippers. Starting in dispatch is a common and fast route into full coordinator and planning roles.",
+      },
+    ],
+  },
+  {
+    slug: "barista-to-sales-development-representative",
+    fromSlug: "barista",
+    toSlug: "sales-development-representative",
+    fromRole: "Barista",
+    toRole: "Sales Development Representative",
+    headline: "From Barista to Sales Development Representative: Turning People Skills Into Pipeline",
+    description:
+      "High-volume service builds the exact muscles an SDR needs — fast rapport, resilience, and consistency under pressure. Here's how to break into tech sales from behind the counter.",
+    keywords: [
+      "barista to sales development representative",
+      "service job to tech sales",
+      "barista career change",
+      "SDR career pivot entry level",
+    ],
+    tldr: [
+      "Fast rapport, composure under a rush, and relentless consistency are the core SDR traits — you build them every shift.",
+      "The gap is sales process and tools (CRM, outreach cadences, discovery questions), all learnable in weeks.",
+      "SDR is one of the most accessible entry points into tech; target SaaS companies with structured onboarding programs.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why baristas make strong SDRs",
+        body: "A busy café teaches you to build instant rapport with strangers, stay upbeat through a relentless queue, and keep quality consistent when it's chaotic. SDR work is the same energy pointed at a pipeline: many short, high-quality interactions, resilience through rejection, and consistency day after day.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn the sales basics: a CRM (Salesforce or HubSpot), outreach cadences across email/phone/LinkedIn, and simple discovery questions to qualify interest. Practice a short pitch and objection handling — your service composure makes rejection far easier to absorb.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "SDR is one of the most open doors into tech because it hires for attitude and coachability. Target SaaS companies with structured SDR onboarding, lead with your service track record, and show you can handle volume and rejection. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Fast rapport with strangers",
+      "Resilience and consistency",
+      "Composure under high volume",
+      "Clear, friendly communication",
+      "Upselling and recommendations",
+    ],
+    timeline: "2–5 months",
+    faq: [
+      {
+        question: "Can a barista become a sales development representative?",
+        answer:
+          "Yes — SDR is one of the most accessible entry points into tech and hires heavily for attitude, resilience, and communication, all of which high-volume service builds. The sales process and CRM are learnable in a few weeks.",
+      },
+      {
+        question: "What should I learn to get an SDR job?",
+        answer:
+          "A CRM like Salesforce or HubSpot, outreach cadences across email, phone, and LinkedIn, and basic discovery and objection handling. Many companies teach this in onboarding, so coachability and energy matter most.",
+      },
+      {
+        question: "What companies should I target?",
+        answer:
+          "SaaS companies with structured SDR programs and clear ramp plans. They expect to train entry-level reps, so your service experience and work ethic can carry the application.",
+      },
+    ],
+  },
+  {
+    slug: "librarian-to-ux-researcher",
+    fromSlug: "librarian",
+    toSlug: "ux-researcher",
+    fromRole: "Librarian",
+    toRole: "UX Researcher",
+    headline: "From Librarian to UX Researcher: Information Science Meets Product",
+    description:
+      "Librarians are trained in information architecture, patron research, and synthesis — the backbone of UX research. Here's how to reframe library science into a UX research portfolio.",
+    keywords: [
+      "librarian to ux researcher",
+      "library science to UX",
+      "librarian career change",
+      "ux researcher career pivot",
+    ],
+    tldr: [
+      "Reference interviews, information architecture, and synthesizing sources are UX research skills under different names.",
+      "The gap is product-context methods (usability testing, interviews for product, research ops tools), not the research craft.",
+      "Target UX research or research-ops roles; a two-study portfolio translates library work into product language.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why librarians make strong UX researchers",
+        body: "A reference interview is a user interview: you draw out what someone actually needs versus what they first asked for. You already organize information for findability (information architecture) and synthesize many sources into a clear answer. UX research is that skill set applied to products and users.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn product-research methods: usability testing, product-focused interview protocols, basic survey design, and how to turn findings into design recommendations. Pick up a research-ops tool and learn to present insights to a product team.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Build a portfolio with two small studies (one usability test, one interview-based study), reframe your library experience in UX terms, and target UX research or research-operations roles — including in edtech and civic tech where your background resonates. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Reference / user interviewing",
+      "Information architecture",
+      "Research synthesis",
+      "Patron needs assessment",
+      "Clear documentation",
+    ],
+    timeline: "6–12 months",
+    faq: [
+      {
+        question: "Can a librarian become a UX researcher?",
+        answer:
+          "Yes. Library science overlaps heavily with UX research — reference interviews, information architecture, and synthesis all transfer. The pivot is learning product-focused methods like usability testing and presenting insights to design teams.",
+      },
+      {
+        question: "What should I learn first?",
+        answer:
+          "Usability testing, product interview protocols, and basic survey design, plus how to translate findings into design recommendations. A two-study portfolio demonstrates the full research loop in a product context.",
+      },
+      {
+        question: "Which employers are most receptive?",
+        answer:
+          "UX research and research-ops teams broadly, with edtech, civic tech, and knowledge-heavy products being especially natural fits for a library-science background.",
+      },
+    ],
+  },
+  {
+    slug: "accountant-to-financial-systems-analyst",
+    fromSlug: "accountant",
+    toSlug: "financial-systems-analyst",
+    fromRole: "Accountant",
+    toRole: "Financial Systems Analyst",
+    headline: "From Accountant to Financial Systems Analyst: Owning the Systems Behind the Numbers",
+    description:
+      "Accountants know financial processes and ERP systems from the user side. Here's how to move into financial-systems analysis — the role that configures, integrates, and optimizes those systems.",
+    keywords: [
+      "accountant to financial systems analyst",
+      "accounting to systems analyst",
+      "accountant career change",
+      "financial systems analyst career pivot",
+    ],
+    tldr: [
+      "You already know the accounting processes and ERP (NetSuite, SAP, Oracle) that financial-systems analysts configure and improve.",
+      "The gap is the technical/systems layer: configuration, data flows, integrations, and requirements gathering.",
+      "This is a high-leverage internal pivot — finance teams actively need people who speak both accounting and systems.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why accountants make strong systems analysts",
+        body: "You use the ERP every day, know where the month-end process breaks, and understand what the numbers must do. A financial-systems analyst sits between finance and IT to make those systems work better. Your accounting fluency is precisely what pure-IT analysts lack — you know what 'correct' looks like.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Build the systems layer: ERP configuration and administration, data flows and integrations, requirements gathering, and basic reporting/automation (SQL or system report builders). Learn to document a process and translate it into a system change.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "The fastest path is internal: volunteer for an ERP implementation, upgrade, or month-end automation project, then move into a financial-systems analyst role. Your dual fluency makes you unusually valuable. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Accounting process expertise",
+      "ERP system fluency",
+      "Month-end and reconciliation knowledge",
+      "Requirements and documentation",
+      "Controls and accuracy discipline",
+    ],
+    timeline: "6–12 months",
+    faq: [
+      {
+        question: "Can an accountant become a financial systems analyst?",
+        answer:
+          "Yes, and it is a high-leverage pivot. Accountants already understand the processes and ERP systems that systems analysts configure. Adding the technical/systems layer — configuration, integrations, requirements — completes the transition.",
+      },
+      {
+        question: "What should I learn to make the switch?",
+        answer:
+          "ERP configuration and administration (NetSuite, SAP, or Oracle), data flows and integrations, requirements gathering, and basic reporting or SQL. Joining an ERP implementation or upgrade project is the best hands-on classroom.",
+      },
+      {
+        question: "Is this a good internal move?",
+        answer:
+          "Often the best one. Finance teams value people who speak both accounting and systems, so volunteering for a systems or month-end automation project frequently leads directly into a systems-analyst role.",
+      },
+    ],
+  },
+  {
+    slug: "social-media-manager-to-product-marketing-manager",
+    fromSlug: "social-media-manager",
+    toSlug: "product-marketing-manager",
+    fromRole: "Social Media Manager",
+    toRole: "Product Marketing Manager",
+    headline: "From Social Media Manager to Product Marketing Manager: From Channels to Positioning",
+    description:
+      "Social media managers already know the audience, the message, and what converts. Here's how to move up into product marketing — owning positioning, launches, and the story behind the product.",
+    keywords: [
+      "social media manager to product marketing",
+      "social media to PMM career change",
+      "social media manager career change",
+      "product marketing manager career pivot",
+    ],
+    tldr: [
+      "You already own messaging, audience insight, and content that converts — the raw material of product marketing.",
+      "The gap is upstream work: positioning, competitive analysis, launch planning, and partnering with product and sales.",
+      "Target PMM or product-marketing-associate roles, ideally at a company whose audience you already understand.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why social media managers move into PMM",
+        body: "You test messages against a real audience daily and learn fast what resonates and converts. Product marketing starts one level up: deciding the positioning and story that messaging flows from. You already have the audience empathy and content skill; PMM adds the strategy and cross-functional ownership.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Build the upstream layer: positioning and messaging frameworks, competitive and market analysis, launch planning (go-to-market), and partnering with product and sales. Learn to write a positioning doc and a launch plan, not just a content calendar.",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target product-marketing-associate or PMM roles, ideally where your existing audience knowledge is an asset. Owning the marketing side of one product launch in your current role is the clearest proof point. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Audience insight and empathy",
+      "Messaging and copywriting",
+      "Content performance analysis",
+      "Campaign execution",
+      "Brand and voice consistency",
+    ],
+    timeline: "4–9 months",
+    faq: [
+      {
+        question: "Can a social media manager become a product marketing manager?",
+        answer:
+          "Yes. Social media managers already own messaging, audience insight, and conversion-focused content. Product marketing adds positioning, competitive analysis, and launch ownership — an upward move that builds on existing strengths.",
+      },
+      {
+        question: "What should I learn to pivot into PMM?",
+        answer:
+          "Positioning and messaging frameworks, competitive analysis, and go-to-market launch planning. Writing a positioning document and owning the marketing side of one launch are the strongest demonstrations.",
+      },
+      {
+        question: "What is the best first step?",
+        answer:
+          "Volunteer to lead the marketing for a product or feature launch in your current company, then target a product-marketing-associate or PMM role where your audience knowledge gives you an edge.",
+      },
+    ],
+  },
+  {
+    slug: "event-planner-to-program-manager",
+    fromSlug: "event-planner",
+    toSlug: "program-manager",
+    fromRole: "Event Planner",
+    toRole: "Program Manager",
+    headline: "From Event Planner to Program Manager: Coordinating Complexity at Scale",
+    description:
+      "Event planning is program management under a hard, immovable deadline. Here's how to translate budgets, vendors, and stakeholder juggling into a program-manager résumé for the corporate world.",
+    keywords: [
+      "event planner to program manager",
+      "event planning to program management",
+      "event planner career change",
+      "program manager career pivot",
+    ],
+    tldr: [
+      "Budgets, vendors, timelines, and many stakeholders toward one date is program management with the deadline turned brutal.",
+      "The gap is corporate vocabulary and tools (cross-functional programs, PM software, status reporting), not the coordination skill.",
+      "Target program-coordinator or PM roles in operations, marketing, or events-heavy teams first.",
+    ],
+    bodyBlocks: [
+      {
+        heading: "Why event planners make strong program managers",
+        body: "You manage a budget, coordinate dozens of vendors and stakeholders, build and defend a timeline, and absorb last-minute chaos — all toward a date that cannot slip. Program management is the same discipline applied to ongoing cross-functional initiatives. Your ability to hold many moving parts together is the hard-to-teach skill.",
+      },
+      {
+        heading: "What you need to add",
+        body: "Learn the corporate layer: framing work as cross-functional programs, PM tooling (Asana, Jira, or Smartsheet), status reporting to leadership, and risk/dependency tracking. Reframe 'planned a 500-person conference' as 'managed a cross-functional program with a fixed deadline and a six-figure budget.'",
+      },
+      {
+        heading: "The realistic on-ramp",
+        body: "Target program-coordinator or associate-PM roles in operations, marketing, or events-heavy organizations where your background reads as directly relevant, then grow into broader program management. " + CTA,
+      },
+    ],
+    transferableSkills: [
+      "Budget management",
+      "Vendor and stakeholder coordination",
+      "Timeline and dependency planning",
+      "Crisis and change management",
+      "Attention to detail at scale",
+    ],
+    timeline: "3–9 months",
+    faq: [
+      {
+        question: "Can an event planner become a program manager?",
+        answer:
+          "Yes. Event planning is essentially program management against an immovable deadline — budgets, vendors, timelines, and stakeholders. The pivot is adopting corporate vocabulary and PM tools and reframing event work in program terms.",
+      },
+      {
+        question: "What should I learn to make the switch?",
+        answer:
+          "PM software (Asana, Jira, or Smartsheet), status reporting, and risk/dependency tracking, plus how cross-functional programs are structured. A CAPM or program-management course helps formalize the vocabulary.",
+      },
+      {
+        question: "Where should I apply first?",
+        answer:
+          "Operations, marketing, and events-heavy teams, where a program-coordinator or associate-PM role lets your coordination track record translate directly before you move into broader program management.",
+      },
+    ],
+  },
 ];
 
 /** Look up a single pivot page by its full slug (`from-to-role`). */
