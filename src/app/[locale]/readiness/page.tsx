@@ -8,6 +8,7 @@ import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
 import ReadinessAssessment from "@/components/ReadinessAssessment";
 import { breadcrumbSchema, speakableSchema } from "@/lib/schema";
 import { decodeResult, overallScore, tierFor } from "@/lib/readiness";
+import { readinessContext } from "@/lib/readiness-context";
 import type { FaqItem } from "@/lib/blog";
 
 const BASE_URL = "https://ai-career-pivot.com";
@@ -95,10 +96,13 @@ const FAQ: FaqItem[] = [
 
 export default async function ReadinessPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const locale = (await params).locale as Locale;
+  const context = readinessContext(await searchParams);
   const canonicalUrl = `${BASE_URL}${localizedPath("/readiness", locale)}`;
 
   const crumbs = breadcrumbSchema([
@@ -180,6 +184,17 @@ export default async function ReadinessPage({
               <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white leading-tight">
                 How Ready Are You for an AI Career Pivot?
               </h1>
+              {context && (
+                <div className="mt-3 text-sm leading-relaxed">
+                  <p className="font-medium text-foreground">
+                    Your selected path: {context.fromRole} → {context.toRole}
+                  </p>
+                  <p className="text-muted-foreground">
+                    This path is shown for context. Your score uses the same five
+                    questions for everyone and does not assess fit for a specific role.
+                  </p>
+                </div>
+              )}
               <p className="mt-4 text-lg text-slate-400">
                 5 questions. 60 seconds. Instant results. No signup required.
               </p>
