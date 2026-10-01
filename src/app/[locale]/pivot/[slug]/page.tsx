@@ -185,30 +185,26 @@ export default async function PivotPage({
               ))}
             </article>
 
-            {/* AIC-1208: personalized trust-loaded on-ramp into /readiness.
-                Replaces the generic assessment CTA on every /pivot page.
-                Signals are honest capability/sourcing claims only (AIC-860/862)
-                — no fabricated outcome numbers. */}
+            {/* Role context leads into the general readiness assessment. */}
             <div className="my-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-teal-950 border border-teal-700/40">
               <p className="text-sm font-semibold text-teal-400 uppercase tracking-widest mb-2">
-                Is this pivot realistic for you?
+                Explore your next step
               </p>
               <p className="text-white font-bold text-xl sm:text-2xl leading-snug mb-3">
-                See how ready you are to go from {pivot.fromRole} to{" "}
-                {pivot.toRole}.
+                Considering a move from {pivot.fromRole} to{" "}
+                {pivot.toRole}?
               </p>
               <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-                The free readiness check runs your actual {pivot.fromRole}{" "}
-                background against the {pivot.toRole} role — it maps your
-                transferable skills, flags the real gaps, and sketches a
-                week-by-week plan. No account to start.
+                Answer five questions about your career stage, AI exposure,
+                motivation, available time, and timeline. Get a general AI career
+                readiness score and a breakdown across four dimensions.
               </p>
 
               <ul className="grid gap-2 mb-6">
                 {[
-                  `A readiness score for the ${pivot.toRole} pivot, not a generic quiz`,
-                  "The specific skill gaps to close first",
-                  "A realistic timeline and starting steps",
+                  "A general readiness score from 0 to 100",
+                  "Your experience, motivation, time commitment, and timeline breakdown",
+                  "A summary of your strongest area and an area to build next",
                 ].map((item) => (
                   <li
                     key={item}
@@ -223,23 +219,15 @@ export default async function PivotPage({
               </ul>
 
               <Link
-                href="/readiness"
-                className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all"
+                href={{ pathname: "/readiness", query: { from: pivot.fromSlug, to: pivot.toSlug } }}
+                className="inline-block px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-400"
               >
-                Check your readiness — free →
+                Check your readiness — <span className="whitespace-nowrap">free →</span>
               </Link>
 
-              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500">
-                <span>No account to start</span>
-                <span aria-hidden className="text-slate-700">
-                  ·
-                </span>
-                <span>Grounded in U.S. Bureau of Labor Statistics data</span>
-                <span aria-hidden className="text-slate-700">
-                  ·
-                </span>
-                <span>Built on Claude</span>
-              </div>
+              <p className="mt-5 text-xs text-slate-400">
+                Free. No account required. Results calculated in your browser.
+              </p>
             </div>
 
             {pivot.faq.length > 0 && (

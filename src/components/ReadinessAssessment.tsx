@@ -25,6 +25,7 @@ import {
   trackReadinessStep,
   trackReadinessCompleted,
 } from "@/lib/tracking";
+import { readinessRetakeUrl } from "@/lib/readiness-retake";
 import ReadinessResult from "@/components/ReadinessResult";
 
 function isAnswered(a: Answers, id: string): boolean {
@@ -127,7 +128,7 @@ export default function ReadinessAssessment() {
     setStep(0);
     // Strip any ?r= from the URL so a retake starts clean.
     if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", window.location.pathname);
+      window.history.replaceState(null, "", readinessRetakeUrl(window.location.href));
     }
   }
 

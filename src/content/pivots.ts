@@ -7,7 +7,7 @@
 //  - Render FAQPage + Article JSON-LD from `faq` and the page copy, mirroring the blog
 //    FAQPage implementation shipped in commit f22b996 / 13d5913.
 //  - `bodyBlocks` are 2–3 answer-first sections; `tldr` mirrors the blog TL;DR slot.
-//  - Every entry ends with a CTA into the assessment ("Start your pivot plan").
+//  - Every entry ends with a CTA into the general readiness assessment.
 
 export interface PivotFaqItem {
   question: string;
@@ -44,7 +44,7 @@ export interface PivotPage {
 }
 
 const CTA =
-  "The fastest way to know if this pivot is realistic for *you* is to run your actual background through it. Start a free AICareerPivot assessment — it maps your transferable skills to the target role, flags the real gaps, and builds a week-by-week plan.";
+  "Check your general AI career readiness with five questions about your experience, motivation, available time, and timeline. This assessment does not evaluate fit for a specific role.";
 
 export const pivots: PivotPage[] = [
   {
