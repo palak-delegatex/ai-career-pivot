@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   Lock,
   Target,
@@ -106,7 +106,7 @@ function LockedSectionCard({
           <Lock className="h-3.5 w-3.5 text-teal-400/80 shrink-0" aria-hidden="true" />
           <p className="text-xs text-slate-300">
             <span className="font-semibold text-teal-300">{countLabel}</span>{" "}
-            ready — unlock to view
+            identified in your snapshot
           </p>
         </div>
       ) : (
@@ -163,7 +163,7 @@ function SubscoreBreakdown({ categories }: { categories: AtsCategoryScore[] }) {
         })}
       </div>
       <p className="text-[11px] text-slate-500 mt-3 leading-snug">
-        The report below closes the gaps behind these scores.
+        The paid report suggests actions to address skill gaps.
       </p>
     </div>
   );
@@ -230,29 +230,11 @@ export default function LockedReportPreview({
       {/* Header */}
       <div className="flex items-center gap-2 mb-1">
         <Lock className="h-5 w-5 text-teal-400 shrink-0" aria-hidden="true" />
-        <h2 className="text-lg font-bold text-white">Your Full Report</h2>
+        <h2 className="text-lg font-bold text-white">What the Paid Report Adds</h2>
       </div>
       <p className="text-sm text-slate-400 mb-4">
-        Personalized to you — built from your snapshot and ready to unlock.
+        This previews the paid report sections. Your full roadmap is generated after checkout and intake. Counts below come from your free snapshot.
       </p>
-
-      {/* Personalized specifics from the engine (defensible, rule-based ranges). */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <div className="flex-1 rounded-xl bg-slate-800/50 border border-slate-700/40 p-3">
-          <div className="flex items-center gap-1.5 text-emerald-400 text-sm font-bold">
-            <TrendingUp className="h-4 w-4" aria-hidden="true" />
-            {teaser.salary.display}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1 leading-snug">{teaser.salary.basis}</p>
-        </div>
-        <div className="flex-1 rounded-xl bg-slate-800/50 border border-slate-700/40 p-3">
-          <div className="flex items-center gap-1.5 text-teal-300 text-sm font-bold">
-            <CalendarClock className="h-4 w-4" aria-hidden="true" />
-            {teaser.timeline.display}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1 leading-snug">{teaser.timeline.basis}</p>
-        </div>
-      </div>
 
       {/* Subscore variant — real ATS category bars above the catalog (AIC-884 §2). */}
       {paywallVariant === "subscore" && atsCategories && atsCategories.length > 0 && (
@@ -282,7 +264,7 @@ export default function LockedReportPreview({
               onClick={onUnlock}
               className="px-6 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors shadow-lg shadow-teal-900/30"
             >
-              Unlock Full Report — ${teaser.priceUsd} →
+              Compare Full Report — ${teaser.priceUsd} →
             </button>
             <p className="text-slate-500 text-xs mt-3">
               One-time payment. 30-day money-back guarantee.
@@ -297,7 +279,7 @@ export default function LockedReportPreview({
       {unlocked && (
         <p className="text-center text-emerald-400 text-xs mt-3 flex items-center justify-center gap-1.5">
           <Check className="h-3.5 w-3.5" aria-hidden="true" />
-          Unlocked — your {roleLabel} report is ready.
+          Paid access confirmed for your {roleLabel} roadmap.
         </p>
       )}
     </section>

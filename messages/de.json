@@ -60,14 +60,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Kostenlose Skill-Gap-Analyse · Ohne Anmeldung · Ergebnis in 3 Min",
+      "badge": "Kostenlose Kompetenzübersicht · Ohne Anmeldung",
       "titleLine1": "Schluss mit dem Gefühl, festzustecken.",
       "titleLine2": "Bauen Sie Ihren Ausweg.",
-      "subtitle": "Laden Sie Ihren Lebenslauf hoch. Erhalten Sie einen personalisierten Karrierewechsel-Fahrplan, der auf Ihren echten Fähigkeiten, Finanzen und familiären Rahmenbedingungen basiert — in unter 5 Minuten.",
+      "subtitle": "Lade deinen Lebenslauf hoch und erhalte deine passendste Karriereoption, drei Kompetenzlücken und übertragbare Stärken. Der kostenpflichtige Bericht ergänzt den vollständigen Fahrplan.",
       "socialProof": "127 Fachleute haben diesen Monat gewechselt",
-      "ctaPrimary": "Kostenlose Skill-Gap-Analyse starten →",
+      "ctaPrimary": "Meine kostenlose Kompetenzübersicht →",
       "freeLink": "Weg schon klar? Hol dir den 19-$-Pivot-Plan →",
-      "freeNote": "3 Minuten · Kein Abo · Kompletter Fahrplan gehört Ihnen",
+      "freeNote": "Kostenlose Übersicht · Keine Karte · Vollständiger Fahrplan kostenpflichtig",
       "viewers": "🔥 83 Personen haben diese Seite heute angesehen",
       "outcomeBadgeValue": "9 Rollen · 30+ Pfade",
       "outcomeBadge": "KI-nah, vollständig kartiert",
@@ -104,20 +104,20 @@
     "howItWorks": {
       "eyebrow": "So funktioniert's",
       "title": "In drei Schritten von feststeckend zu strategisch",
-      "subtitle": "Ein einfacher Prozess, der Ihre gesamte Situation in einen konkreten Aktionsplan verwandelt."
+      "subtitle": "Starte mit einer kostenlosen Übersicht. Wähle den kostenpflichtigen Fahrplan für einen detaillierten Plan."
     },
     "steps": [
       {
-        "title": "Wir lesen Ihren Hintergrund",
-        "desc": "Teilen Sie Ihr LinkedIn-Profil, Ihren Lebenslauf und Ihr Portfolio. Unsere KI analysiert Ihre tatsächliche Erfahrung — Berufshistorie, übertragbare Fähigkeiten, Erfolge — bevor sie eine einzige Empfehlung generiert."
+        "title": "Starte mit deinem Lebenslauf",
+        "desc": "Lade deinen Lebenslauf hoch und erkunde, wie deine Erfahrung zu einer KI-nahen Rolle passt."
       },
       {
-        "title": "KI entwickelt Ihre Strategie",
-        "desc": "Wir verbinden Ihren realen Hintergrund mit Ihrer finanziellen Situation und familiären Rahmenbedingungen, um einen individuellen Übergangs-Fahrplan zu erstellen. Keine allgemeinen Ratschläge. Ihr Plan, aus Ihren Daten."
+        "title": "Prüfe deine kostenlose Übersicht",
+        "desc": "Sieh deine passendste Karriereoption, drei Kompetenzlücken und übertragbare Stärken."
       },
       {
-        "title": "Mit Zuversicht umsetzen",
-        "desc": "Erhalten Sie konkrete Meilensteine für 6 Monate, 1 Jahr und 2 Jahre — mit Kompetenzlücken und Maßnahmen, die auf Ihrem heutigen Stand basieren."
+        "title": "Wähle den kostenpflichtigen Fahrplan",
+        "desc": "Der Bericht für $19 ergänzt 2–3 Wege und Meilensteine für 6/12/24 Monate passend zu deinem Hintergrund und deinen Rahmenbedingungen."
       }
     ],
     "dashboard": {
@@ -189,14 +189,14 @@
       "title": "Ihre Karriere wartet nicht. Sie auch nicht.",
       "subtitle": "Jede Woche, die Sie zögern, verändert KI mehr Stellen. Holen Sie sich jetzt Ihren personalisierten Wechselplan — solange der Einführungspreis gilt.",
       "cta": "Meinen Plan erstellen — <s>$29</s> $19",
-      "note": "3 Minuten · Kein Abo · Für immer Ihres"
+      "note": "Einmaliger Bericht · Kein Abo"
     },
     "courses": {
       "eyebrow": "Fähigkeiten ausbauen",
       "title": "KI-Fähigkeiten, die Sie wirklich eingestellt bekommen",
       "subtitle": "Die Zertifikate, die Personalverantwortliche kennen. Kuratiert für Fachleute, die in KI-nahe Rollen wechseln.",
       "match": "{score}% Übereinstimmung",
-      "ctaNote": "Nicht sicher, welche Kurse zu Ihrem Hintergrund passen? Erhalten Sie einen personalisierten Lernpfad mit Ihrer kostenlosen Karrierewechsel-Analyse.",
+      "ctaNote": "Möchtest du Kursempfehlungen passend zu deinem Hintergrund? Sie sind im kostenpflichtigen Fahrplan enthalten.",
       "cta": "Meinen personalisierten Lernpfad erhalten — <s>$29</s> $19 →",
       "items": [
         {
@@ -294,15 +294,15 @@
       "label": "Entwickelt mit Technologie von"
     },
     "stickyCta": {
-      "cta": "Kostenlose Skill-Gap-Analyse testen →"
+      "cta": "Meine kostenlose Kompetenzübersicht →"
     },
     "featureShowcase": {
       "eyebrow": "In Aktion Erleben",
-      "headingLead": "Das bekommst du.",
-      "headingAccent": "Bevor du zahlst.",
-      "subheading": "Keine vagen Versprechen. Hier ist ein echtes Beispiel des KI-generierten Plans, der Insights und des Reports — erstellt aus einem echten Karrierewechsel-Profil.",
-      "sampleBadge": "Beispiel-Ausgabe",
-      "sampleNote": "— dein Plan wird aus deinem echten Lebenslauf, deinen Finanzen und Rahmenbedingungen erstellt.",
+      "headingLead": "Vorschau auf den kostenpflichtigen Fahrplan.",
+      "headingAccent": "Illustrative Beispiele.",
+      "subheading": "Entdecke Beispiele für den kostenpflichtigen Plan, Analysen und PDF-Bericht. Die kostenlose Übersicht zeigt deine passendste Option, Lücken und Stärken.",
+      "sampleBadge": "Illustratives Beispiel des kostenpflichtigen Berichts",
+      "sampleNote": "— Beispielinhalte, kein Kundenergebnis und keine Vorhersage deines Erfolgs.",
       "tabs": {
         "plan": {
           "label": "Plan-Generierung",
@@ -337,7 +337,7 @@
         {
           "horizon": "2 Jahre",
           "items": [
-            "AI Implementation Consultant — prognostizierte Gehaltssteigerung von 35–45%",
+            "KI-Implementierungsberater — Aufgaben und Vergütung erkunden",
             "Bereichsübergreifende KI-Einführung für eine Geschäftseinheit leiten",
             "Optional: nebenberufliche unabhängige Beratung zur Einkommensdiversifizierung"
           ]
@@ -368,7 +368,7 @@
       ],
       "insightsTitle": "Was die KI an deinem Profil bemerkt hat",
       "insights": [
-        "Dein Operations-Hintergrund ist ein versteckter Vorteil: 71% der AI-Implementation-Rollen priorisieren Fachwissen + Change-Management vor Programmierung.",
+        "Deine Erfahrung im operativen Geschäft kann die KI-Einführung unterstützen, besonders bei Prozessgestaltung und Veränderungsmanagement.",
         "Schnellster Markteinstieg: Automatisiere einen mühsamen Workflow bei deinem aktuellen Arbeitgeber und dokumentiere den ROI als erste Fallstudie.",
         "Größtes Risiko zuerst entschärfen: die Prompt-Engineering-Lücke. Sie ist am günstigsten zu schließen und öffnet die meisten Jobtitel."
       ],
@@ -379,7 +379,7 @@
         "Skill-Lücken-Scores + empfohlene Kurse",
         "Personalisiert auf deine Finanzen & Rahmenbedingungen"
       ],
-      "ctaPrimary": "Meinen erstellen",
+      "ctaPrimary": "Kostenpflichtigen Fahrplan ansehen",
       "ctaSecondary": "Oder probiere zuerst den kostenlosen Skill-Lücken-Schnappschuss — ohne Zahlung"
     },
     "journey": {
@@ -825,8 +825,8 @@
   },
   "pricing": {
     "heroFreeCtaEyebrow": "Noch nicht bereit, dich festzulegen?",
-    "heroFreeCtaControl": "Kostenlos starten — keine Karte nötig",
+    "heroFreeCtaControl": "Meine kostenlose Kompetenzübersicht",
     "heroFreeCtaBenefit": "Kostenlose Skill-Gap-Analyse ansehen",
-    "heroFreeCtaSub": "In 2 Minuten ausprobieren. Nur upgraden, wenn dir dein Plan gefällt."
+    "heroFreeCtaSub": "Erhalte zuerst die kostenlose Übersicht. Der vollständige Fahrplan ist kostenpflichtig."
   }
 }

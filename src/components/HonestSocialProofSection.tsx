@@ -32,14 +32,14 @@ export default function HonestSocialProofSection() {
             See what you get
           </p>
           <h2 className="mb-4 text-3xl font-extrabold text-white sm:text-4xl">
-            Real product output, not{" "}
+            Explore the{" "}
             <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-              borrowed promises
+              paid roadmap
             </span>
           </h2>
           <p className="mx-auto max-w-lg text-slate-400">
-            We&rsquo;re newly launched, so instead of testimonials, here&rsquo;s exactly what the
-            tool produces — and the real sources behind it.
+            These illustrative examples show the structure of the paid roadmap.
+            Start with the free snapshot to see your top match, skill gaps, and strengths.
           </p>
         </div>
 
