@@ -3,7 +3,6 @@
 import { Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import InlineGuaranteeBadge from "@/components/InlineGuaranteeBadge";
-import { PROOF_METRICS } from "@/lib/proof-metrics";
 
 /**
  * PartialRoadmapReveal (AIC-824 gate-the-reveal)
@@ -43,10 +42,10 @@ export default function PartialRoadmapReveal({
   return (
     <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-5">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <h3 className="text-base font-bold text-white">Your Personalized Roadmap</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 className="text-base font-bold text-white">Illustrative Roadmap Preview</h3>
         <Badge variant="outline" className="shrink-0">
-          {visibleCount} of {totalCount} milestones visible
+          {visibleCount} of {totalCount} example steps visible
         </Badge>
       </div>
 
@@ -94,8 +93,7 @@ export default function PartialRoadmapReveal({
       {/* Social proof + unlock CTA */}
       <div className="mt-5 flex flex-col items-center gap-3 text-center">
         <p className="text-xs text-slate-400">
-          <strong className="text-slate-200">{PROOF_METRICS.freeSpeed}</strong> for your free AI
-          roadmap · {PROOF_METRICS.noSignup} to start
+          Example steps based on your top gap. The paid roadmap adds personalized 6/12/24-month milestones.
         </p>
         <InlineGuaranteeBadge variant="short" />
         <button
@@ -104,7 +102,7 @@ export default function PartialRoadmapReveal({
           className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
         >
           <Lock className="w-3.5 h-3.5" />
-          Unlock all {totalCount} milestones — $19
+          Compare Full Report — $19
         </button>
       </div>
     </div>

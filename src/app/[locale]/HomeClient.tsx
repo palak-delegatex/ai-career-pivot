@@ -8,7 +8,6 @@ import { motion, useInView, useMotionValue, useTransform, useSpring } from "fram
 import { useRef, useEffect, useCallback } from "react";
 import SiteNav from "@/components/SiteNav";
 import VoicesOfTheAIEra from "@/components/VoicesOfTheAIEra";
-import SuccessMetrics from "@/components/SuccessMetrics";
 import FeatureShowcase from "@/components/FeatureShowcase";
 import TrustBar from "@/components/TrustBar";
 import { trackCtaClicked, trackCtaHovered, trackScrollDepth } from "@/lib/tracking";
@@ -160,7 +159,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
   const th = useTranslations("home");
   const steps = th.raw("steps") as { title: string; desc: string }[];
   const personas = th.raw("personas") as { label: string; tag: string }[];
-  const beforeAfterCards = th.raw("beforeAfter") as { before: string; after: string; timeline: string }[];
   const courseCopy = th.raw("courses.items") as { valueProp: string; duration: string; cost: string }[];
   const handleHeroCtaHover = useCallback(() => {
     trackCtaHovered({ cta_text: "Get My Free Skill-Gap Snapshot", cta_location: "hero" });
@@ -320,7 +318,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
         <section className="py-16 px-6">
           <AnimatedSection className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 font-serif">Start your pivot — pick your path</h2>
-            <p className="text-slate-400 mb-10">See real value in seconds. No signup, no credit card.</p>
+            <p className="text-slate-400 mb-10">Start with a free snapshot. No signup, no credit card.</p>
             <div className="grid sm:grid-cols-3 gap-5 text-left">
               <Link
                 href="/free?mode=upload"
@@ -329,7 +327,7 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
               >
                 <div className="text-2xl mb-3">📄</div>
                 <div className="font-bold text-white mb-1">I have a resume ready</div>
-                <p className="text-sm text-slate-400 mb-4">Upload it for a personalized skill-gap match score in 30 seconds.</p>
+                <p className="text-sm text-slate-400 mb-4">Upload it for your top career match, skill gaps, and transferable strengths.</p>
                 <span className="text-teal-400 text-sm font-semibold group-hover:text-teal-300">Upload resume →</span>
               </Link>
               <Link
@@ -394,9 +392,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
         {/* AI feature showcase — surface plan gen / insights / PDF before signup (AIC-532) */}
         <FeatureShowcase />
-
-        {/* Success Metrics Banner */}
-        <SuccessMetrics />
 
         {/* Dashboard visual proof */}
         <section className="relative w-full py-24 overflow-hidden">
@@ -464,59 +459,6 @@ export default function HomeClient({ recentPosts }: { recentPosts: Omit<Post, "c
 
         {/* Trust Bar */}
         <TrustBar />
-
-        {/* Before/After Success Metrics */}
-        <section className="py-28 px-6">
-          <div className="max-w-5xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <motion.p variants={fadeUp} className="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-3">
-                {th("transformations.eyebrow")}
-              </motion.p>
-              <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                {th("transformations.titleLead")}{" "}
-                <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  {th("transformations.titleAccent")}
-                </span>
-              </motion.h2>
-            </AnimatedSection>
-
-            <AnimatedSection className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {beforeAfterCards.map((card, i) => (
-                <motion.div
-                  key={card.after}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.12 } },
-                  }}
-                  className="bg-slate-800/60 border border-slate-700 rounded-xl p-6 flex flex-col gap-4"
-                >
-                  <p className="text-slate-500 text-sm">{card.before}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-px bg-gradient-to-r from-slate-700 to-teal-500/60" />
-                    <motion.svg
-                      initial={{ x: -4, opacity: 0 }}
-                      whileInView={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 + i * 0.12, duration: 0.4 }}
-                      viewport={{ once: true }}
-                      className="w-5 h-5 text-teal-400 shrink-0"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </motion.svg>
-                    <div className="flex-1 h-px bg-gradient-to-r from-teal-500/60 to-slate-700" />
-                  </div>
-                  <p className="text-white text-sm font-medium">{card.after}</p>
-                  <span className="inline-flex self-start items-center px-2.5 py-1 rounded-full bg-teal-950/60 border border-teal-800/40 text-teal-300 text-xs font-semibold">
-                    {card.timeline}
-                  </span>
-                </motion.div>
-              ))}
-            </AnimatedSection>
-          </div>
-        </section>
 
         {/* CTA */}
         <section className="py-28 px-6">

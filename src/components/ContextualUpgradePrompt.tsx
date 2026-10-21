@@ -92,7 +92,7 @@ export default function ContextualUpgradePrompt({
         <p className="text-xs text-slate-300 max-w-xs">{hook}</p>
         <div className="mt-2">
           <p className="text-xs font-medium text-teal-300/90">
-            Free AI snapshot in {PROOF_METRICS.freeSpeed} · {PROOF_METRICS.noSignup} to start
+            Free snapshot · {PROOF_METRICS.noSignup} to start
           </p>
         </div>
         <button
@@ -101,10 +101,10 @@ export default function ContextualUpgradePrompt({
           className="mt-2 inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors shadow-lg shadow-teal-900/30"
         >
           <Lock className="w-3.5 h-3.5" />
-          Get Full Report — $19
+          Compare Full Report — $19
         </button>
         <p className="text-xs text-slate-400 mt-1">
-          Includes everything · full roadmap, milestones &amp; salary model
+          Paid report · full roadmap, milestones &amp; salary scenarios
         </p>
         <InlineGuaranteeBadge variant="short" className="mt-1" />
       </div>

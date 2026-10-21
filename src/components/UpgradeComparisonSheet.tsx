@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Check, X, Sparkles, ArrowRight, Star } from "lucide-react";
 import {
   Sheet,
@@ -39,15 +39,13 @@ export interface Row {
 }
 
 function buildRows(snapshot: FreeSnapshot): Row[] {
-  const pathCount = snapshot.paths.length;
-  const uplift = snapshot.estimatedSalaryUplift ?? 15;
   const role = snapshot.paths[0]?.targetRole ?? "your target role";
 
   return [
     {
       feature: "Best-fit career matches",
       free: "Top 1 path",
-      paid: pathCount > 1 ? `All ${pathCount} paths, ranked` : "Every matched path, ranked",
+      paid: "2–3 paths, ranked",
     },
     {
       feature: "Skill-gap analysis",
@@ -67,7 +65,7 @@ function buildRows(snapshot: FreeSnapshot): Row[] {
     {
       feature: "Salary trajectory & bridge plan",
       free: false,
-      paid: `+$${uplift}K modeled, ROI breakeven`,
+      paid: "Salary scenarios, budget & ROI",
     },
     {
       feature: "Week-by-week action plan + AI coaching",
@@ -80,7 +78,7 @@ function buildRows(snapshot: FreeSnapshot): Row[] {
       paid: "Personalized match scores",
     },
     {
-      feature: "Permanent access & updates",
+      feature: "Permanent report access",
       free: false,
       paid: true,
     },
@@ -138,7 +136,7 @@ export default function UpgradeComparisonSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md overflow-y-auto bg-slate-950 text-slate-100 border-slate-800"
+        className="data-[side=right]:w-full data-[side=right]:sm:max-w-md overflow-y-auto bg-slate-950 text-slate-100 border-slate-800"
       >
         <SheetHeader className="px-5 pt-5 pb-0">
           <div className="inline-flex w-fit items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-300 text-[11px] font-semibold mb-2">
@@ -159,7 +157,7 @@ export default function UpgradeComparisonSheet({
           {/* Comparison table */}
           <div className="rounded-2xl border border-slate-800 overflow-hidden">
             {/* Column headers */}
-            <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 items-end px-4 py-3 bg-slate-900/60 border-b border-slate-800">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 items-end px-4 py-3 bg-slate-900/60 border-b border-slate-800">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 What you get
               </span>
@@ -177,7 +175,7 @@ export default function UpgradeComparisonSheet({
             {rows.map((row, i) => (
               <div
                 key={row.feature}
-                className={`grid grid-cols-[1fr_auto_auto] gap-x-3 items-center px-4 py-3 ${
+                className={`grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 items-center px-4 py-3 ${
                   i % 2 === 0 ? "bg-slate-900/20" : "bg-transparent"
                 }`}
               >
@@ -199,7 +197,7 @@ export default function UpgradeComparisonSheet({
           {/* Social-proof metric strip (single source of truth) */}
           <div className="grid grid-cols-3 gap-2 mt-4">
             {[
-              { value: PROOF_METRICS.freeSpeed, label: "Free snapshot" },
+              { value: "$0", label: "Free snapshot" },
               { value: PROOF_METRICS.noSignup, label: "To start" },
               { value: PROOF_METRICS.pathsMapped, label: "Paths mapped" },
             ].map((m) => (
@@ -233,11 +231,11 @@ export default function UpgradeComparisonSheet({
             }
             className="mt-4 flex items-center justify-center gap-2 w-full px-6 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-white transition-colors shadow-lg shadow-teal-900/30"
           >
-            Get Full Report — $19
+            Continue to $19 Report
             <ArrowRight className="w-4 h-4" />
           </Link>
           <p className="text-center text-slate-500 text-xs mt-2">
-            One-time payment · Instant access · 30-day money-back guarantee
+            One-time payment · Full roadmap after checkout and intake
           </p>
 
           {/* Trust badges (AIC-753 components) */}

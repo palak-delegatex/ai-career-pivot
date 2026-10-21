@@ -60,14 +60,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Bilan gratuit des lacunes · Sans inscription · Résultats en 3 min",
+      "badge": "Bilan de compétences gratuit · Sans inscription",
       "titleLine1": "Arrêtez de vous sentir bloqué.",
       "titleLine2": "Construisez votre plan d'évasion.",
-      "subtitle": "Importez votre CV. Obtenez une feuille de route de reconversion personnalisée basée sur vos compétences réelles, vos finances et vos contraintes familiales — en moins de 5 minutes.",
+      "subtitle": "Importez votre CV pour découvrir votre meilleure piste, trois compétences à développer et vos atouts transférables. Le rapport payant ajoute la feuille de route complète.",
       "socialProof": "127 professionnels ont pivoté ce mois-ci",
-      "ctaPrimary": "Obtenir mon bilan gratuit des lacunes →",
+      "ctaPrimary": "Obtenir mon bilan gratuit →",
       "freeLink": "Vous connaissez déjà votre voie ? Obtenez le Plan de Reconversion à 19 $ →",
-      "freeNote": "3 minutes · Sans abonnement · Feuille de route à conserver",
+      "freeNote": "Bilan gratuit · Sans carte · Feuille de route payante",
       "viewers": "🔥 83 personnes ont consulté cette page aujourd'hui",
       "outcomeBadgeValue": "9 métiers · 30+ parcours",
       "outcomeBadge": "proches de l'IA, entièrement cartographiés",
@@ -104,20 +104,20 @@
     "howItWorks": {
       "eyebrow": "Comment ça marche",
       "title": "De bloqué à stratégique en trois étapes",
-      "subtitle": "Un processus simple qui transforme votre situation en un plan d'action concret."
+      "subtitle": "Commencez par un bilan gratuit. Choisissez la feuille de route payante pour un plan détaillé."
     },
     "steps": [
       {
-        "title": "Nous analysons votre parcours",
-        "desc": "Partagez votre LinkedIn, CV et portfolio. Notre IA analyse votre expérience réelle — historique professionnel, compétences transférables, réalisations — avant de formuler la moindre recommandation."
+        "title": "Commencez par votre CV",
+        "desc": "Importez votre CV pour explorer comment votre expérience peut se transférer vers un métier lié à l’IA."
       },
       {
-        "title": "L'IA construit votre stratégie",
-        "desc": "Nous combinons votre parcours réel avec votre situation financière et vos contraintes familiales pour créer une feuille de route de transition sur mesure. Pas de conseils génériques. Votre plan, construit à partir de vos données."
+        "title": "Consultez votre bilan gratuit",
+        "desc": "Découvrez votre meilleure piste, trois compétences à développer et vos atouts transférables."
       },
       {
-        "title": "Passez à l'action avec confiance",
-        "desc": "Obtenez des jalons concrets pour 6 mois, 1 an et 2 ans — avec les écarts de compétences et les actions ancrés dans votre situation actuelle."
+        "title": "Choisissez la feuille de route payante",
+        "desc": "Le rapport à $19 ajoute 2–3 pistes et des jalons à 6/12/24 mois adaptés à votre parcours et vos contraintes."
       }
     ],
     "dashboard": {
@@ -189,14 +189,14 @@
       "title": "Votre carrière n'attendra pas. Vous non plus.",
       "subtitle": "Chaque semaine que vous attendez, l'IA remodèle davantage de métiers. Obtenez votre feuille de route de reconversion maintenant — pendant que le tarif de lancement dure.",
       "cta": "Créer mon plan de reconversion — <s>$29</s> $19",
-      "note": "3 minutes · Sans abonnement · À conserver pour toujours"
+      "note": "Rapport à paiement unique · Sans abonnement"
     },
     "courses": {
       "eyebrow": "Montez en compétences",
       "title": "Les compétences IA qui font vraiment la différence",
       "subtitle": "Les certifications que les recruteurs reconnaissent. Sélectionnées pour les professionnels se reconvertissant vers des rôles liés à l'IA.",
       "match": "{score}% de correspondance",
-      "ctaNote": "Vous ne savez pas quelles formations correspondent à votre profil ? Obtenez un parcours d'apprentissage personnalisé avec votre analyse gratuite.",
+      "ctaNote": "Vous souhaitez des cours adaptés à votre parcours ? Ils sont inclus dans la feuille de route payante.",
       "cta": "Obtenir mon parcours personnalisé — <s>$29</s> $19 →",
       "items": [
         {
@@ -294,15 +294,15 @@
       "label": "Construit avec la technologie de"
     },
     "stickyCta": {
-      "cta": "Essayer mon bilan gratuit des lacunes →"
+      "cta": "Obtenir mon bilan gratuit →"
     },
     "featureShowcase": {
       "eyebrow": "Voyez-le En Action",
-      "headingLead": "Voici ce que vous obtenez.",
-      "headingAccent": "Avant de payer.",
-      "subheading": "Pas de promesses vagues. Voici un vrai échantillon du plan, des insights et du rapport générés par l'IA — construits à partir d'un vrai profil de reconversion.",
-      "sampleBadge": "Exemple de résultat",
-      "sampleNote": "— votre plan est généré à partir de votre vrai CV, de vos finances et de vos contraintes.",
+      "headingLead": "Aperçu de la feuille de route payante.",
+      "headingAccent": "Exemples illustratifs.",
+      "subheading": "Explorez des exemples du plan, des analyses et du PDF payants. Le bilan gratuit présente votre meilleure piste, vos lacunes et vos atouts.",
+      "sampleBadge": "Exemple illustratif du rapport payant",
+      "sampleNote": "— contenu d’exemple, pas un résultat client ni une prédiction de votre avenir.",
       "tabs": {
         "plan": {
           "label": "Génération de plan",
@@ -337,7 +337,7 @@
         {
           "horizon": "2 ans",
           "items": [
-            "Consultant en implémentation de l'IA — hausse de rémunération projetée de 35–45 %",
+            "Consultant en déploiement de l’IA — explorer les missions et la rémunération",
             "Pilotez l'adoption transversale de l'IA pour une unité commerciale",
             "Optionnel : conseil indépendant en parallèle pour diversifier vos revenus"
           ]
@@ -368,7 +368,7 @@
       ],
       "insightsTitle": "Ce que l'IA a remarqué sur votre profil",
       "insights": [
-        "Votre expérience en opérations est un atout caché : 71 % des rôles d'implémentation de l'IA privilégient l'expertise métier + la gestion du changement plutôt que le code.",
+        "Votre expérience opérationnelle peut soutenir l’adoption de l’IA, notamment la conception de processus et la conduite du changement.",
         "L'entrée la plus rapide sur le marché : automatisez un flux de travail pénible chez votre employeur actuel et documentez le ROI comme première étude de cas.",
         "Le plus grand risque à réduire d'abord : l'écart en prompt engineering. C'est le moins cher à combler et il débloque le plus de postes."
       ],
@@ -379,7 +379,7 @@
         "Scores d'écarts de compétences + cours recommandés",
         "Personnalisé selon vos finances et vos contraintes"
       ],
-      "ctaPrimary": "Générer le mien",
+      "ctaPrimary": "Voir la feuille de route payante",
       "ctaSecondary": "Ou essayez d'abord l'aperçu gratuit des écarts de compétences — sans paiement"
     },
     "journey": {
@@ -825,8 +825,8 @@
   },
   "pricing": {
     "heroFreeCtaEyebrow": "Pas encore prêt à vous engager ?",
-    "heroFreeCtaControl": "Commencez gratuitement — sans carte",
+    "heroFreeCtaControl": "Obtenir mon bilan gratuit",
     "heroFreeCtaBenefit": "Voir votre bilan de compétences gratuit",
-    "heroFreeCtaSub": "Essayez en 2 minutes. Passez à l’offre payante seulement si votre feuille de route vous plaît."
+    "heroFreeCtaSub": "Obtenez d’abord le bilan gratuit. La feuille de route complète est payante."
   }
 }

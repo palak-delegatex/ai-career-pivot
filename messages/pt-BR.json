@@ -60,14 +60,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Diagnóstico gratuito de lacunas · Sem cadastro · Resultado em 3 min",
+      "badge": "Diagnóstico gratuito de habilidades · Sem cadastro",
       "titleLine1": "Pare de se sentir preso.",
       "titleLine2": "Monte seu plano de fuga.",
-      "subtitle": "Envie seu currículo. Receba um roteiro personalizado de transição de carreira construído em torno das suas habilidades reais, finanças e limitações familiares — em menos de 5 minutos.",
+      "subtitle": "Envie seu currículo para ver a opção de carreira mais compatível, três lacunas de habilidades e seus pontos fortes transferíveis. O relatório pago inclui o roteiro completo.",
       "socialProof": "127 profissionais fizeram a transição neste mês",
-      "ctaPrimary": "Obter meu diagnóstico gratuito de lacunas →",
+      "ctaPrimary": "Ver meu diagnóstico gratuito →",
       "freeLink": "Já sabe seu caminho? Garanta o Plano de Pivô por US$ 19 →",
-      "freeNote": "Leva 3 minutos · Sem assinatura · O roteiro completo é seu para guardar",
+      "freeNote": "Diagnóstico gratuito · Sem cartão · Roteiro completo pago",
       "viewers": "🔥 83 pessoas visualizaram esta página hoje",
       "outcomeBadgeValue": "9 funções · 30+ caminhos",
       "outcomeBadge": "próximos da IA, totalmente mapeados",
@@ -104,20 +104,20 @@
     "howItWorks": {
       "eyebrow": "Como Funciona",
       "title": "De travado a estratégico em três passos",
-      "subtitle": "Um processo simples que transforma toda a sua situação em um plano de ação concreto."
+      "subtitle": "Comece com um diagnóstico gratuito. Escolha o roteiro pago quando quiser um plano detalhado."
     },
     "steps": [
       {
-        "title": "Analisamos seu histórico",
-        "desc": "Compartilhe seu LinkedIn, currículo e portfólio. Nossa IA analisa a sua experiência real — histórico profissional, habilidades transferíveis, conquistas — antes de gerar qualquer recomendação."
+        "title": "Comece com seu currículo",
+        "desc": "Envie seu currículo para explorar como sua experiência pode se aplicar a uma função ligada à IA."
       },
       {
-        "title": "A IA monta sua estratégia",
-        "desc": "Combinamos seu histórico real com sua situação financeira e suas limitações familiares para criar um roteiro de transição personalizado. Nada de conselhos genéricos. Seu plano, construído a partir dos seus dados."
+        "title": "Confira seu diagnóstico gratuito",
+        "desc": "Veja a opção de carreira mais compatível, três lacunas de habilidades e seus pontos fortes transferíveis."
       },
       {
-        "title": "Execute com confiança",
-        "desc": "Receba marcos concretos para 6 meses, 1 ano e 2 anos — com lacunas de habilidades e ações fundamentadas em onde você realmente está hoje."
+        "title": "Escolha o roteiro completo pago",
+        "desc": "O relatório de $19 acrescenta 2–3 caminhos e marcos de 6/12/24 meses com base na sua experiência e nas suas restrições."
       }
     ],
     "dashboard": {
@@ -189,14 +189,14 @@
       "title": "Sua carreira não vai esperar. Você também não deveria.",
       "subtitle": "A cada semana que você adia, a IA remodela mais funções. Receba seu roteiro de transição personalizado agora — enquanto o preço de lançamento durar.",
       "cta": "Montar meu plano de transição — <s>$29</s> $19",
-      "note": "3 minutos · Sem assinatura · Seu para sempre"
+      "note": "Relatório com pagamento único · Sem assinatura"
     },
     "courses": {
       "eyebrow": "Aprimore Habilidades",
       "title": "Habilidades de IA que realmente conseguem sua contratação",
       "subtitle": "As credenciais que os recrutadores reconhecem. Selecionadas para profissionais em transição para funções ligadas à IA.",
       "match": "{score}% de compatibilidade",
-      "ctaNote": "Não sabe quais cursos combinam com o seu histórico? Receba uma trilha de aprendizado personalizada com sua análise gratuita de transição de carreira.",
+      "ctaNote": "Quer recomendações de cursos adaptadas à sua experiência? Elas estão incluídas no roteiro pago.",
       "cta": "Receber minha trilha de aprendizado personalizada — <s>$29</s> $19 →",
       "items": [
         {
@@ -294,15 +294,15 @@
       "label": "Desenvolvido com tecnologia de"
     },
     "stickyCta": {
-      "cta": "Testar meu diagnóstico gratuito de lacunas →"
+      "cta": "Ver meu diagnóstico gratuito →"
     },
     "featureShowcase": {
       "eyebrow": "Veja Em Ação",
-      "headingLead": "É isto que você recebe.",
-      "headingAccent": "Antes de pagar.",
-      "subheading": "Sem promessas vagas. Aqui está uma amostra real do plano, dos insights e do relatório gerados por IA — criados a partir de um perfil real de transição de carreira.",
-      "sampleBadge": "Saída de exemplo",
-      "sampleNote": "— seu plano é gerado a partir do seu currículo, das suas finanças e das suas restrições reais.",
+      "headingLead": "Prévia do roteiro pago.",
+      "headingAccent": "Exemplos ilustrativos.",
+      "subheading": "Explore exemplos do plano, das análises e do PDF pagos. O diagnóstico gratuito mostra sua melhor opção, lacunas e pontos fortes.",
+      "sampleBadge": "Exemplo ilustrativo do relatório pago",
+      "sampleNote": "— conteúdo de exemplo, não um resultado de cliente nem uma previsão do seu futuro.",
       "tabs": {
         "plan": {
           "label": "Geração de plano",
@@ -337,7 +337,7 @@
         {
           "horizon": "2 anos",
           "items": [
-            "Consultor de Implementação de IA — aumento salarial projetado de 35–45%",
+            "Consultor de implementação de IA — explore responsabilidades e remuneração",
             "Lidere a adoção de IA multifuncional para uma unidade de negócios",
             "Opcional: consultoria independente paralela para diversificar a renda"
           ]
@@ -368,7 +368,7 @@
       ],
       "insightsTitle": "O que a IA notou sobre o seu perfil",
       "insights": [
-        "Sua experiência em operações é uma vantagem oculta: 71% dos cargos de implementação de IA priorizam domínio + gestão da mudança em vez de programação.",
+        "Sua experiência em operações pode ajudar na adoção de IA, especialmente no desenho de processos e na gestão de mudanças.",
         "A entrada mais rápida no mercado: automatize um fluxo de trabalho penoso no seu empregador atual e documente o ROI como seu primeiro estudo de caso.",
         "O maior risco a mitigar primeiro: a lacuna em engenharia de prompts. É a mais barata de fechar e desbloqueia o maior número de cargos."
       ],
@@ -379,7 +379,7 @@
         "Pontuações de lacunas de skills + cursos recomendados",
         "Personalizado para suas finanças e restrições"
       ],
-      "ctaPrimary": "Gerar o meu",
+      "ctaPrimary": "Ver roteiro pago",
       "ctaSecondary": "Ou experimente primeiro o retrato gratuito de lacunas de skills — sem pagamento"
     },
     "journey": {
@@ -825,8 +825,8 @@
   },
   "pricing": {
     "heroFreeCtaEyebrow": "Ainda não quer se comprometer?",
-    "heroFreeCtaControl": "Comece grátis — sem cartão",
+    "heroFreeCtaControl": "Ver meu diagnóstico gratuito",
     "heroFreeCtaBenefit": "Veja seu diagnóstico gratuito de lacunas de habilidades",
-    "heroFreeCtaSub": "Experimente em 2 minutos. Faça upgrade só se amar seu plano."
+    "heroFreeCtaSub": "Obtenha primeiro o diagnóstico gratuito. O roteiro completo é um upgrade pago."
   }
 }

@@ -60,14 +60,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Free · No signup · Instant results",
+      "badge": "Free skill-gap snapshot · No signup",
       "titleLine1": "Discover the AI Career You're Already Qualified For",
       "titleLine2": "Free · 30 Seconds · No Signup",
-      "subtitle": "Upload your resume and see which AI roles match your experience — plus the exact skills to close the gap.",
+      "subtitle": "Upload your resume for your top career match, three skill gaps, and transferable strengths. Upgrade to the paid report for the full roadmap.",
       "socialProof": "127 professionals pivoted this month",
-      "ctaPrimary": "See My AI Career Matches — Free →",
+      "ctaPrimary": "Get My Free Skill-Gap Snapshot →",
       "freeLink": "Already know your path? Get the $19 Pivot Plan →",
-      "freeNote": "No signup · No credit card · Results in 30 seconds",
+      "freeNote": "Free snapshot · No credit card · Full roadmap is paid",
       "outcomeBadgeValue": "9 roles · 30+ paths",
       "outcomeBadge": "AI-adjacent, fully mapped",
       "microProof": [
@@ -102,20 +102,20 @@
     "howItWorks": {
       "eyebrow": "How It Works",
       "title": "From stuck to strategic in three steps",
-      "subtitle": "A simple process that turns your whole situation into a concrete action plan."
+      "subtitle": "Start with a free snapshot. Add a paid roadmap when you want a detailed plan."
     },
     "steps": [
       {
-        "title": "We Read Your Background",
-        "desc": "Share your LinkedIn, resume, and portfolio. Our AI analyzes your actual experience — job history, transferable skills, achievements — before generating a single recommendation."
+        "title": "Start with Your Resume",
+        "desc": "Upload your resume to explore how your experience could transfer to an AI-adjacent role."
       },
       {
-        "title": "AI Builds Your Strategy",
-        "desc": "We combine your real background with your financial situation and family constraints to create a custom transition roadmap. Not generic advice. Your plan, built from your data."
+        "title": "Review Your Free Snapshot",
+        "desc": "See your top career match, three skill gaps, and transferable strengths."
       },
       {
-        "title": "Execute with Confidence",
-        "desc": "Get concrete milestones for 6 months, 1 year, and 2 years — with skill gaps and actions grounded in where you actually are today."
+        "title": "Choose the Paid Full Roadmap",
+        "desc": "The $19 report adds 2–3 paths and 6/12/24-month milestones based on your background and constraints."
       }
     ],
     "dashboard": {
@@ -187,14 +187,14 @@
       "title": "Your career won't wait. Neither should you.",
       "subtitle": "Every week you delay, AI reshapes more roles. Get your personalized pivot roadmap now — while intro pricing lasts.",
       "cta": "Build My Pivot Plan — <s>$29</s> $19",
-      "note": "3 minutes · No subscription · Yours to keep forever"
+      "note": "One-time report · No subscription"
     },
     "courses": {
       "eyebrow": "Skill Up",
       "title": "AI Skills That Actually Get You Hired",
       "subtitle": "The credentials hiring managers recognize. Curated for professionals pivoting into AI-adjacent roles.",
       "match": "{score}% match",
-      "ctaNote": "Not sure which courses match your background? Get a personalized learning path with your free career pivot analysis.",
+      "ctaNote": "Want course recommendations tailored to your background? They are included in the paid roadmap.",
       "cta": "Get My Personalized Learning Path — <s>$29</s> $19 →",
       "items": [
         {
@@ -292,15 +292,15 @@
       "label": "Built with technology from"
     },
     "stickyCta": {
-      "cta": "See My AI Career Matches — Free →"
+      "cta": "Get My Free Skill-Gap Snapshot →"
     },
     "featureShowcase": {
       "eyebrow": "See It In Action",
-      "headingLead": "This is what you get.",
-      "headingAccent": "Before you pay.",
-      "subheading": "No vague promises. Here's a real sample of the AI-generated plan, insights, and report — built from an actual career-pivot profile.",
-      "sampleBadge": "Sample output",
-      "sampleNote": "— your plan is generated from your real resume, finances, and constraints.",
+      "headingLead": "Preview the paid roadmap.",
+      "headingAccent": "Illustrative examples.",
+      "subheading": "Explore examples of the paid plan, insights, and PDF report. The free snapshot shows your top match, skill gaps, and strengths.",
+      "sampleBadge": "Illustrative paid-report sample",
+      "sampleNote": "— example content, not a customer result or a prediction of your outcome.",
       "tabs": {
         "plan": {
           "label": "Plan Generation",
@@ -335,7 +335,7 @@
         {
           "horizon": "2 years",
           "items": [
-            "AI Implementation Consultant — projected 35–45% comp increase",
+            "AI Implementation Consultant — explore responsibilities and compensation",
             "Lead cross-functional AI adoption for a business unit",
             "Optional: independent consulting on the side for income diversification"
           ]
@@ -366,7 +366,7 @@
       ],
       "insightsTitle": "What the AI noticed about your profile",
       "insights": [
-        "Your operations background is a hidden advantage: 71% of AI Implementation roles prioritize domain + change-management over coding.",
+        "Your operations experience can help with AI adoption, especially process design and change management.",
         "Fastest wedge into the market: automate a painful workflow at your current employer and document the ROI as your first case study.",
         "Biggest risk to de-risk first: the prompt-engineering gap. It's the cheapest to close and unlocks the most job titles."
       ],
@@ -377,7 +377,7 @@
         "Skill-gap scores + recommended courses",
         "Personalized to your finances & constraints"
       ],
-      "ctaPrimary": "Generate Mine",
+      "ctaPrimary": "View Paid Roadmap",
       "ctaSecondary": "Or try the free skill-gap snapshot first — no payment"
     },
     "journey": {
@@ -823,8 +823,8 @@
   },
   "pricing": {
     "heroFreeCtaEyebrow": "Not ready to commit?",
-    "heroFreeCtaControl": "Get Started Free — no card required",
+    "heroFreeCtaControl": "Get My Free Skill-Gap Snapshot",
     "heroFreeCtaBenefit": "See Your Free Skill-Gap Snapshot",
-    "heroFreeCtaSub": "Try it in 2 minutes. Upgrade only if you love your roadmap."
+    "heroFreeCtaSub": "Get the free snapshot first. The full roadmap is a paid upgrade."
   }
 }
