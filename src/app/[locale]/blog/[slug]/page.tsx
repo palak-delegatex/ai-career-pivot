@@ -1,6 +1,9 @@
+import type { ComponentProps } from "react";
+import ArticleNextStep from "@/components/blog/ArticleNextStep";
+import BlogArticleLink from "@/components/blog/BlogArticleLink";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getTranslations } from "next-intl/server";
 import { getAllSlugs, getPost } from "@/lib/blog";
@@ -125,7 +128,7 @@ function PricingCTA({
 // posts were bouncing at 90–100% with every CTA pointing at /pricing.
 function FreeSnapshotCTA({
   heading = "Get your free AI career snapshot",
-  subheading = "See your best-fit AI-adjacent roles and biggest skill gaps in 2 minutes — free, no signup. Just upload your resume or LinkedIn.",
+  subheading = "Upload your resume file for a free starting view of possible roles and skill gaps. No signup required.",
   buttonText = "Get My Free Snapshot →",
   slug,
 }: {
@@ -143,7 +146,7 @@ function FreeSnapshotCTA({
         {subheading}
       </p>
       <BlogCtaLink
-        href="/free"
+        href="/free?mode=upload"
         ctaText={buttonText}
         ctaLocation="blog_free_snapshot"
         blogSlug={slug}
@@ -169,6 +172,7 @@ export default async function BlogPost({
   // MDX CTA components with localized default copy; MDX-supplied props (if any)
   // still override these defaults.
   const components = {
+    a: (props: ComponentProps<"a">) => <BlogArticleLink {...props} blogSlug={slug} />,
     FreeSnapshotCTA: (props: Record<string, unknown>) => (
       <FreeSnapshotCTA
         heading={t("cta.free.heading")}
@@ -328,9 +332,13 @@ export default async function BlogPost({
             />
           )}
 
+          <ArticleNextStep slug={slug} placement="after_takeaways" />
+
           <article className="prose prose-invert prose-teal max-w-none prose-headings:font-bold prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline">
             <MDXRemote source={post.content} components={components} />
           </article>
+
+          <ArticleNextStep slug={slug} placement="article_end" />
 
           {/* Content→share leg of the AIC-439 viral loop (AIC-909). Renders the
               client share CTA so blog readers can push UTM-tagged links back

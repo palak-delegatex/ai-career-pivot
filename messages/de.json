@@ -466,7 +466,7 @@
     "cta": {
       "free": {
         "heading": "Hol dir deine kostenlose KI-Karriereanalyse",
-        "subheading": "Entdecke in 2 Minuten deine passendsten KI-nahen Rollen und größten Kompetenzlücken – kostenlos, ohne Anmeldung. Lade einfach deinen Lebenslauf oder LinkedIn hoch.",
+        "subheading": "Lade deine Lebenslaufdatei hoch und erhalte kostenlos erste Hinweise auf mögliche Rollen und Kompetenzlücken. Keine Registrierung erforderlich.",
         "button": "Kostenlose Analyse starten →"
       },
       "waitlist": {
@@ -485,6 +485,28 @@
       "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
       "allPosts": "← All posts",
       "postsInCluster": "{count, plural, one {# post} other {# posts}}"
+    },
+    "nextStep": {
+      "explore": {
+        "heading": "Eine berufliche Richtung erkunden",
+        "description": "Vier Fragen liefern einen Rollenvorschlag anhand deiner Interessen und Erfahrung. Ohne Lebenslauf oder Registrierung; vergleiche ihn mit echten Stellenanforderungen.",
+        "label": "Quiz zur beruflichen Orientierung"
+      },
+      "snapshot": {
+        "heading": "Eine Richtung mit deinem Lebenslauf prüfen",
+        "description": "Lade deinen Lebenslauf für erste kostenlose Hinweise auf mögliche Rollen und Kompetenzlücken hoch. Ohne Registrierung; prüfe die Vorschläge anhand aktueller Stellenanzeigen.",
+        "label": "Kostenlose Lebenslauf-Auswertung"
+      },
+      "planning": {
+        "heading": "Deinen Spielraum für Veränderung reflektieren",
+        "description": "Fünf Fragen zu Erfahrung, Motivation, Zeit und Dringlichkeit. Eine Planungshilfe, kein Test deiner Fähigkeiten oder Beschäftigungsfähigkeit. Ohne Registrierung.",
+        "label": "Bereitschaft zur Planung prüfen"
+      },
+      "posting": {
+        "heading": "Eine echte Stellenanzeige prüfen",
+        "description": "Füge eine Stellenbeschreibung ein, um die gefragten Fähigkeiten zu sehen. Ohne Lebenslauf oder Registrierung; vergleiche den Artikel mit einer konkreten Stelle.",
+        "label": "Stellenanzeige prüfen"
+      }
     }
   },
   "jobTracker": {
