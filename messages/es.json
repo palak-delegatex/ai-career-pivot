@@ -466,7 +466,7 @@
     "cta": {
       "free": {
         "heading": "Obtén tu diagnóstico de carrera con IA gratis",
-        "subheading": "Descubre tus roles más afines a la IA y tus mayores brechas de habilidades en 2 minutos: gratis y sin registro. Solo sube tu currículum o LinkedIn.",
+        "subheading": "Sube el archivo de tu currículum para obtener una primera orientación gratuita sobre posibles puestos y carencias de habilidades. Sin registro.",
         "button": "Obtener mi diagnóstico gratis →"
       },
       "waitlist": {
@@ -485,6 +485,28 @@
       "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
       "allPosts": "← All posts",
       "postsInCluster": "{count, plural, one {# post} other {# posts}}"
+    },
+    "nextStep": {
+      "explore": {
+        "heading": "Explora una dirección profesional",
+        "description": "Cuatro preguntas sugieren un puesto según tus intereses y experiencia. Sin currículum ni registro; compara la sugerencia con requisitos de ofertas reales.",
+        "label": "Prueba el cuestionario de orientación"
+      },
+      "snapshot": {
+        "heading": "Contrasta una dirección con tu currículum",
+        "description": "Sube tu currículum para una primera orientación gratuita sobre posibles puestos y habilidades por desarrollar. Sin registro; contrasta las sugerencias con ofertas actuales.",
+        "label": "Obtén un análisis inicial gratuito"
+      },
+      "planning": {
+        "heading": "Reflexiona sobre tu margen para cambiar",
+        "description": "Cinco preguntas sobre experiencia, motivación, tiempo y urgencia. Una reflexión para planificar, no una prueba de habilidades o empleabilidad. Sin registro.",
+        "label": "Revisa tu preparación para planificar"
+      },
+      "posting": {
+        "heading": "Examina una oferta de empleo real",
+        "description": "Pega una descripción del puesto para ver las habilidades que pide. Sin currículum ni registro; compara el artículo con una vacante concreta.",
+        "label": "Revisa una oferta de empleo"
+      }
     }
   },
   "jobTracker": {

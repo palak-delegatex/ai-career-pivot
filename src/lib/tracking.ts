@@ -771,3 +771,8 @@ export function trackConsentSubmitted(props: {
 }) {
   capture("consent_submitted", { ...props, opted_in: props.choice !== "declined" });
 }
+
+// Visible invitation, once per mounted placement; no form data. Existing SDK consent applies.
+export function trackBlogCtaViewed(props: { cta_location: string; destination: string; blog_slug?: string }) {
+  capture("blog_cta_viewed", props);
+}

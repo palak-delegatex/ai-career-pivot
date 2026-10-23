@@ -11,9 +11,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   return {
-    title: "30-Second Career Quiz — Find Your AI Role | AICareerPivot",
+    title: "Career Quiz — Explore an AI-Adjacent Role | AICareerPivot",
     description:
-      "Answer 4 quick questions and see which AI-adjacent role fits your background — no resume, no signup. Then get your personalized pivot roadmap.",
+      "Answer four questions for an interest-based AI-adjacent role suggestion — no resume or signup. Use it as a starting point for your research.",
     alternates: alternatesFor("/quiz", locale),
   };
 }
