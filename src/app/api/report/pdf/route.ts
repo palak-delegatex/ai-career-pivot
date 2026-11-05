@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
+import { canAccessReport } from "@/lib/report-access";
 import { buildPivotPlanPdf } from "@/lib/pdf-builder";
 import type { PivotPlan, UserProfile } from "@/lib/intake";
 
@@ -22,6 +23,8 @@ export async function GET(request: NextRequest) {
     if (!report) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
+
+    if (!await canAccessReport(report)) return NextResponse.json({ error: "Report access required" }, { status: 403 });
 
     const profile = report.profile as UserProfile;
     const plans = report.plans as PivotPlan[];
@@ -46,6 +49,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": "application/pdf",
+        "Cache-Control": "private, no-store",
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });

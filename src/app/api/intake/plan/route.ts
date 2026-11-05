@@ -4,7 +4,11 @@ import { streamObject } from "ai";
 import { jsonSchema } from "ai";
 import type { UserProfile, ValuesAssessment } from "@/lib/intake";
 import { getSupabaseClient } from "@/lib/supabase";
-import { getStripeClient } from "@/lib/stripe";
+import { findOrder, verifyPaidOrder } from "@/lib/paid-orders";
+import { canAccessOrder } from "@/lib/order-access";
+import { preparePaidReport, persistedReportResponse, releaseReport, ReportBusyError, type PreparedReport } from "@/lib/paid-reports";
+import { trackServerJourney } from "@/lib/journey-server";
+import { safeAnalyticsId } from "@/lib/journey-events";
 import { scheduleMilestoneEmails } from "@/lib/milestone-emails";
 import { localeSystemPrompt } from "@/lib/locale";
 
@@ -232,61 +236,36 @@ type PivotPlan = {
 };
 
 export async function POST(req: NextRequest) {
-  const { profile, paymentSessionId, valuesAssessment, locale }: { profile: UserProfile; paymentSessionId?: string; valuesAssessment?: ValuesAssessment; locale?: string } = await req.json();
+  let input;
+  try { input = await req.json(); } catch { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
+  if (!input || typeof input !== "object") return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  const { profile, paymentSessionId, valuesAssessment, locale, posthogDistinctId }: { profile: UserProfile; paymentSessionId?: string; valuesAssessment?: ValuesAssessment; locale?: string; posthogDistinctId?: string } = input;
+  const analyticsId = safeAnalyticsId(posthogDistinctId);
 
-  if (!profile) {
+  if ((paymentSessionId !== undefined && (typeof paymentSessionId !== "string" || paymentSessionId.length > 255)) || !profile || ![profile.skills, profile.transferableSkills, profile.experience, profile.education, profile.certifications, profile.interests].every(Array.isArray)) {
     return NextResponse.json({ error: "profile required" }, { status: 400 });
   }
 
   const supabase = getSupabaseClient();
 
+  let prepared: PreparedReport | undefined;
+  let paidOrderId: string | undefined;
   if (paymentSessionId) {
-    const { data: order } = await supabase
-      .from("orders")
-      .select("id, status")
-      .eq("stripe_session_id", paymentSessionId)
-      .single();
-
-    if (!order || order.status !== "paid") {
-      if (paymentSessionId.startsWith("bypass_")) {
-        return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+    try {
+      const existingOrder = await findOrder(paymentSessionId);
+      if (!existingOrder || !await canAccessOrder(existingOrder)) {
+        return NextResponse.json({ error: "Use your purchase browser or sign in with your purchase email." }, { status: 403 });
       }
-      // Webhook may not have fired yet. Fall back to checking Stripe directly.
-      try {
-        const stripe = getStripeClient();
-        const session = await stripe.checkout.sessions.retrieve(paymentSessionId);
-        if (session.payment_status !== "paid") {
-          return NextResponse.json({ error: "payment not verified" }, { status: 402 });
-        }
-        await supabase
-          .from("orders")
-          .update({ status: "paid" })
-          .eq("stripe_session_id", paymentSessionId);
-      } catch {
-        return NextResponse.json({ error: "payment not verified" }, { status: 402 });
-      }
-    }
-  }
-
-  let reportId: string | undefined;
-  if (paymentSessionId) {
-    const { data: report } = await supabase
-      .from("reports")
-      .insert({
-        email: profile.email,
-        profile,
-        plans: [],
-        ...(valuesAssessment ? { values_assessment: valuesAssessment } : {}),
-      })
-      .select("id")
-      .single();
-
-    if (report) {
-      reportId = report.id;
-      await supabase
-        .from("orders")
-        .update({ report_id: report.id })
-        .eq("stripe_session_id", paymentSessionId);
+      const order = await verifyPaidOrder(paymentSessionId);
+      if (!order) return NextResponse.json({ error: "payment not verified" }, { status: 402 });
+      paidOrderId = order.id;
+      profile.email = order.email; // Never bind a paid report to a caller-supplied email.
+      prepared = await preparePaidReport(order, profile, valuesAssessment);
+      if (prepared.plans) return new Response(JSON.stringify({ plans: prepared.plans }), {
+        headers: { "Content-Type": "text/plain", "Cache-Control": "no-store", "x-report-id": prepared.id },
+      });
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof ReportBusyError ? error.message : "Could not prepare your saved report. Retry without paying again." }, { status: error instanceof ReportBusyError ? 409 : 503 });
     }
   }
 
@@ -319,25 +298,8 @@ export async function POST(req: NextRequest) {
     // Streaming errors surface here rather than the outer try/catch, since the
     // 200 response headers are already flushed. Log for observability; the
     // client detects the truncated stream and retries.
-    onError: ({ error }) => {
-      console.error("Plan generation stream error:", error);
-    },
-    onFinish: async ({ object }) => {
-      if (reportId && object) {
-        await supabase
-          .from("reports")
-          .update({ plans: object.plans })
-          .eq("id", reportId);
-
-        const firstName = (profile.name ?? "").split(" ")[0] || "there";
-        scheduleMilestoneEmails(
-          supabase,
-          reportId,
-          profile.email,
-          firstName,
-          object.plans
-        ).catch((err) => console.error("Milestone email scheduling error:", err));
-      }
+    onError: () => {
+      console.error("Plan generation stream failed");
     },
     prompt: `You are an elite career strategist who has helped 500+ professionals execute mid-career pivots in the age of AI. You combine deep labor-market knowledge with practical transition planning, and you are obsessed with how AI is transforming every industry. Your core belief: professionals who master AI tools for their new role will out-earn and out-perform those who don't by 2-3x.
 
@@ -420,13 +382,20 @@ VALUES-AWARE PLANNING: Factor the user's values, work style, and energy profile 
 Generate deeply personalized, immediately actionable plans. Reference their specific companies, skills, and experience by name. No filler.${localeSystemPrompt(locale)}`,
   });
 
-  return result.toTextStreamResponse({
-    headers: {
-      ...(reportId ? { "x-report-id": reportId } : {}),
-    },
-  });
-  } catch (err) {
-    console.error("Plan generation error:", err);
+  if (prepared) {
+    const report = prepared;
+    return persistedReportResponse(result.textStream, result.object, report, async () => {
+      await trackServerJourney("report_ready", analyticsId ?? "order_" + paidOrderId, { report_id: report.id }, "report-ready:" + report.id);
+      const object = await result.object;
+      scheduleMilestoneEmails(supabase, report.id, profile.email, (profile.name ?? "").split(" ")[0] || "there", object.plans)
+        .catch(() => console.warn("Milestone scheduling unavailable"));
+    }, () => trackServerJourney("report_generation_failed", analyticsId ?? "order_" + paidOrderId, { paid: true, reason: "generation_or_persistence" }));
+  }
+  return result.toTextStreamResponse({ headers: { "Cache-Control": "no-store" } });
+  } catch {
+    if (prepared) await releaseReport(prepared);
+    console.error("Plan generation failed", { category: "generation_unavailable" });
+    await trackServerJourney("report_generation_failed", analyticsId, { paid: !!paymentSessionId });
     return NextResponse.json(
       { error: "Failed to generate pivot plans. Please try again." },
       { status: 500 }

@@ -7,6 +7,7 @@ import RoadmapTimeline from "@/components/RoadmapTimeline";
 import SkillDeltaPanel from "@/components/SkillDeltaPanel";
 import SkillGapChart from "@/components/SkillGapChart";
 import RiskAssessmentCard from "@/components/RiskAssessmentCard";
+import { getPosthogDistinctId } from "@/lib/tracking";
 import { useLocale } from "next-intl";
 
 type DeepPartial<T> = T extends object
@@ -302,7 +303,7 @@ export default function StreamingPlanGeneration({
         res = await fetch("/api/intake/plan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile, paymentSessionId, valuesAssessment, locale }),
+          body: JSON.stringify({ profile, paymentSessionId, valuesAssessment, locale, posthogDistinctId: getPosthogDistinctId() }),
           signal: controller.signal,
         });
       } catch {

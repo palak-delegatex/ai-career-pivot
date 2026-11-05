@@ -1,5 +1,6 @@
 "use client";
 
+import AuthAnalytics from "@/components/AuthAnalytics";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 
@@ -8,5 +9,5 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   if (!process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) {
     return <>{children}</>;
   }
-  return <PHProvider client={posthog}>{children}</PHProvider>;
+  return <PHProvider client={posthog}><AuthAnalytics />{children}</PHProvider>;
 }

@@ -1,8 +1,9 @@
+import { sanitizeAnalyticsProperties } from "./journey-events";
 import posthog from "posthog-js";
 
 function capture(event: string, properties?: Record<string, unknown>) {
   if (typeof window !== "undefined" && posthog.__loaded) {
-    posthog.capture(event, properties);
+    posthog.capture(event, properties ? sanitizeAnalyticsProperties(properties) : undefined);
   }
 }
 
@@ -120,7 +121,7 @@ export function pageSource(): string {
 
 // Checkout funnel
 export function trackCheckoutStarted(props: { plan: string; has_discount: boolean; cta_location?: string }) {
-  capture("checkout_started", props);
+  capture("checkout_attempted", props);
 }
 
 export function trackCheckoutError(props: { plan: string; error: string; attempt?: number; retrying?: boolean }) {
@@ -142,12 +143,14 @@ export function getPosthogDistinctId(): string | undefined {
 // (source: "client_success_page") is best-effort and drops silently on adblock,
 // redirect failure, or tab-close-after-pay. Filter by `source` to avoid
 // double-counting; the webhook copy is the reliable revenue signal.
-export function trackPaymentVerified(props: { session_id: string }) {
-  capture("payment_verified", { ...props, source: "client_success_page" });
+export function trackPaymentVerified(_props: { session_id: string }) {
+  void _props;
+  capture("checkout_return_verified", { source: "client_success_page" });
 }
 
-export function trackPaymentVerificationFailed(props: { session_id: string }) {
-  capture("payment_verification_failed", props);
+export function trackPaymentVerificationFailed(_props: { session_id: string }) {
+  void _props;
+  capture("payment_verification_failed", { reason: "unverified" });
 }
 
 // CTA clicks. `blog_slug` is set only for in-content blog CTAs (AIC-821) so the
@@ -771,3 +774,7 @@ export function trackConsentSubmitted(props: {
 }) {
   capture("consent_submitted", { ...props, opted_in: props.choice !== "declined" });
 }
+
+export function trackAuthStarted(method: "google" | "magic_link") { capture("auth_started", { method }); }
+export function trackAuthFailed(reason: "provider" | "request" | "callback") { capture("auth_failed", { reason }); }
+export function trackReportViewed(props: { report_id: string }) { capture("report_viewed", props); }
