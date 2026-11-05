@@ -15,14 +15,12 @@ test('free result → one-time offer → checkout return preserves the uploaded 
     sessionStorage.setItem('free_snapshot', JSON.stringify(snapshot));
   }, { profile, snapshot });
   await page.goto('/free-results');
-  await expect(page.getByText('Product Manager', { exact: true }).first()).toBeVisible();
-  // Exercise the current personalized upgrade drawer.
-  const buttons = await page.getByRole('button').allTextContents();
-  const upgrade = page.getByRole('button', { name: /unlock|full report|roadmap/i }).first();
-  if (await upgrade.count()) await upgrade.click();
-  const offerLink = page.getByRole('link', { name: /Get Full Report.*19/i });
-  expect(await offerLink.count(), JSON.stringify(buttons)).toBeGreaterThan(0);
-  await offerLink.first().click();
+  await expect(page.getByText('Product Manager', { exact: true }).first()).toBeVisible({ timeout: 15000 });
+  // Follow the comparison copy shipped in #284 and wait for the drawer.
+  await page.getByRole('button', { name: 'Compare Full Report — $19', exact: true }).first().click();
+  const offerLink = page.getByRole('link', { name: 'Continue to $19 Report', exact: true });
+  await expect(offerLink).toBeVisible();
+  await offerLink.click();
   await expect(page).toHaveURL(/pricing/);
   const form = page.locator('form').filter({ has: page.getByRole('button', { name: 'Get My Report — $19', exact: true }) });
   await expect(form).toBeVisible();

@@ -19,8 +19,8 @@ Recovered the unpublished customer-journey changes onto main at 399e82c. The ori
 - `npx tsc --noEmit --incremental false`: passed.
 - ESLint on all changed/new TypeScript files: passed; subsequently added paid-report tests also passed lint.
 - `git diff --check`: passed.
-- Playwright synthetic browser suite: **2 passed, 1 failed**. Verification-outage retry and default-English canonicalization passed. Free-results → checkout stalled on `Loading your snapshot...` before its role assertion. Cause remains unconfirmed.
-- Browser rerun could not start: `ENOSPC` creating the Next.js lockfile and Playwright output directory. Fresh dependency installation also failed with `ENOSPC`. Validation reused the existing customer-journey checkout's dependencies. Only this task's failed install/cache/build artifacts were removed.
+- Playwright synthetic browser suite: **3 passed (10.0s)** after updating the historical test selector to the comparison drawer copy shipped in #284. Covers free result → pricing → checkout return with profile preservation, verification-outage retry, and default-English canonicalization. The test now waits for the visible drawer link and allows cold-page hydration before the first assertion.
+- Earlier validation attempts hit `ENOSPC` during dependency installation and browser startup. A later run had sufficient disk space and completed all three browser tests. Validation reused the existing customer-journey checkout's dependencies. Only this task's failed install/cache/build artifacts were removed.
 - Production build and real Stripe/Supabase/AI integration have not passed in this session. No production data, configuration, deployment or migrations were changed.
 
 ## Paperclip handoff
@@ -31,7 +31,7 @@ The latest available backup is dated October 25. It lists CTO-owned AIC-1339, �
 
 ## Before marking ready
 
-1. Restore enough disk space and rerun all three browser scenarios; investigate the initial free-results loading failure.
+1. Preserve the passing synthetic browser suite when reconciling this patch with other drafts. Existing Base UI button and smooth-scroll development warnings remain outside this recovery change.
 2. Build against the locked dependencies and run isolated Stripe test-mode + Supabase + model integration QA: payment/webhook replay, interrupted generation, save failure/retry, saved-report recovery, and cross-account denial.
 3. Verify existing production schema matches the checked-in orders/reports migrations and inspect ownership/sharing expectations. The in-memory tests do not model Postgres constraints, RLS, or provider transport.
 4. Reconcile current Paperclip tasks and analytics event consumers before merge.
