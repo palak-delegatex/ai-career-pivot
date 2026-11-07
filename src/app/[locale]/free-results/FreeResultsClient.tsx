@@ -70,54 +70,6 @@ function JobTeaser({ targetRole, jobCount }: { targetRole: string; jobCount: num
 }
 
 /**
- * Salary trajectory gate backdrop (AIC-824). Current estimate anchors the left
- * (rendered as real text when a truthful number is available; masked otherwise
- * — we never fabricate a salary). The right/"target" side is the paid
- * prescription: a `TrendingUp` "projected increase" with the destination number
- * withheld, and the right 60% of the gradient bar blurred.
- */
-function GhostSalaryTrajectory({
-  uplift,
-  direction,
-  currentSalary,
-}: {
-  uplift: number;
-  direction: "up";
-  currentSalary?: string;
-}) {
-  return (
-    <div className="p-4 bg-slate-800/40">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-center">
-          <p className="text-[10px] uppercase tracking-wider text-slate-400">Current</p>
-          <p className="text-lg font-bold text-slate-300">{currentSalary ?? "$XXX,XXX"}</p>
-        </div>
-        <div className="flex-1 flex flex-col items-center">
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400">
-            {direction === "up" && <TrendingUp className="w-3 h-3" />}+${uplift}K
-          </span>
-          {/* Left 40% sharp (where you are), right 60% blurred (where you could be). */}
-          <div className="relative w-full h-1.5 rounded-full bg-gradient-to-r from-slate-600 to-emerald-500 mt-1 overflow-hidden">
-            <div
-              className="absolute inset-y-0 right-0 w-3/5 backdrop-blur-[2px] bg-slate-900/20"
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-        <div className="text-center">
-          <p className="text-[10px] uppercase tracking-wider text-slate-400">Target</p>
-          <p className="inline-flex items-center gap-1 text-lg font-bold text-emerald-300 blur-[3px] select-none" aria-hidden="true">
-            <TrendingUp className="w-4 h-4" />
-          </p>
-          <p className="text-[10px] text-emerald-300/70">projected increase</p>
-        </div>
-      </div>
-      <p className="text-xs text-slate-400 mt-3">Bridge budget + ROI breakeven timeline included</p>
-    </div>
-  );
-}
-
-/**
  * Deferred email capture (AIC-618 D1 / AIC-776). Email is no longer asked for
  * on the upload form — the user sees value first, then opts in here to have the
  * snapshot (and the follow-up nurture) sent to them. Purely additive: skipping
@@ -418,7 +370,6 @@ export default function FreeResultsClient() {
 
   // Single best-match focus (Hick's Law) — always show the #1 ranked path.
   const activePath = snapshot.paths[0];
-  const salaryUplift = snapshot.estimatedSalaryUplift ?? 15;
 
   // Gate zone 1 backing data. The first milestone is a real, personalized step
   // derived from the user's own top skill gap (honest "diagnosis free" teaser);
@@ -642,11 +593,11 @@ export default function FreeResultsClient() {
       <div className="mb-6 mt-6">
         <ContextualUpgradePrompt
           title="Salary trajectory & financial bridge plan"
-          hook={`Estimated +$${salaryUplift}K uplift. See the full current → target model, bridge budget & ROI breakeven.`}
+          hook="Explore salary scenarios, transition costs, and a bridge budget in the paid report."
           icon={TrendingUp}
           onUnlock={() => openUpgrade("gate_salary")}
         >
-          <GhostSalaryTrajectory uplift={salaryUplift} direction="up" />
+          <div className="h-64 bg-slate-800/40" aria-hidden="true" />
         </ContextualUpgradePrompt>
       </div>
 

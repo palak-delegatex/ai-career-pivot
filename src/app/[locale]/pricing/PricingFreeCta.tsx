@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { trackCtaClicked } from "@/lib/tracking";
 
 // CTA for the Free Snapshot tier card on /pricing (AIC-778). The Free tier is

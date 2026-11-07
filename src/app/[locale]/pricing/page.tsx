@@ -13,7 +13,6 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Building2, Rocket, Briefcase } from "lucide-react";
 import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
 import OutcomeProofStrip from "@/components/OutcomeProofStrip";
-import PricingComparisonTable from "@/components/PricingComparisonTable";
 import PlanComparisonTable from "@/components/PlanComparisonTable";
 import CheckoutTrustBlock from "@/components/CheckoutTrustBlock";
 import GuaranteeCard from "@/components/GuaranteeCard";
@@ -44,11 +43,11 @@ export async function generateMetadata({
 const FAQ_ITEMS = [
   {
     q: "What do I get for free?",
-    a: "A complete career pivot snapshot: your #1 best-fit career path with a match score, your top 3 skill gaps to close, and the transferable strengths you already have. No credit card, no account, results in about 30 seconds. It's the honest preview of where AI could take your career before you decide to go deeper.",
+    a: "A complete career pivot snapshot: your #1 best-fit career path with a match score, your top 3 skill gaps to close, and the transferable strengths you already have. No credit card or account required. The full roadmap is a paid upgrade. It's the honest preview of where AI could take your career before you decide to go deeper.",
   },
   {
     q: "What does the $19 report add on top of the free snapshot?",
-    a: "The full report expands your snapshot into a complete career pivot plan: all 3 career paths ranked by fit with detailed analysis, your complete skill-gap map (15+ gaps) with how to close each, 6/12/24-month milestone roadmaps, financial bridge planning with salary trajectories and ROI, AI coaching with a weekly action plan, an AI resume builder, and a job board with personalized match scores. The $19 intro price is a limited-time offer.",
+    a: "The full report expands your snapshot into a complete career pivot plan: 2–3 career paths ranked by fit with detailed analysis, a detailed skill-gap map with how to close each, 6/12/24-month milestone roadmaps, financial bridge planning with salary trajectories and ROI, AI coaching with a weekly action plan, an AI resume builder, and a job board with personalized match scores. The $19 intro price is a limited-time offer.",
   },
   {
     q: "What does Lifetime ($149) include?",
@@ -56,7 +55,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How is this different from just asking ChatGPT?",
-    a: "ChatGPT gives you generic advice unless you spend 30-45 minutes carefully prompting it and pasting in your full background. AICareerPivot extracts your transferable skills automatically, knows what context matters, and outputs a structured roadmap. Most users get better output in 5 minutes than from an hour of ChatGPT prompting.",
+    a: "AICareerPivot provides a structured workflow: a free snapshot of your top career match, followed by an optional paid roadmap based on your background and constraints.",
   },
   {
     q: "What's your refund policy?",
@@ -84,8 +83,8 @@ const FREE_FEATURES = {
 };
 
 const REPORT_FEATURES = [
-  "3 career paths ranked by fit",
-  "Complete skill-gap analysis (15+ gaps)",
+  "2–3 career paths ranked by fit",
+  "Detailed skill-gap analysis",
   "6/12/24-month milestone roadmap",
   "Financial bridge & salary trajectory",
   "AI coaching & weekly action plan",
@@ -190,16 +189,15 @@ export default function PricingPage() {
             <span className="text-teal-400"> Upgrade when you&apos;re ready to commit.</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
-            The average career coach charges $250/hour. You&apos;ll need 3-5 sessions
-            before they give you actionable advice. That&apos;s $750–$1,250 before you
-            get a single roadmap. AICareerPivot builds your complete roadmap in minutes.
+            Start with your top career match, three skill gaps, and transferable strengths.
+            The $19 Career Report adds the full roadmap; $149 Lifetime includes unlimited updates.
           </p>
           <div className="flex items-center justify-center gap-2 mt-6">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
             </span>
-            <span className="text-slate-300 text-sm font-medium">Free AI roadmap in ~60 seconds</span>
+            <span className="text-slate-300 text-sm font-medium">Free skill-gap snapshot · full roadmap is paid</span>
           </div>
           <PricingHeroCta />
         </div>
@@ -210,7 +208,7 @@ export default function PricingPage() {
           {[
             { label: "9 AI-adjacent roles mapped", icon: Building2 },
             { label: "30+ pivot paths modeled", icon: Rocket },
-            { label: "Free AI roadmap in ~60s", icon: Briefcase },
+            { label: "Free skill-gap snapshot", icon: Briefcase },
           ].map(({ label, icon: Icon }) => (
             <span key={label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
               <Icon className="w-4 h-4 text-teal-400" />
@@ -222,20 +220,16 @@ export default function PricingPage() {
           Built on Claude · no signup required to start
         </p>
 
-        {/* Feature-comparison table — us vs. status quo (coach) vs. free (ChatGPT),
-            AICareerPivot column visually anchored (AIC-738) */}
-        <PricingComparisonTable />
-
         {/* Value prop callout */}
         <p className="text-slate-400 text-sm italic max-w-md mx-auto text-center mb-12">
-          The only career pivot tool that plans around your mortgage, your kids, and your income — not just your skills.
+          The paid roadmap considers your skills, finances, family commitments, and location.
         </p>
 
         {/* Outcome proof strip — anchor the value frame before the price (AIC-753) */}
         <div className="max-w-4xl mx-auto mb-10">
           <OutcomeProofStrip
             metrics={[
-              { value: PROOF_METRICS.freeSpeed, label: "Free AI roadmap", accent: "text-teal-400" },
+              { value: "$0", label: "Free skill-gap snapshot", accent: "text-teal-400" },
               { value: PROOF_METRICS.noSignup, label: "To get started" },
               { value: PROOF_METRICS.rolesMapped, label: "AI-adjacent, mapped" },
               { value: PROOF_METRICS.pathsMapped, label: "Pivot paths modeled", accent: "text-emerald-400" },
@@ -281,7 +275,7 @@ export default function PricingPage() {
             </CardContent>
             <CardFooter className="px-8 pb-8 flex-col gap-2">
               <PricingFreeCta />
-              <p className="text-slate-500 text-xs text-center">Results in ~30 seconds. Upgrade anytime.</p>
+              <p className="text-slate-500 text-xs text-center">Snapshot first. Full roadmap available with a paid plan.</p>
             </CardFooter>
           </Card>
 

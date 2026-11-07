@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useInView } from "framer-motion";
@@ -268,7 +268,7 @@ export default function FeatureShowcase() {
         {/* Panel */}
         <div className="rounded-2xl bg-slate-900/40 border border-slate-800 p-5 sm:p-6 backdrop-blur-sm">
           {/* Sample banner */}
-          <div className="flex items-center gap-2 mb-5 text-xs text-slate-500">
+          <div className="flex flex-col items-start gap-2 mb-5 text-xs text-slate-500 sm:flex-row sm:items-center">
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-950/50 border border-amber-800/40 text-amber-300 font-medium">
               {t("sampleBadge")}
             </span>

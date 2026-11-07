@@ -25,8 +25,8 @@ interface Row {
 }
 
 const ROWS: Row[] = [
-  { feature: "Career path matches", free: "1", report: "3", lifetime: "3" },
-  { feature: "Skill-gap analysis", free: "Top 3", report: "Full (15+)", lifetime: "Full (15+)" },
+  { feature: "Career path matches", free: "1", report: "2–3", lifetime: "2–3" },
+  { feature: "Skill-gap analysis", free: "Top 3", report: "Detailed", lifetime: "Detailed" },
   { feature: "Transferable strengths", free: true, report: true, lifetime: true },
   { feature: "6 / 12 / 24-month milestone roadmap", free: false, report: true, lifetime: true },
   { feature: "Financial bridge plan", free: false, report: true, lifetime: true },

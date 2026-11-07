@@ -60,14 +60,14 @@
   },
   "home": {
     "hero": {
-      "badge": "Diagnóstico gratis de brechas · Sin registro · Resultados en 3 min",
+      "badge": "Diagnóstico gratuito de habilidades · Sin registro",
       "titleLine1": "Deja de sentirte atrapado.",
       "titleLine2": "Construye tu plan de escape.",
-      "subtitle": "Sube tu currículum. Obtén un plan de cambio de carrera personalizado basado en tus habilidades reales, tus finanzas y tus circunstancias familiares — en menos de 5 minutos.",
+      "subtitle": "Sube tu currículum para ver tu mejor opción profesional, tres brechas de habilidades y tus fortalezas transferibles. El informe de pago incluye la hoja de ruta completa.",
       "socialProof": "127 profesionales dieron su salto este mes",
-      "ctaPrimary": "Obtén mi diagnóstico gratis de brechas →",
+      "ctaPrimary": "Obtener mi diagnóstico gratuito →",
       "freeLink": "¿Ya sabes tu camino? Consigue el Plan de Pivote por $19 →",
-      "freeNote": "3 minutos · Sin suscripción · Tu plan completo para siempre",
+      "freeNote": "Diagnóstico gratuito · Sin tarjeta · Hoja de ruta de pago",
       "viewers": "🔥 83 personas vieron esta página hoy",
       "outcomeBadgeValue": "9 roles · 30+ rutas",
       "outcomeBadge": "afines a la IA, totalmente mapeados",
@@ -104,20 +104,20 @@
     "howItWorks": {
       "eyebrow": "Cómo funciona",
       "title": "De bloqueado a estratégico en tres pasos",
-      "subtitle": "Un proceso sencillo que convierte tu situación real en un plan de acción concreto."
+      "subtitle": "Empieza con un diagnóstico gratuito. Elige la hoja de ruta de pago cuando quieras un plan detallado."
     },
     "steps": [
       {
-        "title": "Analizamos tu perfil",
-        "desc": "Comparte tu LinkedIn, currículum y portafolio. Nuestra IA analiza tu experiencia real — historial laboral, habilidades transferibles, logros — antes de generar ninguna recomendación."
+        "title": "Empieza con tu currículum",
+        "desc": "Sube tu currículum para explorar cómo tu experiencia puede transferirse a un puesto relacionado con IA."
       },
       {
-        "title": "La IA construye tu estrategia",
-        "desc": "Combinamos tu perfil real con tu situación financiera y circunstancias familiares para crear un plan de transición personalizado. No es un consejo genérico. Es tu plan, construido con tus datos."
+        "title": "Revisa tu diagnóstico gratuito",
+        "desc": "Consulta tu mejor opción profesional, tres brechas de habilidades y tus fortalezas transferibles."
       },
       {
-        "title": "Ejecuta con confianza",
-        "desc": "Obtén hitos concretos a 6 meses, 1 año y 2 años — con brechas de habilidades y acciones basadas en dónde estás hoy realmente."
+        "title": "Elige la hoja de ruta de pago",
+        "desc": "El informe de $19 añade 2–3 opciones e hitos a 6/12/24 meses según tu experiencia y tus circunstancias."
       }
     ],
     "dashboard": {
@@ -189,14 +189,14 @@
       "title": "Tu carrera no espera. Tú tampoco deberías.",
       "subtitle": "Cada semana que demoras, la IA transforma más puestos. Obtén tu plan de cambio personalizado ahora — mientras dure el precio de lanzamiento.",
       "cta": "Crea mi plan — <s>$29</s> $19",
-      "note": "3 minutos · Sin suscripción · Tuyo para siempre"
+      "note": "Informe de pago único · Sin suscripción"
     },
     "courses": {
       "eyebrow": "Sube de nivel",
       "title": "Habilidades en IA que realmente te consiguen empleo",
       "subtitle": "Las credenciales que los reclutadores reconocen. Curadas para profesionales que dan el salto a roles relacionados con IA.",
       "match": "{score}% de coincidencia",
-      "ctaNote": "¿No sabes qué cursos se adaptan a tu perfil? Obtén una ruta de aprendizaje personalizada con tu análisis gratuito de cambio de carrera.",
+      "ctaNote": "¿Quieres cursos adaptados a tu experiencia? Se incluyen en la hoja de ruta de pago.",
       "cta": "Obtener mi ruta de aprendizaje personalizada — <s>$29</s> $19 →",
       "items": [
         {
@@ -294,15 +294,15 @@
       "label": "Construido con tecnología de"
     },
     "stickyCta": {
-      "cta": "Prueba mi diagnóstico gratis de brechas →"
+      "cta": "Obtener mi diagnóstico gratuito →"
     },
     "featureShowcase": {
       "eyebrow": "Míralo En Acción",
-      "headingLead": "Esto es lo que obtienes.",
-      "headingAccent": "Antes de pagar.",
-      "subheading": "Sin promesas vagas. Aquí tienes una muestra real del plan, los insights y el informe generados por IA — creados a partir de un perfil real de cambio de carrera.",
-      "sampleBadge": "Salida de ejemplo",
-      "sampleNote": "— tu plan se genera a partir de tu currículum, tus finanzas y tus circunstancias reales.",
+      "headingLead": "Vista previa de la hoja de ruta de pago.",
+      "headingAccent": "Ejemplos ilustrativos.",
+      "subheading": "Explora ejemplos del plan, los análisis y el PDF de pago. El diagnóstico gratuito muestra tu mejor opción, brechas y fortalezas.",
+      "sampleBadge": "Ejemplo ilustrativo del informe de pago",
+      "sampleNote": "— contenido de ejemplo, no un resultado de cliente ni una predicción de tu futuro.",
       "tabs": {
         "plan": {
           "label": "Generación de plan",
@@ -337,7 +337,7 @@
         {
           "horizon": "2 años",
           "items": [
-            "Consultor de Implementación de IA — aumento salarial proyectado del 35–45%",
+            "Consultor de implementación de IA — explora responsabilidades y remuneración",
             "Lidera la adopción de IA multifuncional para una unidad de negocio",
             "Opcional: consultoría independiente paralela para diversificar ingresos"
           ]
@@ -368,7 +368,7 @@
       ],
       "insightsTitle": "Lo que la IA notó sobre tu perfil",
       "insights": [
-        "Tu experiencia en operaciones es una ventaja oculta: el 71% de los roles de implementación de IA priorizan el dominio + la gestión del cambio sobre la programación.",
+        "Tu experiencia en operaciones puede ayudar en la adopción de IA, especialmente en procesos y gestión del cambio.",
         "La entrada más rápida al mercado: automatiza un flujo de trabajo tedioso en tu empleador actual y documenta el ROI como tu primer caso de estudio.",
         "El mayor riesgo a mitigar primero: la brecha en ingeniería de prompts. Es la más barata de cerrar y desbloquea la mayoría de los puestos."
       ],
@@ -379,7 +379,7 @@
         "Puntuaciones de brechas de skills + cursos recomendados",
         "Personalizado según tus finanzas y circunstancias"
       ],
-      "ctaPrimary": "Generar el mío",
+      "ctaPrimary": "Ver hoja de ruta de pago",
       "ctaSecondary": "O prueba primero la instantánea gratuita de brechas de skills — sin pago"
     },
     "journey": {
@@ -825,8 +825,8 @@
   },
   "pricing": {
     "heroFreeCtaEyebrow": "¿Aún no quieres comprometerte?",
-    "heroFreeCtaControl": "Empieza gratis — sin tarjeta",
+    "heroFreeCtaControl": "Obtener mi diagnóstico gratuito",
     "heroFreeCtaBenefit": "Ve tu análisis gratuito de brechas de habilidades",
-    "heroFreeCtaSub": "Pruébalo en 2 minutos. Mejora tu plan solo si te encanta."
+    "heroFreeCtaSub": "Obtén primero el diagnóstico gratuito. La hoja de ruta completa es de pago."
   }
 }

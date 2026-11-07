@@ -20,8 +20,8 @@ const STEPS = [
   },
   {
     icon: Map,
-    title: "Get a phased roadmap",
-    body: "A structured 6-month / 1-year / 2-year plan with concrete milestones — built for your constraints.",
+    title: "Upgrade to a paid roadmap",
+    body: "The paid report adds a 6-month / 1-year / 2-year plan with milestones built for your constraints.",
   },
   {
     icon: LineChart,
