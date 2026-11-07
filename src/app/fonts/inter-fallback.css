@@ -1,0 +1,9 @@
+/* Preserve the previous next/font/google Inter fallback metrics exactly. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0.0%;
+  size-adjust: 107.12%;
+}

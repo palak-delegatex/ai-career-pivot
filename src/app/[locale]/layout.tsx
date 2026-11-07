@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import {
-  Inter,
   Source_Serif_4,
   JetBrains_Mono,
   Noto_Sans_Devanagari,
@@ -10,6 +9,8 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
+import "../fonts/inter-fallback.css";
+import { interFontVariables } from "@/app/fonts/inter";
 import { PostHogProvider } from "../PostHogProvider";
 import { PreloadResources } from "../PreloadResources";
 import { Analytics } from "@vercel/analytics/next";
@@ -17,13 +18,6 @@ import { Footer } from "@/components/Footer";
 import { HelpPanel } from "@/components/ui/help-panel";
 import { routing, type Locale } from "@/i18n/routing";
 import { alternatesFor, ogLocaleFor, localizedPath } from "@/lib/seo";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
 
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
@@ -164,7 +158,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
+      className={`${interFontVariables} ${sourceSerif.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable} ${notoJP.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <PreloadResources />
