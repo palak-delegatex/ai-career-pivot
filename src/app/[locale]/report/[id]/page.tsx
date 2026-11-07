@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { canAccessReport } from "@/lib/report-access";
+import ReportViewed from "@/components/ReportViewed";
 import { Link } from "@/i18n/navigation";
 import SiteNav from "@/components/SiteNav";
 import type { PivotPlan, UserProfile, ValuesAssessment } from "@/lib/intake";
@@ -55,29 +56,12 @@ export default async function ReportPage({ params }: Props) {
   const valuesAssessment = report.values_assessment as ValuesAssessment | null;
   const topPlan = bestPlan(plans);
 
-  // Owner detection (AIC-712). The report page is public-by-unguessable-link so
-  // the share loop works end to end, but personal profile details are shown
-  // ONLY to the authenticated owner. A non-owner (unauthenticated link
-  // recipient, or a different signed-in user) gets a PII-minimized public view:
-  // the pivot plans/roadmap only — no name, no profile card, no dealbreakers,
-  // no transferable-skills list, and none of the profile-driven owner tools
-  // (resume/cover-letter/gap-analysis generators run off the owner's profile).
-  const serverSupabase = await getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await serverSupabase.auth.getUser();
-  const isOwner = Boolean(
-    user &&
-      ((report.auth_user_id && report.auth_user_id === user.id) ||
-        (report.email &&
-          user.email &&
-          report.email.toLowerCase() === user.email.toLowerCase()))
-  );
+  const isOwner = await canAccessReport(report);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <SiteNav />
-      <ActivityTracker reportId={id} />
+      {isOwner && <><ActivityTracker reportId={id} /><ReportViewed reportId={id} /></>}
       <main id="main-content" className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
           <p className="text-teal-400 font-semibold text-sm uppercase tracking-widest mb-3">

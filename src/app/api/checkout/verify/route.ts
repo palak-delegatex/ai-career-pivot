@@ -1,42 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripeClient } from "@/lib/stripe";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
+import { canAccessOrder } from "@/lib/order-access";
+import { findOrder, verifyPaidOrder } from "@/lib/paid-orders";
 
 export async function GET(req: NextRequest) {
-  const sessionId = req.nextUrl.searchParams.get("session_id");
-  if (!sessionId) {
-    return NextResponse.json({ error: "session_id required" }, { status: 400 });
-  }
-
-  if (sessionId.startsWith("bypass_")) {
-    const supabase = getSupabaseClient();
-    const { data: order } = await supabase
-      .from("orders")
-      .select("email, status")
-      .eq("stripe_session_id", sessionId)
-      .single();
-
-    if (order?.status === "paid") {
-      return NextResponse.json({ paid: true, email: order.email });
+  const id = req.nextUrl.searchParams.get("session_id");
+  if (!id || id.length > 255) return NextResponse.json({ error: "session_id required" }, { status: 400 });
+  try {
+    const existing = await findOrder(id);
+    if (!existing || !await canAccessOrder(existing)) {
+      return NextResponse.json({ error: "Open this checkout in the browser where you paid, or sign in with your purchase email." }, { status: 403 });
     }
-    return NextResponse.json({ paid: false });
+    const order = await verifyPaidOrder(id);
+    let reportReady = false;
+    if (order?.report_id) {
+      const { data, error } = await getSupabaseAdmin().from("reports").select("plans").eq("id", order.report_id).maybeSingle();
+      if (error) throw new Error("report_read_failed");
+      reportReady = Array.isArray(data?.plans) && data.plans.length > 0;
+    }
+    return NextResponse.json(order ? { paid: true, email: order.email, reportId: reportReady ? order.report_id : null } : { paid: false }, {
+      headers: { "Cache-Control": "no-store" },
+    });
+  } catch {
+    return NextResponse.json({ error: "Payment verification is temporarily unavailable. Retry without paying again." }, { status: 503 });
   }
-
-  const stripe = getStripeClient();
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-  if (session.payment_status !== "paid") {
-    return NextResponse.json({ paid: false });
-  }
-
-  const supabase = getSupabaseClient();
-  await supabase
-    .from("orders")
-    .update({ status: "paid" })
-    .eq("stripe_session_id", sessionId);
-
-  return NextResponse.json({
-    paid: true,
-    email: session.customer_email ?? session.customer_details?.email,
-  });
 }

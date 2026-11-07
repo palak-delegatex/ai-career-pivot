@@ -1,200 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient, PLANS, type PlanKey, isBypassEmail } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { PostHog } from "posthog-node";
-import { randomUUID } from "crypto";
-
-// Make order-persistence failures observable in PostHog rather than only in
-// server logs, so a missing/rotated-invalid SUPABASE_SERVICE_ROLE_KEY (the
-// AIC-436 class of bug) surfaces as a metric, not a silent gap. Best-effort:
-// never let telemetry failure affect the checkout response.
-async function trackOrderPersistFailed(props: {
-  email: string;
-  plan: string;
-  reason: "missing_service_role_key" | "insert_error";
-  error: string;
-  stripeSessionId?: string;
-}) {
-  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
-  if (!token) return;
-  try {
-    const ph = new PostHog(token, {
-      host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
-      flushAt: 1,
-    });
-    ph.capture({
-      distinctId: props.email.toLowerCase(),
-      event: "order_persist_failed",
-      properties: {
-        plan: props.plan,
-        reason: props.reason,
-        error: props.error,
-        stripe_session_id: props.stripeSessionId ?? null,
-      },
-    });
-    await ph.shutdown();
-  } catch (err) {
-    console.error("Failed to capture order_persist_failed event:", err);
-  }
-}
+import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { trackServerJourney } from "@/lib/journey-server";
+import { safeAnalyticsId } from "@/lib/journey-events";
+import { ORDER_COOKIE, ORDER_ACCESS_SECONDS, signOrderAccess } from "@/lib/order-access";
+import { createHash, randomUUID } from "node:crypto";
 
 export async function POST(req: NextRequest) {
-  const { email, discountCode, plan: planKey = "report", posthogDistinctId } = await req.json();
-
-  if (!email) {
-    return NextResponse.json({ error: "email required" }, { status: 400 });
+  let body;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
+  if (!body || typeof body !== "object") return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  const email = typeof body.email === "string" ? body.email.toLowerCase().trim() : "";
+  const planKey = body.plan ?? "report";
+  const plan = typeof planKey === "string" && Object.prototype.hasOwnProperty.call(PLANS, planKey) ? PLANS[planKey as PlanKey] : undefined;
+  const discount = typeof body.discountCode === "string" ? body.discountCode.trim().slice(0, 100) : "";
+  if (typeof planKey !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !plan) {
+    return NextResponse.json({ error: "Enter a valid email and plan." }, { status: 400 });
   }
-
-  const plan = PLANS[planKey as PlanKey];
-  if (!plan) {
-    return NextResponse.json({ error: "invalid plan" }, { status: 400 });
-  }
-
+  const distinctId = safeAnalyticsId(body.posthogDistinctId);
+  const attempt = typeof body.checkoutAttemptId === "string" && /^[a-f0-9-]{36}$/i.test(body.checkoutAttemptId)
+    ? body.checkoutAttemptId : randomUUID();
+  // Stable across network retries; email/plan/discount bind the key to its input.
+  const idempotencyKey = createHash("sha256").update(JSON.stringify([attempt, email, planKey, discount])).digest("hex");
   try {
-    const origin = req.headers.get("origin") ?? "https://ai-career-pivot.vercel.app";
-
-    if (isBypassEmail(email)) {
-      let supabase;
-      try {
-        supabase = getSupabaseAdmin();
-      } catch {
-        console.error("Bypass order blocked: SUPABASE_SERVICE_ROLE_KEY is not configured");
-        await trackOrderPersistFailed({
-          email,
-          plan: planKey,
-          reason: "missing_service_role_key",
-          error: "SUPABASE_SERVICE_ROLE_KEY is not configured",
-        });
-        return NextResponse.json(
-          { error: "Server configuration error — please contact support" },
-          { status: 500 }
-        );
+    const db = getSupabaseAdmin();
+    const signingKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const auth = await getSupabaseServerClient();
+    const { data: { user } } = await auth.auth.getUser();
+    const authUserId = user && user.email?.toLowerCase() === email ? user.id : null;
+    const origin = req.nextUrl.origin; // Never trust a caller-supplied Origin header.
+    let sessionId: string;
+    let url: string;
+    let bypass = false;
+    if (authUserId && isBypassEmail(email)) {
+      bypass = true;
+      sessionId = "bypass_" + idempotencyKey;
+      url = origin + "/checkout/success?session_id=" + sessionId;
+    } else {
+      const stripe = getStripeClient();
+      const params: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+        mode: plan.mode, customer_email: email,
+        line_items: [{ quantity: 1, price_data: {
+          currency: "usd", unit_amount: plan.amount,
+          product_data: { name: plan.label, description: plan.description },
+          ...(plan.recurring ? { recurring: plan.recurring } : {}),
+        } }],
+        success_url: origin + "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: origin + "/pricing",
+        metadata: { plan: planKey, discountCode: discount, money_back_guarantee: "30_day", posthog_distinct_id: distinctId ?? "", auth_user_id: authUserId ?? "" },
+      };
+      if (discount) {
+        const promos = await stripe.promotionCodes.list({ code: discount, active: true, limit: 1 });
+        if (!promos.data.length) return NextResponse.json({ error: "That discount code is not available." }, { status: 400 });
+        params.discounts = [{ promotion_code: promos.data[0].id }];
       }
-
-      const bypassSessionId = `bypass_${randomUUID()}`;
-      const { error: insertError } = await supabase.from("orders").insert({
-        email,
-        stripe_session_id: bypassSessionId,
-        amount_cents: 0,
-        status: "paid",
-        discount_code: "TEAM_BYPASS",
-        plan_type: planKey,
-      });
-      if (insertError) {
-        console.error("Bypass order insert failed:", JSON.stringify(insertError));
-        await trackOrderPersistFailed({
-          email,
-          plan: planKey,
-          reason: "insert_error",
-          error: JSON.stringify(insertError),
-          stripeSessionId: bypassSessionId,
-        });
-        return NextResponse.json(
-          { error: "Failed to create order — please try again or contact support" },
-          { status: 500 }
-        );
-      }
-      return NextResponse.json({
-        url: `${origin}/checkout/success?session_id=${bypassSessionId}`,
-      });
+      const session = await stripe.checkout.sessions.create(params, { idempotencyKey });
+      if (!session.url) throw new Error("checkout_url_missing");
+      sessionId = session.id;
+      url = session.url;
     }
-
-    const stripe = getStripeClient();
-
-    // Acquire the service-role client up front so a missing/invalid
-    // SUPABASE_SERVICE_ROLE_KEY fails loud *before* we create a Stripe session
-    // (avoids charging a customer whose order — and entitlement — we can't
-    // persist). Mirrors the bypass path above.
-    let supabase;
-    try {
-      supabase = getSupabaseAdmin();
-    } catch {
-      console.error("Paid order blocked: SUPABASE_SERVICE_ROLE_KEY is not configured");
-      await trackOrderPersistFailed({
-        email,
-        plan: planKey,
-        reason: "missing_service_role_key",
-        error: "SUPABASE_SERVICE_ROLE_KEY is not configured",
-      });
-      return NextResponse.json(
-        { error: "Server configuration error — please contact support" },
-        { status: 500 }
-      );
+    // A retry must not downgrade an already-paid order or discard report linkage.
+    const { error } = await db.from("orders").upsert({
+      email, stripe_session_id: sessionId, amount_cents: bypass ? 0 : plan.amount,
+      status: bypass ? "paid" : "pending", discount_code: bypass ? "TEAM_BYPASS" : discount || null,
+      plan_type: planKey, auth_user_id: authUserId,
+    }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
+    if (error) {
+      await trackServerJourney("order_persist_failed", distinctId, { plan: planKey, reason: "insert_failed" });
+      // Never expose the live checkout URL if we cannot persist its order.
+      return NextResponse.json({ error: "Checkout is temporarily unavailable. Please retry; no payment was taken here." }, { status: 503 });
     }
-
-    const priceData: Record<string, unknown> = {
-      currency: "usd",
-      unit_amount: plan.amount,
-      product_data: {
-        name: plan.label,
-        description: plan.description,
-      },
-    };
-    if (plan.recurring) {
-      priceData.recurring = plan.recurring;
-    }
-
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      mode: plan.mode,
-      customer_email: email,
-      line_items: [{ price_data: priceData as never, quantity: 1 }],
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/pricing`,
-      // posthog_distinct_id lets the Stripe webhook emit payment_verified against
-      // the same PostHog person who fired checkout_started, keeping the funnel
-      // stitched. Empty string when the browser SDK hadn't loaded at submit time.
-      metadata: {
-        email,
-        plan: planKey,
-        discountCode: discountCode ?? "",
-        posthog_distinct_id: typeof posthogDistinctId === "string" ? posthogDistinctId : "",
-        money_back_guarantee: "30_day",
-      },
-    };
-
-    if (discountCode) {
-      try {
-        const promos = await stripe.promotionCodes.list({
-          code: discountCode,
-          active: true,
-          limit: 1,
-        });
-        if (promos.data.length > 0) {
-          sessionParams.discounts = [{ promotion_code: promos.data[0].id }];
-        }
-      } catch {
-        // Invalid code — proceed without discount
-      }
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
-    const { error: orderError } = await supabase.from("orders").insert({
-      email,
-      stripe_session_id: session.id,
-      amount_cents: plan.amount,
-      status: "pending",
-      discount_code: discountCode ?? null,
-      plan_type: planKey,
+    const response = NextResponse.json({ url });
+    response.cookies.set(ORDER_COOKIE, signOrderAccess(sessionId, signingKey), {
+      httpOnly: true, secure: req.nextUrl.protocol === "https:", sameSite: "lax",
+      path: "/", maxAge: ORDER_ACCESS_SECONDS,
     });
-    if (orderError) {
-      // Don't block the paying customer: the Stripe webhook grants entitlement
-      // via the user_plans upsert independently of this pending-order row. But
-      // make the failure observable so it can't recur silently.
-      console.error("Order insert failed (Stripe session created):", orderError);
-      await trackOrderPersistFailed({
-        email,
-        plan: planKey,
-        reason: "insert_error",
-        error: JSON.stringify(orderError),
-        stripeSessionId: session.id,
-      });
-    }
-
-    return NextResponse.json({ url: session.url });
-  } catch (err) {
-    console.error("Checkout session creation failed:", err);
-    const message = err instanceof Error ? err.message : "Checkout failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    await trackServerJourney("checkout_started", distinctId, {
+      plan: planKey, amount_cents: bypass ? 0 : plan.amount, currency: "usd", is_test: bypass,
+    }, "checkout:" + sessionId);
+    return response;
+  } catch {
+    await trackServerJourney("checkout_failed", distinctId, { plan: planKey, reason: "service_unavailable" });
+    return NextResponse.json({ error: "Checkout is temporarily unavailable. Please retry." }, { status: 503 });
   }
 }

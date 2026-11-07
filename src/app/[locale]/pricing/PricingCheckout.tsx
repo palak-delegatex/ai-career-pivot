@@ -58,6 +58,7 @@ export default function PricingCheckout({
   // engages that card's form — the mid-funnel step immediately before
   // checkout_started (AIC-742). A ref (not state) so re-renders never re-emit.
   const selectedTracked = useRef(false);
+  const checkoutAttemptId = useRef<string | null>(null);
 
   function handlePlanEngaged() {
     if (selectedTracked.current) return;
@@ -68,6 +69,8 @@ export default function PricingCheckout({
   const labels: Record<string, string> = {
     report: "Get My Report — $19",
     lifetime: "Get Lifetime Access — $149",
+    report_monthly: "Subscribe — $9.99 / month",
+    report_annual: "Subscribe — $79 / year",
   };
 
   async function attemptCheckout(): Promise<string> {
@@ -76,7 +79,7 @@ export default function PricingCheckout({
       res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature, posthogDistinctId: getPosthogDistinctId() }),
+        body: JSON.stringify({ email, plan, discountCode: discountCode || undefined, sourceFeature, posthogDistinctId: getPosthogDistinctId(), checkoutAttemptId: checkoutAttemptId.current }),
       });
     } catch {
       // fetch rejects only on network-level failure — always transient
@@ -113,6 +116,7 @@ export default function PricingCheckout({
     // Ensures the plan-selected step is recorded before checkout_started even
     // when the email was prefilled and the field never received focus.
     handlePlanEngaged();
+    checkoutAttemptId.current ??= crypto.randomUUID();
     trackCheckoutStarted({ plan, has_discount: !!discountCode, cta_location: ctaLocation });
     setLoading(true);
     setError("");

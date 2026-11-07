@@ -4,12 +4,14 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackPaymentVerified, trackPaymentVerificationFailed, trackCtaClicked } from "@/lib/tracking";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 function CheckoutSuccessInner() {
   const router = useRouter();
   const params = useSearchParams();
   const sessionId = params.get("session_id");
+  const [retry, setRetry] = useState(0);
+  const [continuePath, setContinuePath] = useState("/onboarding");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
 
   useEffect(() => {
@@ -18,18 +20,28 @@ function CheckoutSuccessInner() {
       return;
     }
 
-    fetch(`/api/checkout/verify?session_id=${sessionId}`)
-      .then((res) => res.json())
+    fetch(`/api/checkout/verify?session_id=${encodeURIComponent(sessionId)}`)
+      .then(async (res) => { const data = await res.json(); if (!res.ok) throw new Error(data.error ?? "Please retry verification without paying again."); return data; })
       .then(async (data) => {
         if (data.paid) {
           trackPaymentVerified({ session_id: sessionId });
           sessionStorage.setItem("payment_session_id", sessionId);
           sessionStorage.setItem("payment_email", data.email);
 
-          const supabase = getSupabaseBrowserClient();
-          const { data: authData } = await supabase.auth.getUser();
-          if (!authData.user && data.email) {
-            sessionStorage.setItem("pending_auth_email", data.email);
+          if (data.reportId) {
+            setContinuePath(`/report/${data.reportId}`);
+          } else {
+            // Preserve the free result's uploaded profile through the purchase.
+            const existing = sessionStorage.getItem("intake_profile") ?? sessionStorage.getItem("free_profile");
+            if (existing) {
+              try {
+                const profile = JSON.parse(existing);
+                if ([profile.skills, profile.transferableSkills, profile.experience, profile.education, profile.certifications, profile.interests].every(Array.isArray)) {
+                  sessionStorage.setItem("intake_profile", JSON.stringify({ ...profile, email: data.email }));
+                  setContinuePath("/onboarding/profile?generate=1");
+                }
+              } catch { /* Missing/old profile: onboarding remains available. */ }
+            }
           }
 
           setStatus("success");
@@ -38,11 +50,12 @@ function CheckoutSuccessInner() {
           setStatus("error");
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        setMessage(error instanceof Error ? error.message : "Please retry verification without paying again.");
         trackPaymentVerificationFailed({ session_id: sessionId });
         setStatus("error");
       });
-  }, [sessionId, router]);
+  }, [sessionId, router, retry]);
 
   if (status === "verifying") {
     return (
@@ -62,13 +75,14 @@ function CheckoutSuccessInner() {
           <div className="text-5xl mb-6">⚠️</div>
           <h1 className="text-2xl font-bold mb-3">Payment Not Confirmed</h1>
           <p className="text-slate-400 mb-6">
-            We couldn&apos;t verify your payment. If you were charged, please contact us — we&apos;ll sort it out.
+            {message || "Payment is not confirmed yet. Retry verification; do not pay again."}
           </p>
+          <button onClick={() => { setStatus("verifying"); setRetry(v => v + 1); }} className="mb-4 px-6 py-3 rounded-xl bg-teal-600 font-bold">Retry verification</button>
           <Link
-            href="/pricing"
+            href={`/login?next=${encodeURIComponent("/checkout/success?session_id=" + sessionId)}`}
             className="inline-block px-8 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold transition-colors"
           >
-            Back to Pricing
+            Sign in with your purchase email
           </Link>
         </div>
       </div>
@@ -85,7 +99,7 @@ function CheckoutSuccessInner() {
         </div>
         <h1 className="text-3xl font-extrabold mb-3">Payment Confirmed!</h1>
         <p className="text-slate-400 mb-6 leading-relaxed">
-          You&apos;re all set. Now upload your resume and LinkedIn profile so we can build your personalized career pivot roadmap.
+          Continue with your uploaded profile, or add your background to build your personalized report. You do not need to pay again.
         </p>
 
         {/* What You Unlocked */}
@@ -107,8 +121,8 @@ function CheckoutSuccessInner() {
         </div>
 
         <Link
-          href="/onboarding"
-          onClick={() => trackCtaClicked({ cta_text: "Build My Roadmap", cta_location: "checkout_success", destination: "/onboarding" })}
+          href={continuePath}
+          onClick={() => trackCtaClicked({ cta_text: "Build My Roadmap", cta_location: "checkout_success", destination: continuePath.split("?")[0] })}
           className="inline-block px-10 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 font-bold text-lg transition-colors shadow-lg shadow-teal-900/50"
         >
           Build My Roadmap →
@@ -119,7 +133,7 @@ function CheckoutSuccessInner() {
         </div>
 
         <p className="text-slate-500 text-xs">
-          Your receipt has been sent to your email.
+          Your report will be saved after generation. Keep this browser open, or sign in with your purchase email to find it later.
         </p>
       </div>
     </div>

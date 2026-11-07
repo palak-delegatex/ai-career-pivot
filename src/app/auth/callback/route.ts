@@ -1,83 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { getAuthNextPath } from "../../../lib/auth-redirect";
+import { trackServerJourney } from "@/lib/journey-server";
+import { safeAnalyticsId } from "@/lib/journey-events";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
-
-  const errorParam = searchParams.get("error");
-  const errorDescription = searchParams.get("error_description");
-  const errorCode = searchParams.get("error_code");
-
-  // AIC-1090: Google sign-in has failed silently in prod for months with no
-  // server-side record of WHY — every prior fix flew blind. Log the exact
-  // provider error and callback host here so the real failure is captured in
-  // Vercel logs. `host` surfaces origin-mismatch (verifier set on origin A,
-  // callback served on origin B) at a glance.
-  if (errorParam) {
-    console.error("[auth/callback] provider returned error", {
-      error: errorParam,
-      error_code: errorCode,
-      error_description: errorDescription,
-      host: request.nextUrl.host,
-    });
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", errorParam);
-    if (errorDescription) loginUrl.searchParams.set("error_description", errorDescription);
-    if (errorCode) loginUrl.searchParams.set("error_code", errorCode);
-    return NextResponse.redirect(loginUrl);
+  const params = request.nextUrl.searchParams;
+  const next = getAuthNextPath(params.get("next"));
+  const analyticsId = safeAnalyticsId(request.cookies.get("aic_analytics_id")?.value);
+  async function fail(reason: "provider" | "exchange" | "missing_code") {
+    await trackServerJourney("auth_failed", analyticsId, { reason });
+    const login = new URL("/login", request.url);
+    login.searchParams.set("next", next);
+    login.searchParams.set("error", reason === "provider" ? "server_error" : reason === "exchange" ? "exchange_failed" : "auth");
+    // Never forward provider descriptions, authorization codes or raw errors.
+    return NextResponse.redirect(login);
   }
-
-  if (code) {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
-            }
-          },
-        },
-      }
-    );
-
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      return NextResponse.redirect(new URL(next, request.url));
-    }
-
-    // AIC-1090: capture the exact exchange failure. The classic silent killer is
-    // "code verifier not found" (PKCE verifier cookie absent at the callback —
-    // e.g. sign-in started on a different origin than the one serving /callback).
-    // `hasVerifierCookie` tells us instantly whether that cookie survived.
-    const hasVerifierCookie = cookieStore
-      .getAll()
-      .some((c) => c.name.includes("code-verifier"));
-    console.error("[auth/callback] exchangeCodeForSession failed", {
-      message: error.message,
-      status: (error as { status?: number }).status,
-      code: (error as { code?: string }).code,
-      host: request.nextUrl.host,
-      hasVerifierCookie,
+  if (params.has("error")) return fail("provider");
+  const code = params.get("code");
+  if (!code) return fail("missing_code");
+  try {
+    const store = await cookies();
+    const client = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+      cookies: {
+        getAll: () => store.getAll(),
+        setAll: values => { for (const { name, value, options } of values) store.set(name, value, options); },
+      },
     });
-
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", "exchange_failed");
-    loginUrl.searchParams.set("error_description", error.message);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  console.error("[auth/callback] hit with no code and no error param", {
-    host: request.nextUrl.host,
-  });
-  return NextResponse.redirect(new URL("/login?error=auth", request.url));
+    const { data, error } = await client.auth.exchangeCodeForSession(code);
+    if (error) return fail("exchange");
+    if (data?.user) await trackServerJourney("auth_succeeded", "user_" + data.user.id, {
+      method: data.user.app_metadata?.provider === "google" ? "google" : "magic_link",
+    }, "auth:" + data.user.id + ":" + (data.session?.expires_at ?? "callback"));
+    return NextResponse.redirect(new URL(next, request.url));
+  } catch { return fail("exchange"); }
 }

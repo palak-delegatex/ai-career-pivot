@@ -1,35 +1,31 @@
 import posthog from "posthog-js";
+import { safeAnalyticsId, safeAnalyticsUrl, sanitizeAnalyticsProperties } from "./lib/journey-events";
 
 const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
-const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
-
 if (token) {
   posthog.init(token, {
-    api_host: host ?? "https://us.i.posthog.com",
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     person_profiles: "identified_only",
     capture_pageview: false,
     capture_pageleave: true,
-    // AIC-1076: enable client-side JS error autocapture so $exception events
-    // flow into proj 381452. Without this, error rate is a blind spot in the
-    // weekly analytics review (AIC-1074), not a clean bill of health.
-    capture_exceptions: true,
+    // Explicit events avoid capturing form input, profiles, callback errors or tokens.
+    autocapture: false,
+    capture_exceptions: false,
+    disable_session_recording: true,
+    before_send: event => {
+      if (!event) return event;
+      event.properties = sanitizeAnalyticsProperties(event.properties);
+      return event;
+    },
+    loaded: client => {
+      const id = safeAnalyticsId(client.get_distinct_id());
+      if (id && typeof document !== "undefined") {
+        document.cookie = "aic_analytics_id=" + encodeURIComponent(id) + "; Path=/; SameSite=Lax; Max-Age=2592000" + (location.protocol === "https:" ? "; Secure" : "");
+      }
+    },
   });
-
-  // Capture the initial landing pageview. `onRouterTransitionStart` only fires
-  // on client-side router transitions (push/replace/traverse) — NOT on the
-  // first hard load — so without this the entry pageview is never sent. That
-  // entry URL is the one carrying utm_* params from external links (LinkedIn /
-  // Reddit / X / Google), which is how PostHog derives session channel + UTM
-  // attribution. Firing it here (while window.location still has the query
-  // string) is what makes the AIC-439 distribution measurable at all, and
-  // ensures single-page bounces from shared links aren't invisible.
-  if (typeof window !== "undefined") {
-    posthog.capture("$pageview", { $current_url: window.location.href });
-  }
+  if (typeof window !== "undefined") posthog.capture("$pageview", { $current_url: safeAnalyticsUrl(window.location.href) });
 }
-
 export function onRouterTransitionStart(url: string) {
-  if (token) {
-    posthog.capture("$pageview", { $current_url: url });
-  }
+  if (token) posthog.capture("$pageview", { $current_url: safeAnalyticsUrl(url) });
 }

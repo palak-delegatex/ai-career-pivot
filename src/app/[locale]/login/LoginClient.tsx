@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import { getAuthCallbackUrl } from "@/lib/auth-redirect";
+import { trackAuthStarted, trackAuthFailed } from "@/lib/tracking";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 function GoogleIcon() {
@@ -72,19 +74,24 @@ function LoginForm() {
   });
 
   async function signInWithGoogle() {
+    trackAuthStarted("google");
     setLoading(true);
     setError("");
 
-    const supabase = getSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: getAuthCallbackUrl(window.location.origin, searchParams.get("next")),
+        },
+      });
+      if (error) throw error;
+    } catch {
+      trackAuthFailed("request");
+      // Client initialization and network failures may throw rather than return
+      // an AuthError. Always restore a usable form so the user can retry.
+      setError(t("error.googleUnavailable"));
       setLoading(false);
     }
   }
@@ -92,24 +99,25 @@ function LoginForm() {
   async function signInWithMagicLink(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-
+    trackAuthStarted("magic_link");
     setLoading(true);
     setError("");
-
-    const supabase = getSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+        options: {
+          emailRedirectTo: getAuthCallbackUrl(window.location.origin, searchParams.get("next")),
+        },
+      });
+      if (error) throw error;
       setMagicLinkSent(true);
+    } catch {
+      trackAuthFailed("request");
+      setError(t("error.serverError"));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   if (magicLinkSent) {
@@ -147,11 +155,7 @@ function LoginForm() {
           </p>
         </div>
 
-        {/* AIC-1129: email magic-link is the primary sign-in. Google OAuth has
-            been broken in prod for ~2 months (AIC-1090, post-consent PKCE
-            failure) and is human-gated; leading with a broken CTA bled signups.
-            Email is Google-independent and verified working end-to-end in prod.
-            When Google is fixed, restore it to primary by reversing this order. */}
+        {/* Google and email sign-in share the same safe return-path handling. */}
         <form onSubmit={signInWithMagicLink} className="space-y-3">
           <input
             type="email"
