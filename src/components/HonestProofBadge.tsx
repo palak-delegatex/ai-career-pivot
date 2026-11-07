@@ -77,9 +77,12 @@ export default function HonestProofBadge({
   // Real count when available; otherwise a truthful capability signal so the
   // form still carries a trust cue without a fabricated number.
   if (variant === "live") {
-    // Hide entirely only while the first fetch is still in flight, to avoid a
-    // layout flash; after that we always have something honest to show.
-    if (!signal && !failed) return null;
+    // Reserve the live line and its caller-provided margin while fetching.
+    // This variant always renders a count or capability fallback once settled;
+    // inserting it from nothing shifts the content below the upload form.
+    if (!signal && !failed) {
+      return <div aria-hidden="true" className={`min-h-4 ${className}`} />;
+    }
 
     if (primary) {
       return (
