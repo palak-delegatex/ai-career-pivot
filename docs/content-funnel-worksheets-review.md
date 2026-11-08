@@ -18,13 +18,13 @@ The supplied October 29–November 4 analysis reported 197 filtered visitors (13
 
 `FreeSnapshotCTA` uses `BlogCtaLink`, which emits `cta_clicked` with `blog_slug`, `cta_location=blog_free_snapshot`, CTA text and destination when client analytics is available. Both CTAs in the planning article intentionally share text/location, so current events identify article-level intent, not which placement was clicked.
 
-Current main sends that component to `/free`, whose initial mode is the posting quick-check; readers can choose resume upload. Copy explicitly names the resume-upload option. PR #287 changes the component destination to `/free?mode=upload`; the same copy remains accurate there. This PR does not duplicate the component change.
+This PR now changes the shared `FreeSnapshotCTA` destination from `/free` to `/free?mode=upload`, matching its resume-upload promise directly. Main already supports that server-side mode. This one-line correction is included here so these articles do not depend on PR #287's separate interactive journey changes. Existing click attribution remains unchanged except for the truthful destination.
 
 For a future readout, compare per-article visitors and tracked CTA clickers, then inspect the same-session path to `free_upload_started` and rendered free-result events using the same internal/test/bot exclusions. Keep counts alongside rates and describe attribution gaps. Downloads and plain Markdown links do not gain a dedicated event in this change; do not count them as tracked conversions. No analytics configuration or paid-conversion metric was changed here.
 
 ## Existing work and Paperclip
 
-Verified #283 and #285–#288 remain open. #286 already corrects the over-40 article to `/quiz` and the job-description article to the posting quick-check; those files were left unchanged. #287 covers contextual handoffs for other selected articles, not this planning article. #288's checkout recovery work remains on its independent branch.
+#283, #285, #286 and #290 are merged as of the November 8 release review. #287 and #288 remain separate pending work. #286 already corrects the over-40 article to `/quiz` and the job-description article to the posting quick-check; those files were left unchanged. #287 covers contextual handoffs for other selected articles, not this planning article. #288's checkout recovery work remains on its independent branch.
 
 Paperclip health still fails to connect at the configured `http://127.0.0.1:3100`; no current issue/agent state could be read and no coordination messages were delivered. When restored, ask the CMO to reconcile this draft with the content queue, and the CTO to validate event continuity with #287/#288. No settings or credentials were changed.
 
@@ -35,4 +35,5 @@ Paperclip health still fails to connect at the configured `http://127.0.0.1:3100
 - Every Markdown internal article/download link resolves to an existing repository file.
 - CSV verified as eight columns and five blank editable rows; Markdown worksheet exists and matches its article.
 - `git diff --check` passed.
-- No new UI, routing, or analytics code. Full browser/product integration and conversion lift are not claimed. Keep in draft for editorial review and live destination QA before merge.
+- The only shared UI change is the resume CTA destination described above. No new interaction, pricing, entitlement, analytics configuration, or provider call is added.
+- November 8 release checks: independent content/component review, all three MDX bodies, eight-column CSV and all 21 generated locale article pages passed in the combined integration build. Standalone verification is recorded in the PR release update; hydrated interaction and conversion lift are not claimed.

@@ -143,7 +143,7 @@ function FreeSnapshotCTA({
         {subheading}
       </p>
       <BlogCtaLink
-        href="/free"
+        href="/free?mode=upload"
         ctaText={buttonText}
         ctaLocation="blog_free_snapshot"
         blogSlug={slug}
