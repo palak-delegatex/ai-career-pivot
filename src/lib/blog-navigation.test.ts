@@ -41,7 +41,11 @@ describe("article link classification", () => {
   it.each(["#source-1", "https://example.com/free", "//example.com/quiz", "mailto:hello@example.com", "/blog/example", "/free-results"])("does not turn reading/source links into conversion events: %s", href => {
     expect(blogLinkInfo(href).product).toBe(false);
   });
+  it.each(["/worksheets/plan.md", "/worksheets/gaps.csv?download=1#skills", "/images/guide.png", "/pivot/example.pdf"])("does not localize or track static asset %s", href => {
+    expect(blogLinkInfo(href).staticAsset).toBe(true);
+    expect(blogLinkInfo(href).product).toBe(false);
+  });
   it("preserves existing locale prefixes", () => {
-    expect(blogLinkInfo("/de/free?mode=upload")).toEqual({internal: true, localized: true, product: true});
+    expect(blogLinkInfo("/de/free?mode=upload")).toEqual({internal: true, localized: true, staticAsset: false, product: true});
   });
 });

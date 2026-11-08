@@ -12,6 +12,6 @@ export default function BlogArticleLink({ blogSlug, href = "", children, ...prop
         cta_location: "blog_inline", destination: href, blog_slug: blogSlug });
     }
   };
-  if (!info.internal || info.localized) return <a {...props} href={href} onClick={onClick}>{children}</a>;
+  if (!info.internal || info.localized || info.staticAsset) return <a {...props} href={href} onClick={onClick}>{children}</a>;
   return <Link {...props} href={href} onClick={onClick}>{children}</Link>;
 }

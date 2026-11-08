@@ -35,8 +35,8 @@ afterEach(async () => {
   container.remove();
   vi.unstubAllGlobals();
 });
-async function render(children: ReactNode) {
-  await act(async () => root.render(<NextIntlClientProvider locale="de" messages={{}} timeZone="UTC">{children}</NextIntlClientProvider>));
+async function render(children: ReactNode, locale = "de") {
+  await act(async () => root.render(<NextIntlClientProvider locale={locale} messages={{}} timeZone="UTC">{children}</NextIntlClientProvider>));
 }
 async function click(anchor: HTMLAnchorElement) {
   // Cancel browser navigation after React handles the click.
@@ -103,4 +103,25 @@ it("still provides navigation and click tracking without IntersectionObserver", 
   await click(container.querySelector("a")!);
   expect(trackCtaClicked).toHaveBeenCalledTimes(1);
   expect(trackBlogCtaViewed).not.toHaveBeenCalled();
+});
+
+
+it.each(["en", "es", "hi", "pt-BR", "fr", "de", "ja"])("preserves public worksheet downloads in %s without product tracking", async (locale) => {
+  const hrefs = [
+    "/worksheets/career-pivot-plan.md",
+    "/worksheets/career-change-skills-gap.csv",
+    "/worksheets/career-pivot-plan.md?download=1#template",
+    "/worksheets/career-change-skills-gap.csv#skills",
+  ];
+  await render(<>{hrefs.map(href => <BlogArticleLink key={href} href={href} blogSlug="worksheet" download target="_blank" rel="noreferrer">Download</BlogArticleLink>)}</>, locale);
+  const anchors = container.querySelectorAll("a");
+  expect(anchors).toHaveLength(hrefs.length);
+  for (const [index, anchor] of anchors.entries()) {
+    expect(anchor.getAttribute("href")).toBe(hrefs[index]);
+    expect(anchor.hasAttribute("download")).toBe(true);
+    expect(anchor.getAttribute("target")).toBe("_blank");
+    expect(anchor.getAttribute("rel")).toBe("noreferrer");
+    await click(anchor);
+  }
+  expect(trackCtaClicked).not.toHaveBeenCalled();
 });

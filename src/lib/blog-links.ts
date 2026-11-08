@@ -6,5 +6,7 @@ export function blogLinkInfo(href: string) {
   const first = path.split("/")[1];
   const localized = (locales as readonly string[]).includes(first);
   const canonical = localized ? path.slice(first.length + 1) || "/" : path;
-  return { internal, localized, product: internal && (productPaths.has(canonical) || canonical.startsWith("/pivot/")) };
+  // Public files are served at their root URL, outside locale-prefixed routes.
+  const staticAsset = internal && /\/[^/]+\.[a-z0-9]+$/i.test(path);
+  return { internal, localized, staticAsset, product: internal && !staticAsset && (productPaths.has(canonical) || canonical.startsWith("/pivot/")) };
 }
