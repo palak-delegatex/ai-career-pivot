@@ -466,7 +466,7 @@
     "cta": {
       "free": {
         "heading": "Obtenez votre bilan de carrière IA gratuit",
-        "subheading": "Découvrez vos rôles IA les plus adaptés et vos principales lacunes de compétences en 2 minutes — gratuit, sans inscription. Importez simplement votre CV ou LinkedIn.",
+        "subheading": "Importez votre CV pour obtenir gratuitement un premier aperçu des rôles possibles et des compétences à développer. Sans inscription.",
         "button": "Obtenir mon bilan gratuit →"
       },
       "waitlist": {
@@ -485,6 +485,28 @@
       "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
       "allPosts": "← All posts",
       "postsInCluster": "{count, plural, one {# post} other {# posts}}"
+    },
+    "nextStep": {
+      "explore": {
+        "heading": "Explorez une orientation professionnelle",
+        "description": "Quatre questions suggèrent un rôle selon vos intérêts et votre expérience. Sans CV ni inscription ; comparez la suggestion aux exigences de vraies offres.",
+        "label": "Essayer le questionnaire d’orientation"
+      },
+      "snapshot": {
+        "heading": "Explorez une piste à partir de votre CV",
+        "description": "Importez votre CV pour un premier aperçu gratuit des rôles possibles et des compétences à développer. Sans inscription ; vérifiez les suggestions dans les offres actuelles.",
+        "label": "Obtenir un aperçu gratuit du CV"
+      },
+      "planning": {
+        "heading": "Évaluez votre marge pour changer",
+        "description": "Cinq questions sur votre expérience, motivation, temps et urgence. Une aide à la réflexion, pas un test de compétences ou d’employabilité. Sans inscription.",
+        "label": "Faire le point sur votre préparation"
+      },
+      "posting": {
+        "heading": "Examinez une vraie offre d’emploi",
+        "description": "Collez une description de poste pour voir les compétences demandées. Sans CV ni inscription ; comparez l’article à une offre concrète.",
+        "label": "Examiner une offre d’emploi"
+      }
     }
   },
   "jobTracker": {

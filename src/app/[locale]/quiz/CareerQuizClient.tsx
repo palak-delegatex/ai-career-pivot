@@ -1,25 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { StepIndicator } from "@/components/StepIndicator";
 import {
   trackCareerQuizStarted,
   trackCareerQuizCompleted,
   trackCareerQuizToFree,
+  trackCtaClicked,
 } from "@/lib/tracking";
+import { clearQuizContext, storeQuizContext, isCareerQuizResult, QUIZ_UPLOAD_HREF } from "@/lib/quiz-continuity";
 import type { CareerQuizResult } from "@/app/api/career-quiz/route";
 
-/**
- * Path B — 30-second anonymous career quiz (AIC-833 / AIC-825).
- *
- * The second zero-signup "taste": 4 quick questions (role / experience /
- * interests / timeline) → an instant AI-adjacent role match with a 1-sentence
- * rationale and a public-data salary range. Like Path A, the PERSONALIZED match
- * score is left LOCKED behind a resume upload (the "?" is deliberate —
- * Zeigarnik / Goal-Gradient), and the CTA bridges into the existing free-upload
- * (or pricing) flow.
- */
+// Four-question, interest-based starting suggestion. Resume analysis is optional.
 
 const STEPS = ["Role", "Experience", "Interests", "Timeline"];
 
@@ -68,38 +61,6 @@ const TIMELINE_CHOICES: { id: string; label: string }[] = [
   { id: "exploring", label: "Just exploring" },
 ];
 
-// Locked teaser ring — reuses the /free-results score-ring visual language, but
-// the value is a pulsing "?" (the score unlocks after a resume upload).
-function LockedScoreRing() {
-  const radius = 28;
-  const circumference = 2 * Math.PI * radius;
-  // Decorative ~62% teal arc so the ring reads as "almost there" without
-  // implying an actual computed score.
-  const offset = circumference - 0.62 * circumference;
-  return (
-    <div className="relative w-20 h-20 flex-shrink-0" aria-label="Your match score is locked" role="img">
-      <svg className="w-20 h-20 -rotate-90" viewBox="0 0 72 72">
-        <circle cx="36" cy="36" r={radius} stroke="#334155" strokeWidth="6" fill="none" />
-        <circle
-          cx="36"
-          cy="36"
-          r={radius}
-          stroke="#2dd4bf"
-          strokeWidth="6"
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          opacity={0.55}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-2xl font-bold text-teal-400 motion-safe:animate-pulse">?</span>
-      </div>
-    </div>
-  );
-}
-
 export default function CareerQuizClient() {
   const [step, setStep] = useState(0);
   const [currentRole, setCurrentRole] = useState("");
@@ -111,13 +72,23 @@ export default function CareerQuizClient() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<CareerQuizResult | null>(null);
 
+  const reportedResult = useRef<CareerQuizResult | null>(null);
+
   // Fire the entry event once on load — counts everyone who reaches the quiz,
   // finished or not. Source comes from the deep-link (?source=…), else the page.
   useEffect(() => {
+    clearQuizContext();
     const source =
       new URLSearchParams(window.location.search).get("source") || "quiz_page";
     trackCareerQuizStarted({ source });
   }, []);
+
+  // This event means a valid result actually rendered, not a submit attempt.
+  useEffect(() => {
+    if (!result || reportedResult.current === result) return;
+    reportedResult.current = result;
+    trackCareerQuizCompleted({ current_role: currentRole, timeline, interests });
+  }, [result, currentRole, timeline, interests]);
 
   const canAdvance = useMemo(() => {
     if (step === 0) return currentRole !== "";
@@ -135,7 +106,6 @@ export default function CareerQuizClient() {
 
   async function handleSubmit() {
     if (loading) return;
-    trackCareerQuizCompleted({ current_role: currentRole, timeline, interests });
     setLoading(true);
     setError("");
     try {
@@ -146,25 +116,8 @@ export default function CareerQuizClient() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Couldn't build your match. Please try again.");
-      const matched = data as CareerQuizResult;
-      // Carry the quiz outcome into the /free snapshot (AIC-863 §2b). The upload
-      // page shows a "targeting [matchedRole]" pill and the snapshot API weights
-      // its top path toward this match, so the UI never promises a role the
-      // snapshot doesn't deliver. sessionStorage-scoped, best-effort.
-      try {
-        sessionStorage.setItem(
-          "quiz_answers",
-          JSON.stringify({
-            role: currentRole,
-            matchedRole: matched.matchedRole,
-            experience: years,
-            interests,
-            timeline,
-          })
-        );
-      } catch {
-        /* sessionStorage may be unavailable (private mode) — non-fatal */
-      }
+      if (!isCareerQuizResult(data)) throw new Error("The quiz returned an incomplete result. Please try again.");
+      const matched = data;
       setResult(matched);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -174,6 +127,8 @@ export default function CareerQuizClient() {
   }
 
   function reset() {
+    clearQuizContext();
+    reportedResult.current = null;
     setStep(0);
     setCurrentRole("");
     setYears("");
@@ -189,18 +144,17 @@ export default function CareerQuizClient() {
       <div className="max-w-xl mx-auto px-6 py-12">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-600/20 border border-teal-600/30 text-teal-400 text-xs font-semibold font-mono">
-            Your AI-adjacent match
+            A role to explore
           </div>
         </div>
 
         <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
           <div className="flex items-center gap-4 mb-4">
-            <LockedScoreRing />
             <div className="min-w-0">
               <div className="text-xs uppercase tracking-wide text-slate-400 font-semibold mb-0.5">
-                Top match
+                Interest-based suggestion
               </div>
-              <h2 className="text-xl font-bold text-white leading-tight">{result.matchedRole}</h2>
+              <h1 className="text-xl font-bold text-white leading-tight">{result.matchedRole}</h1>
             </div>
           </div>
 
@@ -225,7 +179,7 @@ export default function CareerQuizClient() {
           {result.adjacentRoles.length > 0 && (
             <div className="mb-5">
               <div className="text-xs uppercase tracking-wide text-slate-400 font-semibold mb-2">
-                Also a fit
+                Also worth exploring
               </div>
               <div className="flex flex-wrap gap-2">
                 {result.adjacentRoles.map((r) => (
@@ -243,16 +197,19 @@ export default function CareerQuizClient() {
           <div className="rounded-xl bg-teal-950/40 border border-teal-700/40 px-4 py-4 text-center">
             <p className="text-sm text-slate-300 mb-4">{result.timelineNote}</p>
             <Link
-              href="/free?mode=upload"
-              onClick={() => trackCareerQuizToFree({ matched_role: result.matchedRole })}
+              href={QUIZ_UPLOAD_HREF}
+              onClick={() => {
+                storeQuizContext({ matchedRole: result.matchedRole, interests, timeline });
+                trackCareerQuizToFree({ matched_role: result.matchedRole });
+              }}
               className="block w-full px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 font-semibold transition-colors min-h-[44px]"
             >
-              Get your full personalized roadmap →
+              Upload a resume for a free snapshot →
             </Link>
             <Link
               href="/pricing"
-              onClick={() => trackCareerQuizToFree({ matched_role: result.matchedRole })}
-              className="inline-block mt-3 text-sm text-teal-400 hover:text-teal-300 font-medium"
+              onClick={() => trackCtaClicked({ cta_text: "See plans & pricing", cta_location: "career_quiz_result", destination: "/pricing" })}
+              className="inline-flex items-center min-h-[44px] mt-3 text-sm text-teal-400 hover:text-teal-300 font-medium"
             >
               See plans & pricing
             </Link>
@@ -262,7 +219,7 @@ export default function CareerQuizClient() {
         <button
           type="button"
           onClick={reset}
-          className="mx-auto mt-6 block text-sm text-slate-400 hover:text-slate-200"
+          className="mx-auto mt-6 block min-h-[44px] px-3 text-sm text-slate-400 hover:text-slate-200"
         >
           ↺ Retake the quiz
         </button>
@@ -278,10 +235,10 @@ export default function CareerQuizClient() {
           Free · No signup needed
         </div>
         <h1 className="text-4xl font-extrabold mb-3 tracking-tight font-serif">
-          Find your AI-adjacent role in 30 seconds
+          Explore an AI-adjacent role
         </h1>
         <p className="text-slate-400 leading-relaxed">
-          Four quick questions — no resume, no email. See where your background fits in AI.
+          Four questions — no resume, no email. Get a starting suggestion based on your interests and experience level, not a skills or employability assessment.
         </p>
       </div>
 
@@ -386,7 +343,7 @@ export default function CareerQuizClient() {
         )}
 
         {error && (
-          <p className="mt-4 text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
+          <p role="alert" className="mt-4 text-red-400 text-sm bg-red-950/30 border border-red-800/40 rounded-lg px-4 py-3">
             {error}
           </p>
         )}

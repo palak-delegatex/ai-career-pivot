@@ -466,7 +466,7 @@
     "cta": {
       "free": {
         "heading": "Receba seu diagnóstico de carreira com IA grátis",
-        "subheading": "Veja suas funções mais compatíveis com IA e suas maiores lacunas de habilidades em 2 minutos — grátis, sem cadastro. Basta enviar seu currículo ou LinkedIn.",
+        "subheading": "Envie o arquivo do seu currículo para obter uma visão inicial gratuita de possíveis funções e lacunas de habilidades. Sem cadastro.",
         "button": "Obter meu diagnóstico grátis →"
       },
       "waitlist": {
@@ -485,6 +485,28 @@
       "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
       "allPosts": "← All posts",
       "postsInCluster": "{count, plural, one {# post} other {# posts}}"
+    },
+    "nextStep": {
+      "explore": {
+        "heading": "Explore uma direção profissional",
+        "description": "Quatro perguntas sugerem uma função com base nos seus interesses e experiência. Sem currículo ou cadastro; compare a sugestão com requisitos de vagas reais.",
+        "label": "Experimente o quiz de orientação"
+      },
+      "snapshot": {
+        "heading": "Explore uma direção com seu currículo",
+        "description": "Envie seu currículo para uma visão inicial gratuita de possíveis funções e lacunas de habilidades. Sem cadastro; confira as sugestões em vagas atuais.",
+        "label": "Receba uma análise inicial gratuita"
+      },
+      "planning": {
+        "heading": "Reflita sobre seu espaço para mudar",
+        "description": "Cinco perguntas sobre experiência, motivação, tempo e urgência. Uma reflexão para planejar, não um teste de habilidades ou empregabilidade. Sem cadastro.",
+        "label": "Avalie sua preparação para planejar"
+      },
+      "posting": {
+        "heading": "Analise uma vaga real",
+        "description": "Cole uma descrição de vaga para ver as habilidades solicitadas. Sem currículo ou cadastro; compare o artigo com uma vaga concreta.",
+        "label": "Analise uma descrição de vaga"
+      }
     }
   },
   "jobTracker": {

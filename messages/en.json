@@ -464,7 +464,7 @@
     "cta": {
       "free": {
         "heading": "Get your free AI career snapshot",
-        "subheading": "See your best-fit AI-adjacent roles and biggest skill gaps in 2 minutes — free, no signup. Just upload your resume or LinkedIn.",
+        "subheading": "Upload your resume file for a free starting view of possible roles and skill gaps. No signup required.",
         "button": "Get My Free Snapshot →"
       },
       "waitlist": {
@@ -483,6 +483,28 @@
       "subheading": "Every guide, grouped by theme — find articles on career pivots, AI skills, interviews, salary, job search, and the future of work.",
       "allPosts": "← All posts",
       "postsInCluster": "{count, plural, one {# post} other {# posts}}"
+    },
+    "nextStep": {
+      "explore": {
+        "heading": "Explore a role direction",
+        "description": "Four questions suggest a role from your interests and experience level. No resume or signup; compare the suggestion with real job requirements.",
+        "label": "Try the role exploration quiz"
+      },
+      "snapshot": {
+        "heading": "Test a direction with your resume",
+        "description": "Upload a resume file for a free starting view of possible roles and skill gaps. No signup; validate the suggestions against current job postings.",
+        "label": "Get a free resume snapshot"
+      },
+      "planning": {
+        "heading": "Reflect on your room to make a change",
+        "description": "Five questions about your experience, motivation, time and urgency. A planning reflection, not a test of skills or employability. No signup.",
+        "label": "Check your planning readiness"
+      },
+      "posting": {
+        "heading": "Inspect a real job posting",
+        "description": "Paste a job description to see the skills it asks for. No resume or signup; use the result to compare the article with an actual vacancy.",
+        "label": "Check a job posting"
+      }
     }
   },
   "jobTracker": {

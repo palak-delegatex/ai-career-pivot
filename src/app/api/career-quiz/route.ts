@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Value-before-signup Path B — 30-second career quiz (AIC-833 / AIC-825 Path B).
-// A logged-out visitor answers 4 quick questions (current role, years of
-// experience, interests, timeline) and gets an instant AI-adjacent role match:
-// the role, a 1-sentence rationale, and a public-data salary range. Like Path A
-// (the ATS quick-check) the PERSONALIZED match score stays LOCKED behind the
-// resume-upload free-snapshot flow — the incomplete "?" motivates the upload.
-//
-// Deliberately rule-based (no LLM per the design spec): the mapping is a small
-// deterministic weighted-scoring model, so it's instant, free, and testable.
+// Anonymous, rule-based role exploration. Interests and experience affect ranking;
+// current role and timeline do not establish skills, job fit, or employability.
 
 // ── Answer vocabulary (kept in sync with the client's option ids) ────────────
 export const YEARS_OPTIONS = ["0-2", "3-5", "6-10", "10+"] as const;
@@ -182,8 +175,7 @@ function buildRationale(role: RoleDef, answers: QuizAnswers): string {
     interests.length > 0
       ? interests.slice(0, 2).map((i) => INTEREST_LABELS[i]).join(" and ")
       : "where you want to grow";
-  const role_ = answers.currentRole?.trim() || "your background";
-  return `Your experience in ${role_} plus a pull toward ${interestPhrase} points toward ${role.title} — ${role.hook}.`;
+  return `Your interest in ${interestPhrase}, with a small adjustment for experience level, suggests exploring ${role.title} — ${role.hook}. This is a starting suggestion, not an assessment of your skills or job readiness.`;
 }
 
 export async function POST(req: NextRequest) {
@@ -225,7 +217,7 @@ export async function POST(req: NextRequest) {
     salaryLow: top.salaryLow,
     salaryHigh: top.salaryHigh,
     salaryDisplay: `$${top.salaryLow}k–$${top.salaryHigh}k`,
-    timelineNote: `Pivoting ${TIMELINE_LABELS[timeline]}? Your personalized roadmap sequences the exact skills to close first.`,
+    timelineNote: `Planning a move ${TIMELINE_LABELS[timeline]}? Compare this suggestion with real job requirements. You can optionally upload a resume for a free career snapshot; it is not a full roadmap.`,
     adjacentRoles,
   };
 
